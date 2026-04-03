@@ -1,0 +1,81 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=Nunito:wght@400;600;700;800;900&display=swap');
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@theme {
+  --font-sans: "Nunito", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Nunito", sans-serif;
+  
+  --color-duo-green: #58cc02;
+  --color-duo-green-dark: #46a302;
+  --color-duo-blue: #1cb0f6;
+  --color-duo-blue-dark: #1899d6;
+  --color-duo-orange: #ff9600;
+  --color-duo-orange-dark: #e58700;
+  --color-duo-red: #ff4b4b;
+  --color-duo-red-dark: #e54343;
+  --color-duo-yellow: #ffc800;
+  --color-duo-yellow-dark: #e5b400;
+  
+  --color-brand-50: #f0f9ff;
+  --color-brand-100: #e0f2fe;
+  --color-brand-200: #bae6fd;
+  --color-brand-300: #7dd3fc;
+  --color-brand-400: #38bdf8;
+  --color-brand-500: #0ea5e9;
+  --color-brand-600: #0284c7;
+  --color-brand-700: #0369a1;
+  --color-brand-800: #075985;
+  --color-brand-900: #0c4a6e;
+}
+
+@layer base {
+  body {
+    @apply bg-white text-slate-900 font-sans antialiased select-none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display font-extrabold tracking-tight;
+  }
+}
+
+.duo-button {
+  @apply relative inline-flex items-center justify-center px-6 py-3 font-black uppercase tracking-wider text-sm rounded-2xl transition-all active:translate-y-1 active:shadow-none;
+}
+
+.duo-button-green {
+  @apply bg-duo-green text-white shadow-[0_4px_0_0_#46a302] hover:bg-[#61e002];
+}
+
+.duo-button-blue {
+  @apply bg-duo-blue text-white shadow-[0_4px_0_0_#1899d6] hover:bg-[#23c4ff];
+}
+
+.duo-button-white {
+  @apply bg-white text-slate-400 border-2 border-slate-200 shadow-[0_4px_0_0_#e2e8f0] hover:bg-slate-50;
+}
+
+.duo-card {
+  @apply bg-white border-2 border-slate-200 rounded-3xl p-6 shadow-sm;
+}
+
+.glass {
+  @apply bg-white/80 backdrop-blur-md border-2 border-slate-100 rounded-3xl shadow-lg;
+}
+
+.markdown-body {
+  @apply prose prose-slate max-w-none;
+  @apply prose-headings:font-display prose-headings:font-black;
+  @apply prose-p:leading-relaxed prose-p:text-slate-600 prose-p:font-bold;
+  @apply prose-li:text-slate-600 prose-li:font-bold;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+

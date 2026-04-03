@@ -1,0 +1,6 @@
+{
+  "appId": "com.ascend.growth",
+  "appName": "Ascend",
+  "webDir": "dist",
+  "bundledWebRuntime": false
+}

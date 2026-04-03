@@ -1,0 +1,174 @@
+name: iOS TestFlight
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/ios-testflight.yml'
+      - 'ios/**'
+      - 'src/**'
+      - 'public/**'
+      - 'index.html'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'capacitor.config.json'
+      - 'vite.config.ts'
+
+jobs:
+  build-and-upload:
+    runs-on: macos-latest
+    env:
+      APP_SCHEME: App
+      APP_PROJECT: ios/App/App.xcodeproj
+      APP_ARCHIVE_PATH: ${{ runner.temp }}/Ascend.xcarchive
+      APP_EXPORT_PATH: ${{ runner.temp }}/export
+      BUILD_CERTIFICATE_BASE64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
+      P12_PASSWORD: ${{ secrets.P12_PASSWORD }}
+      BUILD_PROVISION_PROFILE_BASE64: ${{ secrets.BUILD_PROVISION_PROFILE_BASE64 }}
+      KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+      APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+      APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+      APP_STORE_CONNECT_PRIVATE_KEY: ${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY }}
+      APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+      BUNDLE_ID: com.ascend.growth
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install npm dependencies
+        run: npm ci
+
+      - name: Build web assets and sync Capacitor iOS
+        run: npm run ios:sync
+
+      - name: Install the Apple certificate and provisioning profile
+        env:
+          CERTIFICATE_PATH: ${{ runner.temp }}/build_certificate.p12
+          PP_PATH: ${{ runner.temp }}/build_pp.mobileprovision
+          KEYCHAIN_PATH: ${{ runner.temp }}/app-signing.keychain-db
+        run: |
+          printf '%s' "$BUILD_CERTIFICATE_BASE64" | base64 -D -o "$CERTIFICATE_PATH"
+          printf '%s' "$BUILD_PROVISION_PROFILE_BASE64" | base64 -D -o "$PP_PATH"
+
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+
+          security import "$CERTIFICATE_PATH" -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k "$KEYCHAIN_PATH"
+          security set-key-partition-list -S apple-tool:,apple: -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security list-keychain -d user -s "$KEYCHAIN_PATH"
+
+          mkdir -p "$HOME/Library/MobileDevice/Provisioning Profiles"
+          cp "$PP_PATH" "$HOME/Library/MobileDevice/Provisioning Profiles/build_pp.mobileprovision"
+
+      - name: Prepare App Store Connect API key
+        run: |
+          mkdir -p "$RUNNER_TEMP/private_keys"
+          API_KEY_PATH="$RUNNER_TEMP/private_keys/AuthKey_${APP_STORE_CONNECT_KEY_ID}.p8"
+          printf '%s' "$APP_STORE_CONNECT_PRIVATE_KEY" > "$API_KEY_PATH"
+          {
+            echo "API_KEY_PATH=$API_KEY_PATH"
+            echo "API_PRIVATE_KEYS_DIR=$RUNNER_TEMP/private_keys"
+          } >> "$GITHUB_ENV"
+
+      - name: Resolve signing metadata
+        run: |
+          PROFILE_PLIST="$RUNNER_TEMP/profile.plist"
+          security cms -D -i "$HOME/Library/MobileDevice/Provisioning Profiles/build_pp.mobileprovision" > "$PROFILE_PLIST"
+
+          PROFILE_NAME=$(/usr/libexec/PlistBuddy -c 'Print :Name' "$PROFILE_PLIST")
+          PROFILE_UUID=$(/usr/libexec/PlistBuddy -c 'Print :UUID' "$PROFILE_PLIST")
+          TEAM_ID_FROM_PROFILE=$(/usr/libexec/PlistBuddy -c 'Print :TeamIdentifier:0' "$PROFILE_PLIST")
+          SIGNING_IDENTITY=$(security find-identity -v -p codesigning "$RUNNER_TEMP/app-signing.keychain-db" | grep 'Apple Distribution' | head -n 1 | sed -E 's/.*"(.+)"/\1/')
+
+          if [ -z "$SIGNING_IDENTITY" ]; then
+            echo "Apple Distribution identity not found in imported certificate."
+            exit 1
+          fi
+
+          if [ -z "$APPLE_TEAM_ID" ]; then
+            APPLE_TEAM_ID="$TEAM_ID_FROM_PROFILE"
+          fi
+
+          {
+            echo "PROFILE_NAME=$PROFILE_NAME"
+            echo "PROFILE_UUID=$PROFILE_UUID"
+            echo "APPLE_TEAM_ID=$APPLE_TEAM_ID"
+            echo "SIGNING_IDENTITY=$SIGNING_IDENTITY"
+          } >> "$GITHUB_ENV"
+
+      - name: Create ExportOptions.plist
+        run: |
+          cat > "$RUNNER_TEMP/ExportOptions.plist" <<EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>method</key>
+            <string>app-store</string>
+            <key>signingStyle</key>
+            <string>manual</string>
+            <key>teamID</key>
+            <string>${APPLE_TEAM_ID}</string>
+            <key>signingCertificate</key>
+            <string>Apple Distribution</string>
+            <key>provisioningProfiles</key>
+            <dict>
+              <key>${BUNDLE_ID}</key>
+              <string>${PROFILE_NAME}</string>
+            </dict>
+            <key>stripSwiftSymbols</key>
+            <true/>
+            <key>uploadSymbols</key>
+            <true/>
+          </dict>
+          </plist>
+          EOF
+
+      - name: Archive iOS app
+        run: |
+          xcodebuild \
+            -project "$APP_PROJECT" \
+            -scheme "$APP_SCHEME" \
+            -configuration Release \
+            -destination generic/platform=iOS \
+            -archivePath "$APP_ARCHIVE_PATH" \
+            DEVELOPMENT_TEAM="$APPLE_TEAM_ID" \
+            CODE_SIGN_STYLE=Manual \
+            CODE_SIGN_IDENTITY="$SIGNING_IDENTITY" \
+            PROVISIONING_PROFILE_SPECIFIER="$PROFILE_NAME" \
+            clean archive
+
+      - name: Export IPA
+        run: |
+          mkdir -p "$APP_EXPORT_PATH"
+          xcodebuild \
+            -exportArchive \
+            -archivePath "$APP_ARCHIVE_PATH" \
+            -exportPath "$APP_EXPORT_PATH" \
+            -exportOptionsPlist "$RUNNER_TEMP/ExportOptions.plist"
+
+      - name: Upload IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ascend-testflight-ipa
+          path: ${{ env.APP_EXPORT_PATH }}/*.ipa
+          if-no-files-found: error
+
+      - name: Upload to TestFlight
+        run: |
+          xcrun altool \
+            --upload-app \
+            -f "$APP_EXPORT_PATH/App.ipa" \
+            -t ios \
+            --apiKey "$APP_STORE_CONNECT_KEY_ID" \
+            --apiIssuer "$APP_STORE_CONNECT_ISSUER_ID"

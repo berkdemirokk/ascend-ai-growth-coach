@@ -1,0 +1,21 @@
+{
+  "short_name": "Ascend",
+  "name": "Ascend: AI Growth Coach",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#ffffff",
+  "display": "standalone",
+  "theme_color": "#0ea5e9",
+  "description": "AI-powered personal development coach."
+}
