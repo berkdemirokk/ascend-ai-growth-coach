@@ -9,8 +9,6 @@ jobs:
     env:
       APP_SCHEME: App
       APP_PROJECT: ios/App/App.xcodeproj
-      APP_ARCHIVE_PATH: ${{ runner.temp }}/Ascend.xcarchive
-      APP_EXPORT_PATH: ${{ runner.temp }}/export
       BUILD_CERTIFICATE_BASE64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
       P12_PASSWORD: ${{ secrets.P12_PASSWORD }}
       BUILD_PROVISION_PROFILE_BASE64: ${{ secrets.BUILD_PROVISION_PROFILE_BASE64 }}
@@ -123,6 +121,7 @@ jobs:
 
       - name: Archive iOS app
         run: |
+          APP_ARCHIVE_PATH="$RUNNER_TEMP/Ascend.xcarchive"
           xcodebuild \
             -project "$APP_PROJECT" \
             -scheme "$APP_SCHEME" \
@@ -137,6 +136,8 @@ jobs:
 
       - name: Export IPA
         run: |
+          APP_ARCHIVE_PATH="$RUNNER_TEMP/Ascend.xcarchive"
+          APP_EXPORT_PATH="$RUNNER_TEMP/export"
           mkdir -p "$APP_EXPORT_PATH"
           xcodebuild \
             -exportArchive \
