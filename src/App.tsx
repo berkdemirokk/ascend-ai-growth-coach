@@ -103,6 +103,7 @@ function normalizeTask(data: Record<string, unknown>, id: string): DailyTask {
 }
 
 export default function App() {
+  const authBootstrapTimedOutRef = useRef(false);
   const [user, setUser] = useState<User | null>(null);
   const [storedProfile, setStoredProfile] = useState<StoredUserProfile | null>(null);
   const [tasks, setTasks] = useState<DailyTask[]>([]);
@@ -138,7 +139,33 @@ export default function App() {
   }, []);
 
   useEffect(() => {
+    if (isAuthReady) {
+      authBootstrapTimedOutRef.current = false;
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      if (authBootstrapTimedOutRef.current || isAuthReady) {
+        return;
+      }
+
+      authBootstrapTimedOutRef.current = true;
+      setAppError({
+        title: 'Giriş Sorunu',
+        message: 'Oturum durumu zamanında alınamadı. Uygulama güvenli modda giriş ekranına döndü; tekrar deneyebilirsin.',
+        operationType: OperationType.AUTH,
+        path: 'auth/bootstrap',
+        code: 'auth/bootstrap-timeout',
+      });
+      setIsAuthReady(true);
+    }, 8000);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [isAuthReady]);
+
+  useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      authBootstrapTimedOutRef.current = false;
       setUser(currentUser);
       setIsAuthReady(true);
       if (!currentUser) {

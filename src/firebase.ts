@@ -1,8 +1,13 @@
 import { initializeApp } from 'firebase/app';
 import {
+  browserLocalPersistence,
+  browserPopupRedirectResolver,
+  browserSessionPersistence,
   getAuth,
   GoogleAuthProvider,
   getRedirectResult,
+  indexedDBLocalPersistence,
+  initializeAuth,
   onAuthStateChanged,
   signInWithPopup,
   signInWithRedirect,
@@ -28,7 +33,19 @@ import firebaseConfig from '../firebase-applet-config.json';
 const app = initializeApp(firebaseConfig);
 
 export const db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
-export const auth = getAuth(app);
+
+function createAuth() {
+  try {
+    return initializeAuth(app, {
+      persistence: [indexedDBLocalPersistence, browserLocalPersistence, browserSessionPersistence],
+      popupRedirectResolver: browserPopupRedirectResolver,
+    });
+  } catch {
+    return getAuth(app);
+  }
+}
+
+export const auth = createAuth();
 
 const googleProvider = new GoogleAuthProvider();
 googleProvider.setCustomParameters({
@@ -66,7 +83,12 @@ export async function signInWithGoogle() {
 }
 
 export async function completePendingRedirectSignIn() {
-  return getRedirectResult(auth);
+  return Promise.race([
+    getRedirectResult(auth),
+    new Promise<null>((resolve) => {
+      window.setTimeout(() => resolve(null), 5000);
+    }),
+  ]);
 }
 
 export {
