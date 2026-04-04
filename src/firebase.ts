@@ -31,6 +31,7 @@ import {
 import firebaseConfig from '../firebase-applet-config.json';
 
 const app = initializeApp(firebaseConfig);
+const REDIRECT_PENDING_STORAGE_KEY = 'ascend:auth-redirect-pending';
 
 export const db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
 
@@ -73,8 +74,37 @@ function shouldUseRedirectAuth() {
   return isIOS || isStandalone || isEmbeddedWebView;
 }
 
+function canUseStorage() {
+  return typeof window !== 'undefined' && typeof window.localStorage !== 'undefined';
+}
+
+function markRedirectPending() {
+  if (!canUseStorage()) {
+    return;
+  }
+
+  window.localStorage.setItem(REDIRECT_PENDING_STORAGE_KEY, '1');
+}
+
+function clearRedirectPending() {
+  if (!canUseStorage()) {
+    return;
+  }
+
+  window.localStorage.removeItem(REDIRECT_PENDING_STORAGE_KEY);
+}
+
+export function hasPendingRedirectSignIn() {
+  if (!canUseStorage()) {
+    return false;
+  }
+
+  return window.localStorage.getItem(REDIRECT_PENDING_STORAGE_KEY) === '1';
+}
+
 export async function signInWithGoogle() {
   if (shouldUseRedirectAuth()) {
+    markRedirectPending();
     await signInWithRedirect(auth, googleProvider);
     return null;
   }
@@ -83,12 +113,20 @@ export async function signInWithGoogle() {
 }
 
 export async function completePendingRedirectSignIn() {
-  return Promise.race([
-    getRedirectResult(auth),
-    new Promise<null>((resolve) => {
-      window.setTimeout(() => resolve(null), 5000);
-    }),
-  ]);
+  if (!hasPendingRedirectSignIn()) {
+    return null;
+  }
+
+  try {
+    return await Promise.race([
+      getRedirectResult(auth),
+      new Promise<null>((resolve) => {
+        window.setTimeout(() => resolve(null), 4000);
+      }),
+    ]);
+  } finally {
+    clearRedirectPending();
+  }
 }
 
 export {

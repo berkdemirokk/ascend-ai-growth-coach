@@ -16,6 +16,7 @@ import {
   db,
   deleteDoc,
   doc,
+  hasPendingRedirectSignIn,
   onAuthStateChanged,
   onSnapshot,
   serverTimestamp,
@@ -103,12 +104,11 @@ function normalizeTask(data: Record<string, unknown>, id: string): DailyTask {
 }
 
 export default function App() {
-  const authBootstrapTimedOutRef = useRef(false);
+  const [isAuthReady, setIsAuthReady] = useState(() => !hasPendingRedirectSignIn());
   const [user, setUser] = useState<User | null>(null);
   const [storedProfile, setStoredProfile] = useState<StoredUserProfile | null>(null);
   const [tasks, setTasks] = useState<DailyTask[]>([]);
   const [entitlements, setEntitlements] = useState<TrustedEntitlements>({ isPremium: false });
-  const [isAuthReady, setIsAuthReady] = useState(false);
   const [bootstrapState, setBootstrapState] = useState(READY_BOOTSTRAP_STATE);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -133,39 +133,51 @@ export default function App() {
   }, [entitlements, storedProfile, tasks, user]);
 
   useEffect(() => {
-    completePendingRedirectSignIn().catch((error) => {
-      setAppError(normalizeFirebaseError(error, OperationType.AUTH, 'auth/google'));
-    });
-  }, []);
-
-  useEffect(() => {
-    if (isAuthReady) {
-      authBootstrapTimedOutRef.current = false;
+    if (!hasPendingRedirectSignIn()) {
       return;
     }
 
+    let isCancelled = false;
     const timeoutId = window.setTimeout(() => {
-      if (authBootstrapTimedOutRef.current || isAuthReady) {
+      if (isCancelled) {
         return;
       }
 
-      authBootstrapTimedOutRef.current = true;
       setAppError({
         title: 'Giriş Sorunu',
-        message: 'Oturum durumu zamanında alınamadı. Uygulama güvenli modda giriş ekranına döndü; tekrar deneyebilirsin.',
+        message: 'Google yönlendirmesi zamanında tamamlanamadı. Giriş ekranına döndün; tekrar deneyebilirsin.',
         operationType: OperationType.AUTH,
-        path: 'auth/bootstrap',
-        code: 'auth/bootstrap-timeout',
+        path: 'auth/google-redirect',
+        code: 'auth/redirect-timeout',
       });
       setIsAuthReady(true);
-    }, 8000);
+    }, 4500);
 
-    return () => window.clearTimeout(timeoutId);
-  }, [isAuthReady]);
+    completePendingRedirectSignIn()
+      .catch((error) => {
+        if (isCancelled) {
+          return;
+        }
+
+        setAppError(normalizeFirebaseError(error, OperationType.AUTH, 'auth/google'));
+      })
+      .finally(() => {
+        if (isCancelled) {
+          return;
+        }
+
+        window.clearTimeout(timeoutId);
+        setIsAuthReady(true);
+      });
+
+    return () => {
+      isCancelled = true;
+      window.clearTimeout(timeoutId);
+    };
+  }, []);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      authBootstrapTimedOutRef.current = false;
       setUser(currentUser);
       setIsAuthReady(true);
       if (!currentUser) {
