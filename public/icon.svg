@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">Ascend</title>
+  <desc id="desc">Blue gradient rounded square with an upward arrow and star accent.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0ea5e9" />
+      <stop offset="100%" stop-color="#1d4ed8" />
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fbbf24" />
+      <stop offset="100%" stop-color="#f97316" />
+    </linearGradient>
+  </defs>
+  <rect x="32" y="32" width="448" height="448" rx="112" fill="url(#bg)" />
+  <path d="M164 328l74-98 54 62 74-108" fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" stroke-width="42" />
+  <path d="M316 184h84v84" fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" stroke-width="42" />
+  <path d="M120 156l18-42 18 42 42 18-42 18-18 42-18-42-42-18 42-18z" fill="url(#accent)" />
+</svg>

@@ -1,6 +1,6 @@
 {
-  "name": "Ascend: AI Growth Coach",
-  "description": "An AI-powered personal development coach that helps you make decisions, set goals, and improve yourself in areas like fitness, culture, and social life.",
+  "name": "Ascend AI Growth Coach",
+  "description": "A guided self-improvement app with secure entitlement handling, verified progression rules, and graceful preview fallbacks when backend AI services are unavailable.",
   "bundleId": "com.ascend.growth",
   "requestFramePermissions": []
 }

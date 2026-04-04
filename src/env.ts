@@ -1,6 +1,6 @@
 const readEnv = (key: keyof ImportMetaEnv): string | undefined => {
-  const value = import.meta.env[key];
+  const value = (import.meta as ImportMeta & { env?: Partial<ImportMetaEnv> }).env?.[key];
   return typeof value === 'string' && value.trim() ? value.trim() : undefined;
 };
 
-export const HUGGINGFACE_API_KEY = readEnv('VITE_HUGGINGFACE_API_KEY');
+export const AI_PROXY_URL = readEnv('VITE_AI_PROXY_URL');

@@ -1,20 +1,37 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# Ascend AI Growth Coach
 
-# Run and deploy your AI Studio app
+Ascend is a Firebase-backed self-improvement app prepared for a TestFlight pre-release pass.
 
-This contains everything you need to run your app locally.
+## Local development
 
-View your app in AI Studio: https://ai.studio/apps/efdc3e75-cda5-430a-b771-ba2a0a622c4b
+Prerequisites:
+- Node.js 22+
 
-## Run Locally
+Setup:
+1. `npm install`
+2. Copy [.env.example](.env.example) if you want to configure a trusted AI proxy.
+3. `npm run dev`
 
-**Prerequisites:**  Node.js
+## Safe runtime behavior
 
+- If `VITE_AI_PROXY_URL` is missing, the app runs in preview mode.
+- Preview mode never exposes provider secrets.
+- Preview-generated tasks are clearly labeled in the UI and do not count toward verified progression.
+- Premium access is read only from `userEntitlements/{uid}` and never from legacy user profile fields.
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+## Validation commands
+
+- `npm run lint`
+- `npm run test`
+- `npm run build`
+- `npm run test:rules:contract`
+- `npm run test:rules:emulator`
+
+`test:rules:emulator` requires Java plus the Firebase Firestore emulator.
+
+## iOS / Capacitor
+
+- `npx cap add ios`
+- `npm run ios:sync`
+
+The native iOS project is generated under `ios/` and must still be archived on macOS with Xcode for a real TestFlight upload.
