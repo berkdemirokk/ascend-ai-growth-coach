@@ -5,7 +5,7 @@ on:
 
 jobs:
   build-and-upload:
-    runs-on: macos-latest
+    runs-on: macos-26
     env:
       APP_SCHEME: App
       APP_PROJECT: ios/App/App.xcodeproj
@@ -28,6 +28,18 @@ jobs:
         with:
           node-version: 22
           cache: npm
+
+      - name: Select Xcode 26
+        run: |
+          XCODE_PATH=$(find /Applications -maxdepth 1 -name 'Xcode_26*.app' | sort -V | tail -n 1)
+          if [ -z "$XCODE_PATH" ]; then
+            echo "Xcode 26 was not found on this runner."
+            ls -1 /Applications | grep '^Xcode' || true
+            exit 1
+          fi
+
+          sudo xcode-select -s "$XCODE_PATH/Contents/Developer"
+          xcodebuild -version
 
       - name: Install npm dependencies
         run: npm ci
