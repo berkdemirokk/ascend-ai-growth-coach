@@ -21,7 +21,7 @@ jobs:
       APP_ARCHIVE_PATH: ${{ runner.temp }}/Ascend.xcarchive
       APP_EXPORT_PATH: ${{ runner.temp }}/export
       EXPORT_OPTIONS_PLIST: ${{ runner.temp }}/ExportOptions.plist
-      API_KEY_PATH: ${{ runner.temp }}/AuthKey_${{ vars.APPSTORE_API_KEY_ID }}.p8
+      API_KEY_PATH: ${{ runner.temp }}/AuthKey_${{ secrets.APP_STORE_CONNECT_KEY_ID }}.p8
       VITE_AI_BACKEND_URL: ${{ vars.VITE_AI_BACKEND_URL }}
       VITE_PERSISTENCE_URL: ${{ vars.VITE_PERSISTENCE_URL }}
       VITE_REVENUECAT_IOS_API_KEY: ${{ secrets.VITE_REVENUECAT_IOS_API_KEY }}
@@ -54,22 +54,22 @@ jobs:
       - name: Import iOS distribution certificate
         uses: apple-actions/import-codesign-certs@v3
         with:
-          p12-file-base64: ${{ secrets.APPSTORE_CERTIFICATES_FILE_BASE64 }}
-          p12-password: ${{ secrets.APPSTORE_CERTIFICATES_PASSWORD }}
+          p12-file-base64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
+          p12-password: ${{ secrets.P12_PASSWORD }}
 
       - name: Download App Store provisioning profile
         uses: apple-actions/download-provisioning-profiles@v1
         with:
           bundle-id: ${{ vars.IOS_BUNDLE_ID }}
           profile-type: IOS_APP_STORE
-          issuer-id: ${{ vars.APPSTORE_ISSUER_ID }}
-          api-key-id: ${{ vars.APPSTORE_API_KEY_ID }}
-          api-private-key: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
+          issuer-id: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+          api-key-id: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          api-private-key: ${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY }}
 
       - name: Write App Store Connect API key file
         run: |
           cat > "$API_KEY_PATH" <<'EOF'
-          ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
+          ${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY }}
           EOF
 
       - name: Create export options plist
@@ -84,7 +84,7 @@ jobs:
             <key>signingStyle</key>
             <string>automatic</string>
             <key>teamID</key>
-            <string>${{ vars.IOS_TEAM_ID }}</string>
+            <string>${{ secrets.APPLE_TEAM_ID }}</string>
             <key>uploadSymbols</key>
             <true/>
             <key>stripSwiftSymbols</key>
@@ -103,8 +103,8 @@ jobs:
             -archivePath "$APP_ARCHIVE_PATH" \
             -allowProvisioningUpdates \
             -authenticationKeyPath "$API_KEY_PATH" \
-            -authenticationKeyID "${{ vars.APPSTORE_API_KEY_ID }}" \
-            -authenticationKeyIssuerID "${{ vars.APPSTORE_ISSUER_ID }}" \
+            -authenticationKeyID "${{ secrets.APP_STORE_CONNECT_KEY_ID }}" \
+            -authenticationKeyIssuerID "${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}" \
             clean archive
 
       - name: Export IPA
@@ -116,8 +116,8 @@ jobs:
             -exportOptionsPlist "$EXPORT_OPTIONS_PLIST" \
             -allowProvisioningUpdates \
             -authenticationKeyPath "$API_KEY_PATH" \
-            -authenticationKeyID "${{ vars.APPSTORE_API_KEY_ID }}" \
-            -authenticationKeyIssuerID "${{ vars.APPSTORE_ISSUER_ID }}"
+            -authenticationKeyID "${{ secrets.APP_STORE_CONNECT_KEY_ID }}" \
+            -authenticationKeyIssuerID "${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}"
 
       - name: Locate IPA
         id: ipa
@@ -140,7 +140,7 @@ jobs:
         uses: apple-actions/upload-testflight-build@v3
         with:
           app-path: ${{ steps.ipa.outputs.path }}
-          issuer-id: ${{ vars.APPSTORE_ISSUER_ID }}
-          api-key-id: ${{ vars.APPSTORE_API_KEY_ID }}
-          api-private-key: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
+          issuer-id: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+          api-key-id: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          api-private-key: ${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY }}
           release-notes: ${{ github.event.inputs.release_notes || format('Build {0}', github.sha) }}
