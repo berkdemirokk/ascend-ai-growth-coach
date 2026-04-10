@@ -108,8 +108,6 @@ jobs:
             -archivePath "$APP_ARCHIVE_PATH" \
             -allowProvisioningUpdates \
             DEVELOPMENT_TEAM="${{ secrets.APPLE_TEAM_ID }}" \
-            CODE_SIGN_STYLE=Manual \
-            CODE_SIGN_IDENTITY="Apple Distribution" \
             -authenticationKeyPath "$API_KEY_PATH" \
             -authenticationKeyID "${{ secrets.APP_STORE_CONNECT_KEY_ID }}" \
             -authenticationKeyIssuerID "${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}" \
