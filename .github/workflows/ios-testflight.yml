@@ -2,11 +2,6 @@ name: iOS TestFlight
 
 on:
   workflow_dispatch:
-    inputs:
-      release_notes:
-        description: "TestFlight release notes (optional)"
-        required: false
-        type: string
   push:
     tags:
       - "ios-v*"
@@ -161,4 +156,3 @@ jobs:
           issuer-id: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
           api-key-id: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
           api-private-key: ${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY }}
-          release-notes: ${{ github.event.inputs.release_notes || format('Build {0}', github.sha) }}
