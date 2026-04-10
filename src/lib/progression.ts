@@ -1,170 +1,77 @@
-import { Badge, DailyTask, StoredUserProfile, TaskSource, TrustedEntitlements, UserProfile } from '../types';
+import { DailyTask, UserProfile } from '../types';
+import { getPreviousDayKey } from './day';
 
-export const PROGRESSION_POLICY = {
-  qualifyingSources: ['generated', 'migrated'] as TaskSource[],
-  dailyQualifiedCompletionCap: 3,
-  xpPerQualifiedCompletion: 20,
-  xpPerLevel: 100,
-} as const;
+const EXPERIENCE_PER_TASK = 10;
+const EXPERIENCE_PER_LEVEL = 100;
 
-function toLocalDateKey(dateInput: string | number | Date) {
-  const date = new Date(dateInput);
-  const year = date.getFullYear();
-  const month = `${date.getMonth() + 1}`.padStart(2, '0');
-  const day = `${date.getDate()}`.padStart(2, '0');
-  return `${year}-${month}-${day}`;
-}
+export const createTaskId = () =>
+  typeof crypto !== 'undefined' && 'randomUUID' in crypto
+    ? crypto.randomUUID()
+    : Math.random().toString(36).slice(2, 11);
 
-function normalizeTitle(title: string) {
-  return title.trim().toLocaleLowerCase('tr-TR');
-}
+export const createTask = (
+  input: Pick<DailyTask, 'title' | 'description' | 'category'>,
+): DailyTask => ({
+    ...input,
+    id: createTaskId(),
+    lessonId: createTaskId(),
+    unitId: 'legacy',
+    unitTitle: 'Geçmiş Görevler',
+  unitOrder: 99,
+  missionKind: 'legacy',
+  adaptationMode: 'legacy',
+  planFocus: 'legacy',
+  teaching: input.description,
+    reflectionPrompt: 'Bu görev sana ne öğretti ve yarın neyi daha iyi yapabilirsin?',
+  completed: false,
+  createdAt: Date.now(),
+  completedAt: null,
+  rewardGranted: false,
+  dayKey: 'legacy',
+  reflection: null,
+  source: 'legacy',
+});
 
-function isQualifyingSource(source: TaskSource) {
-  return PROGRESSION_POLICY.qualifyingSources.includes(source);
-}
+export const toggleTaskWithProgression = (
+  tasks: DailyTask[],
+  profile: UserProfile,
+  taskId: string,
+) => {
+  let nextProfile = profile;
 
-function getQualifiedCompletionHistory(tasks: DailyTask[]) {
-  const seenTaskIds = new Set<string>();
-  const seenDailyTitleKeys = new Set<string>();
-  const perDayQualifiedCount = new Map<string, number>();
-
-  return tasks
-    .filter(
-      (task) =>
-        typeof task.completedAt === 'string' &&
-        task.completedAt.length > 0 &&
-        isQualifyingSource(task.source),
-    )
-    .map((task) => ({
-      id: task.id,
-      completedAt: task.completedAt as string,
-      completedDate: toLocalDateKey(task.completedAt as string),
-      title: task.title,
-      source: task.source,
-    }))
-    .sort((left, right) => new Date(left.completedAt).getTime() - new Date(right.completedAt).getTime())
-    .filter((completion) => {
-      if (seenTaskIds.has(completion.id)) {
-        return false;
-      }
-
-      const dailyTitleKey = `${completion.completedDate}:${normalizeTitle(completion.title)}`;
-      const dayCount = perDayQualifiedCount.get(completion.completedDate) ?? 0;
-      if (seenDailyTitleKeys.has(dailyTitleKey) || dayCount >= PROGRESSION_POLICY.dailyQualifiedCompletionCap) {
-        return false;
-      }
-
-      seenTaskIds.add(completion.id);
-      seenDailyTitleKeys.add(dailyTitleKey);
-      perDayQualifiedCount.set(completion.completedDate, dayCount + 1);
-      return true;
-    });
-}
-
-function buildBadgeList(
-  completionHistory: ReturnType<typeof getQualifiedCompletionHistory>,
-  level: number,
-  streak: number,
-): Badge[] {
-  if (completionHistory.length === 0) {
-    return [];
-  }
-
-  const badges: Badge[] = [];
-  const latestCompletion = completionHistory[completionHistory.length - 1];
-
-  badges.push({
-    id: 'first_task',
-    title: 'İlk Adım',
-    icon: 'target',
-    description: 'İlk görevini tamamladın. İvme başladı.',
-    earnedAt: new Date(completionHistory[0].completedAt).getTime(),
-  });
-
-  if (completionHistory.length >= 5) {
-    badges.push({
-      id: 'completed_5',
-      title: 'Azimli',
-      icon: 'zap',
-      description: 'Beş görevi tamamlayarak ritmini kurdun.',
-      earnedAt: new Date(completionHistory[4].completedAt).getTime(),
-    });
-  }
-
-  if (level >= 2) {
-    const levelTwoMoment = completionHistory[Math.min(4, completionHistory.length - 1)] ?? latestCompletion;
-    badges.push({
-      id: 'level_2',
-      title: 'Yükselen Yıldız',
-      icon: 'star',
-      description: 'Seviye 2’ye ulaştın ve düzenli ilerlediğini kanıtladın.',
-      earnedAt: new Date(levelTwoMoment.completedAt).getTime(),
-    });
-  }
-
-  if (streak >= 3) {
-    badges.push({
-      id: 'streak_3',
-      title: 'İstikrar Abidesi',
-      icon: 'award',
-      description: 'Üç günlük seriyi korudun. Disiplinin görünür hale geldi.',
-      earnedAt: new Date(latestCompletion.completedAt).getTime(),
-    });
-  }
-
-  return badges;
-}
-
-function calculateStreak(completionHistory: ReturnType<typeof getQualifiedCompletionHistory>) {
-  const uniqueDays = Array.from(new Set(completionHistory.map((entry) => entry.completedDate)));
-  if (uniqueDays.length === 0) {
-    return {
-      streak: 0,
-      lastCompletedDate: undefined,
-    };
-  }
-
-  let streak = 1;
-  for (let index = uniqueDays.length - 1; index > 0; index -= 1) {
-    const current = new Date(`${uniqueDays[index]}T00:00:00`);
-    const previous = new Date(`${uniqueDays[index - 1]}T00:00:00`);
-    const difference = Math.round((current.getTime() - previous.getTime()) / 86400000);
-
-    if (difference === 1) {
-      streak += 1;
-      continue;
+  const nextTasks = tasks.map((task) => {
+    if (task.id !== taskId) {
+      return task;
     }
 
-    break;
-  }
+    const nextCompleted = !task.completed;
+    const shouldAwardReward = nextCompleted && !task.rewardGranted;
 
-  return {
-    streak,
-    lastCompletedDate: uniqueDays[uniqueDays.length - 1],
-  };
-}
+    if (shouldAwardReward) {
+      const totalExperience = profile.experience + EXPERIENCE_PER_TASK;
+      const streak =
+        profile.lastCompletedDayKey === task.dayKey
+          ? profile.streak
+          : profile.lastCompletedDayKey === getPreviousDayKey(task.dayKey)
+            ? profile.streak + 1
+            : 1;
 
-export function deriveUserProfile(
-  uid: string,
-  storedProfile: StoredUserProfile,
-  tasks: DailyTask[],
-  entitlements: TrustedEntitlements,
-): UserProfile {
-  const completionHistory = getQualifiedCompletionHistory(tasks);
-  const completionCount = completionHistory.length;
-  const totalXp = completionCount * PROGRESSION_POLICY.xpPerQualifiedCompletion;
-  const level = Math.floor(totalXp / PROGRESSION_POLICY.xpPerLevel) + 1;
-  const experience = totalXp % PROGRESSION_POLICY.xpPerLevel;
-  const { streak, lastCompletedDate } = calculateStreak(completionHistory);
+      nextProfile = {
+        ...profile,
+        level: profile.level + Math.floor(totalExperience / EXPERIENCE_PER_LEVEL),
+        experience: totalExperience % EXPERIENCE_PER_LEVEL,
+        streak,
+        lastCompletedDayKey: task.dayKey,
+      };
+    }
 
-  return {
-    ...storedProfile,
-    uid,
-    isPremium: entitlements.isPremium,
-    level,
-    experience,
-    streak,
-    lastCompletedDate,
-    badges: buildBadgeList(completionHistory, level, streak),
-  };
-}
+    return {
+      ...task,
+      completed: nextCompleted,
+      completedAt: nextCompleted ? task.completedAt ?? Date.now() : task.completedAt,
+      rewardGranted: task.rewardGranted || shouldAwardReward,
+    };
+  });
+
+  return { nextTasks, nextProfile };
+};

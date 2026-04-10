@@ -1,323 +1,287 @@
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import { ArrowRight, Book, Briefcase, Clock, Compass, Dumbbell, Film, Flame, ShieldCheck, Sparkles, Target, Users, Zap } from 'lucide-react';
-import { Path, StoredUserProfile } from '../types';
+import React, { useMemo, useState } from 'react';
+import { motion } from 'motion/react';
+import { ArrowLeft, ArrowRight, Book, Briefcase, Compass, Dumbbell, Film, Sparkles, Users } from 'lucide-react';
+import { DailyCommitmentMinutes, OnboardingTempo, Path, UserProfile } from '../types';
 import { cn } from '../lib/utils';
-import { playSound } from '../lib/sounds';
-import { generateProfileAnalysis } from '../services/aiService';
-import { AI_RUNTIME } from '../lib/runtime';
+import { DAILY_MINUTES_LABELS, PATH_LABELS, PATH_SHORT_DESCRIPTIONS, TEMPO_LABELS } from '../lib/productCopy';
 
 interface OnboardingProps {
-  onComplete: (profile: StoredUserProfile) => Promise<void> | void;
+  onComplete: (profile: UserProfile) => void;
+  onShowRestore: () => void;
 }
 
-const paths: { id: Path; title: string; icon: React.ReactNode; color: string; desc: string }[] = [
-  { id: 'fitness', title: 'Spor ve sağlık', icon: <Dumbbell />, color: 'bg-orange-500', desc: 'Kilo verme, güçlenme ve sağlıklı alışkanlıklar.' },
-  { id: 'culture', title: 'Genel kültür', icon: <Book />, color: 'bg-blue-500', desc: 'Okuma, araştırma ve zihinsel gelişim.' },
-  { id: 'social', title: 'Sosyal ilişkiler', icon: <Users />, color: 'bg-pink-500', desc: 'İletişim, arkadaşlık ve özgüven alanı.' },
-  { id: 'entertainment', title: 'Kültür ve sanat', icon: <Film />, color: 'bg-purple-500', desc: 'Film, müzik ve yaratıcı üretim tarafı.' },
-  { id: 'career', title: 'Kariyer', icon: <Briefcase />, color: 'bg-indigo-500', desc: 'İş disiplini, beceri ve profesyonel ilerleme.' },
-  { id: 'general', title: 'Genel gelişim', icon: <Compass />, color: 'bg-slate-500', desc: 'Hayat düzenini bütün olarak güçlendirme.' },
+type OnboardingStep = 'welcome' | 'focus' | 'pace' | 'summary' | 'paywall';
+
+const STEP_ORDER: OnboardingStep[] = ['welcome', 'focus', 'pace', 'summary', 'paywall'];
+
+const pathCards: { id: Path; icon: React.ReactNode; color: string }[] = [
+  { id: 'fitness', icon: <Dumbbell size={20} />, color: 'bg-orange-500' },
+  { id: 'culture', icon: <Book size={20} />, color: 'bg-blue-500' },
+  { id: 'social', icon: <Users size={20} />, color: 'bg-pink-500' },
+  { id: 'entertainment', icon: <Film size={20} />, color: 'bg-purple-500' },
+  { id: 'career', icon: <Briefcase size={20} />, color: 'bg-indigo-500' },
+  { id: 'general', icon: <Compass size={20} />, color: 'bg-slate-500' },
 ];
 
-const levels = [
-  { id: 'beginner', title: 'Başlangıç', desc: 'Temelden başlıyorum ve net bir sistem istiyorum.', icon: <Compass /> },
-  { id: 'intermediate', title: 'Orta seviye', desc: 'Temelim var, daha kararlı ilerlemek istiyorum.', icon: <Target /> },
-  { id: 'advanced', title: 'İleri seviye', desc: 'Yüksek tempoda gelişmek ve sınırlarımı zorlamak istiyorum.', icon: <Zap /> },
-] as const;
+const tempoOptions: { id: OnboardingTempo; title: string; description: string }[] = [
+  { id: 'calm', title: 'Sakin tempo', description: 'Düşük baskı, sürdürülebilir günlük akış.' },
+  { id: 'steady', title: 'Dengeli tempo', description: 'Her gün net bir görevle istikrarlı ilerleme.' },
+  { id: 'focused', title: 'Yüksek odak', description: 'Daha yoğun ama uygulanabilir bir tempo.' },
+];
 
-const intensities = [
-  { id: 'casual', title: 'Rahat', desc: 'Düşük baskı, sürdürülebilir tempo.', icon: <Clock /> },
-  { id: 'regular', title: 'Düzenli', desc: 'Her gün küçük ama net adımlar.', icon: <Flame /> },
-  { id: 'intense', title: 'Yoğun', desc: 'Daha hızlı sonuç için yüksek odak.', icon: <Zap /> },
-] as const;
+const minuteOptions: DailyCommitmentMinutes[] = [15, 25, 40];
 
-const times = [
-  { id: '15m', title: '15 dakika', desc: 'Hızlı ve etkili seanslar.' },
-  { id: '30m', title: '30 dakika', desc: 'Dengeli bir günlük alan.' },
-  { id: '1h', title: '1 saat', desc: 'Derin çalışma ve tekrar.' },
-  { id: '2h+', title: '2 saat+', desc: 'Güçlü odak ve yüksek tempo.' },
-] as const;
-
-export default function Onboarding({ onComplete }: OnboardingProps) {
-  const [step, setStep] = useState(1);
+export default function Onboarding({ onComplete, onShowRestore }: OnboardingProps) {
+  const [step, setStep] = useState<OnboardingStep>('welcome');
   const [name, setName] = useState('');
   const [selectedPath, setSelectedPath] = useState<Path | null>(null);
-  const [currentLevel, setCurrentLevel] = useState<(typeof levels)[number]['id'] | ''>('');
-  const [intensity, setIntensity] = useState<(typeof intensities)[number]['id'] | ''>('');
-  const [dailyTime, setDailyTime] = useState<(typeof times)[number]['id'] | ''>('');
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [submissionError, setSubmissionError] = useState<string | null>(null);
+  const [tempo, setTempo] = useState<OnboardingTempo>('steady');
+  const [dailyMinutes, setDailyMinutes] = useState<DailyCommitmentMinutes>(25);
 
-  const handleNext = async () => {
-    if (step < 5) {
-      playSound('click');
-      setStep((previous) => previous + 1);
-      return;
-    }
+  const currentStepIndex = STEP_ORDER.indexOf(step);
 
-    if (step !== 5 || !dailyTime || !selectedPath || !currentLevel || !intensity) {
-      return;
-    }
+  const canContinue = useMemo(() => {
+    if (step === 'welcome') return Boolean(name.trim());
+    if (step === 'focus') return Boolean(selectedPath);
+    return true;
+  }, [name, selectedPath, step]);
 
-    setIsAnalyzing(true);
-    setSubmissionError(null);
-    playSound('success');
-
-    try {
-      const analysis = await generateProfileAnalysis({
-        name,
-        selectedPath,
-        currentLevel,
-        intensity,
-        dailyTime,
-      });
-
-      await onComplete({
-        name,
-        selectedPath,
-        goals: [],
-        notificationsEnabled: true,
-        reminderTime: '09:00',
-        theme: 'light',
-        currentLevel,
-        intensity,
-        dailyTime,
-        analysis,
-      });
-    } catch (error) {
-      console.error('Onboarding completion error:', error);
-      setSubmissionError('Profil oluşturulamadı. Lütfen bağlantını kontrol edip tekrar dene.');
-    } finally {
-      setIsAnalyzing(false);
-    }
+  const moveToNextStep = () => {
+    const nextIndex = currentStepIndex + 1;
+    if (nextIndex >= STEP_ORDER.length) return;
+    setStep(STEP_ORDER[nextIndex]);
   };
 
-  const renderStep = () => {
-    switch (step) {
-      case 1:
-        return (
-          <motion.div initial={{ opacity: 0, scale: 0.9, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} className="flex flex-col items-center text-center space-y-12">
-            <motion.div
-              animate={{ scale: [1, 1.05, 1], rotate: [0, 5, -5, 0] }}
-              transition={{ duration: 6, repeat: Infinity }}
-              className="w-40 h-40 bg-gradient-to-br from-duo-blue to-duo-blue-dark rounded-[3rem] flex items-center justify-center border-8 border-white dark:border-slate-800 shadow-2xl"
-            >
-              <Sparkles size={80} className="text-white" />
-            </motion.div>
-            <div className="space-y-4">
-              <h1 className="text-6xl font-black tracking-tighter gold-text">ASCEND</h1>
-              <p className="text-slate-500 dark:text-slate-400 font-bold text-2xl">Merhaba, adın nedir?</p>
-            </div>
-            <div className="w-full max-w-md space-y-8">
-              <input
-                type="text"
-                value={name}
-                onChange={(event) => setName(event.target.value)}
-                placeholder="İsmin"
-                className="w-full px-8 py-6 bg-slate-50 dark:bg-slate-900/50 border-4 border-slate-100 dark:border-slate-800 focus:border-premium-gold rounded-[2rem] outline-none text-2xl text-center font-black dark:text-slate-100"
-                onKeyDown={(event) => event.key === 'Enter' && name.trim() && handleNext()}
-              />
-              <button onClick={handleNext} disabled={!name.trim()} className="w-full duo-button bg-premium-slate text-white py-6 text-xl font-black uppercase tracking-widest disabled:opacity-50">
-                Devam et <ArrowRight size={24} className="ml-2" />
-              </button>
-            </div>
-          </motion.div>
-        );
+  const moveToPreviousStep = () => {
+    const nextIndex = currentStepIndex - 1;
+    if (nextIndex < 0) return;
+    setStep(STEP_ORDER[nextIndex]);
+  };
 
-      case 2:
-        return (
-          <motion.div initial={{ opacity: 0, x: 50 }} animate={{ opacity: 1, x: 0 }} className="space-y-12">
-            <div className="text-center space-y-4">
-              <div className="w-24 h-24 bg-duo-green rounded-[2rem] flex items-center justify-center shadow-xl border-4 border-white dark:border-slate-800 mx-auto">
-                <Compass size={48} className="text-white" />
-              </div>
-              <h2 className="text-4xl font-black text-slate-800 dark:text-slate-100 tracking-tight">Neyi geliştirmek istiyorsun?</h2>
-              <p className="text-slate-500 dark:text-slate-400 font-bold text-xl">Odaklanacağımız ana alanı seç.</p>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {paths.map((path) => (
-                <button
-                  key={path.id}
-                  onClick={() => setSelectedPath(path.id)}
-                  className={cn(
-                    'p-8 rounded-[2rem] border-4 text-left transition-all flex items-center gap-6',
-                    selectedPath === path.id
-                      ? 'border-premium-gold bg-premium-gold/5 shadow-xl scale-105'
-                      : 'border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900/40 hover:border-slate-200',
-                  )}
-                >
-                  <div className={cn('w-16 h-16 rounded-2xl flex items-center justify-center text-white', path.color)}>{path.icon}</div>
-                  <div>
-                    <h3 className="font-black uppercase tracking-tight dark:text-slate-100">{path.title}</h3>
-                    <p className="text-xs text-slate-400 font-bold">{path.desc}</p>
-                  </div>
-                </button>
-              ))}
-            </div>
-            <button onClick={handleNext} disabled={!selectedPath} className="w-full duo-button bg-premium-slate text-white py-6 text-xl font-black uppercase tracking-widest disabled:opacity-50">
-              Devam et <ArrowRight size={24} className="ml-2" />
-            </button>
-          </motion.div>
-        );
-
-      case 3:
-        return (
-          <motion.div initial={{ opacity: 0, x: 50 }} animate={{ opacity: 1, x: 0 }} className="space-y-12">
-            <div className="text-center space-y-4">
-              <div className="w-24 h-24 bg-duo-blue rounded-[2rem] flex items-center justify-center shadow-xl border-4 border-white dark:border-slate-800 mx-auto">
-                <Target size={48} className="text-white" />
-              </div>
-              <h2 className="text-4xl font-black text-slate-800 dark:text-slate-100 tracking-tight">Şu an seviyen nasıl?</h2>
-              <p className="text-slate-500 dark:text-slate-400 font-bold text-xl">Planı sana uygun dozda ayarlayalım.</p>
-            </div>
-            <div className="grid grid-cols-1 gap-6 max-w-md mx-auto">
-              {levels.map((level) => (
-                <button
-                  key={level.id}
-                  onClick={() => setCurrentLevel(level.id)}
-                  className={cn(
-                    'p-8 rounded-[2rem] border-4 text-left transition-all flex items-center gap-6',
-                    currentLevel === level.id
-                      ? 'border-premium-gold bg-premium-gold/5 shadow-xl scale-105'
-                      : 'border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900/40 hover:border-slate-200',
-                  )}
-                >
-                  <div className="w-16 h-16 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-300">
-                    {level.icon}
-                  </div>
-                  <div>
-                    <h3 className="font-black uppercase tracking-tight dark:text-slate-100">{level.title}</h3>
-                    <p className="text-xs text-slate-400 font-bold">{level.desc}</p>
-                  </div>
-                </button>
-              ))}
-            </div>
-            <button onClick={handleNext} disabled={!currentLevel} className="w-full duo-button bg-premium-slate text-white py-6 text-xl font-black uppercase tracking-widest disabled:opacity-50">
-              Devam et <ArrowRight size={24} className="ml-2" />
-            </button>
-          </motion.div>
-        );
-
-      case 4:
-        return (
-          <motion.div initial={{ opacity: 0, x: 50 }} animate={{ opacity: 1, x: 0 }} className="space-y-12">
-            <div className="text-center space-y-4">
-              <div className="w-24 h-24 bg-duo-orange rounded-[2rem] flex items-center justify-center shadow-xl border-4 border-white dark:border-slate-800 mx-auto">
-                <Flame size={48} className="text-white" />
-              </div>
-              <h2 className="text-4xl font-black text-slate-800 dark:text-slate-100 tracking-tight">Tempon nasıl olsun?</h2>
-              <p className="text-slate-500 dark:text-slate-400 font-bold text-xl">Günlük baskıyı ve ritmi seç.</p>
-            </div>
-            <div className="grid grid-cols-1 gap-6 max-w-md mx-auto">
-              {intensities.map((tempo) => (
-                <button
-                  key={tempo.id}
-                  onClick={() => setIntensity(tempo.id)}
-                  className={cn(
-                    'p-8 rounded-[2rem] border-4 text-left transition-all flex items-center gap-6',
-                    intensity === tempo.id
-                      ? 'border-premium-gold bg-premium-gold/5 shadow-xl scale-105'
-                      : 'border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900/40 hover:border-slate-200',
-                  )}
-                >
-                  <div className="w-16 h-16 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-300">
-                    {tempo.icon}
-                  </div>
-                  <div>
-                    <h3 className="font-black uppercase tracking-tight dark:text-slate-100">{tempo.title}</h3>
-                    <p className="text-xs text-slate-400 font-bold">{tempo.desc}</p>
-                  </div>
-                </button>
-              ))}
-            </div>
-            <button onClick={handleNext} disabled={!intensity} className="w-full duo-button bg-premium-slate text-white py-6 text-xl font-black uppercase tracking-widest disabled:opacity-50">
-              Devam et <ArrowRight size={24} className="ml-2" />
-            </button>
-          </motion.div>
-        );
-
-      case 5:
-        return (
-          <motion.div initial={{ opacity: 0, x: 50 }} animate={{ opacity: 1, x: 0 }} className="space-y-12">
-            <div className="text-center space-y-4">
-              <div className="w-24 h-24 bg-duo-purple rounded-[2rem] flex items-center justify-center shadow-xl border-4 border-white dark:border-slate-800 mx-auto">
-                <Clock size={48} className="text-white" />
-              </div>
-              <h2 className="text-4xl font-black text-slate-800 dark:text-slate-100 tracking-tight">Günlük ne kadar vaktin var?</h2>
-              <p className="text-slate-500 dark:text-slate-400 font-bold text-xl">Planı buna göre optimize edeceğiz.</p>
-            </div>
-            <div className="grid grid-cols-2 gap-6 max-w-md mx-auto">
-              {times.map((time) => (
-                <button
-                  key={time.id}
-                  onClick={() => setDailyTime(time.id)}
-                  className={cn(
-                    'p-8 rounded-[2rem] border-4 text-center transition-all flex flex-col items-center gap-4',
-                    dailyTime === time.id
-                      ? 'border-premium-gold bg-premium-gold/5 shadow-xl scale-105'
-                      : 'border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900/40 hover:border-slate-200',
-                  )}
-                >
-                  <h3 className="font-black uppercase tracking-tight dark:text-slate-100">{time.title}</h3>
-                  <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">{time.desc}</p>
-                </button>
-              ))}
-            </div>
-
-            {AI_RUNTIME.usesPreviewFallback && (
-              <div className="rounded-[2rem] border border-amber-200 bg-amber-50 px-5 py-4 text-sm text-amber-900">
-                Güvenli AI sunucusu bu önizleme yapısında bağlı değil. Profil özeti yerel önizleme mantığıyla hazırlanacak ve ilk plan doğrulanmış ilerleme üretmeyecek.
-              </div>
-            )}
-
-            {submissionError && <div className="rounded-[2rem] border border-red-200 bg-red-50 px-5 py-4 text-sm text-red-700">{submissionError}</div>}
-
-            <button
-              onClick={handleNext}
-              disabled={!dailyTime || isAnalyzing}
-              className="w-full duo-button bg-premium-slate text-white py-6 text-xl font-black uppercase tracking-widest disabled:opacity-50 flex items-center justify-center gap-4"
-            >
-              {isAnalyzing ? (
-                <>
-                  Plan hazırlanıyor... <Sparkles className="animate-spin" />
-                </>
-              ) : (
-                <>
-                  Yolculuğa başla <ShieldCheck size={24} />
-                </>
-              )}
-            </button>
-          </motion.div>
-        );
-
-      default:
-        return null;
-    }
+  const handleFinish = () => {
+    onComplete({
+      name: name.trim(),
+      selectedPath,
+      goals: [],
+      planTier: 'free',
+      onboardingTempo: tempo,
+      dailyMinutes,
+      level: 1,
+      experience: 0,
+      streak: 0,
+      lastCompletedDayKey: null,
+    });
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6 bg-white dark:bg-[#0f1115] relative overflow-hidden">
-      <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
-        <div className="absolute -top-24 -left-24 w-96 h-96 bg-duo-blue/5 rounded-full blur-3xl" />
-        <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-premium-gold/5 rounded-full blur-3xl" />
-      </div>
-
-      <div className="max-w-4xl w-full relative z-10">
-        <AnimatePresence mode="wait">{renderStep()}</AnimatePresence>
-
-        <div className="mt-12 flex justify-center gap-2">
-          {[1, 2, 3, 4, 5].map((currentStep) => (
+    <div className="min-h-screen flex items-center justify-center p-4 sm:p-6 py-[max(1rem,env(safe-area-inset-top))]">
+      <div className="max-w-3xl w-full space-y-6 max-h-[92vh] overflow-y-auto">
+        <div className="flex items-center gap-2 justify-center">
+          {STEP_ORDER.map((entry, index) => (
             <div
-              key={currentStep}
+              key={entry}
               className={cn(
-                'h-2 rounded-full transition-all duration-500',
-                currentStep === step ? 'w-12 bg-premium-gold' : 'w-2 bg-slate-100 dark:bg-slate-800',
-                currentStep < step && 'bg-duo-green',
+                'h-2.5 rounded-full transition-all',
+                index < currentStepIndex ? 'w-10 bg-brand-500' : index === currentStepIndex ? 'w-12 bg-brand-300' : 'w-7 bg-slate-200',
               )}
             />
           ))}
         </div>
+
+        {step === 'welcome' && (
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="glass p-6 sm:p-10 rounded-[2rem] sm:rounded-[2.5rem] text-center space-y-8">
+            <div className="w-20 h-20 bg-brand-500 rounded-3xl mx-auto flex items-center justify-center text-white shadow-2xl shadow-brand-200">
+              <Sparkles size={38} />
+            </div>
+            <div className="space-y-3">
+              <h1 className="text-3xl sm:text-4xl font-bold text-slate-900">Her gün ne yapacağını bil</h1>
+              <p className="text-slate-500 text-base sm:text-lg max-w-xl mx-auto">
+                Ascend, seviyene göre günlük görev veren kişisel gelişim sistemidir. Kısa adımlarla net ilerlersin.
+              </p>
+            </div>
+            <div className="space-y-4">
+              <input
+                type="text"
+                value={name}
+                onChange={(event) => setName(event.target.value)}
+                placeholder="Sana nasıl hitap edelim?"
+                className="w-full px-6 sm:px-8 py-4 sm:py-5 bg-slate-50 border-2 border-transparent focus:border-brand-500 focus:bg-white rounded-2xl outline-none text-lg sm:text-xl text-center transition-all"
+                onKeyDown={(event) => event.key === 'Enter' && canContinue && moveToNextStep()}
+              />
+              <button
+                onClick={moveToNextStep}
+                disabled={!canContinue}
+                className="w-full py-5 bg-brand-600 text-white rounded-2xl font-bold text-lg hover:bg-brand-700 disabled:opacity-50 transition-all shadow-xl shadow-brand-100 flex items-center justify-center gap-2"
+              >
+                Devam et <ArrowRight size={20} />
+              </button>
+              <button onClick={onShowRestore} className="w-full py-4 bg-slate-100 text-slate-700 rounded-2xl font-semibold text-base hover:bg-slate-200 transition-all">
+                Mevcut hesabımı geri yükle
+              </button>
+            </div>
+          </motion.div>
+        )}
+
+        {step === 'focus' && (
+          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-6">
+            <div className="text-center space-y-2">
+              <h2 className="text-2xl sm:text-3xl font-bold text-slate-900">Odak alanını seç</h2>
+              <p className="text-slate-500 text-base sm:text-lg">Planın bu seçime göre kişiselleştirilecek.</p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {pathCards.map((path) => (
+                <button
+                  key={path.id}
+                  onClick={() => setSelectedPath(path.id)}
+                  className={cn(
+                    'p-5 rounded-3xl text-left transition-all border-2 flex items-start gap-4 group bg-white',
+                    selectedPath === path.id ? 'border-brand-500 shadow-xl scale-[1.01]' : 'border-slate-100 hover:border-slate-200',
+                  )}
+                >
+                  <div className={cn('w-11 h-11 rounded-2xl flex items-center justify-center text-white shrink-0 shadow-lg', path.color)}>{path.icon}</div>
+                  <div className="space-y-1">
+                    <h3 className="font-bold text-slate-900">{PATH_LABELS[path.id]}</h3>
+                    <p className="text-xs text-slate-500 leading-relaxed">{PATH_SHORT_DESCRIPTIONS[path.id]}</p>
+                  </div>
+                </button>
+              ))}
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-3">
+              <button onClick={moveToPreviousStep} className="sm:w-44 py-4 bg-slate-100 text-slate-700 rounded-2xl font-semibold hover:bg-slate-200 transition-all flex items-center justify-center gap-2">
+                <ArrowLeft size={18} /> Geri
+              </button>
+              <button onClick={moveToNextStep} disabled={!canContinue} className="flex-1 py-4 bg-brand-600 text-white rounded-2xl font-bold hover:bg-brand-700 disabled:opacity-50 transition-all flex items-center justify-center gap-2">
+                Devam et <ArrowRight size={18} />
+              </button>
+            </div>
+          </motion.div>
+        )}
+
+        {step === 'pace' && (
+          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-6">
+            <div className="text-center space-y-2">
+              <h2 className="text-2xl sm:text-3xl font-bold text-slate-900">Planının temposunu belirle</h2>
+              <p className="text-slate-500 text-base sm:text-lg">Sana uygun ritmi seç, sistem bunu günlük görevlere yansıtsın.</p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              {tempoOptions.map((option) => (
+                <button
+                  key={option.id}
+                  onClick={() => setTempo(option.id)}
+                  className={cn(
+                    'rounded-2xl border-2 p-4 text-left transition-all bg-white',
+                    tempo === option.id ? 'border-brand-500 shadow-lg' : 'border-slate-100 hover:border-slate-200',
+                  )}
+                >
+                  <p className="text-sm font-bold text-slate-900">{option.title}</p>
+                  <p className="mt-2 text-xs leading-relaxed text-slate-500">{option.description}</p>
+                </button>
+              ))}
+            </div>
+
+            <div className="space-y-2">
+              <p className="text-sm font-semibold text-slate-700">Günlük ayırabileceğin süre</p>
+              <div className="grid grid-cols-3 gap-3">
+                {minuteOptions.map((minutes) => (
+                  <button
+                    key={minutes}
+                    onClick={() => setDailyMinutes(minutes)}
+                    className={cn(
+                      'py-3 rounded-2xl border-2 bg-white font-semibold transition-all',
+                      dailyMinutes === minutes ? 'border-brand-500 text-brand-700' : 'border-slate-100 text-slate-700 hover:border-slate-200',
+                    )}
+                  >
+                    {DAILY_MINUTES_LABELS[minutes]}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-3">
+              <button onClick={moveToPreviousStep} className="sm:w-44 py-4 bg-slate-100 text-slate-700 rounded-2xl font-semibold hover:bg-slate-200 transition-all flex items-center justify-center gap-2">
+                <ArrowLeft size={18} /> Geri
+              </button>
+              <button onClick={moveToNextStep} className="flex-1 py-4 bg-brand-600 text-white rounded-2xl font-bold hover:bg-brand-700 transition-all flex items-center justify-center gap-2">
+                Plan özetine geç <ArrowRight size={18} />
+              </button>
+            </div>
+          </motion.div>
+        )}
+
+        {step === 'summary' && (
+          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="glass rounded-[2.5rem] p-6 sm:p-8 space-y-6">
+            <div className="space-y-2 text-center">
+              <h2 className="text-2xl sm:text-3xl font-bold text-slate-900">Kişisel planın hazır</h2>
+              <p className="text-slate-500">Sistem bu ayarlarla her gün net bir görev üretecek.</p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="rounded-2xl bg-white border border-slate-100 p-4">
+                <p className="text-[11px] uppercase tracking-[0.15em] font-semibold text-slate-400">Odak alanı</p>
+                <p className="mt-2 text-base font-semibold text-slate-900">{PATH_LABELS[selectedPath ?? 'general']}</p>
+              </div>
+              <div className="rounded-2xl bg-white border border-slate-100 p-4">
+                <p className="text-[11px] uppercase tracking-[0.15em] font-semibold text-slate-400">Tempo</p>
+                <p className="mt-2 text-base font-semibold text-slate-900">{TEMPO_LABELS[tempo]}</p>
+              </div>
+              <div className="rounded-2xl bg-white border border-slate-100 p-4">
+                <p className="text-[11px] uppercase tracking-[0.15em] font-semibold text-slate-400">Günlük süre</p>
+                <p className="mt-2 text-base font-semibold text-slate-900">{DAILY_MINUTES_LABELS[dailyMinutes]}</p>
+              </div>
+              <div className="rounded-2xl bg-white border border-slate-100 p-4">
+                <p className="text-[11px] uppercase tracking-[0.15em] font-semibold text-slate-400">İlerleme modeli</p>
+                <p className="mt-2 text-base font-semibold text-slate-900">Günlük görev + düzenli seri + seviye artışı</p>
+              </div>
+            </div>
+
+            <div className="rounded-2xl bg-slate-900 text-slate-100 p-4">
+              <p className="text-sm leading-relaxed">
+                {name.trim()}, ilk gün hedefin tek: bugünün görevini bitirmek. Küçük ama tutarlı adımlar birkaç gün içinde görünür bir ilerleme üretir.
+              </p>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-3">
+              <button onClick={moveToPreviousStep} className="sm:w-44 py-4 bg-slate-100 text-slate-700 rounded-2xl font-semibold hover:bg-slate-200 transition-all flex items-center justify-center gap-2">
+                <ArrowLeft size={18} /> Geri
+              </button>
+              <button onClick={moveToNextStep} className="flex-1 py-4 bg-brand-600 text-white rounded-2xl font-bold hover:bg-brand-700 transition-all flex items-center justify-center gap-2">
+                Planı aç <ArrowRight size={18} />
+              </button>
+            </div>
+          </motion.div>
+        )}
+
+        {step === 'paywall' && (
+          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="glass rounded-[2.5rem] p-6 sm:p-8 space-y-6">
+            <div className="space-y-2 text-center">
+              <h2 className="text-2xl sm:text-3xl font-bold text-slate-900">Planını aç</h2>
+              <p className="text-slate-500">Temel plan bu cihazda hemen aktif olur. Premium için App Store satın alma entegrasyonu gerekir.</p>
+            </div>
+
+            <div className="grid grid-cols-1 gap-3">
+              <div className="rounded-2xl border border-brand-100 bg-brand-50 p-4">
+                <p className="text-sm font-semibold text-brand-900">Premium Plan</p>
+                <p className="mt-1 text-xs leading-relaxed text-brand-800">Satın alma tamamlandığında adaptif haftalık plan ve gelişmiş analizler açılır.</p>
+              </div>
+              <div className="rounded-2xl border border-slate-100 bg-white p-4">
+                <p className="text-sm font-semibold text-slate-900">Temel Plan</p>
+                <p className="mt-1 text-xs leading-relaxed text-slate-600">Günlük görev, görev tamamlama, seri takibi ve temel ilerleme görünümü.</p>
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <button onClick={handleFinish} className="w-full py-4 bg-slate-900 text-white rounded-2xl font-bold hover:bg-black transition-all">
+                Temel planla devam et
+              </button>
+              <button onClick={onShowRestore} className="w-full py-3 text-sm text-slate-500 hover:text-slate-700 transition-colors">
+                Satın alma veya hesabını geri yükle
+              </button>
+            </div>
+          </motion.div>
+        )}
       </div>
     </div>
   );

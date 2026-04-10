@@ -1,37 +1,70 @@
-# Ascend AI Growth Coach
+# Ascend Growth Coach
 
-Ascend is a Firebase-backed self-improvement app prepared for a TestFlight pre-release pass.
+Ascend, her gun tek bir ogretici gorev veren ve seviyene gore ilerleme rotasi cizen bir kisisel gelisim sistemidir.
 
-## Local development
+## Mevcut urun durumu
 
-Prerequisites:
-- Node.js 22+
+- Gunluk mission, unit, checkpoint ve streak akisi aktif.
+- Premium planda adaptif rota, haftalik review, 7 gunluk plan ve planli gorev kuyrugu var.
+- Gorevler, profil, haftalik rota ve planli gorevler server-backed session ile eslenebilir.
+- Hesap e-posta ile baglanirsa ilerleme baska cihazda geri yuklenebilir.
+- AI sunucusu yoksa uygulama guvenli sekilde yerel rehberlik modunda devam eder.
 
-Setup:
-1. `npm install`
-2. Copy [.env.example](.env.example) if you want to configure a trusted AI proxy.
-3. `npm run dev`
+## Gelistirme
 
-## Safe runtime behavior
+1. Bagimliliklari kur:
+   `npm install`
+2. Gelistirme sunucusunu baslat:
+   `npm run dev`
+3. Uretim build'i al:
+   `npm run build`
 
-- If `VITE_AI_PROXY_URL` is missing, the app runs in preview mode.
-- Preview mode never exposes provider secrets.
-- Preview-generated tasks are clearly labeled in the UI and do not count toward verified progression.
-- Premium access is read only from `userEntitlements/{uid}` and never from legacy user profile fields.
+## Yerel AI sunucusu baglama
 
-## Validation commands
+1. `.env.example` dosyasini `.env.local` olarak kopyala.
+2. `OLLAMA_BASE_URL` degerini Ollama calisan makineye gore ayarla.
+3. Frontend baska bir cihazdan acilacaksa `VITE_AI_BACKEND_URL` degerini bu proxy'nin ag adresine cevir.
+4. Proxy'yi baslat:
+   `npm run ai:server`
+5. Frontend'i baslat:
+   `npm run dev`
 
-- `npm run lint`
-- `npm run test`
-- `npm run build`
-- `npm run test:rules:contract`
-- `npm run test:rules:emulator`
+Saglik kontrolu:
 
-`test:rules:emulator` requires Java plus the Firebase Firestore emulator.
+`http://127.0.0.1:8787/api/health`
 
-## iOS / Capacitor
+## iOS sync
 
-- `npx cap add ios`
-- `npm run ios:sync`
+Capacitor iOS projesini guncellemek icin:
 
-The native iOS project is generated under `ios/` and must still be archived on macOS with Xcode for a real TestFlight upload.
+`npm run ios:sync`
+
+## iOS IAP (RevenueCat + StoreKit)
+
+1. `.env.local` dosyasina su anahtarlari gir:
+   - `VITE_REVENUECAT_IOS_API_KEY`
+   - `VITE_REVENUECAT_ENTITLEMENT_ID`
+   - `VITE_REVENUECAT_OFFERING_ID` (opsiyonel)
+   - `REVENUECAT_SECRET_API_KEY`
+   - `REVENUECAT_ENTITLEMENT_ID`
+   - `ENABLE_BILLING_PREVIEW=false`
+2. RevenueCat dashboard:
+   - iOS App olustur.
+   - App Store Connect subscription product id'lerini bagla.
+   - `premium` (veya kullandiginiz entitlement id) entitlement'ini urunlere map et.
+3. App Store Connect:
+   - Auto-renewable subscription urunlerini olustur.
+   - In-App Purchase capability ve banking/tax sozlesmeleri tamam olsun.
+4. iOS cihaz veya simulator:
+   - Sandbox tester ile login ol.
+   - satin alma / iptal / pending / fail / restore senaryolarini dogrula.
+5. Tum adimlar icin ayrintili kontrol listesi:
+   - `RELEASE_SMOKE_CHECKLIST_IOS.md`
+
+## Production notu
+
+Bu repo release adayi seviyesine yaklasti. Public release oncesi zorunlu kontrol:
+
+- iOS cihazda manuel onboarding -> paywall -> today -> progress -> profile smoke
+- RevenueCat + StoreKit sandbox odeme senaryolari
+- TestFlight UAT ve crash/log takibi

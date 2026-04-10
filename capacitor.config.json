@@ -1,6 +1,6 @@
 {
   "appId": "com.ascend.growth",
-  "appName": "Ascend",
+  "appName": "Ascend Growth Coach",
   "webDir": "dist",
   "bundledWebRuntime": false
 }

@@ -1,31 +1,29 @@
 {
-  "name": "ascend-ai-growth-coach",
+  "name": "ascend-growth-coach",
   "private": true,
-  "version": "1.0.0",
+  "version": "0.1.0",
   "type": "module",
   "scripts": {
     "dev": "vite --port=3000 --host=0.0.0.0",
+    "ai:server": "node server/index.mjs",
     "build": "vite build",
     "preview": "vite preview",
-    "clean": "node --input-type=module -e \"import { rmSync } from 'node:fs'; rmSync('dist', { recursive: true, force: true });\"",
+    "test": "tsx --test src/**/*.test.ts server/**/*.test.mjs",
+    "clean": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\"",
     "lint": "tsc --noEmit",
-    "test": "tsx --test src/**/*.test.ts",
-    "test:rules:contract": "tsx --test src/lib/firestoreRulesContract.test.ts",
-    "test:rules:emulator": "node scripts/run-firestore-emulator-tests.mjs",
-    "preflight": "npm run lint && npm run test && npm run build",
     "ios:sync": "npm run build && npx cap sync ios"
   },
   "dependencies": {
     "@capacitor/cli": "^8.3.0",
     "@capacitor/core": "^8.3.0",
     "@capacitor/ios": "^8.3.0",
+    "@revenuecat/purchases-capacitor": "^12.3.2",
     "@tailwindcss/typography": "^0.5.19",
     "@tailwindcss/vite": "^4.1.14",
-    "@types/canvas-confetti": "^1.9.0",
     "@vitejs/plugin-react": "^5.0.4",
-    "canvas-confetti": "^1.9.4",
     "clsx": "^2.1.1",
-    "firebase": "^12.11.0",
+    "dotenv": "^17.2.3",
+    "express": "^4.21.2",
     "lucide-react": "^0.546.0",
     "motion": "^12.23.24",
     "react": "^19.0.0",
@@ -35,13 +33,10 @@
     "vite": "^6.2.0"
   },
   "devDependencies": {
-    "@firebase/rules-unit-testing": "^5.0.0",
     "@types/node": "^22.14.0",
     "autoprefixer": "^10.4.21",
-    "firebase-tools": "^15.13.0",
     "tailwindcss": "^4.1.14",
     "tsx": "^4.21.0",
-    "typescript": "~5.8.2",
-    "vite": "^6.2.0"
+    "typescript": "~5.8.2"
   }
 }

@@ -1,34 +1,26 @@
 {
   "short_name": "Ascend",
-  "name": "Ascend AI Growth Coach",
+  "name": "Ascend Growth Coach",
   "icons": [
     {
-      "src": "./icon-192.png",
-      "type": "image/png",
-      "sizes": "192x192"
+      "src": "/icon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any"
     },
     {
-      "src": "./icon-512.png",
+      "src": "/icon-512.png",
       "type": "image/png",
       "sizes": "512x512"
     },
     {
-      "src": "./icon.svg",
-      "type": "image/svg+xml",
-      "sizes": "any",
-      "purpose": "any"
+      "src": "/icon-1024.png",
+      "type": "image/png",
+      "sizes": "1024x1024"
     }
   ],
-  "start_url": ".",
-  "scope": ".",
+  "start_url": "/",
   "background_color": "#ffffff",
   "display": "standalone",
   "theme_color": "#0ea5e9",
-  "description": "Guided self-improvement with verified progression and safe preview fallbacks.",
-  "related_applications": [
-    {
-      "platform": "itunes",
-      "id": "com.ascend.growth"
-    }
-  ]
+  "description": "Gunluk ogretici gorevler ve adaptif rota ile ilerleme kurmana yardimci olan kisisel gelisim sistemi."
 }

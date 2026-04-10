@@ -1,192 +1,189 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { Suspense, lazy, useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { AlertCircle, ArrowRight, Bot, CheckCircle2, Crown, Lightbulb, MessageSquare, RefreshCw, Sparkles } from 'lucide-react';
-import { DailyTask, UserProfile } from '../types';
+import { Send, Bot, User, Target, RefreshCw } from 'lucide-react';
+import { DailyTask, Message, UserProfile } from '../types';
 import { cn } from '../lib/utils';
-import { playSound } from '../lib/sounds';
-import { generateStructuredCoaching } from '../services/aiService';
-import { buildUserStateSignature } from '../lib/summarySignature';
-import { AI_RUNTIME } from '../lib/runtime';
+import { buildCoachReply, buildWelcomeMessage } from '../lib/localCoach';
+import { requestCoachReply } from '../lib/aiClient';
+import { getAdaptationSignal, getSignalLabel } from '../lib/adaptation';
+import { getPlanTierLabel, isPremiumProfile } from '../lib/premium';
+import { getPathLabel } from '../lib/productCopy';
+import { formatUiText } from '../lib/textFormat';
+
+const CoachMarkdown = lazy(() => import('./CoachMarkdown'));
 
 interface CoachProps {
   profile: UserProfile;
+  activeTask: DailyTask | null;
   tasks: DailyTask[];
 }
 
-export default function Coach({ profile, tasks }: CoachProps) {
-  const [coaching, setCoaching] = useState<{ well: string; slipped: string; next: string; recommendation: string } | null>(null);
+export default function Coach({ profile, activeTask, tasks }: CoachProps) {
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [reflection, setReflection] = useState('');
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const requestVersionRef = useRef(0);
+  const [isUsingFallback, setIsUsingFallback] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const adaptationSignal = getAdaptationSignal(tasks);
+  const adaptationLabel = getSignalLabel(adaptationSignal);
+  const premium = isPremiumProfile(profile);
 
-  const summarySignature = useMemo(() => buildUserStateSignature(profile, tasks), [profile, tasks]);
+  useEffect(() => {
+    setMessages([
+      {
+        role: 'model',
+        text: buildWelcomeMessage(profile, activeTask),
+        timestamp: Date.now(),
+      },
+    ]);
+    setIsUsingFallback(false);
+  }, [profile, activeTask]);
 
-  const loadCoaching = async () => {
-    const requestVersion = requestVersionRef.current + 1;
-    requestVersionRef.current = requestVersion;
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [messages]);
+
+  const handleSend = async () => {
+    if (!input.trim() || isLoading) return;
+
+    const userMessage: Message = { role: 'user', text: input.trim(), timestamp: Date.now() };
+    const history = [...messages, userMessage];
+
+    setMessages(history);
+    setInput('');
     setIsLoading(true);
-    setErrorMessage(null);
 
     try {
-      const data = await generateStructuredCoaching(profile, tasks);
-      if (requestVersion !== requestVersionRef.current) {
-        return;
-      }
-      setCoaching(data);
-    } catch (error) {
-      if (requestVersion !== requestVersionRef.current) {
-        return;
-      }
-      console.error('Coach load error:', error);
-      setErrorMessage('Koçluk özeti hazırlanamadı. Lütfen birazdan tekrar dene.');
+      const reply = await requestCoachReply(profile, history, userMessage.text, activeTask, tasks).catch(() => {
+        setIsUsingFallback(true);
+        return buildCoachReply(profile, history, userMessage.text, activeTask, tasks);
+      });
+
+      setMessages((prev) => [...prev, { role: 'model', text: reply, timestamp: Date.now() }]);
     } finally {
-      if (requestVersion !== requestVersionRef.current) {
-        return;
-      }
       setIsLoading(false);
     }
   };
 
-  useEffect(() => {
-    loadCoaching();
-  }, [summarySignature]);
+  const renderMessageBody = (message: Message) => {
+    const inverted = message.role === 'user';
 
-  useEffect(() => () => {
-    requestVersionRef.current += 1;
-  }, []);
-
-  const handleReflectionSubmit = () => {
-    if (!reflection.trim()) {
-      return;
+    if (message.role === 'user') {
+      return <div className="whitespace-pre-wrap break-words text-sm leading-relaxed">{message.text}</div>;
     }
 
-    playSound('success');
-    setIsSubmitted(true);
+    return (
+      <Suspense fallback={<div className="whitespace-pre-wrap break-words text-sm leading-relaxed">{message.text}</div>}>
+        <CoachMarkdown text={message.text} inverted={inverted} />
+      </Suspense>
+    );
   };
 
   return (
-    <div className="max-w-2xl mx-auto space-y-10 pb-24">
-      <header className="flex items-center justify-between">
-        <div className="flex items-center gap-5">
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-duo-blue to-duo-blue-dark flex items-center justify-center text-white shadow-xl">
-            <Bot size={28} />
+    <div className="flex flex-col min-h-[36rem] md:h-[calc(100vh-8rem)] max-w-4xl mx-auto w-full glass rounded-3xl overflow-hidden">
+      <div className="p-6 border-b border-slate-100 bg-white flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full bg-brand-500 flex items-center justify-center text-white shadow-lg shadow-brand-200">
+            <Bot size={24} />
           </div>
           <div>
-            <h2 className="text-2xl font-black text-slate-800 dark:text-slate-100 tracking-tight flex items-center gap-2">
-              Ascend Rehber
-              {profile.isPremium && <Crown size={16} className="text-premium-gold" />}
-            </h2>
-            <p className="text-[10px] text-slate-400 font-black uppercase tracking-[0.3em]">Günlük strateji</p>
+            <h2 className="text-lg font-bold text-slate-800 leading-tight">Günlük koç</h2>
+            <p className="text-xs text-slate-500 flex items-center gap-1">
+              <span className={cn('w-2 h-2 rounded-full', isUsingFallback ? 'bg-amber-500' : 'bg-green-500')}></span>
+              {isUsingFallback ? 'Standart koç modu' : 'Gelişmiş koç modu'} · {getPlanTierLabel(profile.planTier)}
+            </p>
           </div>
         </div>
-        <button onClick={loadCoaching} disabled={isLoading} className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-400 hover:text-duo-blue transition-all">
-          <RefreshCw size={20} className={cn(isLoading && 'animate-spin')} />
-        </button>
-      </header>
+        <div className="flex items-center gap-2">
+          <div className="px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-xs font-medium flex items-center gap-1">
+            <Target size={14} />
+            {getPathLabel(profile.selectedPath)}
+          </div>
+        </div>
+      </div>
 
-      {errorMessage && <div className="rounded-[2rem] border border-red-200 bg-red-50 px-5 py-4 text-sm text-red-700">{errorMessage}</div>}
-
-      {AI_RUNTIME.usesPreviewFallback && (
-        <div className="rounded-[2rem] border border-amber-200 bg-amber-50 px-5 py-4 text-sm text-amber-900">
-          Güvenli AI koçluk sunucusu bağlı değil. Bu özet yerel önizleme mantığıyla hazırlanıyor.
+      {activeTask && (
+        <div className="px-6 py-3 bg-slate-50 border-b border-slate-100">
+          <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-slate-400">Bugünün bağlamı</p>
+          <p className="mt-1 text-sm font-semibold text-slate-900">{formatUiText(activeTask.title)}</p>
+          <p className="mt-1 text-xs text-slate-600 line-clamp-2">{formatUiText(activeTask.description)}</p>
+          <p className="mt-2 text-[10px] uppercase tracking-[0.16em] font-semibold text-brand-500">{adaptationLabel}</p>
+          <p className="mt-1 text-[10px] uppercase tracking-[0.16em] font-semibold text-slate-400">
+            {premium ? 'Derin bağlam açık' : 'Temel bağlam'}
+          </p>
         </div>
       )}
 
-      <AnimatePresence mode="wait">
-        {isLoading ? (
-          <motion.div key="loading" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="py-32 flex flex-col items-center justify-center space-y-6">
-            <div className="relative">
-              <div className="w-20 h-20 border-[6px] border-slate-100 dark:border-slate-800 border-t-duo-blue rounded-full animate-spin" />
-              <Sparkles className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-duo-blue animate-pulse" size={32} />
+      <div ref={scrollRef} className="flex-1 overflow-y-auto p-6 space-y-6 scroll-smooth">
+        <AnimatePresence initial={false}>
+          {messages.map((message, index) => (
+            <motion.div
+              key={message.timestamp + index}
+              initial={{ opacity: 0, y: 10, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              className={cn('flex w-full gap-3', message.role === 'user' ? 'flex-row-reverse' : 'flex-row')}
+            >
+              <div
+                className={cn(
+                  'w-8 h-8 rounded-full flex items-center justify-center shrink-0',
+                  message.role === 'user' ? 'bg-slate-200 text-slate-600' : 'bg-brand-100 text-brand-600',
+                )}
+              >
+                {message.role === 'user' ? <User size={16} /> : <Bot size={16} />}
+              </div>
+              <div
+                className={cn(
+                  'max-w-[80%] p-4 rounded-2xl shadow-sm',
+                  message.role === 'user'
+                    ? 'bg-brand-600 text-white rounded-tr-none'
+                    : 'bg-white border border-slate-100 text-slate-800 rounded-tl-none',
+                )}
+              >
+                {renderMessageBody(message)}
+              </div>
+            </motion.div>
+          ))}
+        </AnimatePresence>
+        {isLoading && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex gap-3">
+            <div className="w-8 h-8 rounded-full bg-brand-100 text-brand-600 flex items-center justify-center">
+              <RefreshCw size={16} className="animate-spin" />
             </div>
-            <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em] animate-pulse text-center">Strateji hazırlanıyor</p>
-          </motion.div>
-        ) : coaching ? (
-          <motion.div key="content" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-8">
-            <div className="grid grid-cols-1 gap-4">
-              <div className="p-6 bg-white dark:bg-slate-800/40 rounded-[2rem] border-2 border-slate-50 dark:border-slate-700/50 shadow-xl space-y-3 relative overflow-hidden group">
-                <div className="absolute top-0 right-0 p-4 text-duo-green opacity-5 group-hover:opacity-10 transition-opacity">
-                  <CheckCircle2 size={60} />
-                </div>
-                <div className="flex items-center gap-3 text-duo-green">
-                  <CheckCircle2 size={18} />
-                  <span className="text-[10px] font-black uppercase tracking-[0.2em]">Neyi iyi yaptın?</span>
-                </div>
-                <p className="text-slate-700 dark:text-slate-200 font-bold leading-relaxed relative z-10">{coaching.well}</p>
+            <div className="bg-white border border-slate-100 p-4 rounded-2xl rounded-tl-none shadow-sm">
+              <div className="flex gap-1">
+                <span className="w-2 h-2 bg-slate-300 rounded-full animate-bounce"></span>
+                <span className="w-2 h-2 bg-slate-300 rounded-full animate-bounce [animation-delay:0.2s]"></span>
+                <span className="w-2 h-2 bg-slate-300 rounded-full animate-bounce [animation-delay:0.4s]"></span>
               </div>
-
-              <div className="p-6 bg-white dark:bg-slate-800/40 rounded-[2rem] border-2 border-slate-50 dark:border-slate-700/50 shadow-xl space-y-3 relative overflow-hidden group">
-                <div className="absolute top-0 right-0 p-4 text-duo-orange opacity-5 group-hover:opacity-10 transition-opacity">
-                  <AlertCircle size={60} />
-                </div>
-                <div className="flex items-center gap-3 text-duo-orange">
-                  <AlertCircle size={18} />
-                  <span className="text-[10px] font-black uppercase tracking-[0.2em]">Nerede zorlandın?</span>
-                </div>
-                <p className="text-slate-700 dark:text-slate-200 font-bold leading-relaxed relative z-10">{coaching.slipped}</p>
-              </div>
-
-              <div className="p-6 bg-slate-900 rounded-[2rem] text-white shadow-2xl space-y-3 relative overflow-hidden group">
-                <div className="absolute top-0 right-0 p-4 text-white opacity-5 group-hover:opacity-10 transition-opacity">
-                  <ArrowRight size={60} />
-                </div>
-                <div className="flex items-center gap-3 text-duo-blue">
-                  <ArrowRight size={18} />
-                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white">Sıradaki adım</span>
-                </div>
-                <p className="text-slate-200 font-bold leading-relaxed relative z-10">{coaching.next}</p>
-              </div>
-
-              <div className="p-6 bg-premium-gold/10 rounded-[2rem] border-2 border-premium-gold/20 shadow-xl space-y-3 relative overflow-hidden group">
-                <div className="absolute top-0 right-0 p-4 text-premium-gold opacity-5 group-hover:opacity-10 transition-opacity">
-                  <Lightbulb size={60} />
-                </div>
-                <div className="flex items-center gap-3 text-premium-gold">
-                  <Lightbulb size={18} />
-                  <span className="text-[10px] font-black uppercase tracking-[0.2em]">Özel tavsiye</span>
-                </div>
-                <p className="text-slate-800 dark:text-slate-100 font-bold leading-relaxed relative z-10">{coaching.recommendation}</p>
-              </div>
-            </div>
-
-            <div className="p-8 bg-slate-50 dark:bg-slate-900/40 rounded-[2.5rem] border-2 border-dashed border-slate-200 dark:border-slate-800 space-y-6">
-              <div className="flex items-center gap-4">
-                <div className="w-10 h-10 rounded-xl bg-white dark:bg-slate-800 flex items-center justify-center text-duo-blue shadow-sm">
-                  <MessageSquare size={20} />
-                </div>
-                <div>
-                  <h4 className="text-lg font-black text-slate-800 dark:text-slate-100 tracking-tight">Günlük yansıma</h4>
-                  <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest">Bugün öğrendiğin en önemli şey neydi?</p>
-                </div>
-              </div>
-
-              {!isSubmitted ? (
-                <div className="space-y-4">
-                  <textarea
-                    value={reflection}
-                    onChange={(event) => setReflection(event.target.value)}
-                    placeholder="Düşüncelerini buraya yaz..."
-                    className="w-full h-32 p-6 bg-white dark:bg-slate-900/50 border-2 border-slate-100 dark:border-slate-800 rounded-3xl outline-none focus:border-duo-blue transition-all font-bold text-slate-700 dark:text-slate-200 resize-none"
-                  />
-                  <button onClick={handleReflectionSubmit} disabled={!reflection.trim()} className="w-full py-5 bg-duo-blue text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-duo-blue/20 disabled:opacity-50">
-                    Yansımayı kaydet
-                  </button>
-                </div>
-              ) : (
-                <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="p-8 bg-duo-green/10 rounded-3xl border-2 border-duo-green/20 text-center space-y-4">
-                  <div className="w-12 h-12 bg-duo-green text-white rounded-full flex items-center justify-center mx-auto shadow-lg">
-                    <CheckCircle2 size={24} />
-                  </div>
-                  <p className="text-duo-green-dark dark:text-duo-green font-black text-sm uppercase tracking-widest">Yansıma kaydedildi</p>
-                  <p className="text-slate-500 dark:text-slate-400 text-xs font-bold">Bu farkındalık bir sonraki günün kalitesini yükseltir.</p>
-                </motion.div>
-              )}
             </div>
           </motion.div>
-        ) : null}
-      </AnimatePresence>
+        )}
+      </div>
+
+      <div className="p-6 bg-white border-t border-slate-100">
+        <div className="relative flex items-center">
+          <input
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+            placeholder="Bugünkü görev, odağın veya zorlandığın nokta hakkında yaz..."
+            className="w-full pl-6 pr-14 py-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-brand-500 transition-all outline-none text-slate-700"
+          />
+          <button
+            onClick={handleSend}
+            disabled={!input.trim() || isLoading}
+            className="absolute right-2 p-3 bg-brand-600 text-white rounded-xl hover:bg-brand-700 disabled:opacity-50 disabled:hover:bg-brand-600 transition-colors shadow-lg shadow-brand-200"
+          >
+            <Send size={20} />
+          </button>
+        </div>
+        <p className="mt-3 text-center text-[10px] text-slate-400 uppercase tracking-widest font-semibold">
+          {isUsingFallback ? 'Koç hızlı modda çalışıyor' : 'Koç hazır'}
+        </p>
+      </div>
     </div>
   );
 }

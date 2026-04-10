@@ -1,91 +1,40 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=Nunito:wght@400;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Space Grotesk", sans-serif;
+  --font-display: "Outfit", sans-serif;
   
-  --color-duo-green: #2ecc71;
-  --color-duo-green-dark: #27ae60;
-  --color-duo-blue: #3498db;
-  --color-duo-blue-dark: #2980b9;
-  --color-duo-orange: #e67e22;
-  --color-duo-orange-dark: #d35400;
-  --color-duo-red: #e74c3c;
-  --color-duo-red-dark: #c0392b;
-  --color-duo-yellow: #f1c40f;
-  --color-duo-yellow-dark: #f39c12;
-  
-  --color-premium-gold: #d4af37;
-  --color-premium-black: #1a1a1a;
-  --color-premium-slate: #2c3e50;
+  --color-brand-50: #f0f9ff;
+  --color-brand-100: #e0f2fe;
+  --color-brand-200: #bae6fd;
+  --color-brand-300: #7dd3fc;
+  --color-brand-400: #38bdf8;
+  --color-brand-500: #0ea5e9;
+  --color-brand-600: #0284c7;
+  --color-brand-700: #0369a1;
+  --color-brand-800: #075985;
+  --color-brand-900: #0c4a6e;
 }
 
 @layer base {
   body {
-    @apply bg-slate-50 text-slate-900 font-sans antialiased select-none transition-colors duration-500;
-    @apply dark:bg-[#0f1115] dark:text-slate-100;
-    -webkit-tap-highlight-color: transparent;
+    @apply bg-slate-50 text-slate-900 font-sans antialiased;
   }
   
   h1, h2, h3, h4, h5, h6 {
-    @apply font-display font-bold tracking-tight;
+    @apply font-display font-semibold tracking-tight;
   }
 }
 
-.duo-button {
-  @apply relative inline-flex items-center justify-center px-8 py-3.5 font-bold uppercase tracking-widest text-xs rounded-xl transition-all active:scale-95 shadow-lg;
-}
-
-.duo-button-green {
-  @apply bg-duo-green text-white shadow-green-900/20 hover:bg-duo-green-dark hover:-translate-y-0.5;
-}
-
-.duo-button-blue {
-  @apply bg-duo-blue text-white shadow-blue-900/20 hover:bg-duo-blue-dark hover:-translate-y-0.5;
-}
-
-.duo-button-white {
-  @apply bg-white text-slate-600 border border-slate-200 shadow-sm hover:bg-slate-50 hover:-translate-y-0.5;
-  @apply dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700 dark:hover:bg-slate-700;
-}
-
-.duo-card {
-  @apply bg-white border border-slate-200/60 rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all duration-500;
-  @apply dark:bg-slate-900/40 dark:border-slate-800/50 dark:shadow-none;
-}
-
-.duo-card:hover {
-  @apply shadow-[0_20px_50px_rgba(0,0,0,0.08)] -translate-y-1;
-  @apply dark:shadow-[0_20px_50px_rgba(0,0,0,0.3)];
-}
-
 .glass {
-  @apply bg-white/70 backdrop-blur-xl border border-white/20 rounded-[2.5rem] shadow-2xl transition-all duration-500;
-  @apply dark:bg-slate-900/70 dark:border-slate-800/30;
+  @apply bg-white/95 backdrop-blur-sm border border-slate-200/70 shadow-[0_12px_28px_rgba(15,23,42,0.06)];
 }
 
 .markdown-body {
-  @apply prose prose-slate max-w-none dark:prose-invert;
+  @apply prose prose-slate max-w-none;
   @apply prose-headings:font-display prose-headings:font-bold;
-  @apply prose-p:leading-relaxed prose-p:text-slate-600 prose-p:font-medium dark:prose-p:text-slate-400;
-  @apply prose-li:text-slate-600 prose-li:font-medium dark:prose-li:text-slate-400;
+  @apply prose-p:leading-relaxed prose-p:text-slate-600;
+  @apply prose-li:text-slate-600;
 }
-
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-.no-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
-.premium-gradient {
-  @apply bg-gradient-to-br from-premium-slate to-premium-black;
-}
-
-.gold-text {
-  @apply bg-gradient-to-r from-premium-gold via-yellow-200 to-premium-gold bg-clip-text text-transparent;
-}
-
