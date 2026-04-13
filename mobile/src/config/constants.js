@@ -81,7 +81,7 @@ export const STORAGE_KEYS = {
 };
 
 export const REVENUECAT_CONFIG = {
-  API_KEY_IOS: 'appl_REPLACE_WITH_REAL_KEY',
+  API_KEY_IOS: 'appl_GdTXEiIwMXBaFuHLGjwBhzlrruB',
   ENTITLEMENT_ID: 'premium',
   OFFERING_ID: 'default',
   PRODUCT_ID: 'ascend_super_monthly',

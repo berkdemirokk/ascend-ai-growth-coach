@@ -40,7 +40,7 @@
         "react-native-purchases",
         {
           "iOS": {
-            "apiKey": "appl_REPLACE_WITH_REAL_KEY"
+            "apiKey": "appl_GdTXEiIwMXBaFuHLGjwBhzlrruB"
           }
         }
       ]
