@@ -14,11 +14,12 @@
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.ascend.levelup",
+      "bundleIdentifier": "com.ascend.growth",
       "buildNumber": "1",
       "infoPlist": {
         "NSUserTrackingUsageDescription": "This identifier will be used to deliver personalized ads to you.",
-        "SKAdNetworkItems": []
+        "SKAdNetworkItems": [],
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {
@@ -26,7 +27,7 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#0B0B14"
       },
-      "package": "com.ascend.levelup"
+      "package": "com.ascend.growth"
     },
     "plugins": [
       [
