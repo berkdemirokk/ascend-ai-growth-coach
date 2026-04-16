@@ -27,12 +27,8 @@ const THEME = {
 };
 
 const getLevelTitle = (lvl) => {
-  if (lvl >= 50) return 'Legend';
-  if (lvl >= 30) return 'Master';
-  if (lvl >= 20) return 'Expert';
-  if (lvl >= 10) return 'Adept';
-  if (lvl >= 5) return 'Apprentice';
-  return 'Novice';
+  const tier = LEVEL_THRESHOLDS.find((t) => t.level === lvl);
+  return tier?.title ?? 'Ascender';
 };
 
 function StatCard({ emoji, value, label }) {
@@ -56,14 +52,18 @@ export default function ProfileScreen({ navigation }) {
   } = useApp();
 
   const nextLevel = useMemo(() => getNextLevel(level), [level]);
-  const currentLevelThreshold = LEVEL_THRESHOLDS[level - 1] ?? 0;
-  const nextLevelThreshold = LEVEL_THRESHOLDS[level] ?? currentLevelThreshold + 1000;
+  const currentLevelThreshold =
+    LEVEL_THRESHOLDS.find((t) => t.level === level)?.xpRequired ?? 0;
+  const nextLevelThreshold =
+    nextLevel?.xpRequired ?? currentLevelThreshold;
   const xpInCurrentLevel = totalXP - currentLevelThreshold;
-  const xpNeededForNext = nextLevelThreshold - currentLevelThreshold;
-  const progressPercent = Math.min(
-    Math.max((xpInCurrentLevel / xpNeededForNext) * 100, 0),
-    100
+  const xpNeededForNext = Math.max(
+    nextLevelThreshold - currentLevelThreshold,
+    1,
   );
+  const progressPercent = nextLevel
+    ? Math.min(Math.max((xpInCurrentLevel / xpNeededForNext) * 100, 0), 100)
+    : 100;
 
   const recentAchievements = useMemo(() => {
     return ACHIEVEMENTS.filter((a) => unlockedAchievements.includes(a.id))
@@ -184,7 +184,7 @@ export default function ProfileScreen({ navigation }) {
                   <View
                     style={[styles.achievementCircle, { borderColor: rarityColor }]}
                   >
-                    <Text style={styles.achievementEmoji}>{achievement.emoji}</Text>
+                    <Text style={styles.achievementEmoji}>{achievement.icon}</Text>
                   </View>
                   <Text style={styles.achievementTitle} numberOfLines={2}>
                     {achievement.title}

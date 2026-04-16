@@ -111,18 +111,18 @@ export default function OnboardingScreen() {
         </Text>
         <View style={styles.categoryGrid}>
           {CATEGORIES.map((category) => {
-            const isSelected = selectedCategories.includes(category.key);
+            const isSelected = selectedCategories.includes(category.id);
             return (
               <TouchableOpacity
-                key={category.key}
+                key={category.id}
                 style={[
                   styles.categoryCard,
                   isSelected && styles.categoryCardSelected,
                 ]}
-                onPress={() => toggleCategory(category.key)}
+                onPress={() => toggleCategory(category.id)}
                 activeOpacity={0.8}
               >
-                <Text style={styles.categoryEmoji}>{category.emoji}</Text>
+                <Text style={styles.categoryEmoji}>{category.icon}</Text>
                 <Text style={styles.categoryLabel}>{category.label}</Text>
                 {category.description ? (
                   <Text style={styles.categoryDescription} numberOfLines={2}>
@@ -169,15 +169,15 @@ export default function OnboardingScreen() {
         </Text>
         <View style={styles.difficultyList}>
           {DIFFICULTIES.map((difficulty) => {
-            const isSelected = selectedDifficulty === difficulty.key;
+            const isSelected = selectedDifficulty === difficulty.id;
             return (
               <TouchableOpacity
-                key={difficulty.key}
+                key={difficulty.id}
                 style={[
                   styles.difficultyCard,
                   isSelected && styles.difficultyCardSelected,
                 ]}
-                onPress={() => setSelectedDifficulty(difficulty.key)}
+                onPress={() => setSelectedDifficulty(difficulty.id)}
                 activeOpacity={0.8}
               >
                 <View style={styles.difficultyCardLeft}>

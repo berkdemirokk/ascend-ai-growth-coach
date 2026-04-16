@@ -82,7 +82,7 @@ export default function AchievementsScreen() {
         {/* Emoji */}
         <View style={styles.emojiWrapper}>
           <Text style={[styles.cardEmoji, !isUnlocked && styles.dimmed]}>
-            {item.emoji}
+            {item.icon}
           </Text>
           {!isUnlocked && (
             <View style={styles.lockOverlay}>
@@ -204,7 +204,7 @@ export default function AchievementsScreen() {
                   { borderColor: getRarityColor(selectedAchievement.rarity) },
                 ]}
               >
-                <Text style={styles.modalEmoji}>{selectedAchievement.emoji}</Text>
+                <Text style={styles.modalEmoji}>{selectedAchievement.icon}</Text>
               </View>
 
               <Text style={styles.modalTitle}>{selectedAchievement.title}</Text>

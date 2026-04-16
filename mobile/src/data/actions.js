@@ -577,14 +577,25 @@ export const ACTIONS = [
 // DAILY ACTION SELECTOR (seed-based: same day = same action)
 // ═══════════════════════════════════════════════════════════════════════════
 
+// Returns a YYYY-MM-DD string in the device's LOCAL timezone so that the
+// selected daily action rolls over at local midnight, not UTC midnight.
+// This also matches the date format used by AppContext.lastCompletedDate.
+const getLocalDateString = (date) => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
 export const getDailyAction = (categories, difficulty, date = new Date()) => {
   const filtered = ACTIONS.filter(
     (a) => categories.includes(a.category) && a.difficulty === difficulty
   );
   if (filtered.length === 0) return null;
 
-  // Deterministic seed from date string so the same day always returns the same action
-  const dateStr = date.toISOString().split('T')[0];
+  // Deterministic seed from local-date string so the same day always returns
+  // the same action for the user regardless of timezone.
+  const dateStr = getLocalDateString(date);
   let seed = 0;
   for (let i = 0; i < dateStr.length; i++) {
     seed = ((seed << 5) - seed + dateStr.charCodeAt(i)) | 0;

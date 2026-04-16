@@ -11,7 +11,12 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import { useApp } from '../contexts/AppContext';
-import { COLORS } from '../config/constants';
+import {
+  COLORS,
+  getLevelForXP,
+  getNextLevel,
+  LEVEL_THRESHOLDS,
+} from '../config/constants';
 import { getDailyAction } from '../data/actions';
 import ActionCard from '../components/ActionCard';
 import LevelUpModal from '../components/LevelUpModal';
@@ -19,43 +24,13 @@ import AchievementUnlockModal from '../components/AchievementUnlockModal';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
-// XP thresholds per level (cumulative XP needed to reach that level)
-const LEVEL_LABELS = [
-  'Beginner',
-  'Seeker',
-  'Dedicated',
-  'Committed',
-  'Focused',
-  'Advanced',
-  'Expert',
-  'Master',
-  'Champion',
-  'Legend',
-];
-
-const XP_PER_LEVEL = 200;
-
-function getLevelInfo(totalXP) {
-  const level = Math.floor(totalXP / XP_PER_LEVEL) + 1;
-  const currentLevelXP = totalXP % XP_PER_LEVEL;
-  const label = LEVEL_LABELS[Math.min(level - 1, LEVEL_LABELS.length - 1)];
-  return { level, currentLevelXP, xpForNextLevel: XP_PER_LEVEL, label };
-}
-
-function isSameDay(dateA, dateB) {
-  if (!dateA || !dateB) return false;
-  const a = new Date(dateA);
-  const b = new Date(dateB);
-  return (
-    a.getFullYear() === b.getFullYear() &&
-    a.getMonth() === b.getMonth() &&
-    a.getDate() === b.getDate()
-  );
-}
-
 export default function HomeScreen() {
   const {
-    user,
+    totalXP,
+    level,
+    currentStreak,
+    longestStreak,
+    todayCompleted,
     completeAction,
     selectedCategories,
     difficulty,
@@ -75,16 +50,24 @@ export default function HomeScreen() {
     setTodayAction(action);
   }, [selectedCategories, difficulty]);
 
-  const isCompletedToday = isSameDay(user?.lastCompletedDate, new Date());
+  const isCompletedToday = !!todayCompleted;
 
-  const totalXP = user?.xp ?? 0;
-  const streak = user?.streak ?? 0;
-  const longestStreak = user?.longestStreak ?? 0;
+  const safeXP = totalXP ?? 0;
+  const streak = currentStreak ?? 0;
+  const longest = longestStreak ?? 0;
 
-  const { level, currentLevelXP, xpForNextLevel, label: levelLabel } =
-    getLevelInfo(totalXP);
+  // Derive level info from the shared LEVEL_THRESHOLDS table in constants.
+  const currentTier = getLevelForXP(safeXP);
+  const nextTier = getNextLevel(currentTier.level);
+  const displayLevel = currentTier.level;
+  const levelLabel = currentTier.title;
 
-  const xpProgress = xpForNextLevel > 0 ? currentLevelXP / xpForNextLevel : 0;
+  const xpForNextLevel = nextTier
+    ? nextTier.xpRequired - currentTier.xpRequired
+    : 0;
+  const currentLevelXP = safeXP - currentTier.xpRequired;
+  const xpProgress =
+    xpForNextLevel > 0 ? currentLevelXP / xpForNextLevel : 1;
   const xpProgressClamped = Math.min(Math.max(xpProgress, 0), 1);
 
   const handleCompleteAction = async () => {
@@ -97,8 +80,13 @@ export default function HomeScreen() {
 
       const result = await completeAction(todayAction);
 
-      if (result?.levelUp) {
-        setLevelUpData(result.levelUp);
+      // completeAction returns { xpEarned, newLevel, newAchievements, streakCount }
+      // newLevel is the new level number if a level-up occurred, otherwise null.
+      if (result?.newLevel) {
+        const tier =
+          LEVEL_THRESHOLDS.find((t) => t.level === result.newLevel) ||
+          getLevelForXP(safeXP + (result.xpEarned ?? 0));
+        setLevelUpData({ level: tier.level, title: tier.title });
         setShowLevelUpModal(true);
       } else if (result?.newAchievements && result.newAchievements.length > 0) {
         setAchievementData(result.newAchievements[0]);
@@ -128,7 +116,7 @@ export default function HomeScreen() {
                 end={{ x: 1, y: 0 }}
                 style={styles.levelBadgeGradient}
               >
-                <Text style={styles.levelBadgeText}>Level {level}</Text>
+                <Text style={styles.levelBadgeText}>Level {displayLevel}</Text>
               </LinearGradient>
             </View>
             <Text style={styles.levelTitle}>
@@ -156,7 +144,9 @@ export default function HomeScreen() {
               />
             </View>
             <Text style={styles.xpPercent}>
-              {Math.round(xpProgressClamped * 100)}% to Level {level + 1}
+              {nextTier
+                ? `${Math.round(xpProgressClamped * 100)}% to Level ${nextTier.level}`
+                : 'Max level reached'}
             </Text>
           </View>
 
@@ -175,7 +165,7 @@ export default function HomeScreen() {
                   <Text style={styles.streakLabel}> day streak</Text>
                 </View>
                 <Text style={styles.longestStreak}>
-                  Longest: {longestStreak} days
+                  Longest: {longest} days
                 </Text>
               </View>
             </View>
@@ -193,7 +183,10 @@ export default function HomeScreen() {
 
           {todayAction ? (
             <View style={styles.actionCardWrapper}>
-              <ActionCard action={todayAction} />
+              <ActionCard
+                action={todayAction}
+                category={todayAction.category}
+              />
               {isCompletedToday && (
                 <View style={styles.completedOverlay}>
                   <Text style={styles.completedOverlayCheck}>✓</Text>
@@ -248,7 +241,8 @@ export default function HomeScreen() {
       {/* ── Modals ── */}
       <LevelUpModal
         visible={showLevelUpModal}
-        levelData={levelUpData}
+        level={levelUpData?.level}
+        title={levelUpData?.title}
         onClose={() => {
           setShowLevelUpModal(false);
           setLevelUpData(null);

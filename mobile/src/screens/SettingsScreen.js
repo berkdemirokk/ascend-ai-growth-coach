@@ -115,7 +115,7 @@ export default function SettingsScreen({ navigation }) {
                   onPress={() => toggleCategory(cat.id)}
                   activeOpacity={0.7}
                 >
-                  <Text style={styles.categoryChipEmoji}>{cat.emoji || '✦'}</Text>
+                  <Text style={styles.categoryChipEmoji}>{cat.icon || '✦'}</Text>
                   <Text
                     style={[
                       styles.categoryChipText,
