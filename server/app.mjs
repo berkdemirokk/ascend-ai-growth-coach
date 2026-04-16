@@ -224,6 +224,8 @@ export const createServerApp = ({
   revenueCatEntitlementId = 'premium',
   revenueCatApiBaseUrl = 'https://api.revenuecat.com/v1',
   revenueCatFetch = fetch,
+  onEmailVerificationRequested = async () => {},
+  onPasswordResetRequested = async () => {},
 }) => {
   const app = express();
   const resolvedDbPath = dbPath ?? path.join(path.dirname(sessionDir ?? accountDir ?? process.cwd()), 'data', 'ascend.sqlite');
@@ -523,10 +525,14 @@ export const createServerApp = ({
         email,
         expiresAt: Date.now() + 24 * 60 * 60 * 1000,
       });
+      await onEmailVerificationRequested({
+        token: verificationToken,
+        accountId,
+        email,
+      });
 
       response.json({
         ...serializeAccountSession(nextAccount, db.readSession(accountId)),
-        verificationToken,
       });
     } catch (error) {
       response.status(500).json({
@@ -631,8 +637,13 @@ export const createServerApp = ({
         accountId: account.accountId,
         expiresAt: Date.now() + 60 * 60 * 1000,
       });
+      await onPasswordResetRequested({
+        token: resetToken,
+        accountId: account.accountId,
+        email,
+      });
 
-      response.json({ ok: true, resetToken });
+      response.json({ ok: true });
     } catch (error) {
       response.status(500).json({
         error: error instanceof Error ? error.message : 'Password reset request failed',

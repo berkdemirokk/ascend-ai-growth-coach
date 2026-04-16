@@ -31,6 +31,8 @@ interface AuthenticatedAppProps {
   onSaveReflection: (id: string, reflection: string) => void;
   accountEmail: string | null;
   onClaimAccount: (email: string, password: string) => Promise<string | null>;
+  onDeleteAccount: () => Promise<string | null>;
+  accountDeletionLoading: boolean;
   syncState: SessionSyncState;
   syncMessage: string | null;
   lastSyncedAt: number | null;
@@ -62,6 +64,8 @@ export default function AuthenticatedApp({
   onSaveReflection,
   accountEmail,
   onClaimAccount,
+  onDeleteAccount,
+  accountDeletionLoading,
   syncState,
   syncMessage,
   lastSyncedAt,
@@ -276,6 +280,8 @@ export default function AuthenticatedApp({
                 <AccountPanel
                   accountEmail={accountEmail}
                   onClaimAccount={onClaimAccount}
+                  onDeleteAccount={onDeleteAccount}
+                  accountDeletionLoading={accountDeletionLoading}
                   syncState={syncState}
                   syncMessage={syncMessage}
                   lastSyncedAt={lastSyncedAt}
