@@ -1,0 +1,109 @@
+export const COLORS = {
+  primary: '#6366F1',
+  primaryDark: '#4F46E5',
+  accent: '#8B5CF6',
+  accentDark: '#7C3AED',
+  background: '#0B0B14',
+  surface: '#161626',
+  surfaceLight: '#1F1F33',
+  border: '#2A2A42',
+  text: '#F5F5FA',
+  textSecondary: '#9898B0',
+  textMuted: '#6B6B85',
+  success: '#10B981',
+  warning: '#F59E0B',
+  error: '#EF4444',
+  gold: '#FBBF24',
+  // Category colors
+  health: '#10B981',
+  career: '#3B82F6',
+  mindfulness: '#8B5CF6',
+  relationships: '#EC4899',
+  finance: '#F59E0B',
+};
+
+export const XP_REWARDS = {
+  ACTION_COMPLETE: 10,
+  FIRST_TIME_BONUS: 5,
+  STREAK_10: 25,
+  STREAK_30: 100,
+  STREAK_100: 500,
+};
+
+export const LEVEL_THRESHOLDS = [
+  { level: 1, title: 'Beginner', xpRequired: 0, isPremium: false },
+  { level: 2, title: 'Committed', xpRequired: 100, isPremium: false },
+  { level: 3, title: 'Dedicated', xpRequired: 300, isPremium: false },
+  { level: 4, title: 'Advanced', xpRequired: 600, isPremium: false },
+  { level: 5, title: 'Elite', xpRequired: 1000, isPremium: false },
+  { level: 6, title: 'Master', xpRequired: 1500, isPremium: false },
+  { level: 7, title: 'Legendary', xpRequired: 2500, isPremium: true },
+];
+
+export const getLevelForXP = (xp) => {
+  let current = LEVEL_THRESHOLDS[0];
+  for (const t of LEVEL_THRESHOLDS) {
+    if (xp >= t.xpRequired) current = t;
+  }
+  return current;
+};
+
+export const getNextLevel = (currentLevel) => {
+  return LEVEL_THRESHOLDS.find((l) => l.level === currentLevel + 1) || null;
+};
+
+export const checkLevelUp = (newTotalXP, currentLevel) => {
+  const next = getNextLevel(currentLevel);
+  if (next && newTotalXP >= next.xpRequired) {
+    return next.level;
+  }
+  return currentLevel;
+};
+
+export const CATEGORIES = [
+  { id: 'health', label: 'Health', icon: '💪', color: COLORS.health, description: 'Physical fitness & wellbeing' },
+  { id: 'career', label: 'Career', icon: '🚀', color: COLORS.career, description: 'Work, skills, and growth' },
+  { id: 'mindfulness', label: 'Mindfulness', icon: '🧘', color: COLORS.mindfulness, description: 'Mental clarity & peace' },
+  { id: 'relationships', label: 'Relationships', icon: '❤️', color: COLORS.relationships, description: 'Family, friends & love' },
+  { id: 'finance', label: 'Finance', icon: '💰', color: COLORS.finance, description: 'Money, savings & wealth' },
+];
+
+export const DIFFICULTIES = [
+  { id: 'beginner', label: 'Beginner', description: 'Easy, 5-10 min per day', icon: '🌱' },
+  { id: 'intermediate', label: 'Intermediate', description: 'Moderate, 10-30 min per day', icon: '⚡' },
+  { id: 'advanced', label: 'Advanced', description: 'Challenging, 30+ min per day', icon: '🔥' },
+];
+
+export const STORAGE_KEYS = {
+  USER_STATE: '@ascend/user_state_v1',
+  ONBOARDED: '@ascend/onboarded_v1',
+  AD_COUNTER: '@ascend/ad_counter_v1',
+};
+
+export const REVENUECAT_CONFIG = {
+  API_KEY_IOS: 'appl_GdTXEiIwMXBaFuHLGjwBhzlrruB',
+  ENTITLEMENT_ID: 'premium',
+  OFFERING_ID: 'default',
+  PRODUCT_ID: 'ascend_super_monthly',
+};
+
+export const ADMOB_IDS = {
+  // Google test IDs - replace with real IDs in production
+  INTERSTITIAL_IOS: 'ca-app-pub-3940256099942544/4411468910',
+  INTERSTITIAL_ANDROID: 'ca-app-pub-3940256099942544/1033173712',
+};
+
+export const PAYWALL_FEATURES = [
+  { icon: '🚫', title: 'Ad-Free Experience', description: 'Remove all advertisements' },
+  { icon: '❄️', title: 'Streak Freeze', description: 'Miss a day without losing your streak' },
+  { icon: '👑', title: 'Legendary Levels', description: 'Unlock level 7 and beyond' },
+  { icon: '📊', title: 'Advanced Stats', description: 'Deep insights into your progress' },
+  { icon: '🎯', title: 'Unlimited History', description: 'Full timeline of every action' },
+  { icon: '✨', title: 'Exclusive Badges', description: 'Show off your premium status' },
+];
+
+export const LEGAL = {
+  PRIVACY_URL: 'https://ascendapp.example.com/privacy',
+  TERMS_URL: 'https://ascendapp.example.com/terms',
+  SUPPORT_EMAIL: 'support@ascendapp.example.com',
+};
