@@ -10,6 +10,14 @@ Notifications.setNotificationHandler({
   }),
 });
 
+// Schedulable trigger shape changed in expo-notifications 0.28+ (SDK 52).
+// Fall back to the legacy shape on older installs so either version works.
+const SchedulableTriggerInputTypes =
+  Notifications.SchedulableTriggerInputTypes ?? {};
+
+const DAILY_REMINDER_ID = 'ascend-daily-reminder';
+const EVENING_REMINDER_ID = 'ascend-evening-reminder';
+
 export const requestNotificationPermissions = async () => {
   if (!Device.isDevice) {
     console.log('Notifications require a physical device');
@@ -35,44 +43,54 @@ export const requestNotificationPermissions = async () => {
 };
 
 export const scheduleDailyReminder = async () => {
-  // Cancel existing daily reminder
-  await Notifications.cancelAllScheduledNotificationsAsync();
+  // Replace any previously scheduled copy of the same reminder so we don't
+  // pile up duplicates every app launch.
+  try {
+    await Notifications.cancelScheduledNotificationAsync(DAILY_REMINDER_ID);
+  } catch {
+    // no-op — notification may not exist yet
+  }
 
-  // Schedule daily at 9:00 AM
   await Notifications.scheduleNotificationAsync({
+    identifier: DAILY_REMINDER_ID,
     content: {
       title: "Time to level up! 🚀",
       body: "Your daily action is waiting. Don't break your streak!",
       sound: true,
     },
     trigger: {
+      type: SchedulableTriggerInputTypes.DAILY ?? 'daily',
       hour: 9,
       minute: 0,
-      repeats: true,
     },
   });
 };
 
 export const scheduleStreakReminder = async () => {
-  // Evening reminder if action not completed - schedule for 8 PM
+  // Evening reminder at 8 PM today if we're still before 8 PM.
   const now = new Date();
   const evening = new Date();
   evening.setHours(20, 0, 0, 0);
+  if (now >= evening) return;
 
-  if (now < evening) {
-    await Notifications.scheduleNotificationAsync({
-      content: {
-        title: "Your streak is in danger! 🔥",
-        body: "Complete today's action before midnight to keep your streak alive!",
-        sound: true,
-      },
-      trigger: {
-        hour: 20,
-        minute: 0,
-        repeats: false,
-      },
-    });
+  try {
+    await Notifications.cancelScheduledNotificationAsync(EVENING_REMINDER_ID);
+  } catch {
+    // no-op
   }
+
+  await Notifications.scheduleNotificationAsync({
+    identifier: EVENING_REMINDER_ID,
+    content: {
+      title: "Your streak is in danger! 🔥",
+      body: "Complete today's action before midnight to keep your streak alive!",
+      sound: true,
+    },
+    trigger: {
+      type: SchedulableTriggerInputTypes.DATE ?? 'date',
+      date: evening,
+    },
+  });
 };
 
 export const sendCelebrationNotification = async (title, body) => {

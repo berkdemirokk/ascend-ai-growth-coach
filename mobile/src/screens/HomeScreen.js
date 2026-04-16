@@ -21,6 +21,7 @@ import { getDailyAction } from '../data/actions';
 import ActionCard from '../components/ActionCard';
 import LevelUpModal from '../components/LevelUpModal';
 import AchievementUnlockModal from '../components/AchievementUnlockModal';
+import { shouldShowAd, showInterstitial } from '../services/ads';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -31,6 +32,7 @@ export default function HomeScreen() {
     currentStreak,
     longestStreak,
     todayCompleted,
+    isPremium,
     completeAction,
     selectedCategories,
     difficulty,
@@ -79,6 +81,14 @@ export default function HomeScreen() {
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
 
       const result = await completeAction(todayAction);
+
+      // Show a non-premium interstitial every N actions. `shouldShowAd`
+      // tracks the in-memory counter and returns false for premium users,
+      // and `showInterstitial` is a no-op if the AdMob module isn't
+      // available, so this is safe to call unconditionally.
+      if (shouldShowAd(isPremium)) {
+        showInterstitial().catch(() => {});
+      }
 
       // completeAction returns { xpEarned, newLevel, newAchievements, streakCount }
       // newLevel is the new level number if a level-up occurred, otherwise null.

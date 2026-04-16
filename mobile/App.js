@@ -5,7 +5,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AppProvider } from './src/contexts/AppContext';
 import AppNavigator from './src/navigation/AppNavigator';
 import { initPurchases } from './src/services/purchases';
-import { initAds } from './src/services/ads';
+import { initAds, loadInterstitial } from './src/services/ads';
 import { requestNotificationPermissions, scheduleDailyReminder } from './src/services/notifications';
 
 export default function App() {
@@ -18,6 +18,10 @@ export default function App() {
       }
       try {
         await initAds();
+        // Preload the first interstitial so it's ready when the user
+        // completes their first action. Safe no-op if the AdMob module
+        // isn't installed.
+        loadInterstitial().catch(() => {});
       } catch (e) {
         console.warn('Ads init failed:', e?.message);
       }

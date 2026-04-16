@@ -2,6 +2,7 @@ import { createContext, useContext, useReducer, useEffect, useCallback } from 'r
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { STORAGE_KEYS, XP_REWARDS, checkLevelUp } from '../config/constants';
 import { checkAchievements } from '../config/achievements';
+import { checkPremiumStatus } from '../services/purchases';
 
 // ─── Initial State ───────────────────────────────────────────────────────────
 
@@ -94,8 +95,18 @@ function appReducer(state, action) {
     case ACTION_TYPES.COMPLETE_ONBOARDING:
       return { ...state, onboarded: true };
 
-    case ACTION_TYPES.SET_PREMIUM:
-      return { ...state, isPremium: action.payload };
+    case ACTION_TYPES.SET_PREMIUM: {
+      const becomingPremium = action.payload && !state.isPremium;
+      return {
+        ...state,
+        isPremium: action.payload,
+        // Grant 3 streak-freeze tokens the first time a user transitions to
+        // premium. Downgrades don't revoke already-granted freezes.
+        streakFreezes: becomingPremium
+          ? state.streakFreezes + 3
+          : state.streakFreezes,
+      };
+    }
 
     case ACTION_TYPES.USE_STREAK_FREEZE:
       return { ...state, streakFreezes: Math.max(0, state.streakFreezes - 1) };
@@ -157,6 +168,37 @@ export function AppProvider({ children }) {
       (e) => console.error('[AppContext] Failed to save state:', e),
     );
   }, [state]);
+
+  // ── Reconcile premium status with RevenueCat on launch ───────────────────
+  //
+  // Locally-persisted `isPremium` can drift from the real entitlement state
+  // (subscription expired, user restored on another device, refunded, etc.).
+  // After the initial state load we ask RevenueCat for the truth and sync.
+  // We only flip to `true` here; flipping to `false` happens too on expiry.
+
+  useEffect(() => {
+    if (!state._loaded) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const active = await checkPremiumStatus();
+        if (cancelled) return;
+        if (active !== state.isPremium) {
+          dispatch({ type: ACTION_TYPES.SET_PREMIUM, payload: !!active });
+        }
+      } catch (e) {
+        // RevenueCat not initialized yet (simulator, sandbox hiccup, no
+        // network); fall back to the persisted value silently.
+        console.warn('[AppContext] premium reconcile skipped:', e?.message);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+    // Run once after the initial load. `isPremium` intentionally omitted
+    // from deps to avoid re-running every time premium toggles.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state._loaded]);
 
   // ── Actions ──────────────────────────────────────────────────────────────
 
@@ -229,12 +271,16 @@ export function AppProvider({ children }) {
         : state.streakFreezes;
 
       // ── History entry ─────────────────────────────────────────────────────
+      // `completedAt` is an ISO timestamp used by HistoryScreen to order the
+      // timeline and render the exact time of each completion. `date` stays
+      // as a local YYYY-MM-DD string for grouping + streak detection.
       const historyEntry = {
         id: action.id,
         category: action.category,
         difficulty: action.difficulty,
         title: action.title,
         date: today,
+        completedAt: new Date().toISOString(),
         xpEarned,
       };
       const newHistory = [...state.history, historyEntry];
