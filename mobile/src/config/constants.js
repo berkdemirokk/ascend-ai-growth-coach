@@ -88,9 +88,16 @@ export const REVENUECAT_CONFIG = {
 };
 
 export const ADMOB_IDS = {
-  // Google test IDs - replace with real IDs in production
-  INTERSTITIAL_IOS: 'ca-app-pub-3940256099942544/4411468910',
-  INTERSTITIAL_ANDROID: 'ca-app-pub-3940256099942544/1033173712',
+  // Real production IDs from the AdMob console for the "Ascend ai growth
+  // coach" app (publisher pub-9898903071826160).
+  APP_ID_IOS: 'ca-app-pub-9898903071826160~9553442066',
+  INTERSTITIAL_IOS: 'ca-app-pub-9898903071826160/9449500287',
+  REWARDED_IOS: 'ca-app-pub-9898903071826160/6183162364',
+  // Google-provided test IDs — use these only when __DEV__ to avoid invalid
+  // traffic flags on live ad units during development.
+  TEST_INTERSTITIAL_IOS: 'ca-app-pub-3940256099942544/4411468910',
+  TEST_REWARDED_IOS: 'ca-app-pub-3940256099942544/1712485313',
+  TEST_INTERSTITIAL_ANDROID: 'ca-app-pub-3940256099942544/1033173712',
 };
 
 export const PAYWALL_FEATURES = [

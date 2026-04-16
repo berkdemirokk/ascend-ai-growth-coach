@@ -1,41 +1,113 @@
 import { Platform } from 'react-native';
 import { ADMOB_IDS } from '../config/constants';
 
-// AdMob is optional - wraps calls safely so the app works without it installed
-let AdMobInterstitial = null;
+// ─── Module state ────────────────────────────────────────────────────────────
+// We lazy-require `react-native-google-mobile-ads` so the rest of the app keeps
+// working even if the native module isn't present (JS-only Metro dev, bare
+// Snack link, forgotten `pod install`, etc.).
+
+let gma = null; // the imported module, or null if unavailable
 let adsReady = false;
+
+let interstitial = null;
+let interstitialLoaded = false;
+
+let rewarded = null;
+let rewardedLoaded = false;
+
+// ─── Ad unit resolution ──────────────────────────────────────────────────────
+
+const getInterstitialId = () => {
+  if (Platform.OS !== 'ios') {
+    return ADMOB_IDS.TEST_INTERSTITIAL_ANDROID;
+  }
+  // Google recommends test ads in __DEV__ to avoid invalid-traffic flags on
+  // live ad units.
+  return __DEV__
+    ? ADMOB_IDS.TEST_INTERSTITIAL_IOS
+    : ADMOB_IDS.INTERSTITIAL_IOS;
+};
+
+const getRewardedId = () => {
+  if (Platform.OS !== 'ios') return null;
+  return __DEV__ ? ADMOB_IDS.TEST_REWARDED_IOS : ADMOB_IDS.REWARDED_IOS;
+};
+
+// ─── ATT + init ──────────────────────────────────────────────────────────────
+
+/**
+ * Request App Tracking Transparency before initializing ads. On iOS 14.5+ this
+ * is required by Apple policy for personalized ads. Denial just downgrades us
+ * to non-personalized ads — it isn't a fatal error.
+ */
+const requestTrackingPermissionIfNeeded = async () => {
+  if (Platform.OS !== 'ios') return;
+  try {
+    const mod = await import('expo-tracking-transparency').catch(() => null);
+    if (!mod) return;
+    const { getTrackingPermissionsAsync, requestTrackingPermissionsAsync } = mod;
+    const existing = await getTrackingPermissionsAsync();
+    if (existing?.status === 'undetermined') {
+      await requestTrackingPermissionsAsync();
+    }
+  } catch (e) {
+    // ATT is best-effort; failures just mean we serve non-personalized ads.
+    console.warn('ATT request skipped:', e?.message);
+  }
+};
 
 export const initAds = async () => {
   try {
-    // expo-ads-admob was deprecated; use react-native-google-mobile-ads if available
-    const mod = await import('react-native-google-mobile-ads').catch(() => null);
-    if (mod) {
-      AdMobInterstitial = mod.InterstitialAd;
+    // On iOS we request ATT first so the SDK picks up the user's choice.
+    await requestTrackingPermissionIfNeeded();
+
+    gma = await import('react-native-google-mobile-ads').catch(() => null);
+    if (!gma) {
+      adsReady = false;
+      return;
     }
-    adsReady = !!AdMobInterstitial;
-  } catch {
+
+    // `mobileAds()` is the default export in v14+. Initialize it once.
+    if (typeof gma.default === 'function') {
+      await gma.default().initialize();
+    }
+    adsReady = true;
+  } catch (e) {
+    console.warn('Ads init error:', e?.message);
     adsReady = false;
   }
 };
 
-let interstitialLoaded = false;
-let interstitialAd = null;
+// ─── Interstitial ────────────────────────────────────────────────────────────
 
 export const loadInterstitial = async () => {
-  if (!adsReady || !AdMobInterstitial) return;
+  if (!adsReady || !gma?.InterstitialAd || !gma?.AdEventType) return;
   try {
-    const adUnitId =
-      Platform.OS === 'ios'
-        ? ADMOB_IDS.INTERSTITIAL_IOS
-        : ADMOB_IDS.INTERSTITIAL_ANDROID;
-    interstitialAd = AdMobInterstitial.createForAdRequest(adUnitId);
+    const adUnitId = getInterstitialId();
+    interstitial = gma.InterstitialAd.createForAdRequest(adUnitId, {
+      requestNonPersonalizedAdsOnly: false,
+    });
+
     await new Promise((resolve, reject) => {
-      interstitialAd.addAdEventListener('loaded', () => {
-        interstitialLoaded = true;
-        resolve();
-      });
-      interstitialAd.addAdEventListener('error', reject);
-      interstitialAd.load();
+      const offLoaded = interstitial.addAdEventListener(
+        gma.AdEventType.LOADED,
+        () => {
+          interstitialLoaded = true;
+          offLoaded?.();
+          offError?.();
+          resolve();
+        },
+      );
+      const offError = interstitial.addAdEventListener(
+        gma.AdEventType.ERROR,
+        (err) => {
+          interstitialLoaded = false;
+          offLoaded?.();
+          offError?.();
+          reject(err);
+        },
+      );
+      interstitial.load();
     });
   } catch (e) {
     console.warn('Load interstitial error:', e?.message);
@@ -44,14 +116,12 @@ export const loadInterstitial = async () => {
 };
 
 export const showInterstitial = async () => {
-  if (!adsReady || !interstitialLoaded || !interstitialAd) {
-    // Silently skip if ads not available
-    return false;
-  }
+  if (!adsReady || !interstitialLoaded || !interstitial) return false;
   try {
-    await interstitialAd.show();
+    await interstitial.show();
     interstitialLoaded = false;
-    // Preload next ad
+    // Preload the next one in the background so the following completion is
+    // ready to show immediately.
     loadInterstitial().catch(() => {});
     return true;
   } catch (e) {
@@ -60,7 +130,85 @@ export const showInterstitial = async () => {
   }
 };
 
-// Counter-based ad logic: show every N completions
+// ─── Rewarded ────────────────────────────────────────────────────────────────
+
+export const loadRewarded = async () => {
+  if (!adsReady || !gma?.RewardedAd || !gma?.RewardedAdEventType) return;
+  const adUnitId = getRewardedId();
+  if (!adUnitId) return;
+  try {
+    rewarded = gma.RewardedAd.createForAdRequest(adUnitId, {
+      requestNonPersonalizedAdsOnly: false,
+    });
+    await new Promise((resolve, reject) => {
+      const offLoaded = rewarded.addAdEventListener(
+        gma.RewardedAdEventType.LOADED,
+        () => {
+          rewardedLoaded = true;
+          offLoaded?.();
+          offError?.();
+          resolve();
+        },
+      );
+      const offError = rewarded.addAdEventListener(
+        gma.AdEventType.ERROR,
+        (err) => {
+          rewardedLoaded = false;
+          offLoaded?.();
+          offError?.();
+          reject(err);
+        },
+      );
+      rewarded.load();
+    });
+  } catch (e) {
+    console.warn('Load rewarded error:', e?.message);
+    rewardedLoaded = false;
+  }
+};
+
+/**
+ * Show a rewarded ad. Resolves with `true` if the user earned the reward
+ * (watched the ad through), `false` if they bailed early or ads are
+ * unavailable.
+ */
+export const showRewarded = async () => {
+  if (!adsReady || !rewardedLoaded || !rewarded || !gma?.RewardedAdEventType) {
+    return false;
+  }
+  return new Promise((resolve) => {
+    let earned = false;
+    const offEarned = rewarded.addAdEventListener(
+      gma.RewardedAdEventType.EARNED_REWARD,
+      () => {
+        earned = true;
+      },
+    );
+    const offClosed = rewarded.addAdEventListener(
+      gma.AdEventType.CLOSED,
+      () => {
+        offEarned?.();
+        offClosed?.();
+        rewardedLoaded = false;
+        // Preload the next rewarded ad for the next reward moment.
+        loadRewarded().catch(() => {});
+        resolve(earned);
+      },
+    );
+    rewarded.show().catch((e) => {
+      console.warn('Show rewarded error:', e?.message);
+      offEarned?.();
+      offClosed?.();
+      resolve(false);
+    });
+  });
+};
+
+// ─── Frequency capping ───────────────────────────────────────────────────────
+// In-memory counter that decides whether this completion triggers an ad.
+// Persists only for the current session — acceptable since the worst case is
+// the first action of a new session not showing an ad.
+
 let actionsSinceLastAd = 0;
 const AD_FREQUENCY = 2;
 

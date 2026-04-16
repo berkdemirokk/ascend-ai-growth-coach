@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Ascend - Level Up Daily",
+    "name": "Ascend ai growth coach",
     "slug": "ascend-level-up",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -43,6 +43,19 @@
           "iOS": {
             "apiKey": "appl_GdTXEiIwMXBaFuHLGjwBhzlrruB"
           }
+        }
+      ],
+      [
+        "react-native-google-mobile-ads",
+        {
+          "iosAppId": "ca-app-pub-9898903071826160~9553442066",
+          "userTrackingUsageDescription": "This identifier will be used to deliver personalized ads to you."
+        }
+      ],
+      [
+        "expo-tracking-transparency",
+        {
+          "userTrackingPermission": "This identifier will be used to deliver personalized ads to you."
         }
       ]
     ],
