@@ -1,254 +1,250 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
   TouchableOpacity,
   StyleSheet,
   ScrollView,
-  Dimensions,
   SafeAreaView,
+  Alert,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useNavigation } from '@react-navigation/native';
 import * as Haptics from 'expo-haptics';
 import { useApp } from '../contexts/AppContext';
-import {
-  COLORS,
-  getLevelForXP,
-  getNextLevel,
-  LEVEL_THRESHOLDS,
-} from '../config/constants';
-import { getDailyAction } from '../data/actions';
-import ActionCard from '../components/ActionCard';
-import LevelUpModal from '../components/LevelUpModal';
-import AchievementUnlockModal from '../components/AchievementUnlockModal';
+import { COLORS } from '../config/constants';
+import { getSprintById } from '../config/sprints';
 import { shouldShowAd, showInterstitial } from '../services/ads';
-
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
+import SprintSelectScreen from './SprintSelectScreen';
+import LevelUpModal from '../components/LevelUpModal';
 
 export default function HomeScreen() {
+  const navigation = useNavigation();
   const {
+    activeSprint,
+    currentSprintDay,
+    sprintFinished,
+    todaySprintTaskIds,
     totalXP,
     level,
-    currentStreak,
-    longestStreak,
-    todayCompleted,
     isPremium,
-    completeAction,
-    selectedCategories,
-    difficulty,
+    completeSprintTask,
+    recordSprintViolation,
+    abandonSprint,
+    completeSprint,
   } = useApp();
 
-  const [todayAction, setTodayAction] = useState(null);
-  const [isCompleting, setIsCompleting] = useState(false);
-
-  // Modal state
   const [showLevelUpModal, setShowLevelUpModal] = useState(false);
   const [levelUpData, setLevelUpData] = useState(null);
-  const [showAchievementModal, setShowAchievementModal] = useState(false);
-  const [achievementData, setAchievementData] = useState(null);
 
-  useEffect(() => {
-    const action = getDailyAction(selectedCategories, difficulty);
-    setTodayAction(action);
-  }, [selectedCategories, difficulty]);
+  if (!activeSprint) {
+    return <SprintSelectScreen />;
+  }
 
-  const isCompletedToday = !!todayCompleted;
+  const sprint = getSprintById(activeSprint.sprintId);
+  if (!sprint) {
+    return <SprintSelectScreen />;
+  }
 
-  const safeXP = totalXP ?? 0;
-  const streak = currentStreak ?? 0;
-  const longest = longestStreak ?? 0;
+  const completedTaskIds = new Set(todaySprintTaskIds);
+  const todayTasksDone = sprint.dailyTasks.every((t) =>
+    completedTaskIds.has(t.id),
+  );
+  const progress = Math.min(currentSprintDay / sprint.duration, 1);
 
-  // Derive level info from the shared LEVEL_THRESHOLDS table in constants.
-  const currentTier = getLevelForXP(safeXP);
-  const nextTier = getNextLevel(currentTier.level);
-  const displayLevel = currentTier.level;
-  const levelLabel = currentTier.title;
-
-  const xpForNextLevel = nextTier
-    ? nextTier.xpRequired - currentTier.xpRequired
-    : 0;
-  const currentLevelXP = safeXP - currentTier.xpRequired;
-  const xpProgress =
-    xpForNextLevel > 0 ? currentLevelXP / xpForNextLevel : 1;
-  const xpProgressClamped = Math.min(Math.max(xpProgress, 0), 1);
-
-  const handleCompleteAction = async () => {
-    if (isCompletedToday || isCompleting || !todayAction) return;
-
-    setIsCompleting(true);
-
-    try {
-      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-
-      const result = await completeAction(todayAction);
-
-      // Show a non-premium interstitial every N actions. `shouldShowAd`
-      // tracks the in-memory counter and returns false for premium users,
-      // and `showInterstitial` is a no-op if the AdMob module isn't
-      // available, so this is safe to call unconditionally.
-      if (shouldShowAd(isPremium)) {
-        showInterstitial().catch(() => {});
-      }
-
-      // completeAction returns { xpEarned, newLevel, newAchievements, streakCount }
-      // newLevel is the new level number if a level-up occurred, otherwise null.
-      if (result?.newLevel) {
-        const tier =
-          LEVEL_THRESHOLDS.find((t) => t.level === result.newLevel) ||
-          getLevelForXP(safeXP + (result.xpEarned ?? 0));
-        setLevelUpData({ level: tier.level, title: tier.title });
-        setShowLevelUpModal(true);
-      } else if (result?.newAchievements && result.newAchievements.length > 0) {
-        setAchievementData(result.newAchievements[0]);
-        setShowAchievementModal(true);
-      }
-    } catch (error) {
-      console.error('Failed to complete action:', error);
-    } finally {
-      setIsCompleting(false);
+  const handleTaskTap = async (task) => {
+    if (completedTaskIds.has(task.id)) return;
+    await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    const result = completeSprintTask(task.id);
+    if (result?.newLevel) {
+      setLevelUpData({ level: result.newLevel });
+      setShowLevelUpModal(true);
+    }
+    if (shouldShowAd(isPremium)) {
+      showInterstitial().catch(() => {});
     }
   };
+
+  const handleRuleViolation = (rule) => {
+    Alert.alert(
+      'Kuralı kırdın mı?',
+      `"${rule.text}" — bunu kabul etmek kolay değil ama dürüstlük seni büyütür.`,
+      [
+        { text: 'Vazgeç', style: 'cancel' },
+        {
+          text: 'Evet, kırdım',
+          style: 'destructive',
+          onPress: async () => {
+            await Haptics.notificationAsync(
+              Haptics.NotificationFeedbackType.Warning,
+            );
+            recordSprintViolation(rule.id);
+          },
+        },
+      ],
+    );
+  };
+
+  const handleAbandon = () => {
+    Alert.alert(
+      'Sprint\'i bırak?',
+      'Vazgeçersen ilerleme tarihine geçer, ama sertifika alamazsın.',
+      [
+        { text: 'Devam et', style: 'cancel' },
+        {
+          text: 'Bırak',
+          style: 'destructive',
+          onPress: () => abandonSprint(),
+        },
+      ],
+    );
+  };
+
+  const handleClaim = async () => {
+    await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    const res = completeSprint();
+    if (res) {
+      navigation.navigate('SprintComplete', {
+        sprintTitle: sprint.title,
+        sprintDuration: sprint.duration,
+        bonusXP: res.bonusXP,
+        completedAt: new Date().toISOString(),
+      });
+    }
+  };
+
+  const violationsToday = (activeSprint.violations || []).filter((v) => {
+    const today = new Date();
+    const y = today.getFullYear();
+    const m = String(today.getMonth() + 1).padStart(2, '0');
+    const d = String(today.getDate()).padStart(2, '0');
+    return v.date === `${y}-${m}-${d}`;
+  }).length;
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <LinearGradient colors={['#0B0B14', '#161626']} style={styles.container}>
-        <ScrollView
-          style={styles.scrollView}
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
-        >
-          {/* ── Header / Level Badge ── */}
-          <View style={styles.header}>
-            <View style={styles.levelBadge}>
-              <LinearGradient
-                colors={[COLORS.primary || '#6366F1', COLORS.accent || '#8B5CF6']}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
-                style={styles.levelBadgeGradient}
-              >
-                <Text style={styles.levelBadgeText}>Level {displayLevel}</Text>
-              </LinearGradient>
+        <ScrollView contentContainerStyle={styles.scroll}>
+          {/* Sprint header */}
+          <LinearGradient
+            colors={[sprint.color, '#161626']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.headerCard}
+          >
+            <View style={styles.headerTopRow}>
+              <Text style={styles.headerIcon}>{sprint.icon}</Text>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.headerTitle}>{sprint.title}</Text>
+                <Text style={styles.headerSubtitle}>{sprint.subtitle}</Text>
+              </View>
             </View>
-            <Text style={styles.levelTitle}>
-              {levelLabel}
-            </Text>
-          </View>
 
-          {/* ── XP Progress Bar ── */}
-          <View style={styles.xpCard}>
-            <View style={styles.xpLabelRow}>
-              <Text style={styles.xpLabel}>XP Progress</Text>
-              <Text style={styles.xpNumbers}>
-                {currentLevelXP} / {xpForNextLevel} XP
-              </Text>
+            <View style={styles.dayRow}>
+              <Text style={styles.dayBig}>Gün {currentSprintDay}</Text>
+              <Text style={styles.dayTotal}>/ {sprint.duration}</Text>
             </View>
-            <View style={styles.xpBarTrack}>
-              <LinearGradient
-                colors={[COLORS.primary || '#6366F1', COLORS.accent || '#8B5CF6']}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
+
+            <View style={styles.progressTrack}>
+              <View
                 style={[
-                  styles.xpBarFill,
-                  { width: `${Math.round(xpProgressClamped * 100)}%` },
+                  styles.progressFill,
+                  { width: `${Math.round(progress * 100)}%` },
                 ]}
               />
             </View>
-            <Text style={styles.xpPercent}>
-              {nextTier
-                ? `${Math.round(xpProgressClamped * 100)}% to Level ${nextTier.level}`
-                : 'Max level reached'}
-            </Text>
-          </View>
 
-          {/* ── Streak Card ── */}
-          <LinearGradient
-            colors={['#7C2D12', '#C2410C']}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={styles.streakCard}
-          >
-            <View style={styles.streakMain}>
-              <Text style={styles.streakEmoji}>🔥</Text>
-              <View style={styles.streakInfo}>
-                <View style={styles.streakRow}>
-                  <Text style={styles.streakNumber}>{streak}</Text>
-                  <Text style={styles.streakLabel}> day streak</Text>
-                </View>
-                <Text style={styles.longestStreak}>
-                  Longest: {longest} days
-                </Text>
-              </View>
-            </View>
+            <Text style={styles.metaRow}>
+              Level {level} · {totalXP} XP
+            </Text>
           </LinearGradient>
 
-          {/* ── Today's Action ── */}
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Today's Action</Text>
-            {isCompletedToday && (
-              <View style={styles.completedBadge}>
-                <Text style={styles.completedBadgeText}>✓ Done</Text>
-              </View>
-            )}
-          </View>
-
-          {todayAction ? (
-            <View style={styles.actionCardWrapper}>
-              <ActionCard
-                action={todayAction}
-                category={todayAction.category}
-              />
-              {isCompletedToday && (
-                <View style={styles.completedOverlay}>
-                  <Text style={styles.completedOverlayCheck}>✓</Text>
-                  <Text style={styles.completedOverlayText}>Completed!</Text>
-                </View>
-              )}
+          {/* Claim banner if finished */}
+          {sprintFinished && !todayTasksDone && (
+            <View style={styles.infoBanner}>
+              <Text style={styles.infoText}>
+                Son gün! Bugünün görevlerini bitir ve sertifikanı al.
+              </Text>
             </View>
-          ) : (
-            <View style={styles.noActionCard}>
-              <Text style={styles.noActionText}>
-                No action available. Select a category to get started!
+          )}
+          {sprintFinished && (
+            <TouchableOpacity
+              style={styles.claimButton}
+              onPress={handleClaim}
+              activeOpacity={0.85}
+            >
+              <LinearGradient
+                colors={[COLORS.gold, '#D97706']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                style={styles.claimGradient}
+              >
+                <Text style={styles.claimText}>🏆 Sertifikayı Al</Text>
+              </LinearGradient>
+            </TouchableOpacity>
+          )}
+
+          {/* Today's tasks */}
+          <Text style={styles.sectionTitle}>Bugünün Görevleri</Text>
+          {sprint.dailyTasks.map((task) => {
+            const done = completedTaskIds.has(task.id);
+            return (
+              <TouchableOpacity
+                key={task.id}
+                style={[styles.taskCard, done && styles.taskCardDone]}
+                activeOpacity={done ? 1 : 0.8}
+                onPress={() => handleTaskTap(task)}
+                disabled={done}
+              >
+                <View style={[styles.checkbox, done && styles.checkboxDone]}>
+                  {done && <Text style={styles.checkmark}>✓</Text>}
+                </View>
+                <Text style={[styles.taskText, done && styles.taskTextDone]}>
+                  {task.title}
+                </Text>
+                <Text style={styles.taskXP}>+{task.xp}</Text>
+              </TouchableOpacity>
+            );
+          })}
+
+          {/* Rules */}
+          <Text style={styles.sectionTitle}>Kurallar</Text>
+          <Text style={styles.sectionHint}>
+            Kuralları kırarsan dürüst ol — hesabı kendine ver.
+          </Text>
+          {sprint.rules.map((rule) => (
+            <TouchableOpacity
+              key={rule.id}
+              style={styles.ruleCard}
+              activeOpacity={0.8}
+              onPress={() => handleRuleViolation(rule)}
+            >
+              <Text style={styles.ruleEmoji}>⚠️</Text>
+              <Text style={styles.ruleText}>{rule.text}</Text>
+            </TouchableOpacity>
+          ))}
+
+          {violationsToday > 0 && (
+            <View style={styles.warnBanner}>
+              <Text style={styles.warnText}>
+                Bugün {violationsToday} kuralı kırdın. Yarın daha iyi ol.
               </Text>
             </View>
           )}
 
-          {/* ── Complete Action Button ── */}
+          {/* Abandon */}
           <TouchableOpacity
-            onPress={handleCompleteAction}
-            activeOpacity={isCompletedToday || isCompleting ? 1 : 0.85}
-            disabled={isCompletedToday || isCompleting || !todayAction}
-            style={styles.completeButtonOuter}
+            onPress={handleAbandon}
+            style={styles.abandonBtn}
+            activeOpacity={0.7}
           >
-            <LinearGradient
-              colors={
-                isCompletedToday || isCompleting
-                  ? ['#2a2a3a', '#2a2a3a']
-                  : [COLORS.primary || '#6366F1', COLORS.accent || '#8B5CF6']
-              }
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              style={[
-                styles.completeButton,
-                (isCompletedToday || isCompleting) &&
-                  styles.completeButtonDisabled,
-              ]}
-            >
-              <Text style={styles.completeButtonText}>
-                {isCompletedToday
-                  ? '✓  Action Completed'
-                  : isCompleting
-                  ? 'Completing...'
-                  : 'Complete Action'}
-              </Text>
-            </LinearGradient>
+            <Text style={styles.abandonText}>Sprint'i bırak</Text>
           </TouchableOpacity>
 
-          {/* Bottom spacer */}
-          <View style={styles.bottomSpacer} />
+          <View style={{ height: 40 }} />
         </ScrollView>
       </LinearGradient>
 
-      {/* ── Modals ── */}
       <LevelUpModal
         visible={showLevelUpModal}
         level={levelUpData?.level}
@@ -256,15 +252,6 @@ export default function HomeScreen() {
         onClose={() => {
           setShowLevelUpModal(false);
           setLevelUpData(null);
-          // Show achievement modal afterwards if any was queued
-        }}
-      />
-      <AchievementUnlockModal
-        visible={showAchievementModal}
-        achievement={achievementData}
-        onClose={() => {
-          setShowAchievementModal(false);
-          setAchievementData(null);
         }}
       />
     </SafeAreaView>
@@ -272,213 +259,184 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: '#0B0B14',
-  },
-  container: {
-    flex: 1,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingHorizontal: 20,
-    paddingTop: 24,
-  },
+  safeArea: { flex: 1, backgroundColor: COLORS.background },
+  container: { flex: 1 },
+  scroll: { paddingHorizontal: 20, paddingTop: 16 },
 
-  // Header / Level Badge
-  header: {
-    alignItems: 'center',
+  headerCard: {
+    borderRadius: 20,
+    padding: 20,
     marginBottom: 20,
   },
-  levelBadge: {
-    borderRadius: 20,
-    overflow: 'hidden',
-    marginBottom: 8,
-  },
-  levelBadgeGradient: {
-    paddingHorizontal: 20,
-    paddingVertical: 6,
-    borderRadius: 20,
-  },
-  levelBadgeText: {
-    color: '#F5F5FA',
-    fontSize: 13,
-    fontWeight: '700',
-    letterSpacing: 0.5,
-    textTransform: 'uppercase',
-  },
-  levelTitle: {
-    color: '#F5F5FA',
-    fontSize: 26,
-    fontWeight: '700',
-    letterSpacing: 0.2,
-  },
-
-  // XP Card
-  xpCard: {
-    backgroundColor: '#161626',
-    borderRadius: 16,
-    padding: 18,
-    marginBottom: 16,
-  },
-  xpLabelRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  xpLabel: {
-    color: '#F5F5FA',
-    fontSize: 15,
-    fontWeight: '600',
-  },
-  xpNumbers: {
-    color: '#9B9BB0',
-    fontSize: 13,
-    fontWeight: '500',
-  },
-  xpBarTrack: {
-    height: 10,
-    backgroundColor: '#2a2a3a',
-    borderRadius: 5,
-    overflow: 'hidden',
-    marginBottom: 8,
-  },
-  xpBarFill: {
-    height: '100%',
-    borderRadius: 5,
-  },
-  xpPercent: {
-    color: '#9B9BB0',
-    fontSize: 12,
-    textAlign: 'right',
-  },
-
-  // Streak Card
-  streakCard: {
-    borderRadius: 16,
-    padding: 20,
-    marginBottom: 24,
-  },
-  streakMain: {
+  headerTopRow: {
     flexDirection: 'row',
     alignItems: 'center',
+    marginBottom: 14,
   },
-  streakEmoji: {
-    fontSize: 42,
-    marginRight: 16,
+  headerIcon: { fontSize: 42, marginRight: 12 },
+  headerTitle: {
+    color: COLORS.text,
+    fontSize: 22,
+    fontWeight: '800',
   },
-  streakInfo: {
-    flex: 1,
+  headerSubtitle: {
+    color: COLORS.text,
+    opacity: 0.85,
+    fontSize: 13,
+    marginTop: 2,
   },
-  streakRow: {
+  dayRow: {
     flexDirection: 'row',
     alignItems: 'baseline',
+    marginBottom: 10,
   },
-  streakNumber: {
-    color: '#F5F5FA',
-    fontSize: 36,
+  dayBig: {
+    color: COLORS.text,
+    fontSize: 42,
     fontWeight: '800',
-    lineHeight: 40,
+    lineHeight: 46,
   },
-  streakLabel: {
-    color: '#FED7AA',
-    fontSize: 18,
+  dayTotal: {
+    color: COLORS.text,
+    opacity: 0.75,
+    fontSize: 20,
+    fontWeight: '600',
+    marginLeft: 6,
+  },
+  progressTrack: {
+    height: 8,
+    backgroundColor: 'rgba(0,0,0,0.35)',
+    borderRadius: 4,
+    overflow: 'hidden',
+    marginBottom: 8,
+  },
+  progressFill: {
+    height: '100%',
+    backgroundColor: COLORS.text,
+    borderRadius: 4,
+  },
+  metaRow: {
+    color: COLORS.text,
+    opacity: 0.85,
+    fontSize: 13,
     fontWeight: '600',
   },
-  longestStreak: {
-    color: '#FCA07A',
-    fontSize: 13,
+
+  sectionTitle: {
+    color: COLORS.text,
+    fontSize: 18,
+    fontWeight: '700',
+    marginBottom: 8,
     marginTop: 4,
   },
+  sectionHint: {
+    color: COLORS.textSecondary,
+    fontSize: 12,
+    marginBottom: 10,
+  },
 
-  // Section Header
-  sectionHeader: {
+  taskCard: {
+    backgroundColor: COLORS.surface,
+    borderRadius: 14,
+    padding: 16,
+    marginBottom: 10,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 12,
   },
-  sectionTitle: {
-    color: '#F5F5FA',
-    fontSize: 18,
-    fontWeight: '700',
+  taskCardDone: {
+    backgroundColor: '#0F2B1F',
+    opacity: 0.85,
   },
-  completedBadge: {
-    backgroundColor: '#14532D',
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 12,
-  },
-  completedBadgeText: {
-    color: '#86EFAC',
-    fontSize: 12,
-    fontWeight: '600',
-  },
-
-  // Action Card Wrapper (for overlay)
-  actionCardWrapper: {
-    marginBottom: 20,
-    position: 'relative',
-  },
-  completedOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(11, 11, 20, 0.72)',
-    borderRadius: 16,
+  checkbox: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    borderWidth: 2,
+    borderColor: COLORS.border,
+    marginRight: 14,
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 8,
   },
-  completedOverlayCheck: {
-    fontSize: 48,
-    color: '#86EFAC',
+  checkboxDone: {
+    backgroundColor: COLORS.success,
+    borderColor: COLORS.success,
   },
-  completedOverlayText: {
-    color: '#86EFAC',
-    fontSize: 20,
-    fontWeight: '700',
+  checkmark: {
+    color: COLORS.text,
+    fontWeight: '800',
+    fontSize: 16,
   },
-
-  // No Action fallback
-  noActionCard: {
-    backgroundColor: '#161626',
-    borderRadius: 16,
-    padding: 24,
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  noActionText: {
-    color: '#9B9BB0',
+  taskText: {
+    flex: 1,
+    color: COLORS.text,
     fontSize: 15,
-    textAlign: 'center',
-    lineHeight: 22,
+    fontWeight: '500',
+  },
+  taskTextDone: {
+    color: '#86EFAC',
+    textDecorationLine: 'line-through',
+  },
+  taskXP: {
+    color: COLORS.gold,
+    fontWeight: '700',
+    fontSize: 13,
+    marginLeft: 8,
   },
 
-  // Complete Button
-  completeButtonOuter: {
+  ruleCard: {
+    backgroundColor: COLORS.surface,
+    borderRadius: 14,
+    padding: 14,
+    marginBottom: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  ruleEmoji: { fontSize: 18, marginRight: 10 },
+  ruleText: {
+    flex: 1,
+    color: COLORS.text,
+    fontSize: 14,
+  },
+
+  infoBanner: {
+    backgroundColor: '#1E3A8A',
+    borderRadius: 12,
+    padding: 14,
+    marginBottom: 12,
+  },
+  infoText: { color: COLORS.text, fontSize: 14 },
+
+  warnBanner: {
+    backgroundColor: '#7F1D1D',
+    borderRadius: 12,
+    padding: 14,
+    marginTop: 10,
+  },
+  warnText: { color: COLORS.text, fontSize: 13 },
+
+  claimButton: {
     borderRadius: 16,
     overflow: 'hidden',
-    marginBottom: 12,
+    marginBottom: 20,
   },
-  completeButton: {
+  claimGradient: {
     paddingVertical: 18,
     alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 16,
   },
-  completeButtonDisabled: {
-    opacity: 0.6,
-  },
-  completeButtonText: {
-    color: '#F5F5FA',
+  claimText: {
+    color: '#0B0B14',
     fontSize: 17,
-    fontWeight: '700',
-    letterSpacing: 0.3,
+    fontWeight: '800',
+    letterSpacing: 0.4,
   },
 
-  bottomSpacer: {
-    height: 32,
+  abandonBtn: {
+    alignItems: 'center',
+    paddingVertical: 14,
+    marginTop: 8,
+  },
+  abandonText: {
+    color: COLORS.textMuted,
+    fontSize: 13,
   },
 });

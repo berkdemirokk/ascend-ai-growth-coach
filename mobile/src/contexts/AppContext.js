@@ -3,6 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { STORAGE_KEYS, XP_REWARDS, checkLevelUp } from '../config/constants';
 import { checkAchievements } from '../config/achievements';
 import { checkPremiumStatus } from '../services/purchases';
+import { getSprintById, getSprintDay, isSprintFinished } from '../config/sprints';
 
 // ─── Initial State ───────────────────────────────────────────────────────────
 
@@ -34,6 +35,14 @@ const initialState = {
 
   // Ad counter
   actionsSinceLastAd: 0,
+
+  // ── Monk Mode Sprint ────────────────────────────────────────────────────
+  // activeSprint: { sprintId, startedAt (ISO), violations: [{ ruleId, date }] }
+  // sprintTaskCompletions: { [YYYY-MM-DD]: [taskId, ...] }
+  // sprintHistory: [{ sprintId, startedAt, completedAt, status, daysCompleted }]
+  activeSprint: null,
+  sprintTaskCompletions: {},
+  sprintHistory: [],
 
   // Internal
   _loaded: false,
@@ -76,6 +85,11 @@ const ACTION_TYPES = {
   USE_STREAK_FREEZE: 'USE_STREAK_FREEZE',
   DELETE_ACCOUNT: 'DELETE_ACCOUNT',
   REFRESH_TODAY: 'REFRESH_TODAY',
+  START_SPRINT: 'START_SPRINT',
+  COMPLETE_SPRINT_TASK: 'COMPLETE_SPRINT_TASK',
+  RECORD_SPRINT_VIOLATION: 'RECORD_SPRINT_VIOLATION',
+  ABANDON_SPRINT: 'ABANDON_SPRINT',
+  COMPLETE_SPRINT: 'COMPLETE_SPRINT',
 };
 
 function appReducer(state, action) {
@@ -116,6 +130,83 @@ function appReducer(state, action) {
 
     case ACTION_TYPES.REFRESH_TODAY:
       return { ...state, todayCompleted: action.payload };
+
+    case ACTION_TYPES.START_SPRINT:
+      return {
+        ...state,
+        activeSprint: {
+          sprintId: action.payload.sprintId,
+          startedAt: action.payload.startedAt,
+          violations: [],
+        },
+        sprintTaskCompletions: {},
+      };
+
+    case ACTION_TYPES.COMPLETE_SPRINT_TASK: {
+      const { date, taskId, xpEarned } = action.payload;
+      const existing = state.sprintTaskCompletions[date] || [];
+      if (existing.includes(taskId)) return state;
+      const newTotalXP = state.totalXP + xpEarned;
+      const newLevel = checkLevelUp(newTotalXP, state.level);
+      return {
+        ...state,
+        totalXP: newTotalXP,
+        level: newLevel,
+        sprintTaskCompletions: {
+          ...state.sprintTaskCompletions,
+          [date]: [...existing, taskId],
+        },
+      };
+    }
+
+    case ACTION_TYPES.RECORD_SPRINT_VIOLATION: {
+      if (!state.activeSprint) return state;
+      return {
+        ...state,
+        activeSprint: {
+          ...state.activeSprint,
+          violations: [
+            ...(state.activeSprint.violations || []),
+            { ruleId: action.payload.ruleId, date: action.payload.date },
+          ],
+        },
+      };
+    }
+
+    case ACTION_TYPES.ABANDON_SPRINT: {
+      if (!state.activeSprint) return state;
+      const entry = {
+        ...state.activeSprint,
+        completedAt: action.payload.completedAt,
+        status: 'abandoned',
+      };
+      return {
+        ...state,
+        activeSprint: null,
+        sprintTaskCompletions: {},
+        sprintHistory: [...state.sprintHistory, entry],
+      };
+    }
+
+    case ACTION_TYPES.COMPLETE_SPRINT: {
+      if (!state.activeSprint) return state;
+      const entry = {
+        ...state.activeSprint,
+        completedAt: action.payload.completedAt,
+        status: 'completed',
+        taskCompletions: state.sprintTaskCompletions,
+      };
+      const bonusXP = action.payload.bonusXP || 0;
+      const newTotalXP = state.totalXP + bonusXP;
+      return {
+        ...state,
+        totalXP: newTotalXP,
+        level: checkLevelUp(newTotalXP, state.level),
+        activeSprint: null,
+        sprintTaskCompletions: {},
+        sprintHistory: [...state.sprintHistory, entry],
+      };
+    }
 
     default:
       return state;
@@ -373,11 +464,98 @@ export function AppProvider({ children }) {
     }
   }, [state.lastCompletedDate, state.todayCompleted]);
 
+  // ── Sprint actions ─────────────────────────────────────────────────────
+
+  const startSprint = useCallback((sprintId) => {
+    const sprint = getSprintById(sprintId);
+    if (!sprint) return false;
+    dispatch({
+      type: ACTION_TYPES.START_SPRINT,
+      payload: { sprintId, startedAt: new Date().toISOString() },
+    });
+    return true;
+  }, []);
+
+  /**
+   * Complete a sprint task for today.
+   * Awards task XP to meta progression. Idempotent per (date, taskId).
+   */
+  const completeSprintTask = useCallback(
+    (taskId) => {
+      if (!state.activeSprint) return null;
+      const sprint = getSprintById(state.activeSprint.sprintId);
+      if (!sprint) return null;
+      const task = sprint.dailyTasks.find((t) => t.id === taskId);
+      if (!task) return null;
+      const date = getTodayDateString();
+      const existing = state.sprintTaskCompletions[date] || [];
+      if (existing.includes(taskId)) return null;
+      const prevLevel = state.level;
+      dispatch({
+        type: ACTION_TYPES.COMPLETE_SPRINT_TASK,
+        payload: { date, taskId, xpEarned: task.xp },
+      });
+      const newLevel = checkLevelUp(state.totalXP + task.xp, prevLevel);
+      return {
+        xpEarned: task.xp,
+        newLevel: newLevel > prevLevel ? newLevel : null,
+      };
+    },
+    [state.activeSprint, state.sprintTaskCompletions, state.totalXP, state.level],
+  );
+
+  const recordSprintViolation = useCallback(
+    (ruleId) => {
+      if (!state.activeSprint) return;
+      dispatch({
+        type: ACTION_TYPES.RECORD_SPRINT_VIOLATION,
+        payload: { ruleId, date: getTodayDateString() },
+      });
+    },
+    [state.activeSprint],
+  );
+
+  const abandonSprint = useCallback(() => {
+    if (!state.activeSprint) return;
+    dispatch({
+      type: ACTION_TYPES.ABANDON_SPRINT,
+      payload: { completedAt: new Date().toISOString() },
+    });
+  }, [state.activeSprint]);
+
+  /**
+   * Finalize a finished sprint, awarding a completion bonus scaled by duration.
+   */
+  const completeSprint = useCallback(() => {
+    if (!state.activeSprint) return null;
+    const sprint = getSprintById(state.activeSprint.sprintId);
+    if (!sprint) return null;
+    const bonusXP = sprint.duration * 10;
+    dispatch({
+      type: ACTION_TYPES.COMPLETE_SPRINT,
+      payload: { completedAt: new Date().toISOString(), bonusXP },
+    });
+    return { bonusXP, sprintId: sprint.id };
+  }, [state.activeSprint]);
+
+  // Derived sprint helpers
+  const currentSprintDay = state.activeSprint
+    ? getSprintDay(state.activeSprint)
+    : 0;
+  const sprintFinished = isSprintFinished(state.activeSprint);
+  const todaySprintDate = getTodayDateString();
+  const todaySprintTaskIds = state.sprintTaskCompletions[todaySprintDate] || [];
+
   // ── Context value ──────────────────────────────────────────────────────────
 
   const value = {
     // State
     ...state,
+
+    // Sprint derived
+    currentSprintDay,
+    sprintFinished,
+    todaySprintTaskIds,
 
     // Actions
     completeAction,
@@ -388,6 +566,11 @@ export function AppProvider({ children }) {
     useStreakFreeze,
     deleteAccount,
     refreshTodayStatus,
+    startSprint,
+    completeSprintTask,
+    recordSprintViolation,
+    abandonSprint,
+    completeSprint,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
