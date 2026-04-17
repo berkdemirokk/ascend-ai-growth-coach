@@ -110,7 +110,7 @@ export const PAYWALL_FEATURES = [
 ];
 
 export const LEGAL = {
-  PRIVACY_URL: 'https://ascendapp.example.com/privacy',
-  TERMS_URL: 'https://ascendapp.example.com/terms',
-  SUPPORT_EMAIL: 'support@ascendapp.example.com',
+  PRIVACY_URL: 'https://berkdemirokk.github.io/ascend-ai-growth-coach/privacy.html',
+  TERMS_URL: 'https://berkdemirokk.github.io/ascend-ai-growth-coach/terms.html',
+  SUPPORT_EMAIL: 'berkdemirok@icloud.com',
 };
