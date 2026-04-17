@@ -38,14 +38,6 @@
         }
       ],
       [
-        "react-native-purchases",
-        {
-          "iOS": {
-            "apiKey": "appl_GdTXEiIwMXBaFuHLGjwBhzlrruB"
-          }
-        }
-      ],
-      [
         "react-native-google-mobile-ads",
         {
           "iosAppId": "ca-app-pub-9898903071826160~9553442066",
