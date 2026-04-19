@@ -41,6 +41,12 @@ export default function HomeScreen() {
     maintenanceCompletionsToday,
     completeMaintenanceTask,
     stopMaintenance,
+    nextLesson,
+    completedLessonCount,
+    sprintLessons,
+    dailyFact,
+    dailyFactRead,
+    markFactRead,
   } = useApp();
 
   const [showLevelUpModal, setShowLevelUpModal] = useState(false);
@@ -93,6 +99,15 @@ export default function HomeScreen() {
                   );
                   claimDailyChallenge();
                 }}
+              />
+            )}
+
+            {/* Fact of the day — maintenance */}
+            {dailyFact && (
+              <FactCard
+                fact={dailyFact}
+                read={dailyFactRead}
+                onRead={() => markFactRead(dailyFact.id)}
               />
             )}
 
@@ -280,6 +295,28 @@ export default function HomeScreen() {
             />
           )}
 
+          {/* Daily lesson (Duolingo-style) */}
+          {nextLesson && (
+            <LessonCard
+              lesson={nextLesson}
+              totalCount={sprintLessons.length}
+              completedCount={completedLessonCount}
+              onStart={() =>
+                navigation.navigate('Lesson', { lessonId: nextLesson.id })
+              }
+              onOpenPath={() => navigation.navigate('Path')}
+            />
+          )}
+
+          {/* Fact of the day */}
+          {dailyFact && (
+            <FactCard
+              fact={dailyFact}
+              read={dailyFactRead}
+              onRead={() => markFactRead(dailyFact.id)}
+            />
+          )}
+
           {/* Claim banner if finished */}
           {sprintFinished && !todayTasksDone && (
             <View style={styles.infoBanner}>
@@ -379,6 +416,58 @@ export default function HomeScreen() {
         }}
       />
     </SafeAreaView>
+  );
+}
+
+function LessonCard({ lesson, totalCount, completedCount, onStart, onOpenPath }) {
+  const pct = totalCount > 0 ? completedCount / totalCount : 0;
+  return (
+    <View style={styles.lessonCard}>
+      <LinearGradient
+        colors={[COLORS.primary, COLORS.accent]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.lessonGradient}
+      >
+        <View style={styles.lessonTopRow}>
+          <Text style={styles.lessonLabel}>📚 BUGÜNÜN DERSİ</Text>
+          <TouchableOpacity onPress={onOpenPath} activeOpacity={0.8}>
+            <Text style={styles.lessonPathLink}>Yol →</Text>
+          </TouchableOpacity>
+        </View>
+        <Text style={styles.lessonTitle}>{lesson.title}</Text>
+        <View style={styles.lessonProgressTrack}>
+          <View style={[styles.lessonProgressFill, { width: `${pct * 100}%` }]} />
+        </View>
+        <Text style={styles.lessonProgressText}>
+          {completedCount}/{totalCount} ders tamamlandı
+        </Text>
+        <TouchableOpacity
+          style={styles.lessonBtn}
+          activeOpacity={0.85}
+          onPress={onStart}
+        >
+          <Text style={styles.lessonBtnText}>Başla</Text>
+        </TouchableOpacity>
+      </LinearGradient>
+    </View>
+  );
+}
+
+function FactCard({ fact, read, onRead }) {
+  return (
+    <TouchableOpacity
+      activeOpacity={0.85}
+      onPress={() => !read && onRead?.()}
+      style={styles.factCard}
+    >
+      <View style={styles.factTopRow}>
+        <Text style={styles.factLabel}>✨ GÜNÜN BİLGİSİ</Text>
+        {read && <Text style={styles.factReadTag}>✓ OKUNDU</Text>}
+      </View>
+      <Text style={styles.factTitle}>{fact.title}</Text>
+      <Text style={styles.factBody}>{fact.body}</Text>
+    </TouchableOpacity>
   );
 }
 
@@ -661,6 +750,103 @@ const styles = StyleSheet.create({
     color: COLORS.text,
     fontWeight: '700',
     fontSize: 14,
+  },
+
+  // Lesson card
+  lessonCard: { borderRadius: 16, overflow: 'hidden', marginBottom: 16 },
+  lessonGradient: { padding: 18 },
+  lessonTopRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  lessonLabel: {
+    color: COLORS.text,
+    fontSize: 11,
+    fontWeight: '800',
+    letterSpacing: 1.2,
+    opacity: 0.9,
+  },
+  lessonPathLink: {
+    color: COLORS.text,
+    fontSize: 12,
+    fontWeight: '700',
+    opacity: 0.9,
+  },
+  lessonTitle: {
+    color: COLORS.text,
+    fontSize: 18,
+    fontWeight: '800',
+    marginBottom: 12,
+  },
+  lessonProgressTrack: {
+    height: 6,
+    backgroundColor: 'rgba(0,0,0,0.3)',
+    borderRadius: 3,
+    overflow: 'hidden',
+    marginBottom: 6,
+  },
+  lessonProgressFill: {
+    height: '100%',
+    backgroundColor: COLORS.gold,
+    borderRadius: 3,
+  },
+  lessonProgressText: {
+    color: COLORS.text,
+    fontSize: 11,
+    opacity: 0.9,
+    marginBottom: 12,
+  },
+  lessonBtn: {
+    backgroundColor: '#0B0B14',
+    borderRadius: 10,
+    paddingVertical: 12,
+    alignItems: 'center',
+  },
+  lessonBtnText: {
+    color: COLORS.text,
+    fontWeight: '700',
+    fontSize: 14,
+  },
+
+  // Fact card
+  factCard: {
+    backgroundColor: COLORS.surface,
+    borderRadius: 14,
+    padding: 16,
+    marginBottom: 20,
+    borderLeftWidth: 4,
+    borderLeftColor: COLORS.accent,
+  },
+  factTopRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 6,
+  },
+  factLabel: {
+    color: COLORS.accent,
+    fontSize: 11,
+    fontWeight: '800',
+    letterSpacing: 1.2,
+  },
+  factReadTag: {
+    color: COLORS.success,
+    fontSize: 10,
+    fontWeight: '800',
+    letterSpacing: 0.8,
+  },
+  factTitle: {
+    color: COLORS.text,
+    fontSize: 15,
+    fontWeight: '800',
+    marginBottom: 6,
+  },
+  factBody: {
+    color: COLORS.textSecondary,
+    fontSize: 13,
+    lineHeight: 20,
   },
 
   newSprintBtn: {

@@ -14,6 +14,13 @@ import {
 } from '../config/sprints';
 import { getDailyChallenge } from '../config/challenges';
 import { getRank } from '../config/ranks';
+import {
+  getLessonById,
+  getLessonsForSprint,
+  getUnlockedLessons,
+  calculateLessonXP,
+} from '../config/lessons';
+import { getFactOfTheDay } from '../config/facts';
 
 // ─── Initial State ───────────────────────────────────────────────────────────
 
@@ -60,6 +67,12 @@ const initialState = {
   claimedChallenges: {},
   maintenance: null,
 
+  // ── Learning (Duolingo-style) ─────────────────────────────────────────
+  // lessonCompletions: { [lessonId]: { completedAt, correctAnswers, totalQuestions, xpEarned } }
+  // readFactIds: { [factId]: ISO string when first read }
+  lessonCompletions: {},
+  readFactIds: {},
+
   // Internal
   _loaded: false,
 };
@@ -105,6 +118,8 @@ const ACTION_TYPES = {
   START_MAINTENANCE: 'START_MAINTENANCE',
   COMPLETE_MAINTENANCE_TASK: 'COMPLETE_MAINTENANCE_TASK',
   STOP_MAINTENANCE: 'STOP_MAINTENANCE',
+  COMPLETE_LESSON: 'COMPLETE_LESSON',
+  MARK_FACT_READ: 'MARK_FACT_READ',
 };
 
 function appReducer(state, action) {
@@ -279,6 +294,39 @@ function appReducer(state, action) {
 
     case ACTION_TYPES.STOP_MAINTENANCE:
       return { ...state, maintenance: null };
+
+    case ACTION_TYPES.COMPLETE_LESSON: {
+      const { lessonId, correctAnswers, totalQuestions, xpEarned } =
+        action.payload;
+      if (state.lessonCompletions[lessonId]) return state;
+      const newTotalXP = state.totalXP + xpEarned;
+      return {
+        ...state,
+        totalXP: newTotalXP,
+        level: checkLevelUp(newTotalXP, state.level),
+        lessonCompletions: {
+          ...state.lessonCompletions,
+          [lessonId]: {
+            completedAt: new Date().toISOString(),
+            correctAnswers,
+            totalQuestions,
+            xpEarned,
+          },
+        },
+      };
+    }
+
+    case ACTION_TYPES.MARK_FACT_READ: {
+      const { factId } = action.payload;
+      if (state.readFactIds[factId]) return state;
+      return {
+        ...state,
+        readFactIds: {
+          ...state.readFactIds,
+          [factId]: new Date().toISOString(),
+        },
+      };
+    }
 
     default:
       return state;
@@ -616,6 +664,34 @@ export function AppProvider({ children }) {
     [state.maintenance],
   );
 
+  // ── Lessons & Facts ────────────────────────────────────────────────────
+
+  const completeLesson = useCallback(
+    (lessonId, correctAnswers = 0) => {
+      const lesson = getLessonById(lessonId);
+      if (!lesson) return null;
+      if (state.lessonCompletions[lessonId]) return null;
+      const xpEarned = calculateLessonXP(lesson, correctAnswers);
+      const totalQuestions = lesson.quiz?.length || 0;
+      const prevLevel = state.level;
+      dispatch({
+        type: ACTION_TYPES.COMPLETE_LESSON,
+        payload: { lessonId, correctAnswers, totalQuestions, xpEarned },
+      });
+      const newLevel = checkLevelUp(state.totalXP + xpEarned, prevLevel);
+      return {
+        xpEarned,
+        newLevel: newLevel > prevLevel ? newLevel : null,
+      };
+    },
+    [state.lessonCompletions, state.totalXP, state.level],
+  );
+
+  const markFactRead = useCallback((factId) => {
+    if (!factId) return;
+    dispatch({ type: ACTION_TYPES.MARK_FACT_READ, payload: { factId } });
+  }, []);
+
   // ── Derived ────────────────────────────────────────────────────────────
   const today = getTodayDateString();
   const currentSprintDay = state.activeSprint
@@ -637,6 +713,19 @@ export function AppProvider({ children }) {
     ? state.maintenance.completions[today] || []
     : [];
 
+  // Learning derived
+  const sprintLessons = state.activeSprint
+    ? getLessonsForSprint(state.activeSprint.sprintId)
+    : [];
+  const unlockedLessons = state.activeSprint
+    ? getUnlockedLessons(state.activeSprint.sprintId, currentSprintDay)
+    : [];
+  const nextLesson =
+    unlockedLessons.find((l) => !state.lessonCompletions[l.id]) || null;
+  const completedLessonCount = Object.keys(state.lessonCompletions).length;
+  const dailyFact = getFactOfTheDay(state.userProfile?.userId || 'guest');
+  const dailyFactRead = !!state.readFactIds[dailyFact.id];
+
   const value = {
     ...state,
 
@@ -651,7 +740,17 @@ export function AppProvider({ children }) {
     maintenanceTasks,
     maintenanceCompletionsToday,
 
+    // Learning derived
+    sprintLessons,
+    unlockedLessons,
+    nextLesson,
+    completedLessonCount,
+    dailyFact,
+    dailyFactRead,
+
     // Actions
+    completeLesson,
+    markFactRead,
     completeAction,
     setCategories,
     setDifficulty,

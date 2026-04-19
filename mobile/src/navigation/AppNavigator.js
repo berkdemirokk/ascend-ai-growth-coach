@@ -13,12 +13,15 @@ import ProfileScreen from '../screens/ProfileScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import PaywallScreen from '../screens/PaywallScreen';
 import SprintCompleteScreen from '../screens/SprintCompleteScreen';
+import LessonScreen from '../screens/LessonScreen';
+import PathScreen from '../screens/PathScreen';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
 const TAB_ICON_MAP = {
   Home: '🔥',
+  Path: '🎓',
   History: '📋',
   Profile: '👤',
   Settings: '⚙️',
@@ -63,6 +66,7 @@ function MainTabs() {
       })}
     >
       <Tab.Screen name="Home" component={HomeScreen} />
+      <Tab.Screen name="Path" component={PathScreen} options={{ title: 'Yol' }} />
       <Tab.Screen name="History" component={HistoryScreen} />
       <Tab.Screen name="Profile" component={ProfileScreen} />
       <Tab.Screen name="Settings" component={SettingsScreen} />
@@ -97,6 +101,14 @@ export default function AppNavigator() {
         <Stack.Screen
           name="SprintComplete"
           component={SprintCompleteScreen}
+          options={{
+            presentation: 'modal',
+            animation: 'slide_from_bottom',
+          }}
+        />
+        <Stack.Screen
+          name="Lesson"
+          component={LessonScreen}
           options={{
             presentation: 'modal',
             animation: 'slide_from_bottom',
