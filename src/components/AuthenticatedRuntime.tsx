@@ -20,6 +20,7 @@ import {
 import { provisionRemoteSessionSeed, SessionSeed } from '../lib/sessionBootstrap';
 import {
   claimRemoteAccount,
+  deleteRemoteSession,
   getPersistenceConflictSession,
   isPersistenceAuthError,
   isPersistenceConflictError,
@@ -63,6 +64,7 @@ export default function AuthenticatedRuntime({ initialSeed, onLogout }: Authenti
   const [billingLoading, setBillingLoading] = useState(false);
   const [billingMessage, setBillingMessage] = useState<string | null>(null);
   const [billingPackagePrice, setBillingPackagePrice] = useState<string | null>(null);
+  const [accountDeletionLoading, setAccountDeletionLoading] = useState(false);
 
   const activeTask = useMemo(() => {
     const { todayMission } = ensureDailyMission(profile, tasks, weeklyPlanSnapshot, plannedMissions);
@@ -467,10 +469,40 @@ export default function AuthenticatedRuntime({ initialSeed, onLogout }: Authenti
 
       setAccountEmail(claimed.accountEmail);
       writeAccountEmail(claimed.accountEmail);
-      return null;
+      return 'Hesap baglandi. E-posta dogrulama baglantisi ayrica gonderilmeli.';
     } catch (error) {
       console.warn('Account claim failed.', error);
       return 'Bu e-posta zaten kullanımda olabilir ya da şifre geçersiz.';
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    if (accountDeletionLoading) {
+      return null;
+    }
+
+    if (!isRemotePersistenceEnabled() || !accountToken) {
+      return 'Hesap silme su an kullanilamiyor.';
+    }
+
+    const confirmed = window.confirm(
+      'Hesabi silersen tum profil ve ilerleme verisi kalici olarak kaldirilir. Devam edilsin mi?',
+    );
+    if (!confirmed) {
+      return null;
+    }
+
+    setAccountDeletionLoading(true);
+    try {
+      await deleteRemoteSession(accountId, accountToken);
+      clearAppStorage();
+      onLogout();
+      return null;
+    } catch (error) {
+      console.warn('Account deletion failed.', error);
+      return 'Hesap silinemedi. Kisa sure sonra tekrar dene.';
+    } finally {
+      setAccountDeletionLoading(false);
     }
   };
 
@@ -501,6 +533,8 @@ export default function AuthenticatedRuntime({ initialSeed, onLogout }: Authenti
         onSaveReflection={handleSaveReflection}
         accountEmail={accountEmail}
         onClaimAccount={handleClaimAccount}
+        onDeleteAccount={handleDeleteAccount}
+        accountDeletionLoading={accountDeletionLoading}
         syncState={syncState}
         syncMessage={syncMessage}
         lastSyncedAt={lastSyncedAt}

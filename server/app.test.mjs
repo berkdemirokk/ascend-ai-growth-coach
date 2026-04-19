@@ -71,6 +71,10 @@ const createPlannedMissions = () => [
 
 const withServer = async (callback, options = {}) => {
   const rootDir = await fs.mkdtemp(path.join(os.tmpdir(), 'ascend-server-test-'));
+  const emitted = {
+    verificationRequests: [],
+    passwordResetRequests: [],
+  };
   const app = createServerApp({
     sessionDir: path.join(rootDir, 'sessions'),
     accountDir: path.join(rootDir, 'accounts'),
@@ -80,13 +84,19 @@ const withServer = async (callback, options = {}) => {
     revenueCatApiKey: options.revenueCatApiKey ?? '',
     revenueCatEntitlementId: options.revenueCatEntitlementId ?? 'premium',
     revenueCatFetch: options.revenueCatFetch ?? fetch,
+    onEmailVerificationRequested: async (payload) => {
+      emitted.verificationRequests.push(payload);
+    },
+    onPasswordResetRequested: async (payload) => {
+      emitted.passwordResetRequests.push(payload);
+    },
   });
   const server = app.listen(0);
   const address = server.address();
   const baseUrl = `http://127.0.0.1:${address.port}`;
 
   try {
-    await callback(baseUrl);
+    await callback(baseUrl, emitted);
   } finally {
     await new Promise((resolve, reject) => {
       server.close((error) => {
@@ -261,6 +271,38 @@ test('session writes reject invalid tokens and accept the right token', async ()
   });
 });
 
+test('account deletion removes the remote account and session', async () => {
+  await withServer(async (baseUrl) => {
+    const createResponse = await fetch(`${baseUrl}/api/account`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        accountId: 'account-delete',
+        profile: createProfile(),
+        tasks: [createTask()],
+      }),
+    });
+    const created = await createResponse.json();
+
+    const deleteResponse = await fetch(`${baseUrl}/api/session/account-delete`, {
+      method: 'DELETE',
+      headers: {
+        'X-Ascend-Account-Token': created.accountToken,
+      },
+    });
+    assert.equal(deleteResponse.status, 204);
+
+    const readAfterDelete = await fetch(`${baseUrl}/api/session/account-delete`, {
+      headers: {
+        'X-Ascend-Account-Token': created.accountToken,
+      },
+    });
+    assert.equal(readAfterDelete.status, 404);
+  });
+});
+
 test('claimed account can be restored by email and password with a rotated token', async () => {
   await withServer(async (baseUrl) => {
     const createResponse = await fetch(`${baseUrl}/api/account`, {
@@ -323,8 +365,8 @@ test('claimed account can be restored by email and password with a rotated token
   });
 });
 
-test('claimed account can be verified by token and login payload reflects verified email', async () => {
-  await withServer(async (baseUrl) => {
+test('claimed account can be verified by delivered token and login payload reflects verified email', async () => {
+  await withServer(async (baseUrl, emitted) => {
     const createResponse = await fetch(`${baseUrl}/api/account`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -349,12 +391,14 @@ test('claimed account can be verified by token and login payload reflects verifi
       }),
     });
     const claimed = await claimResponse.json();
+    assert.equal(claimed.verificationToken, undefined);
+    assert.equal(emitted.verificationRequests.length, 1);
 
     const verifyResponse = await fetch(`${baseUrl}/api/account/verify-email`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        token: claimed.verificationToken,
+        token: emitted.verificationRequests[0]?.token,
       }),
     });
     assert.equal(verifyResponse.status, 200);
@@ -375,7 +419,7 @@ test('claimed account can be verified by token and login payload reflects verifi
 });
 
 test('password reset request and confirm lets the user login with a new password', async () => {
-  await withServer(async (baseUrl) => {
+  await withServer(async (baseUrl, emitted) => {
     const createResponse = await fetch(`${baseUrl}/api/account`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -408,13 +452,14 @@ test('password reset request and confirm lets the user login with a new password
     assert.equal(requestResetResponse.status, 200);
     const requestReset = await requestResetResponse.json();
     assert.equal(requestReset.ok, true);
-    assert.equal(typeof requestReset.resetToken, 'string');
+    assert.equal(requestReset.resetToken, undefined);
+    assert.equal(emitted.passwordResetRequests.length, 1);
 
     const confirmResetResponse = await fetch(`${baseUrl}/api/account/password-reset/confirm`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        token: requestReset.resetToken,
+        token: emitted.passwordResetRequests[0]?.token,
         password: 'renewed456',
       }),
     });

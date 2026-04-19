@@ -30,7 +30,6 @@ export interface AccountLoginPayload extends AccountProvisionPayload {}
 
 export interface PasswordResetRequestPayload {
   ok: boolean;
-  resetToken?: string;
 }
 
 export interface PasswordResetConfirmPayload {
