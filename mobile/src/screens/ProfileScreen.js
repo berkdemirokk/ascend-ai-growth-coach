@@ -12,6 +12,7 @@ import { useApp } from '../contexts/AppContext';
 import { LEVEL_THRESHOLDS, getNextLevel, COLORS } from '../config/constants';
 import { ACHIEVEMENTS, RARITY_COLORS } from '../config/achievements';
 import { getSprintById } from '../config/sprints';
+import { getRank, getNextRank } from '../config/ranks';
 
 const { width } = Dimensions.get('window');
 const CARD_WIDTH = (width - 48) / 2;
@@ -55,6 +56,12 @@ export default function ProfileScreen({ navigation }) {
   const completedSprints = (sprintHistory || []).filter(
     (s) => s.status === 'completed',
   ).length;
+
+  const rank = useMemo(() => getRank(completedSprints), [completedSprints]);
+  const nextRank = useMemo(
+    () => getNextRank(completedSprints),
+    [completedSprints],
+  );
 
   const nextLevel = useMemo(() => getNextLevel(level), [level]);
   const currentLevelThreshold =
@@ -113,6 +120,30 @@ export default function ProfileScreen({ navigation }) {
           <Text style={styles.xpPillText}>⚡ {totalXP.toLocaleString()} XP</Text>
         </View>
       </LinearGradient>
+
+      {/* ── Rank ── */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Rank</Text>
+        <View style={[styles.rankCard, { borderColor: rank.color }]}>
+          <Text style={styles.rankEmoji}>{rank.emoji}</Text>
+          <View style={{ flex: 1 }}>
+            <Text style={[styles.rankTitle, { color: rank.color }]}>
+              {rank.title}
+            </Text>
+            <Text style={styles.rankSubtitle}>{rank.subtitle}</Text>
+            {nextRank ? (
+              <Text style={styles.rankProgress}>
+                {nextRank.minSprints - completedSprints} sprint kaldı →{' '}
+                {nextRank.title}
+              </Text>
+            ) : (
+              <Text style={[styles.rankProgress, { color: THEME.accent }]}>
+                Max rank!
+              </Text>
+            )}
+          </View>
+        </View>
+      </View>
 
       {/* ── Stats Grid ── */}
       <View style={styles.section}>
@@ -486,5 +517,35 @@ const styles = StyleSheet.create({
     height: '100%',
     borderRadius: 3,
     minWidth: 4,
+  },
+
+  // ── Rank ──
+  rankCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: THEME.surface,
+    borderWidth: 2,
+    borderRadius: 16,
+    padding: 16,
+    gap: 14,
+  },
+  rankEmoji: {
+    fontSize: 40,
+  },
+  rankTitle: {
+    fontSize: 20,
+    fontWeight: '800',
+    letterSpacing: 0.3,
+  },
+  rankSubtitle: {
+    fontSize: 13,
+    color: THEME.textSecondary,
+    marginTop: 2,
+  },
+  rankProgress: {
+    fontSize: 12,
+    color: THEME.textSecondary,
+    marginTop: 6,
+    fontWeight: '600',
   },
 });

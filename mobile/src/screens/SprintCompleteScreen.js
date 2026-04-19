@@ -10,10 +10,12 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { COLORS } from '../config/constants';
+import { getTierConfig } from '../config/sprints';
 
 export default function SprintCompleteScreen({ route, navigation }) {
-  const { sprintTitle, sprintDuration, bonusXP, completedAt } =
+  const { sprintTitle, sprintDuration, bonusXP, completedAt, tier } =
     route?.params || {};
+  const tierCfg = tier ? getTierConfig(tier) : null;
 
   const dateLabel = completedAt
     ? new Date(completedAt).toLocaleDateString()
@@ -45,6 +47,11 @@ export default function SprintCompleteScreen({ route, navigation }) {
             <Text style={styles.trophy}>🏆</Text>
             <Text style={styles.certLabel}>SERTİFİKA</Text>
             <Text style={styles.certTitle}>{sprintTitle || 'Sprint'}</Text>
+            {tierCfg && (
+              <Text style={styles.certTier}>
+                {tierCfg.badge} {tierCfg.label}
+              </Text>
+            )}
             <Text style={styles.certDuration}>
               {sprintDuration || 0} Gün Tamamlandı
             </Text>
@@ -125,6 +132,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     marginBottom: 12,
+  },
+  certTier: {
+    color: '#0B0B14',
+    fontSize: 14,
+    fontWeight: '800',
+    letterSpacing: 0.5,
+    marginBottom: 8,
   },
   divider: {
     width: 80,

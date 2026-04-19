@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   View,
   Text,
@@ -12,22 +12,42 @@ import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import { useApp } from '../contexts/AppContext';
 import { COLORS } from '../config/constants';
-import { SPRINTS } from '../config/sprints';
+import {
+  SPRINTS,
+  TIERS,
+  getUnlockedTier,
+  recommendSprint,
+} from '../config/sprints';
 
 export default function SprintSelectScreen() {
-  const { startSprint, activeSprint } = useApp();
+  const { startSprint, activeSprint, userProfile, sprintHistory } = useApp();
+
+  const recommendedId = useMemo(
+    () => recommendSprint(userProfile),
+    [userProfile],
+  );
+
+  // Default selected tier per sprint = unlocked tier (so users default to hardest)
+  const [selectedTier, setSelectedTier] = useState({});
+
+  const tierFor = (sprintId) => {
+    const unlocked = getUnlockedTier(sprintId, sprintHistory);
+    return Math.min(selectedTier[sprintId] || unlocked, unlocked);
+  };
 
   const handlePickSprint = (sprint) => {
     if (activeSprint) {
       Alert.alert(
         'Aktif sprint var',
-        'Yeni bir sprint başlatmak için önce mevcut sprint\'i bitir veya iptal et.',
+        "Yeni bir sprint başlatmak için önce mevcut sprint'i bitir veya iptal et.",
       );
       return;
     }
+    const tier = tierFor(sprint.id);
+    const tierCfg = TIERS[tier];
     Alert.alert(
-      `${sprint.title} başlasın mı?`,
-      `${sprint.duration} gün boyunca her gün görevlerini yapmalısın. Kurallar sıkı. Hazır mısın?`,
+      `${sprint.title} ${tierCfg.label}?`,
+      `${sprint.duration} gün, günde ${tierCfg.tasksPerDay} görev. Kurallar sıkı. XP: ${tierCfg.xpMultiplier}x. Hazır mısın?`,
       [
         { text: 'İptal', style: 'cancel' },
         {
@@ -37,7 +57,7 @@ export default function SprintSelectScreen() {
             await Haptics.notificationAsync(
               Haptics.NotificationFeedbackType.Success,
             );
-            startSprint(sprint.id);
+            startSprint(sprint.id, tier);
           },
         },
       ],
@@ -51,51 +71,123 @@ export default function SprintSelectScreen() {
           <Text style={styles.header}>Monk Mode</Text>
           <Text style={styles.subheader}>
             Bir sprint seç. Kuralları uy, günlük görevleri tamamla, sertifikanı
-            al.
+            al. Bitirdikçe zor tier'lar açılır.
           </Text>
 
-          {SPRINTS.map((sprint) => (
-            <TouchableOpacity
-              key={sprint.id}
-              style={styles.card}
-              activeOpacity={0.85}
-              onPress={() => handlePickSprint(sprint)}
-            >
-              <LinearGradient
-                colors={[sprint.color, '#161626']}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={styles.cardGradient}
+          {SPRINTS.map((sprint) => {
+            const unlockedTier = getUnlockedTier(sprint.id, sprintHistory);
+            const activeTier = tierFor(sprint.id);
+            const isRecommended = sprint.id === recommendedId;
+            const completedCount = sprintHistory.filter(
+              (h) => h?.sprintId === sprint.id && h?.status === 'completed',
+            ).length;
+            return (
+              <TouchableOpacity
+                key={sprint.id}
+                style={styles.card}
+                activeOpacity={0.85}
+                onPress={() => handlePickSprint(sprint)}
               >
-                <View style={styles.cardHeader}>
-                  <Text style={styles.cardIcon}>{sprint.icon}</Text>
-                  <View style={styles.cardTitleBox}>
-                    <Text style={styles.cardTitle}>{sprint.title}</Text>
-                    <Text style={styles.cardSubtitle}>{sprint.subtitle}</Text>
+                <LinearGradient
+                  colors={[sprint.color, '#161626']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  style={styles.cardGradient}
+                >
+                  {isRecommended && (
+                    <View style={styles.recBadge}>
+                      <Text style={styles.recBadgeText}>
+                        ⭐ SANA ÖNERİLİYOR
+                      </Text>
+                    </View>
+                  )}
+                  <View style={styles.cardHeader}>
+                    <Text style={styles.cardIcon}>{sprint.icon}</Text>
+                    <View style={styles.cardTitleBox}>
+                      <Text style={styles.cardTitle}>{sprint.title}</Text>
+                      <Text style={styles.cardSubtitle}>
+                        {sprint.subtitle}
+                      </Text>
+                    </View>
+                    <View style={styles.durationPill}>
+                      <Text style={styles.durationText}>
+                        {sprint.duration}g
+                      </Text>
+                    </View>
                   </View>
-                  <View style={styles.durationPill}>
-                    <Text style={styles.durationText}>{sprint.duration}g</Text>
+
+                  <Text style={styles.cardDesc}>{sprint.description}</Text>
+
+                  {/* Tier selector */}
+                  <View style={styles.tierRow}>
+                    {[1, 2, 3].map((t) => {
+                      const cfg = TIERS[t];
+                      const isLocked = t > unlockedTier;
+                      const isActive = t === activeTier;
+                      return (
+                        <TouchableOpacity
+                          key={t}
+                          style={[
+                            styles.tierChip,
+                            isActive && styles.tierChipActive,
+                            isLocked && styles.tierChipLocked,
+                          ]}
+                          activeOpacity={0.85}
+                          disabled={isLocked}
+                          onPress={(e) => {
+                            e.stopPropagation?.();
+                            setSelectedTier((prev) => ({
+                              ...prev,
+                              [sprint.id]: t,
+                            }));
+                          }}
+                        >
+                          <Text
+                            style={[
+                              styles.tierChipText,
+                              isActive && styles.tierChipTextActive,
+                              isLocked && styles.tierChipTextLocked,
+                            ]}
+                          >
+                            {isLocked ? '🔒 ' : cfg.badge + ' '}
+                            {cfg.label}
+                          </Text>
+                        </TouchableOpacity>
+                      );
+                    })}
                   </View>
-                </View>
-
-                <Text style={styles.cardDesc}>{sprint.description}</Text>
-
-                <Text style={styles.sectionLabel}>Kurallar</Text>
-                {sprint.rules.map((r) => (
-                  <Text key={r.id} style={styles.listItem}>
-                    • {r.text}
+                  <Text style={styles.tierMeta}>
+                    Günde {TIERS[activeTier].tasksPerDay} görev •{' '}
+                    {TIERS[activeTier].xpMultiplier}x XP
+                    {completedCount > 0 &&
+                      `  •  ${completedCount}x tamamladın`}
                   </Text>
-                ))}
 
-                <Text style={styles.sectionLabel}>Günlük görevler</Text>
-                {sprint.dailyTasks.map((t) => (
-                  <Text key={t.id} style={styles.listItem}>
-                    ✓ {t.title}  <Text style={styles.xpTag}>+{t.xp} XP</Text>
+                  <Text style={styles.sectionLabel}>Kurallar</Text>
+                  {sprint.rules.map((r) => (
+                    <Text key={r.id} style={styles.listItem}>
+                      • {r.text}
+                    </Text>
+                  ))}
+
+                  <Text style={styles.sectionLabel}>
+                    Görev havuzu ({sprint.taskPool?.length || 0} görev, rotasyonla)
                   </Text>
-                ))}
-              </LinearGradient>
-            </TouchableOpacity>
-          ))}
+                  {(sprint.taskPool || []).slice(0, 4).map((t) => (
+                    <Text key={t.id} style={styles.listItem}>
+                      ✓ {t.title}{' '}
+                      <Text style={styles.xpTag}>+{t.xp} XP</Text>
+                    </Text>
+                  ))}
+                  {(sprint.taskPool || []).length > 4 && (
+                    <Text style={styles.moreHint}>
+                      + {sprint.taskPool.length - 4} görev daha…
+                    </Text>
+                  )}
+                </LinearGradient>
+              </TouchableOpacity>
+            );
+          })}
 
           <View style={styles.footerSpacer} />
         </ScrollView>
@@ -128,6 +220,20 @@ const styles = StyleSheet.create({
   },
   cardGradient: {
     padding: 18,
+  },
+  recBadge: {
+    alignSelf: 'flex-start',
+    backgroundColor: COLORS.gold,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 10,
+    marginBottom: 10,
+  },
+  recBadgeText: {
+    color: '#0B0B14',
+    fontWeight: '800',
+    fontSize: 11,
+    letterSpacing: 0.5,
   },
   cardHeader: {
     flexDirection: 'row',
@@ -168,6 +274,44 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     marginBottom: 10,
   },
+  tierRow: {
+    flexDirection: 'row',
+    gap: 8,
+    marginTop: 4,
+    marginBottom: 6,
+  },
+  tierChip: {
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 10,
+    backgroundColor: 'rgba(0,0,0,0.35)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.15)',
+  },
+  tierChipActive: {
+    backgroundColor: 'rgba(255,255,255,0.25)',
+    borderColor: COLORS.text,
+  },
+  tierChipLocked: {
+    opacity: 0.45,
+  },
+  tierChipText: {
+    color: COLORS.text,
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  tierChipTextActive: {
+    fontWeight: '800',
+  },
+  tierChipTextLocked: {
+    color: COLORS.textSecondary,
+  },
+  tierMeta: {
+    color: COLORS.text,
+    opacity: 0.8,
+    fontSize: 12,
+    marginBottom: 6,
+  },
   sectionLabel: {
     color: COLORS.text,
     opacity: 0.9,
@@ -183,6 +327,13 @@ const styles = StyleSheet.create({
     opacity: 0.92,
     fontSize: 13,
     lineHeight: 20,
+  },
+  moreHint: {
+    color: COLORS.text,
+    opacity: 0.7,
+    fontSize: 12,
+    fontStyle: 'italic',
+    marginTop: 2,
   },
   xpTag: {
     color: COLORS.gold,

@@ -13,7 +13,7 @@ import { useNavigation } from '@react-navigation/native';
 import * as Haptics from 'expo-haptics';
 import { useApp } from '../contexts/AppContext';
 import { COLORS } from '../config/constants';
-import { getSprintById } from '../config/sprints';
+import { getSprintById, getTierConfig } from '../config/sprints';
 import { shouldShowAd, showInterstitial } from '../services/ads';
 import SprintSelectScreen from './SprintSelectScreen';
 import LevelUpModal from '../components/LevelUpModal';
@@ -25,20 +25,120 @@ export default function HomeScreen() {
     currentSprintDay,
     sprintFinished,
     todaySprintTaskIds,
+    todaysTasks,
     totalXP,
     level,
     isPremium,
+    dailyChallenge,
+    dailyChallengeClaimed,
     completeSprintTask,
     recordSprintViolation,
     abandonSprint,
     completeSprint,
+    claimDailyChallenge,
+    maintenance,
+    maintenanceTasks,
+    maintenanceCompletionsToday,
+    completeMaintenanceTask,
+    stopMaintenance,
   } = useApp();
 
   const [showLevelUpModal, setShowLevelUpModal] = useState(false);
   const [levelUpData, setLevelUpData] = useState(null);
 
-  if (!activeSprint) {
+  // No active sprint and no maintenance → show select screen (maintenance
+  // route only takes over when there's no active sprint)
+  if (!activeSprint && !maintenance) {
     return <SprintSelectScreen />;
+  }
+
+  // Maintenance mode view (shown after sprint completion)
+  if (!activeSprint && maintenance) {
+    const mSprint = getSprintById(maintenance.sprintId);
+    const doneSet = new Set(maintenanceCompletionsToday);
+    return (
+      <SafeAreaView style={styles.safeArea}>
+        <LinearGradient colors={['#0B0B14', '#161626']} style={styles.container}>
+          <ScrollView contentContainerStyle={styles.scroll}>
+            <LinearGradient
+              colors={[mSprint?.color || COLORS.primary, '#161626']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.headerCard}
+            >
+              <View style={styles.headerTopRow}>
+                <Text style={styles.headerIcon}>{mSprint?.icon || '🔥'}</Text>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.headerTitle}>
+                    {mSprint?.title} — Maintenance
+                  </Text>
+                  <Text style={styles.headerSubtitle}>
+                    Kazandığın alışkanlıkları kaybetme
+                  </Text>
+                </View>
+              </View>
+              <Text style={styles.metaRow}>
+                Level {level} · {totalXP} XP
+              </Text>
+            </LinearGradient>
+
+            {/* Daily challenge — also in maintenance */}
+            {dailyChallenge && (
+              <ChallengeCard
+                challenge={dailyChallenge}
+                claimed={dailyChallengeClaimed}
+                onClaim={async () => {
+                  await Haptics.notificationAsync(
+                    Haptics.NotificationFeedbackType.Success,
+                  );
+                  claimDailyChallenge();
+                }}
+              />
+            )}
+
+            <Text style={styles.sectionTitle}>Bakım Görevleri</Text>
+            <Text style={styles.sectionHint}>
+              Hafif tempo, alışkanlığı koru. Her an yeni sprint başlatabilirsin.
+            </Text>
+            {maintenanceTasks.map((task) => {
+              const done = doneSet.has(task.id);
+              return (
+                <TouchableOpacity
+                  key={task.id}
+                  style={[styles.taskCard, done && styles.taskCardDone]}
+                  activeOpacity={done ? 1 : 0.8}
+                  disabled={done}
+                  onPress={async () => {
+                    await Haptics.notificationAsync(
+                      Haptics.NotificationFeedbackType.Success,
+                    );
+                    completeMaintenanceTask(task.id);
+                  }}
+                >
+                  <View style={[styles.checkbox, done && styles.checkboxDone]}>
+                    {done && <Text style={styles.checkmark}>✓</Text>}
+                  </View>
+                  <Text style={[styles.taskText, done && styles.taskTextDone]}>
+                    {task.title}
+                  </Text>
+                  <Text style={styles.taskXP}>+{task.xp}</Text>
+                </TouchableOpacity>
+              );
+            })}
+
+            <TouchableOpacity
+              style={styles.newSprintBtn}
+              activeOpacity={0.85}
+              onPress={() => stopMaintenance()}
+            >
+              <Text style={styles.newSprintText}>Yeni Sprint Seç</Text>
+            </TouchableOpacity>
+
+            <View style={{ height: 40 }} />
+          </ScrollView>
+        </LinearGradient>
+      </SafeAreaView>
+    );
   }
 
   const sprint = getSprintById(activeSprint.sprintId);
@@ -46,10 +146,11 @@ export default function HomeScreen() {
     return <SprintSelectScreen />;
   }
 
+  const tier = activeSprint.tier || 1;
+  const tierCfg = getTierConfig(tier);
+
   const completedTaskIds = new Set(todaySprintTaskIds);
-  const todayTasksDone = sprint.dailyTasks.every((t) =>
-    completedTaskIds.has(t.id),
-  );
+  const todayTasksDone = todaysTasks.every((t) => completedTaskIds.has(t.id));
   const progress = Math.min(currentSprintDay / sprint.duration, 1);
 
   const handleTaskTap = async (task) => {
@@ -87,7 +188,7 @@ export default function HomeScreen() {
 
   const handleAbandon = () => {
     Alert.alert(
-      'Sprint\'i bırak?',
+      "Sprint'i bırak?",
       'Vazgeçersen ilerleme tarihine geçer, ama sertifika alamazsın.',
       [
         { text: 'Devam et', style: 'cancel' },
@@ -109,6 +210,7 @@ export default function HomeScreen() {
         sprintDuration: sprint.duration,
         bonusXP: res.bonusXP,
         completedAt: new Date().toISOString(),
+        tier: res.tier,
       });
     }
   };
@@ -138,6 +240,11 @@ export default function HomeScreen() {
                 <Text style={styles.headerTitle}>{sprint.title}</Text>
                 <Text style={styles.headerSubtitle}>{sprint.subtitle}</Text>
               </View>
+              <View style={styles.tierBadge}>
+                <Text style={styles.tierBadgeText}>
+                  {tierCfg.badge} {tierCfg.label}
+                </Text>
+              </View>
             </View>
 
             <View style={styles.dayRow}>
@@ -155,9 +262,23 @@ export default function HomeScreen() {
             </View>
 
             <Text style={styles.metaRow}>
-              Level {level} · {totalXP} XP
+              Level {level} · {totalXP} XP · {tierCfg.xpMultiplier}x
             </Text>
           </LinearGradient>
+
+          {/* Daily challenge */}
+          {dailyChallenge && (
+            <ChallengeCard
+              challenge={dailyChallenge}
+              claimed={dailyChallengeClaimed}
+              onClaim={async () => {
+                await Haptics.notificationAsync(
+                  Haptics.NotificationFeedbackType.Success,
+                );
+                claimDailyChallenge();
+              }}
+            />
+          )}
 
           {/* Claim banner if finished */}
           {sprintFinished && !todayTasksDone && (
@@ -184,9 +305,12 @@ export default function HomeScreen() {
             </TouchableOpacity>
           )}
 
-          {/* Today's tasks */}
+          {/* Today's tasks (rotating from pool) */}
           <Text style={styles.sectionTitle}>Bugünün Görevleri</Text>
-          {sprint.dailyTasks.map((task) => {
+          <Text style={styles.sectionHint}>
+            Her gün farklı görevler — monoton değil.
+          </Text>
+          {todaysTasks.map((task) => {
             const done = completedTaskIds.has(task.id);
             return (
               <TouchableOpacity
@@ -258,6 +382,38 @@ export default function HomeScreen() {
   );
 }
 
+function ChallengeCard({ challenge, claimed, onClaim }) {
+  return (
+    <View style={styles.challengeCard}>
+      <LinearGradient
+        colors={['#FBBF24', '#D97706']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.challengeGradient}
+      >
+        <View style={styles.challengeTopRow}>
+          <Text style={styles.challengeLabel}>🎯 BUGÜNÜN CHALLENGE'I</Text>
+          <Text style={styles.challengeXP}>+{challenge.xp} XP</Text>
+        </View>
+        <View style={styles.challengeBody}>
+          <Text style={styles.challengeEmoji}>{challenge.emoji}</Text>
+          <Text style={styles.challengeTitle}>{challenge.title}</Text>
+        </View>
+        <TouchableOpacity
+          style={[styles.challengeBtn, claimed && styles.challengeBtnClaimed]}
+          activeOpacity={claimed ? 1 : 0.85}
+          disabled={claimed}
+          onPress={onClaim}
+        >
+          <Text style={styles.challengeBtnText}>
+            {claimed ? '✓ Tamamlandı' : 'Tamamladım'}
+          </Text>
+        </TouchableOpacity>
+      </LinearGradient>
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: COLORS.background },
   container: { flex: 1 },
@@ -284,6 +440,17 @@ const styles = StyleSheet.create({
     opacity: 0.85,
     fontSize: 13,
     marginTop: 2,
+  },
+  tierBadge: {
+    backgroundColor: 'rgba(0,0,0,0.35)',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 10,
+  },
+  tierBadgeText: {
+    color: COLORS.text,
+    fontWeight: '700',
+    fontSize: 12,
   },
   dayRow: {
     flexDirection: 'row',
@@ -326,7 +493,7 @@ const styles = StyleSheet.create({
     color: COLORS.text,
     fontSize: 18,
     fontWeight: '700',
-    marginBottom: 8,
+    marginBottom: 4,
     marginTop: 4,
   },
   sectionHint: {
@@ -438,5 +605,75 @@ const styles = StyleSheet.create({
   abandonText: {
     color: COLORS.textMuted,
     fontSize: 13,
+  },
+
+  // Challenge card
+  challengeCard: {
+    borderRadius: 16,
+    overflow: 'hidden',
+    marginBottom: 20,
+  },
+  challengeGradient: {
+    padding: 16,
+  },
+  challengeTopRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  challengeLabel: {
+    color: '#0B0B14',
+    fontWeight: '800',
+    fontSize: 11,
+    letterSpacing: 0.8,
+  },
+  challengeXP: {
+    color: '#0B0B14',
+    fontWeight: '800',
+    fontSize: 13,
+  },
+  challengeBody: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  challengeEmoji: {
+    fontSize: 32,
+    marginRight: 12,
+  },
+  challengeTitle: {
+    flex: 1,
+    color: '#0B0B14',
+    fontSize: 16,
+    fontWeight: '700',
+  },
+  challengeBtn: {
+    backgroundColor: '#0B0B14',
+    borderRadius: 10,
+    paddingVertical: 10,
+    alignItems: 'center',
+  },
+  challengeBtnClaimed: {
+    backgroundColor: 'rgba(0,0,0,0.5)',
+  },
+  challengeBtnText: {
+    color: COLORS.text,
+    fontWeight: '700',
+    fontSize: 14,
+  },
+
+  newSprintBtn: {
+    borderRadius: 14,
+    padding: 16,
+    alignItems: 'center',
+    backgroundColor: COLORS.primary,
+    marginTop: 12,
+    marginBottom: 8,
+  },
+  newSprintText: {
+    color: COLORS.text,
+    fontWeight: '700',
+    fontSize: 15,
   },
 });
