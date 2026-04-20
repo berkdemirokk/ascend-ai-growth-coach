@@ -4,6 +4,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AppProvider } from './src/contexts/AppContext';
 import AppNavigator from './src/navigation/AppNavigator';
+import ErrorBoundary from './src/components/ErrorBoundary';
 import { initPurchases } from './src/services/purchases';
 import { initAds, loadInterstitial } from './src/services/ads';
 import { requestNotificationPermissions, scheduleDailyReminder } from './src/services/notifications';
@@ -35,13 +36,15 @@ export default function App() {
   }, []);
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <SafeAreaProvider>
-        <AppProvider>
-          <StatusBar style="light" />
-          <AppNavigator />
-        </AppProvider>
-      </SafeAreaProvider>
-    </GestureHandlerRootView>
+    <ErrorBoundary>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <SafeAreaProvider>
+          <AppProvider>
+            <StatusBar style="light" />
+            <AppNavigator />
+          </AppProvider>
+        </SafeAreaProvider>
+      </GestureHandlerRootView>
+    </ErrorBoundary>
   );
 }

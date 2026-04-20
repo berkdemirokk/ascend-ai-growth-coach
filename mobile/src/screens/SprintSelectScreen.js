@@ -181,7 +181,7 @@ export default function SprintSelectScreen() {
                   ))}
                   {(sprint.taskPool || []).length > 4 && (
                     <Text style={styles.moreHint}>
-                      + {sprint.taskPool.length - 4} görev daha…
+                      + {(sprint.taskPool || []).length - 4} görev daha…
                     </Text>
                   )}
                 </LinearGradient>

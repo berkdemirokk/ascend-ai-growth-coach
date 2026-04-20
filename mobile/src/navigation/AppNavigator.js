@@ -15,6 +15,7 @@ import PaywallScreen from '../screens/PaywallScreen';
 import SprintCompleteScreen from '../screens/SprintCompleteScreen';
 import LessonScreen from '../screens/LessonScreen';
 import PathScreen from '../screens/PathScreen';
+import AchievementsScreen from '../screens/AchievementsScreen';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -109,6 +110,14 @@ export default function AppNavigator() {
         <Stack.Screen
           name="Lesson"
           component={LessonScreen}
+          options={{
+            presentation: 'modal',
+            animation: 'slide_from_bottom',
+          }}
+        />
+        <Stack.Screen
+          name="Achievements"
+          component={AchievementsScreen}
           options={{
             presentation: 'modal',
             animation: 'slide_from_bottom',
