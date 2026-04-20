@@ -11,6 +11,7 @@ import {
   Linking,
 } from 'react-native';
 import { useApp } from '../contexts/AppContext';
+import { useAuth } from '../contexts/AuthContext';
 import { COLORS, LEGAL } from '../config/constants';
 
 const COLORS_THEME = {
@@ -27,8 +28,30 @@ const COLORS_THEME = {
 
 export default function SettingsScreen({ navigation }) {
   const { isPremium, deleteAccount } = useApp();
+  const { user, isAuthenticated, guestMode, signOut } = useAuth();
 
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
+
+  const handleSignOut = () => {
+    Alert.alert(
+      'Çıkış yap',
+      'Hesabından çıkış yapmak istediğine emin misin? İlerlemen bu cihazda kalacak, tekrar giriş yaptığında bulutla senkronize olacak.',
+      [
+        { text: 'İptal', style: 'cancel' },
+        {
+          text: 'Çıkış Yap',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await signOut();
+            } catch (e) {
+              Alert.alert('Hata', 'Çıkış yapılamadı. Tekrar dene.');
+            }
+          },
+        },
+      ],
+    );
+  };
 
   const handleDeleteAccount = () => {
     Alert.alert(
@@ -153,6 +176,28 @@ export default function SettingsScreen({ navigation }) {
         {/* ACCOUNT */}
         <SectionHeader title="Account" />
         <View style={styles.card}>
+          {isAuthenticated && user?.email ? (
+            <SettingRow label="E-posta">
+              <Text style={styles.infoValue} numberOfLines={1}>
+                {user.email}
+              </Text>
+            </SettingRow>
+          ) : guestMode ? (
+            <SettingRow label="Hesap">
+              <Text style={styles.infoValue}>Misafir</Text>
+            </SettingRow>
+          ) : null}
+
+          {isAuthenticated ? (
+            <TouchableOpacity
+              style={styles.signOutButton}
+              onPress={handleSignOut}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.signOutButtonText}>Çıkış Yap</Text>
+            </TouchableOpacity>
+          ) : null}
+
           <TouchableOpacity
             style={styles.deleteButton}
             onPress={handleDeleteAccount}
@@ -326,6 +371,21 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '700',
     color: '#EF4444',
+  },
+  signOutButton: {
+    marginHorizontal: 16,
+    marginTop: 16,
+    backgroundColor: '#2A2A42',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#2A2A42',
+    paddingVertical: 14,
+    alignItems: 'center',
+  },
+  signOutButtonText: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#F5F5FA',
   },
   madeWith: {
     textAlign: 'center',

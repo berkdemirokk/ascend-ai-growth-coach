@@ -21,6 +21,8 @@ import {
   calculateLessonXP,
 } from '../config/lessons';
 import { getFactOfTheDay } from '../config/facts';
+import { pullState, pushState, chooseWinner } from '../services/cloudSync';
+import { useAuth } from './AuthContext';
 
 // ─── Initial State ───────────────────────────────────────────────────────────
 
@@ -341,6 +343,8 @@ const AppContext = createContext(null);
 
 export function AppProvider({ children }) {
   const [state, dispatch] = useReducer(appReducer, initialState);
+  const { user, isAuthenticated } = useAuth();
+  const userId = user?.id || null;
 
   useEffect(() => {
     (async () => {
@@ -372,6 +376,45 @@ export function AppProvider({ children }) {
       (e) => console.error('[AppContext] Failed to save state:', e),
     );
   }, [state]);
+
+  // Cloud pull: when a user first signs in, merge cloud snapshot with
+  // the local one using chooseWinner. Runs once per user id.
+  useEffect(() => {
+    if (!state._loaded || !isAuthenticated || !userId) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const { data, error } = await pullState(userId);
+        if (cancelled) return;
+        if (error) {
+          console.warn('[AppContext] cloud pull failed:', error?.message);
+          return;
+        }
+        if (!data?.payload) return;
+        const winner = chooseWinner(state, data.payload);
+        if (winner === 'cloud') {
+          dispatch({ type: ACTION_TYPES.LOAD_STATE, payload: data.payload });
+        }
+      } catch (e) {
+        console.warn('[AppContext] cloud pull error:', e?.message);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userId, isAuthenticated, state._loaded]);
+
+  // Cloud push: debounce state changes and upload snapshot.
+  useEffect(() => {
+    if (!state._loaded || !isAuthenticated || !userId) return;
+    const handle = setTimeout(() => {
+      pushState(userId, state).then(({ error }) => {
+        if (error) console.warn('[AppContext] cloud push failed:', error?.message);
+      });
+    }, 1500);
+    return () => clearTimeout(handle);
+  }, [state, userId, isAuthenticated]);
 
   useEffect(() => {
     if (!state._loaded) return;
