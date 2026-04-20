@@ -53,6 +53,10 @@
       ]
     ],
     "extra": {
+      "supabase": {
+        "url": "https://wihkcmgtzmdupxuyavyr.supabase.co",
+        "anonKey": "sb_publishable_2VZz9irXZ95Anw3kKA4d7w_AXgRzAp3"
+      },
       "eas": {
         "projectId": "2a44eced-27a4-4ae2-b831-25957422f01b"
       }
