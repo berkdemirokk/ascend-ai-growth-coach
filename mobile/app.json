@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Ascend ai growth coach",
+    "name": "Ascend: Monk Mode",
     "slug": "ascend-level-up",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -15,7 +15,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.ascend.growth",
-      "buildNumber": "1",
+      "buildNumber": "14",
       "infoPlist": {
         "NSUserTrackingUsageDescription": "This identifier will be used to deliver personalized ads to you.",
         "SKAdNetworkItems": [],
@@ -38,17 +38,10 @@
         }
       ],
       [
-        "react-native-purchases",
-        {
-          "iOS": {
-            "apiKey": "appl_GdTXEiIwMXBaFuHLGjwBhzlrruB"
-          }
-        }
-      ],
-      [
         "react-native-google-mobile-ads",
         {
           "iosAppId": "ca-app-pub-9898903071826160~9553442066",
+          "androidAppId": "ca-app-pub-9898903071826160~9553442066",
           "userTrackingUsageDescription": "This identifier will be used to deliver personalized ads to you."
         }
       ],
@@ -60,8 +53,12 @@
       ]
     ],
     "extra": {
+      "supabase": {
+        "url": "https://wihkcmgtzmdupxuyavyr.supabase.co",
+        "anonKey": "sb_publishable_2VZz9irXZ95Anw3kKA4d7w_AXgRzAp3"
+      },
       "eas": {
-        "projectId": "replace-with-eas-project-id"
+        "projectId": "2a44eced-27a4-4ae2-b831-25957422f01b"
       }
     }
   }
