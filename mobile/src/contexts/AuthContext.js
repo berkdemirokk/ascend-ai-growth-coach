@@ -100,6 +100,57 @@ export function AuthProvider({ children }) {
     setGuestMode(true);
   }, []);
 
+  const signInWithApple = useCallback(async () => {
+    if (!SUPABASE_CONFIGURED) {
+      return { error: new Error('Supabase henüz yapılandırılmadı.') };
+    }
+    try {
+      const AppleAuthentication = await import('expo-apple-authentication').catch(() => null);
+      const Crypto = await import('expo-crypto').catch(() => null);
+      if (!AppleAuthentication || !Crypto) {
+        return { error: new Error('Apple Sign-In modülü yüklenemedi.') };
+      }
+
+      const isAvailable = await AppleAuthentication.isAvailableAsync();
+      if (!isAvailable) {
+        return { error: new Error('Apple Sign-In bu cihazda kullanılamıyor.') };
+      }
+
+      const rawNonce = Crypto.randomUUID
+        ? Crypto.randomUUID()
+        : Math.random().toString(36).slice(2);
+      const hashedNonce = await Crypto.digestStringAsync(
+        Crypto.CryptoDigestAlgorithm.SHA256,
+        rawNonce,
+      );
+
+      const credential = await AppleAuthentication.signInAsync({
+        requestedScopes: [
+          AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+          AppleAuthentication.AppleAuthenticationScope.EMAIL,
+        ],
+        nonce: hashedNonce,
+      });
+
+      if (!credential?.identityToken) {
+        return { error: new Error('Apple kimlik doğrulaması başarısız.') };
+      }
+
+      const { data, error } = await supabase.auth.signInWithIdToken({
+        provider: 'apple',
+        token: credential.identityToken,
+        nonce: rawNonce,
+      });
+
+      return { data, error };
+    } catch (e) {
+      if (e?.code === 'ERR_REQUEST_CANCELED') {
+        return { canceled: true };
+      }
+      return { error: e };
+    }
+  }, []);
+
   const value = {
     session,
     user: session?.user ?? null,
@@ -109,6 +160,7 @@ export function AuthProvider({ children }) {
     configured: SUPABASE_CONFIGURED,
     signUp,
     signIn,
+    signInWithApple,
     signOut,
     resetPassword,
     continueAsGuest,

@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { View, ActivityIndicator } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -9,8 +10,17 @@ import ErrorBoundary from './src/components/ErrorBoundary';
 import { initPurchases } from './src/services/purchases';
 import { initAds, loadInterstitial } from './src/services/ads';
 import { requestNotificationPermissions, scheduleDailyReminder } from './src/services/notifications';
+import { initI18n } from './src/i18n';
 
 export default function App() {
+  const [i18nReady, setI18nReady] = useState(false);
+
+  useEffect(() => {
+    initI18n()
+      .catch((e) => console.warn('i18n init failed:', e?.message))
+      .finally(() => setI18nReady(true));
+  }, []);
+
   useEffect(() => {
     (async () => {
       try {
@@ -20,9 +30,6 @@ export default function App() {
       }
       try {
         await initAds();
-        // Preload the first interstitial so it's ready when the user
-        // completes their first action. Safe no-op if the AdMob module
-        // isn't installed.
         loadInterstitial().catch(() => {});
       } catch (e) {
         console.warn('Ads init failed:', e?.message);
@@ -35,6 +42,14 @@ export default function App() {
       }
     })();
   }, []);
+
+  if (!i18nReady) {
+    return (
+      <View style={{ flex: 1, backgroundColor: '#0B0B14', alignItems: 'center', justifyContent: 'center' }}>
+        <ActivityIndicator color="#6366F1" size="large" />
+      </View>
+    );
+  }
 
   return (
     <ErrorBoundary>

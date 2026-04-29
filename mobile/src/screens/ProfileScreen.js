@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   View,
   Text,
@@ -44,6 +45,7 @@ function StatCard({ emoji, value, label }) {
 }
 
 export default function ProfileScreen({ navigation }) {
+  const { t } = useTranslation();
   const {
     totalXP,
     level,
@@ -145,21 +147,59 @@ export default function ProfileScreen({ navigation }) {
         </View>
       </View>
 
+      {/* ── Quick Nav (Settings / Path / History) ── */}
+      <View style={styles.section}>
+        <View style={styles.quickNavRow}>
+          <TouchableOpacity
+            style={styles.quickNavBtn}
+            onPress={() => navigation?.navigate('Path')}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.quickNavEmoji}>🎓</Text>
+            <Text style={styles.quickNavLabel}>{t('profile.navPath')}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.quickNavBtn}
+            onPress={() => navigation?.navigate('History')}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.quickNavEmoji}>📋</Text>
+            <Text style={styles.quickNavLabel}>{t('profile.navHistory')}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.quickNavBtn}
+            onPress={() => navigation?.navigate('Achievements')}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.quickNavEmoji}>🏆</Text>
+            <Text style={styles.quickNavLabel}>{t('profile.navAchievements')}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.quickNavBtn}
+            onPress={() => navigation?.navigate('Settings')}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.quickNavEmoji}>⚙️</Text>
+            <Text style={styles.quickNavLabel}>{t('profile.navSettings')}</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+
       {/* ── Stats Grid ── */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Stats</Text>
+        <Text style={styles.sectionTitle}>{t('profile.stats')}</Text>
         <View style={styles.statsGrid}>
-          <StatCard emoji="⭐" value={totalXP.toLocaleString()} label="Total XP" />
-          <StatCard emoji="🏆" value={completedSprints} label="Sprints Done" />
+          <StatCard emoji="⭐" value={totalXP.toLocaleString()} label={t('profile.totalXp')} />
+          <StatCard emoji="🏆" value={completedSprints} label={t('profile.sprintsDone')} />
           <StatCard
             emoji="🔥"
-            value={activeSprint ? `${currentSprintDay}. gün` : '—'}
-            label="Active Sprint"
+            value={activeSprint ? `${currentSprintDay}` : '—'}
+            label={t('profile.activeSprint')}
           />
           <StatCard
             emoji="📋"
             value={(sprintHistory || []).length}
-            label="Total Sprints"
+            label={t('profile.totalSprints')}
           />
         </View>
       </View>
@@ -167,7 +207,7 @@ export default function ProfileScreen({ navigation }) {
       {/* ── XP Progress ── */}
       <View style={styles.section}>
         <View style={styles.rowBetween}>
-          <Text style={styles.sectionTitle}>Level Progress</Text>
+          <Text style={styles.sectionTitle}>{t('profile.levelProgress')}</Text>
           <Text style={styles.progressXpLabel}>
             {xpInCurrentLevel.toLocaleString()} / {xpNeededForNext.toLocaleString()} XP
           </Text>
@@ -195,9 +235,9 @@ export default function ProfileScreen({ navigation }) {
       {/* ── Recent Achievements ── */}
       <View style={styles.section}>
         <View style={styles.rowBetween}>
-          <Text style={styles.sectionTitle}>Recent Achievements</Text>
+          <Text style={styles.sectionTitle}>{t('profile.recentAchievements')}</Text>
           <TouchableOpacity onPress={() => navigation?.navigate('Achievements')}>
-            <Text style={styles.seeAllText}>See All</Text>
+            <Text style={styles.seeAllText}>{t('profile.seeAll')}</Text>
           </TouchableOpacity>
         </View>
 
@@ -236,7 +276,7 @@ export default function ProfileScreen({ navigation }) {
 
       {/* ── Sprint History ── */}
       <View style={[styles.section, styles.lastSection]}>
-        <Text style={styles.sectionTitle}>Sprint Geçmişi</Text>
+        <Text style={styles.sectionTitle}>{t('profile.sprintHistory')}</Text>
         {sprintHistoryList.length === 0 ? (
           <View style={styles.emptyCard}>
             <Text style={styles.emptyCardEmoji}>🎯</Text>
@@ -295,6 +335,31 @@ const styles = StyleSheet.create({
   },
   content: {
     paddingBottom: 48,
+  },
+
+  // ── Quick Nav ──
+  quickNavRow: {
+    flexDirection: 'row',
+    gap: 10,
+  },
+  quickNavBtn: {
+    flex: 1,
+    backgroundColor: '#161626',
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: '#2A2A42',
+    paddingVertical: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  quickNavEmoji: {
+    fontSize: 22,
+    marginBottom: 4,
+  },
+  quickNavLabel: {
+    fontSize: 11,
+    color: '#B4B4D0',
+    fontWeight: '600',
   },
 
   // ── Header ──

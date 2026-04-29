@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -6,13 +6,45 @@ import {
   SafeAreaView,
   TouchableOpacity,
   Image,
+  Platform,
+  Alert,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useTranslation } from 'react-i18next';
 import { COLORS } from '../../config/constants';
 import { useAuth } from '../../contexts/AuthContext';
 
 export default function WelcomeScreen({ navigation }) {
-  const { continueAsGuest, configured } = useAuth();
+  const { t } = useTranslation();
+  const { continueAsGuest, configured, signInWithApple } = useAuth();
+  const [appleAvailable, setAppleAvailable] = useState(false);
+  const [appleLoading, setAppleLoading] = useState(false);
+
+  useEffect(() => {
+    if (Platform.OS !== 'ios') return;
+    (async () => {
+      try {
+        const mod = await import('expo-apple-authentication');
+        const ok = await mod.isAvailableAsync();
+        setAppleAvailable(!!ok);
+      } catch {
+        setAppleAvailable(false);
+      }
+    })();
+  }, []);
+
+  const handleApple = async () => {
+    setAppleLoading(true);
+    try {
+      const result = await signInWithApple();
+      if (result?.canceled) return;
+      if (result?.error) {
+        Alert.alert(t('common.error'), result.error.message || 'Apple Sign-In failed');
+      }
+    } finally {
+      setAppleLoading(false);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -23,14 +55,25 @@ export default function WelcomeScreen({ navigation }) {
         <View style={styles.hero}>
           <Text style={styles.logo}>🔥</Text>
           <Text style={styles.title}>Ascend</Text>
-          <Text style={styles.tagline}>Monk Mode</Text>
-          <Text style={styles.pitch}>
-            Dopamin detoksundan finansal özgürlüğe{'\n'}
-            Sprint sprint kendini inşa et.
-          </Text>
+          <Text style={styles.tagline}>{t('onboarding.title')}</Text>
+          <Text style={styles.pitch}>{t('onboarding.subtitle')}</Text>
         </View>
 
         <View style={styles.buttons}>
+          {appleAvailable ? (
+            <TouchableOpacity
+              style={styles.appleBtn}
+              activeOpacity={0.85}
+              onPress={handleApple}
+              disabled={appleLoading}
+            >
+              <Text style={styles.appleIcon}></Text>
+              <Text style={styles.appleText}>
+                {appleLoading ? t('paywall.loading') : t('auth.signInWithApple')}
+              </Text>
+            </TouchableOpacity>
+          ) : null}
+
           <TouchableOpacity
             style={styles.primaryBtn}
             activeOpacity={0.85}
@@ -42,7 +85,7 @@ export default function WelcomeScreen({ navigation }) {
               end={{ x: 1, y: 0 }}
               style={styles.primaryGrad}
             >
-              <Text style={styles.primaryText}>Hesap Oluştur</Text>
+              <Text style={styles.primaryText}>{t('auth.signup')}</Text>
             </LinearGradient>
           </TouchableOpacity>
 
@@ -51,7 +94,7 @@ export default function WelcomeScreen({ navigation }) {
             activeOpacity={0.85}
             onPress={() => navigation.navigate('Login')}
           >
-            <Text style={styles.secondaryText}>Giriş Yap</Text>
+            <Text style={styles.secondaryText}>{t('auth.login')}</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -59,17 +102,11 @@ export default function WelcomeScreen({ navigation }) {
             activeOpacity={0.7}
             onPress={continueAsGuest}
           >
-            <Text style={styles.guestText}>
-              {configured
-                ? 'Hesapsız devam et (veri sadece bu cihazda)'
-                : 'Misafir modunda devam et'}
-            </Text>
+            <Text style={styles.guestText}>{t('auth.guestMode')}</Text>
           </TouchableOpacity>
         </View>
 
-        <Text style={styles.footer}>
-          Devam ederek Kullanım Şartları'nı kabul etmiş olursun.
-        </Text>
+        <Text style={styles.footer}>{t('settings.termsOfService')}</Text>
       </LinearGradient>
     </SafeAreaView>
   );
@@ -119,6 +156,18 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   secondaryText: { color: COLORS.text, fontWeight: '700', fontSize: 16 },
+  appleBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#000000',
+    borderRadius: 14,
+    paddingVertical: 16,
+    marginBottom: 12,
+    gap: 8,
+  },
+  appleIcon: { fontSize: 18, color: '#FFFFFF' },
+  appleText: { color: '#FFFFFF', fontWeight: '700', fontSize: 16 },
   guestBtn: { paddingVertical: 12, alignItems: 'center' },
   guestText: { color: COLORS.textMuted, fontSize: 13 },
   footer: {

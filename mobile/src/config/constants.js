@@ -84,6 +84,8 @@ export const REVENUECAT_CONFIG = {
   API_KEY_IOS: 'appl_GdTXEiIwMXBaFuHLGjwBhzlrruB',
   ENTITLEMENT_ID: 'premium',
   OFFERING_ID: 'default',
+  PRODUCT_ID_MONTHLY: 'ascend_super_monthly',
+  PRODUCT_ID_YEARLY: 'ascend_super_yearly',
   PRODUCT_ID: 'ascend_super_monthly',
 };
 

@@ -12,6 +12,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
 import * as Haptics from 'expo-haptics';
 import { useApp } from '../contexts/AppContext';
+import { useTranslation } from 'react-i18next';
 import { COLORS } from '../config/constants';
 import { getSprintById, getTierConfig } from '../config/sprints';
 import { shouldShowAd, showInterstitial } from '../services/ads';
@@ -19,6 +20,7 @@ import SprintSelectScreen from './SprintSelectScreen';
 import LevelUpModal from '../components/LevelUpModal';
 
 export default function HomeScreen() {
+  const { t } = useTranslation();
   const navigation = useNavigation();
   const {
     activeSprint,
@@ -111,7 +113,7 @@ export default function HomeScreen() {
               />
             )}
 
-            <Text style={styles.sectionTitle}>Bakım Görevleri</Text>
+            <Text style={styles.sectionTitle}>{t('home.maintenanceTasks')}</Text>
             <Text style={styles.sectionHint}>
               Hafif tempo, alışkanlığı koru. Her an yeni sprint başlatabilirsin.
             </Text>
@@ -146,7 +148,7 @@ export default function HomeScreen() {
               activeOpacity={0.85}
               onPress={() => stopMaintenance()}
             >
-              <Text style={styles.newSprintText}>Yeni Sprint Seç</Text>
+              <Text style={styles.newSprintText}>{t('home.newSprint')}</Text>
             </TouchableOpacity>
 
             <View style={{ height: 40 }} />
@@ -343,7 +345,7 @@ export default function HomeScreen() {
           )}
 
           {/* Today's tasks (rotating from pool) */}
-          <Text style={styles.sectionTitle}>Bugünün Görevleri</Text>
+          <Text style={styles.sectionTitle}>{t('home.todaysTasks')}</Text>
           <Text style={styles.sectionHint}>
             Her gün farklı görevler — monoton değil.
           </Text>
@@ -369,7 +371,7 @@ export default function HomeScreen() {
           })}
 
           {/* Rules */}
-          <Text style={styles.sectionTitle}>Kurallar</Text>
+          <Text style={styles.sectionTitle}>{t('home.rules')}</Text>
           <Text style={styles.sectionHint}>
             Kuralları kırarsan dürüst ol — hesabı kendine ver.
           </Text>
@@ -399,7 +401,7 @@ export default function HomeScreen() {
             style={styles.abandonBtn}
             activeOpacity={0.7}
           >
-            <Text style={styles.abandonText}>Sprint'i bırak</Text>
+            <Text style={styles.abandonText}>{t('home.abandonSprint')}</Text>
           </TouchableOpacity>
 
           <View style={{ height: 40 }} />
@@ -447,7 +449,7 @@ function LessonCard({ lesson, totalCount, completedCount, onStart, onOpenPath })
           activeOpacity={0.85}
           onPress={onStart}
         >
-          <Text style={styles.lessonBtnText}>Başla</Text>
+          <Text style={styles.lessonBtnText}>{t('common.start')}</Text>
         </TouchableOpacity>
       </LinearGradient>
     </View>

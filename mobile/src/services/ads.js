@@ -1,5 +1,6 @@
+// Monk Mode: ads fully removed. Premium subscription is the only monetization.
+// All exports are no-ops kept for compatibility with existing imports.
 import { Platform } from 'react-native';
-import { ADMOB_IDS } from '../config/constants';
 
 // ─── Module state ────────────────────────────────────────────────────────────
 // We lazy-require `react-native-google-mobile-ads` so the rest of the app keeps
@@ -56,7 +57,15 @@ const requestTrackingPermissionIfNeeded = async () => {
   }
 };
 
+// Monk Mode: ads disabled. Premium subscription is the only monetization.
+// To re-enable, set ADS_ENABLED=true.
+const ADS_ENABLED = false;
+
 export const initAds = async () => {
+  if (!ADS_ENABLED) {
+    adsReady = false;
+    return;
+  }
   try {
     // On iOS we request ATT first so the SDK picks up the user's choice.
     await requestTrackingPermissionIfNeeded();

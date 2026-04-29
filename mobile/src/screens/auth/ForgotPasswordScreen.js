@@ -13,10 +13,12 @@ import {
   Alert,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useTranslation } from 'react-i18next';
 import { COLORS } from '../../config/constants';
 import { useAuth } from '../../contexts/AuthContext';
 
 export default function ForgotPasswordScreen({ navigation }) {
+  const { t } = useTranslation();
   const { resetPassword } = useAuth();
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
@@ -24,14 +26,14 @@ export default function ForgotPasswordScreen({ navigation }) {
 
   const handleReset = async () => {
     if (!email.includes('@') || !email.includes('.')) {
-      Alert.alert('Geçersiz e-posta', 'Lütfen geçerli bir e-posta adresi gir.');
+      Alert.alert(t('common.error'), t('auth.invalidCredentials'));
       return;
     }
     setLoading(true);
     const { error } = await resetPassword(email);
     setLoading(false);
     if (error) {
-      Alert.alert('Gönderilemedi', error.message || 'Bir hata oluştu.');
+      Alert.alert(t('common.error'), error.message || t('common.tryAgain'));
       return;
     }
     setSent(true);
@@ -54,18 +56,13 @@ export default function ForgotPasswordScreen({ navigation }) {
             <Text style={styles.backIcon}>←</Text>
           </TouchableOpacity>
 
-          <Text style={styles.title}>Şifreni Sıfırla</Text>
-          <Text style={styles.subtitle}>
-            E-posta adresini gir, sana sıfırlama bağlantısı gönderelim.
-          </Text>
+          <Text style={styles.title}>{t('auth.forgotPassword')}</Text>
+          <Text style={styles.subtitle}>{t('auth.welcomeSubtitle')}</Text>
 
           {sent ? (
             <View style={styles.successBox}>
-              <Text style={styles.successTitle}>E-posta gönderildi</Text>
-              <Text style={styles.successText}>
-                {email} adresine sıfırlama bağlantısı gönderdik. Gelen kutunu
-                ve spam klasörünü kontrol et.
-              </Text>
+              <Text style={styles.successTitle}>{t('auth.passwordResetSent')}</Text>
+              <Text style={styles.successText}>{email}</Text>
               <TouchableOpacity
                 style={styles.primaryBtn}
                 activeOpacity={0.85}
@@ -77,17 +74,17 @@ export default function ForgotPasswordScreen({ navigation }) {
                   end={{ x: 1, y: 0 }}
                   style={styles.primaryGrad}
                 >
-                  <Text style={styles.primaryText}>Giriş ekranına dön</Text>
+                  <Text style={styles.primaryText}>{t('auth.login')}</Text>
                 </LinearGradient>
               </TouchableOpacity>
             </View>
           ) : (
             <View style={styles.form}>
-              <Text style={styles.label}>E-posta</Text>
+              <Text style={styles.label}>{t('auth.email')}</Text>
               <TextInput
                 value={email}
                 onChangeText={setEmail}
-                placeholder="ornek@mail.com"
+                placeholder="example@mail.com"
                 placeholderTextColor={COLORS.textMuted}
                 keyboardType="email-address"
                 autoCapitalize="none"

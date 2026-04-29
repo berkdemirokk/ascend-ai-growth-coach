@@ -27,10 +27,12 @@ const Tab = createBottomTabNavigator();
 
 const TAB_ICON_MAP = {
   Home: '🔥',
-  Path: '🎓',
-  History: '📋',
   Profile: '👤',
-  Settings: '⚙️',
+};
+
+const TAB_LABEL_MAP = {
+  Home: 'Bugün',
+  Profile: 'Sen',
 };
 
 function TabIcon({ name, focused }) {
@@ -71,11 +73,16 @@ function MainTabs() {
         ),
       })}
     >
-      <Tab.Screen name="Home" component={HomeScreen} />
-      <Tab.Screen name="Path" component={PathScreen} options={{ title: 'Yol' }} />
-      <Tab.Screen name="History" component={HistoryScreen} />
-      <Tab.Screen name="Profile" component={ProfileScreen} />
-      <Tab.Screen name="Settings" component={SettingsScreen} />
+      <Tab.Screen
+        name="Home"
+        component={HomeScreen}
+        options={{ title: TAB_LABEL_MAP.Home }}
+      />
+      <Tab.Screen
+        name="Profile"
+        component={ProfileScreen}
+        options={{ title: TAB_LABEL_MAP.Profile }}
+      />
     </Tab.Navigator>
   );
 }
@@ -155,6 +162,30 @@ export default function AppNavigator() {
         <Stack.Screen
           name="Achievements"
           component={AchievementsScreen}
+          options={{
+            presentation: 'modal',
+            animation: 'slide_from_bottom',
+          }}
+        />
+        <Stack.Screen
+          name="History"
+          component={HistoryScreen}
+          options={{
+            presentation: 'modal',
+            animation: 'slide_from_bottom',
+          }}
+        />
+        <Stack.Screen
+          name="Settings"
+          component={SettingsScreen}
+          options={{
+            presentation: 'modal',
+            animation: 'slide_from_bottom',
+          }}
+        />
+        <Stack.Screen
+          name="Path"
+          component={PathScreen}
           options={{
             presentation: 'modal',
             animation: 'slide_from_bottom',

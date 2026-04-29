@@ -1,6 +1,7 @@
 import * as Notifications from 'expo-notifications';
 import * as Device from 'expo-device';
 import { Platform } from 'react-native';
+import i18n from '../i18n';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -54,8 +55,8 @@ export const scheduleDailyReminder = async () => {
   await Notifications.scheduleNotificationAsync({
     identifier: DAILY_REMINDER_ID,
     content: {
-      title: "Time to level up! 🚀",
-      body: "Your daily action is waiting. Don't break your streak!",
+      title: i18n.t('notifications.reminderTitleProgress', { streak: '' }).trim(),
+      body: i18n.t('notifications.reminderBodyProgress'),
       sound: true,
     },
     trigger: {
@@ -82,8 +83,8 @@ export const scheduleStreakReminder = async () => {
   await Notifications.scheduleNotificationAsync({
     identifier: EVENING_REMINDER_ID,
     content: {
-      title: "Your streak is in danger! 🔥",
-      body: "Complete today's action before midnight to keep your streak alive!",
+      title: i18n.t('notifications.reminderTitleDanger', { streak: '' }).replace('  ', ' ').trim(),
+      body: i18n.t('notifications.reminderBodyDanger'),
       sound: true,
     },
     trigger: {

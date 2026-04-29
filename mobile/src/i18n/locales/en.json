@@ -1,0 +1,182 @@
+{
+  "common": {
+    "continue": "Continue",
+    "back": "Back",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "close": "Close",
+    "next": "Next",
+    "done": "Done",
+    "start": "Start",
+    "loading": "Loading...",
+    "error": "Error",
+    "tryAgain": "Try again",
+    "yes": "Yes",
+    "no": "No",
+    "today": "Today",
+    "you": "You",
+    "settings": "Settings",
+    "profile": "Profile"
+  },
+  "onboarding": {
+    "title": "Monk Mode",
+    "subtitle": "Pick your discipline. Finish your sprint. Transform yourself.",
+    "bullet1": "One task per day",
+    "bullet2": "If the flame dies, it all dies",
+    "bullet3": "Finish a sprint, raise your rank",
+    "cta": "Start"
+  },
+  "auth": {
+    "welcomeTitle": "Welcome to Monk Mode",
+    "welcomeSubtitle": "Your discipline journey starts here",
+    "login": "Log In",
+    "signup": "Sign Up",
+    "guestMode": "Continue as guest",
+    "email": "Email",
+    "password": "Password",
+    "name": "Name",
+    "forgotPassword": "Forgot password",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "signInWithApple": "Continue with Apple",
+    "passwordResetSent": "Password reset link sent",
+    "invalidCredentials": "Invalid email or password"
+  },
+  "home": {
+    "streak": "{{count}} day sprint",
+    "todayLesson": "Today's lesson",
+    "complete": "Complete",
+    "completed": "Completed",
+    "streakActive": "Sprint active",
+    "streakStart": "Start monk mode",
+    "noActiveSprint": "No active sprint",
+    "selectSprint": "Select a sprint",
+    "openPath": "Open path",
+    "todaysTasks": "Today's Tasks",
+    "maintenanceTasks": "Maintenance Tasks",
+    "rules": "Rules",
+    "newSprint": "Choose New Sprint",
+    "abandonSprint": "Abandon sprint"
+  },
+  "lesson": {
+    "teaching": "Teaching",
+    "action": "Do today",
+    "reflection": "Reflection",
+    "reflectionPlaceholder": "What did this task teach you?",
+    "completeLesson": "Complete lesson",
+    "skipLesson": "Skip today",
+    "easier": "Make easier",
+    "harder": "Make harder"
+  },
+  "profile": {
+    "title": "You",
+    "rank": "Rank",
+    "stats": "Stats",
+    "totalXp": "Total XP",
+    "sprintsDone": "Sprints Done",
+    "activeSprint": "Active Sprint",
+    "totalSprints": "Total Sprints",
+    "levelProgress": "Level Progress",
+    "level": "Level",
+    "maxLevel": "Max Level!",
+    "recentAchievements": "Recent Achievements",
+    "seeAll": "See all",
+    "sprintHistory": "Sprint History",
+    "noAchievements": "Complete tasks to unlock achievements!",
+    "noSprintHistory": "No completed sprints yet.",
+    "completed": "✓ Completed",
+    "abandoned": "✗ Abandoned",
+    "navPath": "Path",
+    "navHistory": "History",
+    "navAchievements": "Ranks",
+    "navSettings": "Settings"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "notifications": "Notifications",
+    "dailyReminder": "Daily Reminder",
+    "reminderTime": "Reminder Time",
+    "account": "Account",
+    "logout": "Log Out",
+    "deleteAccount": "Delete Account",
+    "deleteAccountConfirm": "Are you sure you want to delete your account? This cannot be undone.",
+    "premium": "Premium",
+    "managePremium": "Manage Premium",
+    "restorePurchases": "Restore Purchases",
+    "privacyPolicy": "Privacy Policy",
+    "termsOfService": "Terms of Service",
+    "version": "Version",
+    "support": "Support"
+  },
+  "paywall": {
+    "title": "Full Monk Mode",
+    "subtitle": "First 7 days free",
+    "feature1": "All sprints unlocked",
+    "feature2": "More streak freezes",
+    "feature3": "Advanced analytics",
+    "feature4": "Sprint analysis and weekly review",
+    "feature5": "Cross-device sync",
+    "monthly": "Monthly",
+    "yearly": "Yearly",
+    "saveAmount": "Save {{amount}}",
+    "ctaTrial": "Start 7-day free trial",
+    "ctaContinue": "Continue for now",
+    "autoRenew": "Auto-renews. Cancel anytime in App Store.",
+    "loading": "Processing..."
+  },
+  "sprintComplete": {
+    "title": "Sprint Complete!",
+    "subtitle": "You held {{days}} days",
+    "xpEarned": "Earned {{xp}} XP",
+    "newRank": "New rank: {{rank}}",
+    "share": "Share",
+    "continue": "Choose new sprint"
+  },
+  "history": {
+    "title": "History",
+    "filterAll": "All",
+    "filterCompleted": "Completed",
+    "filterAbandoned": "Abandoned",
+    "noHistory": "No history yet"
+  },
+  "achievements": {
+    "title": "Ranks",
+    "locked": "Locked",
+    "unlocked": "Unlocked",
+    "rarity": {
+      "common": "Common",
+      "rare": "Rare",
+      "epic": "Epic",
+      "legendary": "Legendary"
+    }
+  },
+  "path": {
+    "title": "Path",
+    "current": "Current",
+    "locked": "Locked",
+    "completed": "Completed"
+  },
+  "sprintSelect": {
+    "title": "Select Sprint",
+    "subtitle": "Which discipline will you focus on?",
+    "duration": "{{days}} days",
+    "tier": "Tier {{tier}}",
+    "premiumLocked": "Unlock with Premium",
+    "start": "Start"
+  },
+  "notifications": {
+    "reminderTitleStart": "🔥 Begin monk mode",
+    "reminderTitleDanger": "🔥 {{streak}} days at risk",
+    "reminderTitleProgress": "🔥 {{streak}} days — discipline",
+    "reminderBodyStart": "Take the first step. 5 minutes.",
+    "reminderBodyDanger": "This much effort can't be wasted. Today's task awaits.",
+    "reminderBodyProgress": "Complete today, keep the sprint alive."
+  },
+  "share": {
+    "streakStart": "Starting monk mode 🔥 Discipline. Focus. Repeat.",
+    "streakActive": "{{streak}} days — monk mode running 🔥 Join me, don't let the flame die.",
+    "title": "Monk Mode 🔥"
+  }
+}

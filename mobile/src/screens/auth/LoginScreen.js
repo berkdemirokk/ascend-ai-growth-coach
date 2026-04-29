@@ -13,10 +13,12 @@ import {
   Alert,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useTranslation } from 'react-i18next';
 import { COLORS } from '../../config/constants';
 import { useAuth } from '../../contexts/AuthContext';
 
 export default function LoginScreen({ navigation }) {
+  const { t } = useTranslation();
   const { signIn } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -24,18 +26,18 @@ export default function LoginScreen({ navigation }) {
 
   const handleLogin = async () => {
     if (!email.includes('@')) {
-      Alert.alert('Geçersiz e-posta', 'Lütfen geçerli bir e-posta adresi gir.');
+      Alert.alert(t('common.error'), t('auth.invalidCredentials'));
       return;
     }
     if (password.length < 6) {
-      Alert.alert('Şifre çok kısa', 'Şifre en az 6 karakter olmalı.');
+      Alert.alert(t('common.error'), t('auth.invalidCredentials'));
       return;
     }
     setLoading(true);
     const { error } = await signIn({ email, password });
     setLoading(false);
     if (error) {
-      Alert.alert('Giriş başarısız', error.message || 'Bir hata oluştu.');
+      Alert.alert(t('common.error'), error.message || t('auth.invalidCredentials'));
     }
     // Başarı durumunda AuthContext session güncellenir, navigator otomatik yönlendirir.
   };
@@ -57,17 +59,15 @@ export default function LoginScreen({ navigation }) {
             <Text style={styles.backIcon}>←</Text>
           </TouchableOpacity>
 
-          <Text style={styles.title}>Tekrar Hoş Geldin</Text>
-          <Text style={styles.subtitle}>
-            Hesabına gir ve yolculuğuna devam et.
-          </Text>
+          <Text style={styles.title}>{t('auth.welcomeTitle')}</Text>
+          <Text style={styles.subtitle}>{t('auth.welcomeSubtitle')}</Text>
 
           <View style={styles.form}>
-            <Text style={styles.label}>E-posta</Text>
+            <Text style={styles.label}>{t('auth.email')}</Text>
             <TextInput
               value={email}
               onChangeText={setEmail}
-              placeholder="ornek@mail.com"
+              placeholder="example@mail.com"
               placeholderTextColor={COLORS.textMuted}
               keyboardType="email-address"
               autoCapitalize="none"
@@ -75,7 +75,7 @@ export default function LoginScreen({ navigation }) {
               style={styles.input}
             />
 
-            <Text style={styles.label}>Şifre</Text>
+            <Text style={styles.label}>{t('auth.password')}</Text>
             <TextInput
               value={password}
               onChangeText={setPassword}
@@ -89,7 +89,7 @@ export default function LoginScreen({ navigation }) {
               onPress={() => navigation.navigate('ForgotPassword')}
               style={styles.forgotBtn}
             >
-              <Text style={styles.forgotText}>Şifremi unuttum</Text>
+              <Text style={styles.forgotText}>{t('auth.forgotPassword')}</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -107,7 +107,7 @@ export default function LoginScreen({ navigation }) {
                 {loading ? (
                   <ActivityIndicator color={COLORS.text} />
                 ) : (
-                  <Text style={styles.primaryText}>Giriş Yap</Text>
+                  <Text style={styles.primaryText}>{t('auth.login')}</Text>
                 )}
               </LinearGradient>
             </TouchableOpacity>
@@ -117,8 +117,8 @@ export default function LoginScreen({ navigation }) {
               style={styles.switchBtn}
             >
               <Text style={styles.switchText}>
-                Hesabın yok mu?{' '}
-                <Text style={styles.switchLink}>Kayıt ol</Text>
+                {t('auth.noAccount')}{' '}
+                <Text style={styles.switchLink}>{t('auth.signup')}</Text>
               </Text>
             </TouchableOpacity>
           </View>

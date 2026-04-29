@@ -13,10 +13,12 @@ import {
   Alert,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useTranslation } from 'react-i18next';
 import { COLORS } from '../../config/constants';
 import { useAuth } from '../../contexts/AuthContext';
 
 export default function SignupScreen({ navigation }) {
+  const { t } = useTranslation();
   const { signUp } = useAuth();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -24,31 +26,22 @@ export default function SignupScreen({ navigation }) {
   const [loading, setLoading] = useState(false);
 
   const handleSignup = async () => {
-    if (!name.trim()) {
-      Alert.alert('İsim gerekli', 'Sana nasıl hitap edelim?');
-      return;
-    }
-    if (!email.includes('@') || !email.includes('.')) {
-      Alert.alert('Geçersiz e-posta', 'Lütfen geçerli bir e-posta adresi gir.');
-      return;
-    }
-    if (password.length < 6) {
-      Alert.alert('Şifre çok kısa', 'Şifre en az 6 karakter olmalı.');
+    if (!name.trim() || !email.includes('@') || !email.includes('.') || password.length < 6) {
+      Alert.alert(t('common.error'), t('auth.invalidCredentials'));
       return;
     }
     setLoading(true);
     const { data, error } = await signUp({ email, password, name });
     setLoading(false);
     if (error) {
-      Alert.alert('Kayıt başarısız', error.message || 'Bir hata oluştu.');
+      Alert.alert(t('common.error'), error.message || t('auth.invalidCredentials'));
       return;
     }
-    // If email confirmation is required, tell user
     if (data?.user && !data?.session) {
       Alert.alert(
-        'E-postanı onayla',
-        'Kayıt tamamlandı. E-postana gönderilen onay bağlantısına tıkla ve tekrar giriş yap.',
-        [{ text: 'Tamam', onPress: () => navigation.replace('Login') }],
+        t('auth.email'),
+        t('auth.passwordResetSent'),
+        [{ text: t('common.done'), onPress: () => navigation.replace('Login') }],
       );
     }
     // Otherwise session auto-updates via AuthContext listener
@@ -71,27 +64,25 @@ export default function SignupScreen({ navigation }) {
             <Text style={styles.backIcon}>←</Text>
           </TouchableOpacity>
 
-          <Text style={styles.title}>Hesap Oluştur</Text>
-          <Text style={styles.subtitle}>
-            İlerlemeni cihazlar arasında güvende tut.
-          </Text>
+          <Text style={styles.title}>{t('auth.signup')}</Text>
+          <Text style={styles.subtitle}>{t('auth.welcomeSubtitle')}</Text>
 
           <View style={styles.form}>
-            <Text style={styles.label}>İsmin</Text>
+            <Text style={styles.label}>{t('auth.name')}</Text>
             <TextInput
               value={name}
               onChangeText={setName}
-              placeholder="Berk"
+              placeholder=""
               placeholderTextColor={COLORS.textMuted}
               autoCapitalize="words"
               style={styles.input}
             />
 
-            <Text style={styles.label}>E-posta</Text>
+            <Text style={styles.label}>{t('auth.email')}</Text>
             <TextInput
               value={email}
               onChangeText={setEmail}
-              placeholder="ornek@mail.com"
+              placeholder="example@mail.com"
               placeholderTextColor={COLORS.textMuted}
               keyboardType="email-address"
               autoCapitalize="none"
@@ -99,11 +90,11 @@ export default function SignupScreen({ navigation }) {
               style={styles.input}
             />
 
-            <Text style={styles.label}>Şifre</Text>
+            <Text style={styles.label}>{t('auth.password')}</Text>
             <TextInput
               value={password}
               onChangeText={setPassword}
-              placeholder="En az 6 karakter"
+              placeholder="••••••••"
               placeholderTextColor={COLORS.textMuted}
               secureTextEntry
               style={styles.input}
@@ -124,7 +115,7 @@ export default function SignupScreen({ navigation }) {
                 {loading ? (
                   <ActivityIndicator color={COLORS.text} />
                 ) : (
-                  <Text style={styles.primaryText}>Kayıt Ol</Text>
+                  <Text style={styles.primaryText}>{t('auth.signup')}</Text>
                 )}
               </LinearGradient>
             </TouchableOpacity>
@@ -134,8 +125,8 @@ export default function SignupScreen({ navigation }) {
               style={styles.switchBtn}
             >
               <Text style={styles.switchText}>
-                Zaten hesabın var mı?{' '}
-                <Text style={styles.switchLink}>Giriş yap</Text>
+                {t('auth.hasAccount')}{' '}
+                <Text style={styles.switchLink}>{t('auth.login')}</Text>
               </Text>
             </TouchableOpacity>
           </View>

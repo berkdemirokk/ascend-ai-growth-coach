@@ -10,9 +10,11 @@ import {
   SafeAreaView,
   Linking,
 } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { useApp } from '../contexts/AppContext';
 import { useAuth } from '../contexts/AuthContext';
 import { COLORS, LEGAL } from '../config/constants';
+import { setLanguage, getCurrentLanguage, SUPPORTED_LANGUAGES } from '../i18n';
 
 const COLORS_THEME = {
   background: '#0B0B14',
@@ -27,10 +29,17 @@ const COLORS_THEME = {
 };
 
 export default function SettingsScreen({ navigation }) {
+  const { t, i18n } = useTranslation();
   const { isPremium, deleteAccount } = useApp();
   const { user, isAuthenticated, guestMode, signOut } = useAuth();
 
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
+  const [currentLang, setCurrentLang] = useState(getCurrentLanguage());
+
+  const handleChangeLanguage = async (code) => {
+    await setLanguage(code);
+    setCurrentLang(code);
+  };
 
   const handleSignOut = () => {
     Alert.alert(
@@ -106,10 +115,33 @@ export default function SettingsScreen({ navigation }) {
         contentContainerStyle={styles.contentContainer}
         showsVerticalScrollIndicator={false}
       >
-        <Text style={styles.screenTitle}>Settings</Text>
+        <Text style={styles.screenTitle}>{t('settings.title')}</Text>
+
+        {/* LANGUAGE */}
+        <SectionHeader title={t('settings.language')} />
+        <View style={styles.card}>
+          <View style={styles.langRow}>
+            {SUPPORTED_LANGUAGES.map((lang) => {
+              const active = currentLang === lang.code;
+              return (
+                <TouchableOpacity
+                  key={lang.code}
+                  style={[styles.langBtn, active && styles.langBtnActive]}
+                  onPress={() => handleChangeLanguage(lang.code)}
+                  activeOpacity={0.7}
+                >
+                  <Text style={styles.langFlag}>{lang.flag}</Text>
+                  <Text style={[styles.langLabel, active && styles.langLabelActive]}>
+                    {lang.label}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+        </View>
 
         {/* PREMIUM */}
-        <SectionHeader title="Premium" />
+        <SectionHeader title={t('settings.premium')} />
         <View style={styles.card}>
           {isPremium ? (
             <View style={styles.premiumBadgeRow}>
@@ -139,9 +171,9 @@ export default function SettingsScreen({ navigation }) {
         </View>
 
         {/* NOTIFICATIONS */}
-        <SectionHeader title="Notifications" />
+        <SectionHeader title={t('settings.notifications')} />
         <View style={styles.card}>
-          <SettingRow label="Daily Reminders" borderBottom={false}>
+          <SettingRow label={t('settings.dailyReminder')} borderBottom={false}>
             <Switch
               value={notificationsEnabled}
               onValueChange={setNotificationsEnabled}
@@ -159,7 +191,7 @@ export default function SettingsScreen({ navigation }) {
             onPress={() => openURL(LEGAL?.PRIVACY_URL || 'https://example.com/privacy')}
             activeOpacity={0.7}
           >
-            <Text style={styles.settingLabel}>Privacy Policy</Text>
+            <Text style={styles.settingLabel}>{t('settings.privacyPolicy')}</Text>
             <Text style={styles.linkArrow}>›</Text>
           </TouchableOpacity>
           <View style={styles.divider} />
@@ -168,13 +200,13 @@ export default function SettingsScreen({ navigation }) {
             onPress={() => openURL(LEGAL?.TERMS_URL || 'https://example.com/terms')}
             activeOpacity={0.7}
           >
-            <Text style={styles.settingLabel}>Terms of Service</Text>
+            <Text style={styles.settingLabel}>{t('settings.termsOfService')}</Text>
             <Text style={styles.linkArrow}>›</Text>
           </TouchableOpacity>
         </View>
 
         {/* ACCOUNT */}
-        <SectionHeader title="Account" />
+        <SectionHeader title={t('settings.account')} />
         <View style={styles.card}>
           {isAuthenticated && user?.email ? (
             <SettingRow label="E-posta">
@@ -194,7 +226,7 @@ export default function SettingsScreen({ navigation }) {
               onPress={handleSignOut}
               activeOpacity={0.8}
             >
-              <Text style={styles.signOutButtonText}>Çıkış Yap</Text>
+              <Text style={styles.signOutButtonText}>{t('settings.logout')}</Text>
             </TouchableOpacity>
           ) : null}
 
@@ -224,6 +256,39 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: '#0B0B14',
+  },
+  langRow: {
+    flexDirection: 'row',
+    gap: 8,
+    padding: 12,
+  },
+  langBtn: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 8,
+    borderRadius: 12,
+    borderWidth: 1.5,
+    borderColor: '#2A2A42',
+    backgroundColor: '#0B0B14',
+  },
+  langBtnActive: {
+    borderColor: '#6366F1',
+    backgroundColor: '#6366F125',
+  },
+  langFlag: {
+    fontSize: 24,
+    marginBottom: 4,
+  },
+  langLabel: {
+    fontSize: 12,
+    color: '#9898B0',
+    fontWeight: '600',
+  },
+  langLabelActive: {
+    color: '#FFFFFF',
+    fontWeight: '700',
   },
   container: {
     flex: 1,

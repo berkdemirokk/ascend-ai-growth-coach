@@ -56,7 +56,7 @@ export const getOfferings = async () => {
   }
 };
 
-export const purchasePremium = async () => {
+export const purchasePremium = async (period = 'monthly') => {
   try {
     const offerings = await getOfferings();
     if (!offerings?.availablePackages?.length) {
@@ -64,12 +64,43 @@ export const purchasePremium = async () => {
     }
     const P = await loadPurchasesModule();
     if (!P) throw new Error('Purchases module unavailable');
-    const pkg = offerings.availablePackages[0];
+
+    // Pick package by RevenueCat package type or fallback to product id match
+    const pkgs = offerings.availablePackages;
+    let pkg = null;
+    if (period === 'yearly') {
+      pkg = pkgs.find((p) => p.packageType === 'ANNUAL')
+        || pkgs.find((p) => p.product?.identifier === REVENUECAT_CONFIG.PRODUCT_ID_YEARLY);
+    } else {
+      pkg = pkgs.find((p) => p.packageType === 'MONTHLY')
+        || pkgs.find((p) => p.product?.identifier === REVENUECAT_CONFIG.PRODUCT_ID_MONTHLY);
+    }
+    if (!pkg) pkg = pkgs[0];
+
     const { customerInfo } = await P.purchasePackage(pkg);
     return customerInfo?.entitlements?.active?.[REVENUECAT_CONFIG.ENTITLEMENT_ID] != null;
   } catch (e) {
     if (e.userCancelled) return false;
     throw e;
+  }
+};
+
+export const getAvailablePackages = async () => {
+  try {
+    const offerings = await getOfferings();
+    if (!offerings?.availablePackages?.length) return null;
+    const pkgs = offerings.availablePackages;
+    return {
+      monthly: pkgs.find((p) => p.packageType === 'MONTHLY')
+        || pkgs.find((p) => p.product?.identifier === REVENUECAT_CONFIG.PRODUCT_ID_MONTHLY)
+        || null,
+      yearly: pkgs.find((p) => p.packageType === 'ANNUAL')
+        || pkgs.find((p) => p.product?.identifier === REVENUECAT_CONFIG.PRODUCT_ID_YEARLY)
+        || null,
+    };
+  } catch (e) {
+    console.warn('getAvailablePackages error:', e?.message);
+    return null;
   }
 };
 

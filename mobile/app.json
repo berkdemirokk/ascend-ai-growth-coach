@@ -16,10 +16,11 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.ascend.growth",
       "buildNumber": "14",
+      "usesAppleSignIn": true,
       "infoPlist": {
-        "NSUserTrackingUsageDescription": "This identifier will be used to deliver personalized ads to you.",
-        "SKAdNetworkItems": [],
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "CFBundleLocalizations": ["tr", "en", "ar"],
+        "CFBundleAllowMixedLocalizations": true
       }
     },
     "android": {
@@ -37,20 +38,8 @@
           "color": "#6366F1"
         }
       ],
-      [
-        "react-native-google-mobile-ads",
-        {
-          "iosAppId": "ca-app-pub-9898903071826160~9553442066",
-          "androidAppId": "ca-app-pub-9898903071826160~9553442066",
-          "userTrackingUsageDescription": "This identifier will be used to deliver personalized ads to you."
-        }
-      ],
-      [
-        "expo-tracking-transparency",
-        {
-          "userTrackingPermission": "This identifier will be used to deliver personalized ads to you."
-        }
-      ]
+      "expo-apple-authentication",
+      "expo-localization"
     ],
     "extra": {
       "supabase": {
