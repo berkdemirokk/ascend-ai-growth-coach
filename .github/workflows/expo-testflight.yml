@@ -118,7 +118,11 @@ jobs:
             -destination "generic/platform=iOS" \
             -archivePath "$APP_ARCHIVE_PATH" \
             -allowProvisioningUpdates \
+            -sdk iphoneos \
             DEVELOPMENT_TEAM="${{ secrets.APPLE_TEAM_ID }}" \
+            CODE_SIGN_STYLE=Automatic \
+            CODE_SIGN_IDENTITY="Apple Distribution" \
+            PROVISIONING_PROFILE_SPECIFIER="" \
             CURRENT_PROJECT_VERSION="${{ github.run_number }}" \
             -authenticationKeyPath "$API_KEY_PATH" \
             -authenticationKeyID "${{ secrets.APP_STORE_CONNECT_KEY_ID }}" \
