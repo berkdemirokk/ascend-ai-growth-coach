@@ -50,18 +50,50 @@ jobs:
           cd ios
           pod install --repo-update
 
-      - name: Patch project for Distribution signing
+      - name: Download App Store provisioning profile via ASC API
+        working-directory: ${{ github.workspace }}
         run: |
-          # Expo prebuild sets CODE_SIGN_IDENTITY = "Apple Development" in
-          # both Debug and Release. For archive (Release) we need Distribution.
-          PBXPROJ=$(find ios -name "project.pbxproj" | head -n 1)
-          echo "Patching $PBXPROJ"
-          # Replace 'Apple Development' with 'Apple Distribution' (Release config will be picked when -configuration Release is used; Debug ones still build but we won't sign Debug)
-          sed -i.bak 's/"Apple Development"/"Apple Distribution"/g' "$PBXPROJ"
-          sed -i.bak2 's/CODE_SIGN_IDENTITY = "iPhone Developer"/CODE_SIGN_IDENTITY = "Apple Distribution"/g' "$PBXPROJ"
-          rm -f "$PBXPROJ.bak" "$PBXPROJ.bak2"
-          # Verify
-          grep -n "CODE_SIGN_IDENTITY\|Apple Distribution" "$PBXPROJ" | head -10 || true
+          # Use fastlane sigh (preinstalled on macos-latest) to fetch the latest
+          # App Store distribution profile from Apple Developer Portal.
+          PROFILE_DIR="$RUNNER_TEMP/profiles"
+          mkdir -p "$PROFILE_DIR"
+
+          fastlane sigh download_all \
+            --app_identifier "$BUNDLE_ID" \
+            --team_id "${{ secrets.APPLE_TEAM_ID }}" \
+            --api_key_path "$API_KEY_PATH" \
+            --output_path "$PROFILE_DIR" \
+            --platform ios \
+            --skip_certificate_verification true \
+          || fastlane sigh \
+            --app_identifier "$BUNDLE_ID" \
+            --team_id "${{ secrets.APPLE_TEAM_ID }}" \
+            --api_key_path "$API_KEY_PATH" \
+            --output_path "$PROFILE_DIR" \
+            --filename "AscendMonkMode.mobileprovision" \
+            --platform ios \
+            --skip_certificate_verification true
+
+          ls -la "$PROFILE_DIR"
+
+          # Find the App Store profile (filename pattern from sigh)
+          PROFILE_FILE=$(find "$PROFILE_DIR" -name "*.mobileprovision" | head -n 1)
+          if [ -z "$PROFILE_FILE" ]; then
+            echo "No provisioning profile downloaded."
+            exit 1
+          fi
+          echo "Found profile: $PROFILE_FILE"
+
+          # Install profile into Xcode's profile directory
+          PP_PLIST="$RUNNER_TEMP/profile.plist"
+          security cms -D -i "$PROFILE_FILE" > "$PP_PLIST"
+          PROFILE_UUID=$(/usr/libexec/PlistBuddy -c "Print :UUID" "$PP_PLIST")
+          PROFILE_NAME=$(/usr/libexec/PlistBuddy -c "Print :Name" "$PP_PLIST")
+          mkdir -p "$HOME/Library/MobileDevice/Provisioning Profiles"
+          cp "$PROFILE_FILE" "$HOME/Library/MobileDevice/Provisioning Profiles/$PROFILE_UUID.mobileprovision"
+          echo "PROFILE_UUID=$PROFILE_UUID" >> "$GITHUB_ENV"
+          echo "PROFILE_NAME=$PROFILE_NAME" >> "$GITHUB_ENV"
+          echo "Installed profile: $PROFILE_NAME ($PROFILE_UUID)"
 
       - name: Import iOS distribution certificate
         uses: apple-actions/import-codesign-certs@v3
@@ -109,9 +141,14 @@ jobs:
             <key>method</key>
             <string>app-store</string>
             <key>signingStyle</key>
-            <string>automatic</string>
+            <string>manual</string>
             <key>teamID</key>
             <string>${{ secrets.APPLE_TEAM_ID }}</string>
+            <key>provisioningProfiles</key>
+            <dict>
+              <key>$BUNDLE_ID</key>
+              <string>$PROFILE_NAME</string>
+            </dict>
             <key>uploadSymbols</key>
             <true/>
             <key>stripSwiftSymbols</key>
@@ -133,7 +170,9 @@ jobs:
             -allowProvisioningUpdates \
             -sdk iphoneos \
             DEVELOPMENT_TEAM="${{ secrets.APPLE_TEAM_ID }}" \
-            CODE_SIGN_STYLE=Automatic \
+            CODE_SIGN_STYLE=Manual \
+            CODE_SIGN_IDENTITY="Apple Distribution" \
+            PROVISIONING_PROFILE_SPECIFIER="$PROFILE_NAME" \
             CURRENT_PROJECT_VERSION="${{ github.run_number }}" \
             -authenticationKeyPath "$API_KEY_PATH" \
             -authenticationKeyID "${{ secrets.APP_STORE_CONNECT_KEY_ID }}" \
