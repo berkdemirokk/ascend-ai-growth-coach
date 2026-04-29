@@ -75,6 +75,12 @@ const initialState = {
   lessonCompletions: {},
   readFactIds: {},
 
+  // ── Discipline Academy (path-based curriculum) ────────────────────────
+  // pathProgress: { [pathId]: { completed: [lessonId, ...], reflections: { [lessonId]: text } } }
+  // activePathId: currently selected path
+  pathProgress: {},
+  activePathId: 'dopamine-detox',
+
   // Internal
   _loaded: false,
 };
@@ -122,6 +128,8 @@ const ACTION_TYPES = {
   STOP_MAINTENANCE: 'STOP_MAINTENANCE',
   COMPLETE_LESSON: 'COMPLETE_LESSON',
   MARK_FACT_READ: 'MARK_FACT_READ',
+  COMPLETE_PATH_LESSON: 'COMPLETE_PATH_LESSON',
+  SET_ACTIVE_PATH: 'SET_ACTIVE_PATH',
 };
 
 function appReducer(state, action) {
@@ -327,6 +335,48 @@ function appReducer(state, action) {
           ...state.readFactIds,
           [factId]: new Date().toISOString(),
         },
+      };
+    }
+
+    case ACTION_TYPES.SET_ACTIVE_PATH: {
+      return { ...state, activePathId: action.payload };
+    }
+
+    case ACTION_TYPES.COMPLETE_PATH_LESSON: {
+      const { pathId, lessonId, reflection, xp } = action.payload;
+      const today = getTodayDateString();
+      const current = state.pathProgress[pathId] || { completed: [], reflections: {} };
+      if (current.completed.includes(lessonId)) return state;
+
+      const newTotalXP = state.totalXP + (xp || 10);
+      const lvl = checkLevelUp(state.level, newTotalXP);
+
+      // Streak update — completing a lesson counts as today's action
+      let newStreak = state.currentStreak;
+      let newLastDate = state.lastCompletedDate;
+      if (state.lastCompletedDate !== today) {
+        const yesterday = getYesterdayDateString();
+        newStreak = state.lastCompletedDate === yesterday ? state.currentStreak + 1 : 1;
+        newLastDate = today;
+      }
+
+      return {
+        ...state,
+        pathProgress: {
+          ...state.pathProgress,
+          [pathId]: {
+            completed: [...current.completed, lessonId],
+            reflections: reflection
+              ? { ...current.reflections, [lessonId]: reflection }
+              : current.reflections,
+          },
+        },
+        totalXP: newTotalXP,
+        level: lvl.newLevel,
+        currentStreak: newStreak,
+        longestStreak: Math.max(state.longestStreak, newStreak),
+        lastCompletedDate: newLastDate,
+        actionsSinceLastAd: state.actionsSinceLastAd + 1,
       };
     }
 
@@ -735,6 +785,21 @@ export function AppProvider({ children }) {
     dispatch({ type: ACTION_TYPES.MARK_FACT_READ, payload: { factId } });
   }, []);
 
+  // ── Discipline Academy: path lessons ───────────────────────────────────
+  const setActivePath = useCallback((pathId) => {
+    dispatch({ type: ACTION_TYPES.SET_ACTIVE_PATH, payload: pathId });
+  }, []);
+
+  const completePathLesson = useCallback(
+    ({ pathId, lessonId, reflection, xp = 10 }) => {
+      dispatch({
+        type: ACTION_TYPES.COMPLETE_PATH_LESSON,
+        payload: { pathId, lessonId, reflection, xp },
+      });
+    },
+    [],
+  );
+
   // ── Derived ────────────────────────────────────────────────────────────
   const today = getTodayDateString();
   const currentSprintDay = state.activeSprint
@@ -812,6 +877,8 @@ export function AppProvider({ children }) {
     startMaintenance,
     stopMaintenance,
     completeMaintenanceTask,
+    setActivePath,
+    completePathLesson,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

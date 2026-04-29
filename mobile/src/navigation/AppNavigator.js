@@ -75,7 +75,7 @@ function MainTabs() {
     >
       <Tab.Screen
         name="Home"
-        component={HomeScreen}
+        component={PathScreen}
         options={{ title: TAB_LABEL_MAP.Home }}
       />
       <Tab.Screen

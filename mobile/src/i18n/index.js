@@ -6,15 +6,17 @@ import { I18nManager, NativeModules, Platform } from 'react-native';
 import tr from './locales/tr.json';
 import en from './locales/en.json';
 import ar from './locales/ar.json';
+import lessonsTR from './locales/lessons.tr.json';
+import lessonsEN from './locales/lessons.en.json';
 
 const STORAGE_KEY = 'ascend.language';
 const SUPPORTED = ['tr', 'en', 'ar'];
 const DEFAULT_LANG = 'tr';
 
 const resources = {
-  tr: { translation: tr },
-  en: { translation: en },
-  ar: { translation: ar },
+  tr: { translation: { ...tr, ...lessonsTR } },
+  en: { translation: { ...en, ...lessonsEN } },
+  ar: { translation: { ...ar, ...lessonsTR } }, // AR fallback to TR for now (curriculum)
 };
 
 const getDeviceLanguageCode = () => {

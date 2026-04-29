@@ -2,500 +2,298 @@ import React, { useState, useMemo } from 'react';
 import {
   View,
   Text,
+  ScrollView,
+  TouchableOpacity,
+  TextInput,
   StyleSheet,
   SafeAreaView,
-  TouchableOpacity,
-  ScrollView,
-  Alert,
+  Animated,
+  Easing,
+  Platform,
 } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { LinearGradient } from 'expo-linear-gradient';
-import { COLORS } from '../config/constants';
-import { getLessonById } from '../config/lessons';
-import { useApp } from '../contexts/AppContext';
+import * as Haptics from 'expo-haptics';
 
-export default function LessonScreen({ route, navigation }) {
-  const { lessonId } = route?.params || {};
-  const { completeLesson, lessonCompletions } = useApp();
+import { useApp } from '../contexts/AppContext';
+import { getPathById, getLessonById } from '../data/paths';
+import { showInterstitial, shouldShowAd } from '../services/ads';
+
+export default function LessonScreen({ navigation, route }) {
+  const { t } = useTranslation();
+  const { pathId, lessonId } = route.params || {};
+  const { completePathLesson, pathProgress, isPremium } = useApp();
+
+  const path = useMemo(() => getPathById(pathId), [pathId]);
   const lesson = useMemo(() => getLessonById(lessonId), [lessonId]);
 
-  const [phase, setPhase] = useState('cards'); // 'cards' | 'quiz' | 'result'
-  const [cardIndex, setCardIndex] = useState(0);
-  const [quizIndex, setQuizIndex] = useState(0);
-  const [selectedOption, setSelectedOption] = useState(null);
-  const [revealed, setRevealed] = useState(false);
-  const [correctCount, setCorrectCount] = useState(0);
-  const [resultPayload, setResultPayload] = useState(null);
+  const [reflection, setReflection] = useState('');
+  const [completing, setCompleting] = useState(false);
+  const [showCelebration, setShowCelebration] = useState(false);
 
-  if (!lesson) {
+  const alreadyCompleted = pathProgress?.[pathId]?.completed?.includes(lessonId);
+
+  if (!path || !lesson) {
     return (
       <SafeAreaView style={styles.safeArea}>
-        <View style={styles.empty}>
-          <Text style={styles.emptyText}>Ders bulunamadı.</Text>
-          <TouchableOpacity onPress={() => navigation?.goBack?.()}>
-            <Text style={styles.link}>Geri dön</Text>
+        <View style={styles.center}>
+          <Text style={styles.errorText}>{t('common.error', 'Hata')}</Text>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <Text style={styles.backText}>{t('common.back', 'Geri')}</Text>
           </TouchableOpacity>
         </View>
       </SafeAreaView>
     );
   }
 
-  const alreadyDone = !!lessonCompletions[lesson.id];
-  const cards = lesson.cards || [];
-  const quiz = lesson.quiz || [];
-  const currentCard = cards[cardIndex];
-  const currentQuestion = quiz[quizIndex];
+  const i18nBase = `lessons.${pathId}.${lesson.order}`;
+  const title = t(`${i18nBase}.title`, `${lesson.order}`);
+  const teaching = t(`${i18nBase}.teaching`, '');
+  const action = t(`${i18nBase}.action`, '');
+  const reflectionPrompt = t(`${i18nBase}.reflectionPrompt`, '');
 
-  const handleNextCard = () => {
-    if (cardIndex < cards.length - 1) {
-      setCardIndex((i) => i + 1);
-    } else if (quiz.length > 0) {
-      setPhase('quiz');
-    } else {
-      finalize(0);
-    }
+  const handleComplete = async () => {
+    if (completing || alreadyCompleted) return;
+    setCompleting(true);
+
+    try {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
+    } catch {}
+
+    completePathLesson({
+      pathId,
+      lessonId,
+      reflection: reflection.trim(),
+      xp: 15,
+    });
+
+    setShowCelebration(true);
+
+    setTimeout(async () => {
+      // Ad after every 2-3 lesson completions for free users
+      if (!isPremium && shouldShowAd(false)) {
+        try {
+          await showInterstitial();
+        } catch {}
+      }
+      navigation.goBack();
+    }, 1500);
   };
-
-  const handleSelectOption = (idx) => {
-    if (revealed) return;
-    setSelectedOption(idx);
-  };
-
-  const handleCheck = () => {
-    if (!currentQuestion) return;
-    const isCorrect =
-      currentQuestion.type === 'multiple'
-        ? selectedOption === currentQuestion.correctIndex
-        : currentQuestion.type === 'truefalse'
-          ? (selectedOption === 0) === !!currentQuestion.correct
-          : false;
-    if (isCorrect) setCorrectCount((c) => c + 1);
-    setRevealed(true);
-  };
-
-  const handleNextQuestion = () => {
-    setRevealed(false);
-    setSelectedOption(null);
-    if (quizIndex < quiz.length - 1) {
-      setQuizIndex((i) => i + 1);
-    } else {
-      finalize(correctCount);
-    }
-  };
-
-  const finalize = (correct) => {
-    if (alreadyDone) {
-      setPhase('result');
-      setResultPayload({ xpEarned: 0, alreadyDone: true });
-      return;
-    }
-    const result = completeLesson(lesson.id, correct);
-    setResultPayload(result || { xpEarned: 0 });
-    setPhase('result');
-  };
-
-  const handleClose = () => {
-    if (phase === 'result') {
-      navigation?.goBack?.();
-      return;
-    }
-    Alert.alert(
-      'Çıkmak istediğine emin misin?',
-      'Bu dersteki ilerleme kaybolacak.',
-      [
-        { text: 'Vazgeç', style: 'cancel' },
-        { text: 'Çık', style: 'destructive', onPress: () => navigation?.goBack?.() },
-      ],
-    );
-  };
-
-  // ─── Header ──────────────────────────────────────────────────────────
-  const totalSteps = cards.length + quiz.length;
-  const stepNum =
-    phase === 'cards' ? cardIndex + 1
-      : phase === 'quiz' ? cards.length + quizIndex + 1
-        : totalSteps;
-  const progress = Math.min(stepNum / Math.max(totalSteps, 1), 1);
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={handleClose} style={styles.closeBtn}>
-          <Text style={styles.closeIcon}>✕</Text>
-        </TouchableOpacity>
-        <View style={styles.progressTrack}>
-          <View style={[styles.progressFill, { width: `${progress * 100}%` }]} />
-        </View>
-      </View>
-
-      {phase === 'cards' && currentCard && (
-        <ScrollView
-          style={styles.body}
-          contentContainerStyle={styles.bodyContent}
-        >
-          <Text style={styles.lessonTitle}>{lesson.title}</Text>
-          <CardView card={currentCard} />
-          <Text style={styles.stepLabel}>
-            Kart {cardIndex + 1} / {cards.length}
+      <LinearGradient colors={['#0B0B14', '#161626']} style={styles.container}>
+        {/* Top bar */}
+        <View style={styles.topBar}>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.closeBtn}>
+            <Text style={styles.closeIcon}>✕</Text>
+          </TouchableOpacity>
+          <Text style={styles.lessonNumber}>
+            {lesson.order} / {path.duration}
           </Text>
-        </ScrollView>
-      )}
+          <View style={{ width: 32 }} />
+        </View>
 
-      {phase === 'quiz' && currentQuestion && (
         <ScrollView
-          style={styles.body}
-          contentContainerStyle={styles.bodyContent}
+          contentContainerStyle={styles.content}
+          showsVerticalScrollIndicator={false}
         >
-          <Text style={styles.quizLabel}>SORU {quizIndex + 1} / {quiz.length}</Text>
-          <Text style={styles.quizQuestion}>{currentQuestion.question}</Text>
-          {renderOptions(currentQuestion, selectedOption, revealed, handleSelectOption)}
-          {revealed && currentQuestion.explanation && (
-            <View style={styles.explanationBox}>
-              <Text style={styles.explanationLabel}>AÇIKLAMA</Text>
-              <Text style={styles.explanationText}>
-                {currentQuestion.explanation}
+          {/* Title */}
+          <Text style={styles.title}>{title}</Text>
+
+          {/* Teaching */}
+          <View style={styles.section}>
+            <Text style={styles.sectionLabel}>📖 {t('lesson.teaching', 'Öğretim')}</Text>
+            <View style={styles.card}>
+              <Text style={styles.cardText}>{teaching}</Text>
+            </View>
+          </View>
+
+          {/* Action */}
+          <View style={styles.section}>
+            <Text style={[styles.sectionLabel, { color: path.color }]}>
+              🎯 {t('lesson.action', 'Bugün yap')}
+            </Text>
+            <View style={[styles.card, styles.actionCard, { borderColor: path.color }]}>
+              <Text style={[styles.cardText, { color: '#FFFFFF', fontWeight: '600' }]}>
+                {action}
               </Text>
             </View>
-          )}
-        </ScrollView>
-      )}
-
-      {phase === 'result' && (
-        <View style={styles.body}>
-          <View style={styles.resultBox}>
-            <Text style={styles.resultEmoji}>
-              {correctCount === quiz.length ? '🏆' : correctCount > 0 ? '✨' : '📚'}
-            </Text>
-            <Text style={styles.resultTitle}>Ders Tamamlandı</Text>
-            <Text style={styles.resultStat}>
-              {correctCount} / {quiz.length} doğru
-            </Text>
-            {!resultPayload?.alreadyDone && resultPayload?.xpEarned ? (
-              <Text style={styles.resultXP}>+{resultPayload.xpEarned} XP</Text>
-            ) : (
-              <Text style={styles.resultMuted}>Bu ders daha önce tamamlandı.</Text>
-            )}
           </View>
-        </View>
-      )}
 
-      <View style={styles.footer}>
-        {phase === 'cards' && (
-          <TouchableOpacity
-            style={styles.primaryBtn}
-            activeOpacity={0.85}
-            onPress={handleNextCard}
-          >
-            <LinearGradient
-              colors={[COLORS.primary, COLORS.accent]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              style={styles.primaryGrad}
-            >
-              <Text style={styles.primaryText}>
-                {cardIndex < cards.length - 1 ? 'Devam' : quiz.length > 0 ? 'Quiz\'e Geç' : 'Bitir'}
+          {/* Reflection */}
+          {reflectionPrompt ? (
+            <View style={styles.section}>
+              <Text style={styles.sectionLabel}>
+                💭 {t('lesson.reflection', 'Yansıma')}
               </Text>
-            </LinearGradient>
-          </TouchableOpacity>
-        )}
+              <View style={styles.card}>
+                <Text style={styles.promptText}>{reflectionPrompt}</Text>
+                <TextInput
+                  value={reflection}
+                  onChangeText={setReflection}
+                  placeholder={t('lesson.reflectionPlaceholder', 'Düşüncelerini yaz...')}
+                  placeholderTextColor="#6B6B85"
+                  multiline
+                  numberOfLines={3}
+                  style={styles.input}
+                  editable={!alreadyCompleted}
+                />
+              </View>
+            </View>
+          ) : null}
 
-        {phase === 'quiz' && !revealed && (
+          {/* Complete button */}
           <TouchableOpacity
-            style={[
-              styles.primaryBtn,
-              selectedOption === null && styles.disabledBtn,
-            ]}
-            disabled={selectedOption === null}
+            onPress={handleComplete}
+            disabled={completing || alreadyCompleted}
             activeOpacity={0.85}
-            onPress={handleCheck}
+            style={styles.completeBtn}
           >
             <LinearGradient
               colors={
-                selectedOption === null
-                  ? [COLORS.border, COLORS.border]
-                  : [COLORS.primary, COLORS.accent]
+                alreadyCompleted
+                  ? ['#10B981', '#059669']
+                  : [path.color, path.color]
               }
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
-              style={styles.primaryGrad}
+              style={styles.completeGradient}
             >
-              <Text style={styles.primaryText}>Kontrol Et</Text>
-            </LinearGradient>
-          </TouchableOpacity>
-        )}
-
-        {phase === 'quiz' && revealed && (
-          <TouchableOpacity
-            style={styles.primaryBtn}
-            activeOpacity={0.85}
-            onPress={handleNextQuestion}
-          >
-            <LinearGradient
-              colors={[COLORS.primary, COLORS.accent]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              style={styles.primaryGrad}
-            >
-              <Text style={styles.primaryText}>
-                {quizIndex < quiz.length - 1 ? 'Devam' : 'Bitir'}
+              <Text style={styles.completeText}>
+                {alreadyCompleted
+                  ? `✓ ${t('lesson.completed', 'Tamamlandı')}`
+                  : `✓ ${t('lesson.completeLesson', 'Dersi tamamla')}`}
               </Text>
             </LinearGradient>
           </TouchableOpacity>
-        )}
 
-        {phase === 'result' && (
-          <TouchableOpacity
-            style={styles.primaryBtn}
-            activeOpacity={0.85}
-            onPress={() => navigation?.goBack?.()}
-          >
-            <LinearGradient
-              colors={[COLORS.primary, COLORS.accent]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              style={styles.primaryGrad}
-            >
-              <Text style={styles.primaryText}>Tamam</Text>
-            </LinearGradient>
-          </TouchableOpacity>
+          <View style={{ height: 40 }} />
+        </ScrollView>
+
+        {/* Celebration overlay */}
+        {showCelebration && (
+          <View style={styles.celebration}>
+            <Text style={styles.celebrationEmoji}>🔥</Text>
+            <Text style={styles.celebrationText}>+15 XP</Text>
+          </View>
         )}
-      </View>
+      </LinearGradient>
     </SafeAreaView>
   );
 }
 
-function CardView({ card }) {
-  if (card.type === 'tip') {
-    return (
-      <View style={styles.tipCard}>
-        <Text style={styles.tipIcon}>💡</Text>
-        <Text style={styles.tipText}>{card.text}</Text>
-      </View>
-    );
-  }
-  return (
-    <View style={styles.infoCard}>
-      {card.title && <Text style={styles.infoTitle}>{card.title}</Text>}
-      <Text style={styles.infoBody}>{card.body}</Text>
-    </View>
-  );
-}
-
-function renderOptions(question, selected, revealed, onSelect) {
-  if (question.type === 'truefalse') {
-    const opts = [
-      { idx: 0, label: 'Doğru' },
-      { idx: 1, label: 'Yanlış' },
-    ];
-    return opts.map((o) => {
-      const isSelected = selected === o.idx;
-      const isCorrect = revealed && (o.idx === 0) === !!question.correct;
-      const isWrong = revealed && isSelected && !isCorrect;
-      return (
-        <TouchableOpacity
-          key={o.idx}
-          activeOpacity={0.85}
-          style={[
-            styles.option,
-            isSelected && !revealed && styles.optionSelected,
-            isCorrect && styles.optionCorrect,
-            isWrong && styles.optionWrong,
-          ]}
-          onPress={() => onSelect(o.idx)}
-        >
-          <Text style={styles.optionText}>{o.label}</Text>
-        </TouchableOpacity>
-      );
-    });
-  }
-  return (question.options || []).map((opt, idx) => {
-    const isSelected = selected === idx;
-    const isCorrect = revealed && idx === question.correctIndex;
-    const isWrong = revealed && isSelected && !isCorrect;
-    return (
-      <TouchableOpacity
-        key={idx}
-        activeOpacity={0.85}
-        style={[
-          styles.option,
-          isSelected && !revealed && styles.optionSelected,
-          isCorrect && styles.optionCorrect,
-          isWrong && styles.optionWrong,
-        ]}
-        onPress={() => onSelect(idx)}
-      >
-        <Text style={styles.optionText}>{opt}</Text>
-      </TouchableOpacity>
-    );
-  });
-}
-
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: COLORS.background },
-  header: {
+  safeArea: { flex: 1, backgroundColor: '#0B0B14' },
+  container: { flex: 1 },
+  center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  errorText: { color: '#F5F5FA', fontSize: 16 },
+  backText: { color: '#6366F1', fontSize: 16, marginTop: 12 },
+
+  topBar: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
     paddingHorizontal: 16,
     paddingTop: 8,
-    paddingBottom: 16,
+    paddingBottom: 8,
   },
   closeBtn: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: COLORS.surface,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: '#161626',
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 12,
-  },
-  closeIcon: { color: COLORS.textSecondary, fontSize: 16, fontWeight: '600' },
-  progressTrack: {
-    flex: 1,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: COLORS.surface,
-    overflow: 'hidden',
-  },
-  progressFill: {
-    height: '100%',
-    backgroundColor: COLORS.primary,
-    borderRadius: 4,
-  },
-  body: { flex: 1 },
-  bodyContent: { padding: 20, paddingBottom: 40 },
-  lessonTitle: {
-    color: COLORS.text,
-    fontSize: 22,
-    fontWeight: '800',
-    marginBottom: 16,
-  },
-  stepLabel: {
-    color: COLORS.textMuted,
-    fontSize: 12,
-    textAlign: 'center',
-    marginTop: 16,
-    letterSpacing: 1,
-  },
-  infoCard: {
-    backgroundColor: COLORS.surface,
-    borderRadius: 16,
-    padding: 24,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: '#2A2A42',
   },
-  infoTitle: {
-    color: COLORS.primary,
-    fontSize: 16,
+  closeIcon: { color: '#9898B0', fontSize: 14, fontWeight: '700' },
+  lessonNumber: { color: '#9898B0', fontSize: 13, fontWeight: '700' },
+
+  content: {
+    paddingHorizontal: 20,
+    paddingTop: 8,
+    paddingBottom: 32,
+  },
+  title: {
+    color: '#F5F5FA',
+    fontSize: 26,
     fontWeight: '800',
-    marginBottom: 10,
-    letterSpacing: 0.3,
-  },
-  infoBody: {
-    color: COLORS.text,
-    fontSize: 17,
-    lineHeight: 26,
-  },
-  tipCard: {
-    backgroundColor: 'rgba(251,191,36,0.1)',
-    borderRadius: 16,
-    padding: 24,
-    borderWidth: 1,
-    borderColor: COLORS.gold,
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-  },
-  tipIcon: { fontSize: 28, marginRight: 12 },
-  tipText: {
-    flex: 1,
-    color: COLORS.text,
-    fontSize: 16,
-    lineHeight: 24,
-    fontStyle: 'italic',
-  },
-  quizLabel: {
-    color: COLORS.textMuted,
-    fontSize: 12,
-    fontWeight: '700',
-    letterSpacing: 1.5,
-    marginBottom: 8,
-  },
-  quizQuestion: {
-    color: COLORS.text,
-    fontSize: 20,
-    fontWeight: '700',
-    lineHeight: 28,
     marginBottom: 24,
+    lineHeight: 32,
   },
-  option: {
-    backgroundColor: COLORS.surface,
-    padding: 18,
-    borderRadius: 14,
-    borderWidth: 2,
-    borderColor: COLORS.border,
-    marginBottom: 12,
-  },
-  optionSelected: {
-    borderColor: COLORS.primary,
-    backgroundColor: 'rgba(99,102,241,0.1)',
-  },
-  optionCorrect: {
-    borderColor: COLORS.success,
-    backgroundColor: 'rgba(16,185,129,0.15)',
-  },
-  optionWrong: {
-    borderColor: COLORS.error,
-    backgroundColor: 'rgba(239,68,68,0.15)',
-  },
-  optionText: { color: COLORS.text, fontSize: 16, fontWeight: '500' },
-  explanationBox: {
-    marginTop: 16,
-    padding: 16,
-    backgroundColor: COLORS.surfaceLight,
-    borderRadius: 12,
-    borderLeftWidth: 4,
-    borderLeftColor: COLORS.primary,
-  },
-  explanationLabel: {
-    color: COLORS.primary,
+  section: { marginBottom: 20 },
+  sectionLabel: {
+    color: '#9898B0',
     fontSize: 11,
     fontWeight: '800',
-    letterSpacing: 1.5,
-    marginBottom: 6,
-  },
-  explanationText: { color: COLORS.text, fontSize: 14, lineHeight: 20 },
-  footer: {
-    padding: 20,
-    borderTopWidth: 1,
-    borderTopColor: COLORS.border,
-  },
-  primaryBtn: { borderRadius: 14, overflow: 'hidden' },
-  disabledBtn: { opacity: 0.5 },
-  primaryGrad: { paddingVertical: 16, alignItems: 'center' },
-  primaryText: { color: COLORS.text, fontWeight: '700', fontSize: 16 },
-  resultBox: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 32,
-  },
-  resultEmoji: { fontSize: 80, marginBottom: 16 },
-  resultTitle: {
-    color: COLORS.text,
-    fontSize: 24,
-    fontWeight: '800',
+    letterSpacing: 1,
+    textTransform: 'uppercase',
     marginBottom: 8,
   },
-  resultStat: {
-    color: COLORS.textSecondary,
-    fontSize: 18,
+  card: {
+    backgroundColor: '#161626',
+    borderRadius: 16,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: '#2A2A42',
+  },
+  actionCard: {
+    borderWidth: 2,
+  },
+  cardText: {
+    color: '#F5F5FA',
+    fontSize: 15,
+    lineHeight: 24,
+  },
+  promptText: {
+    color: '#B4B4D0',
+    fontSize: 14,
+    fontStyle: 'italic',
     marginBottom: 12,
+    lineHeight: 22,
   },
-  resultXP: {
-    color: COLORS.gold,
-    fontSize: 22,
+  input: {
+    backgroundColor: '#0B0B14',
+    borderRadius: 12,
+    padding: 12,
+    color: '#F5F5FA',
+    fontSize: 14,
+    minHeight: 80,
+    textAlignVertical: 'top',
+    borderWidth: 1,
+    borderColor: '#2A2A42',
+  },
+
+  completeBtn: {
+    marginTop: 8,
+    borderRadius: 16,
+    overflow: 'hidden',
+  },
+  completeGradient: {
+    paddingVertical: 18,
+    alignItems: 'center',
+  },
+  completeText: {
+    color: '#FFFFFF',
+    fontSize: 17,
     fontWeight: '800',
+    letterSpacing: 0.3,
   },
-  resultMuted: { color: COLORS.textMuted, fontSize: 14 },
-  empty: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  emptyText: { color: COLORS.textSecondary, fontSize: 16, marginBottom: 12 },
-  link: { color: COLORS.primary, fontSize: 14, fontWeight: '600' },
+
+  celebration: {
+    position: 'absolute',
+    top: 0, left: 0, right: 0, bottom: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(11, 11, 20, 0.85)',
+  },
+  celebrationEmoji: { fontSize: 96 },
+  celebrationText: {
+    color: '#FDE047',
+    fontSize: 32,
+    fontWeight: '800',
+    marginTop: 16,
+  },
 });

@@ -2,267 +2,301 @@ import React, { useMemo } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
-  SafeAreaView,
   ScrollView,
   TouchableOpacity,
+  StyleSheet,
+  SafeAreaView,
+  Dimensions,
 } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { LinearGradient } from 'expo-linear-gradient';
-import { COLORS } from '../config/constants';
+
 import { useApp } from '../contexts/AppContext';
-import { getSprintById } from '../config/sprints';
+import {
+  PATHS,
+  getPathLessons,
+  getLessonState,
+  getCurrentLesson,
+  getPathProgress,
+  getPathById,
+} from '../data/paths';
+
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 export default function PathScreen({ navigation }) {
-  const {
-    activeSprint,
-    currentSprintDay,
-    sprintLessons,
-    lessonCompletions,
-  } = useApp();
+  const { t } = useTranslation();
+  const { pathProgress, activePathId, setActivePath, isPremium } = useApp();
 
-  const sprint = activeSprint ? getSprintById(activeSprint.sprintId) : null;
+  const activePath = useMemo(
+    () => getPathById(activePathId) || PATHS[0],
+    [activePathId],
+  );
 
-  const items = useMemo(() => {
-    return sprintLessons.map((lesson) => {
-      const done = !!lessonCompletions[lesson.id];
-      const unlocked = lesson.dayUnlock <= currentSprintDay;
-      return { lesson, done, unlocked };
-    });
-  }, [sprintLessons, lessonCompletions, currentSprintDay]);
+  const lessons = useMemo(() => getPathLessons(activePath), [activePath]);
+  const progress = useMemo(
+    () => getPathProgress(activePath, pathProgress),
+    [activePath, pathProgress],
+  );
 
-  const completedCount = items.filter((i) => i.done).length;
-  const totalCount = items.length;
-  const progressPct = totalCount > 0 ? completedCount / totalCount : 0;
-
-  if (!activeSprint) {
-    return (
-      <SafeAreaView style={styles.safeArea}>
-        <View style={styles.empty}>
-          <Text style={styles.emptyEmoji}>🎓</Text>
-          <Text style={styles.emptyTitle}>Henüz Aktif Sprint Yok</Text>
-          <Text style={styles.emptyText}>
-            Bir sprint başlat — günlük dersler ve quizler açılsın.
-          </Text>
-          <TouchableOpacity
-            style={styles.primaryBtn}
-            onPress={() => navigation?.navigate?.('Home')}
-            activeOpacity={0.85}
-          >
-            <LinearGradient
-              colors={[COLORS.primary, COLORS.accent]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              style={styles.primaryGrad}
-            >
-              <Text style={styles.primaryText}>Sprint Seç</Text>
-            </LinearGradient>
-          </TouchableOpacity>
-        </View>
-      </SafeAreaView>
-    );
-  }
+  const handleLessonTap = (lesson, state) => {
+    if (state === 'locked') {
+      const freeLimit = activePath.freeLessons || 5;
+      const isLockedByPremium = !isPremium && lesson.order > freeLimit;
+      if (isLockedByPremium) {
+        navigation.navigate('Paywall');
+        return;
+      }
+      return;
+    }
+    navigation.navigate('Lesson', { pathId: lesson.pathId, lessonId: lesson.id });
+  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <ScrollView contentContainerStyle={styles.content}>
+      <LinearGradient colors={['#0B0B14', '#161626']} style={styles.container}>
+        {/* Header — selected path */}
         <View style={styles.header}>
-          <Text style={styles.title}>Öğrenme Yolu</Text>
-          <Text style={styles.subtitle}>{sprint?.title}</Text>
-          <View style={styles.progressRow}>
-            <View style={styles.progressTrack}>
-              <View style={[styles.progressFill, { width: `${progressPct * 100}%` }]} />
-            </View>
-            <Text style={styles.progressText}>
-              {completedCount}/{totalCount}
-            </Text>
+          <Text style={styles.icon}>{activePath.icon}</Text>
+          <Text style={styles.title}>
+            {t(`paths.${activePath.id}.title`, activePath.id)}
+          </Text>
+          <Text style={styles.subtitle}>
+            {t(`paths.${activePath.id}.subtitle`, '')}
+          </Text>
+          <View style={styles.progressBar}>
+            <View
+              style={[
+                styles.progressFill,
+                {
+                  width: `${progress.percent}%`,
+                  backgroundColor: activePath.color,
+                },
+              ]}
+            />
           </View>
+          <Text style={styles.progressText}>
+            {progress.completed} / {progress.total}
+          </Text>
         </View>
 
-        <View style={styles.path}>
-          {items.map((item, idx) => {
-            const offset = idx % 2 === 0 ? -40 : 40;
+        {/* Path switcher */}
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.pathSwitcher}
+        >
+          {PATHS.map((p) => {
+            const isActive = p.id === activePathId;
             return (
-              <View key={item.lesson.id} style={styles.nodeWrap}>
-                {idx > 0 && <View style={styles.connector} />}
-                <View style={[styles.nodeRow, { transform: [{ translateX: offset }] }]}>
-                  <Node
-                    item={item}
-                    onPress={() =>
-                      item.unlocked &&
-                      navigation?.navigate?.('Lesson', { lessonId: item.lesson.id })
-                    }
-                  />
-                </View>
-                <View style={[styles.nodeLabel, { transform: [{ translateX: offset }] }]}>
-                  <Text
+              <TouchableOpacity
+                key={p.id}
+                style={[
+                  styles.pathChip,
+                  isActive && { borderColor: p.color, backgroundColor: `${p.color}22` },
+                ]}
+                onPress={() => setActivePath(p.id)}
+                activeOpacity={0.7}
+              >
+                <Text style={styles.pathChipIcon}>{p.icon}</Text>
+                <Text style={styles.pathChipLabel}>
+                  {t(`paths.${p.id}.title`, p.id)}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </ScrollView>
+
+        {/* Duolingo zigzag tree */}
+        <ScrollView
+          contentContainerStyle={styles.tree}
+          showsVerticalScrollIndicator={false}
+        >
+          {lessons.map((lesson, index) => {
+            const state = getLessonState(lesson, pathProgress);
+            const isLockedByPremium =
+              !isPremium && lesson.order > (activePath.freeLessons || 5);
+            const finalState =
+              isLockedByPremium && state !== 'completed' ? 'premium' : state;
+            const offset = (index % 4) - 1.5;
+            const xOffset = offset * 50;
+
+            return (
+              <View
+                key={lesson.id}
+                style={[styles.lessonNodeWrap, { transform: [{ translateX: xOffset }] }]}
+              >
+                {index > 0 && (
+                  <View
                     style={[
-                      styles.nodeTitle,
-                      !item.unlocked && styles.nodeTitleLocked,
+                      styles.connector,
+                      finalState === 'completed'
+                        ? { backgroundColor: activePath.color }
+                        : null,
                     ]}
-                    numberOfLines={2}
-                  >
-                    {item.lesson.title}
-                  </Text>
-                  <Text style={styles.nodeDay}>
-                    Gün {item.lesson.dayUnlock}
-                  </Text>
-                </View>
+                  />
+                )}
+                <LessonNode
+                  lesson={lesson}
+                  state={finalState}
+                  pathColor={activePath.color}
+                  onPress={() => handleLessonTap(lesson, state)}
+                  t={t}
+                />
               </View>
             );
           })}
-        </View>
 
-        {totalCount === 0 && (
-          <Text style={styles.emptyText}>
-            Bu sprint için ders bulunmuyor.
-          </Text>
-        )}
-      </ScrollView>
+          {/* Path complete celebration */}
+          {progress.completed === progress.total && (
+            <View style={styles.completion}>
+              <Text style={styles.completionEmoji}>🏆</Text>
+              <Text style={styles.completionText}>
+                {t('path.completed', 'Tamamlandı')}
+              </Text>
+            </View>
+          )}
+
+          <View style={{ height: 80 }} />
+        </ScrollView>
+      </LinearGradient>
     </SafeAreaView>
   );
 }
 
-function Node({ item, onPress }) {
-  if (item.done) {
-    return (
-      <TouchableOpacity activeOpacity={0.8} onPress={onPress} style={styles.nodeShadow}>
-        <LinearGradient
-          colors={[COLORS.gold, '#D97706']}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={styles.node}
-        >
-          <Text style={styles.nodeIcon}>⭐</Text>
-        </LinearGradient>
-      </TouchableOpacity>
-    );
+function LessonNode({ lesson, state, pathColor, onPress, t }) {
+  const lessonTitle = t(
+    `lessons.${lesson.pathId}.${lesson.order}.title`,
+    `${lesson.order}`,
+  );
+
+  let bgColor = '#2A2A42';
+  let icon = '🔒';
+  let labelOpacity = 0.4;
+
+  if (state === 'completed') {
+    bgColor = pathColor;
+    icon = '✓';
+    labelOpacity = 1;
+  } else if (state === 'current') {
+    bgColor = pathColor;
+    icon = '🔥';
+    labelOpacity = 1;
+  } else if (state === 'premium') {
+    bgColor = '#1F1F33';
+    icon = '👑';
+    labelOpacity = 0.6;
   }
-  if (item.unlocked) {
-    return (
-      <TouchableOpacity activeOpacity={0.8} onPress={onPress} style={styles.nodeShadow}>
-        <LinearGradient
-          colors={[COLORS.primary, COLORS.accent]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={styles.node}
-        >
-          <Text style={styles.nodeIcon}>▶</Text>
-        </LinearGradient>
-      </TouchableOpacity>
-    );
-  }
+
   return (
-    <View style={styles.nodeShadow}>
-      <View style={[styles.node, styles.nodeLocked]}>
-        <Text style={styles.nodeIcon}>🔒</Text>
+    <TouchableOpacity onPress={onPress} activeOpacity={0.7} style={styles.nodeContainer}>
+      <View
+        style={[
+          styles.node,
+          { backgroundColor: bgColor },
+          state === 'current' && styles.nodeCurrent,
+          state === 'current' && { shadowColor: pathColor },
+        ]}
+      >
+        <Text style={styles.nodeIcon}>{icon}</Text>
       </View>
-    </View>
+      <Text style={[styles.nodeLabel, { opacity: labelOpacity }]} numberOfLines={2}>
+        {lessonTitle}
+      </Text>
+    </TouchableOpacity>
   );
 }
 
-const NODE = 80;
+const NODE = 76;
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: COLORS.background },
-  content: { paddingHorizontal: 20, paddingBottom: 40 },
-  header: { paddingTop: 16, paddingBottom: 24 },
-  title: {
-    color: COLORS.text,
-    fontSize: 26,
-    fontWeight: '800',
-    marginBottom: 4,
+  safeArea: { flex: 1, backgroundColor: '#0B0B14' },
+  container: { flex: 1 },
+  header: {
+    paddingHorizontal: 24,
+    paddingTop: 16,
+    paddingBottom: 16,
+    alignItems: 'center',
   },
-  subtitle: { color: COLORS.textSecondary, fontSize: 15, marginBottom: 16 },
-  progressRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  progressTrack: {
-    flex: 1,
-    height: 10,
-    borderRadius: 5,
-    backgroundColor: COLORS.surface,
-    overflow: 'hidden',
-  },
-  progressFill: {
-    height: '100%',
-    backgroundColor: COLORS.gold,
-    borderRadius: 5,
-  },
-  progressText: {
-    color: COLORS.textSecondary,
+  icon: { fontSize: 40, marginBottom: 8 },
+  title: { color: '#F5F5FA', fontSize: 24, fontWeight: '800', textAlign: 'center' },
+  subtitle: {
+    color: '#9898B0',
     fontSize: 13,
-    fontWeight: '700',
-    marginLeft: 10,
-    minWidth: 40,
+    marginTop: 4,
+    textAlign: 'center',
   },
-  path: { alignItems: 'center', paddingVertical: 16 },
-  nodeWrap: { alignItems: 'center', marginBottom: 8 },
+  progressBar: {
+    width: 220,
+    height: 6,
+    backgroundColor: '#2A2A42',
+    borderRadius: 3,
+    overflow: 'hidden',
+    marginTop: 14,
+  },
+  progressFill: { height: '100%', borderRadius: 3 },
+  progressText: { color: '#9898B0', fontSize: 11, fontWeight: '600', marginTop: 6 },
+
+  pathSwitcher: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    gap: 8,
+  },
+  pathChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 20,
+    borderWidth: 1.5,
+    borderColor: '#2A2A42',
+    backgroundColor: '#161626',
+    gap: 6,
+    marginRight: 6,
+  },
+  pathChipIcon: { fontSize: 16 },
+  pathChipLabel: { color: '#F5F5FA', fontSize: 12, fontWeight: '700' },
+
+  tree: {
+    paddingTop: 32,
+    paddingBottom: 32,
+    alignItems: 'center',
+  },
+  lessonNodeWrap: { alignItems: 'center', marginBottom: 8 },
   connector: {
     width: 4,
-    height: 28,
-    backgroundColor: COLORS.border,
+    height: 24,
+    backgroundColor: '#2A2A42',
     borderRadius: 2,
-    marginBottom: 8,
+    marginBottom: 4,
   },
-  nodeRow: { alignItems: 'center' },
-  nodeShadow: {
-    shadowColor: COLORS.primary,
-    shadowOpacity: 0.3,
-    shadowRadius: 12,
-    shadowOffset: { width: 0, height: 4 },
-    elevation: 6,
-  },
+  nodeContainer: { alignItems: 'center', maxWidth: 120 },
   node: {
     width: NODE,
     height: NODE,
     borderRadius: NODE / 2,
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 4,
-    borderColor: COLORS.background,
   },
-  nodeLocked: {
-    backgroundColor: COLORS.surface,
-    borderColor: COLORS.border,
+  nodeCurrent: {
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.6,
+    shadowRadius: 16,
+    elevation: 8,
   },
-  nodeIcon: { fontSize: 30 },
+  nodeIcon: { fontSize: 32 },
   nodeLabel: {
-    marginTop: 8,
-    alignItems: 'center',
-    maxWidth: 220,
-  },
-  nodeTitle: {
-    color: COLORS.text,
-    fontSize: 13,
-    fontWeight: '700',
-    textAlign: 'center',
-  },
-  nodeTitleLocked: { color: COLORS.textMuted },
-  nodeDay: {
-    color: COLORS.textMuted,
+    color: '#F5F5FA',
     fontSize: 11,
-    marginTop: 2,
-    letterSpacing: 0.5,
-  },
-  empty: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 32,
-  },
-  emptyEmoji: { fontSize: 80, marginBottom: 16 },
-  emptyTitle: {
-    color: COLORS.text,
-    fontSize: 22,
-    fontWeight: '800',
-    marginBottom: 8,
-  },
-  emptyText: {
-    color: COLORS.textSecondary,
-    fontSize: 15,
+    fontWeight: '600',
+    marginTop: 8,
     textAlign: 'center',
-    lineHeight: 22,
-    marginBottom: 24,
   },
-  primaryBtn: { borderRadius: 14, overflow: 'hidden', minWidth: 200 },
-  primaryGrad: { paddingVertical: 16, alignItems: 'center' },
-  primaryText: { color: COLORS.text, fontWeight: '700', fontSize: 16 },
+
+  completion: {
+    alignItems: 'center',
+    marginTop: 24,
+    padding: 16,
+  },
+  completionEmoji: { fontSize: 48 },
+  completionText: { color: '#F5F5FA', fontSize: 18, fontWeight: '700', marginTop: 8 },
 });
