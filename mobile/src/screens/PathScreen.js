@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -7,6 +7,9 @@ import {
   StyleSheet,
   SafeAreaView,
   Dimensions,
+  Animated,
+  Easing,
+  RefreshControl,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -104,6 +107,10 @@ export default function PathScreen({ navigation }) {
         >
           {PATHS.map((p) => {
             const isActive = p.id === activePathId;
+            const pathProg = pathProgress?.[p.id]?.completed?.length || 0;
+            const isCompleted = pathProg >= p.duration;
+            // First path is free, others are premium
+            const isPremiumPath = !isPremium && p.order > 1;
             return (
               <TouchableOpacity
                 key={p.id}
@@ -118,6 +125,11 @@ export default function PathScreen({ navigation }) {
                 <Text style={styles.pathChipLabel}>
                   {t(`paths.${p.id}.title`, p.id)}
                 </Text>
+                {isCompleted && <Text style={styles.pathChipBadge}>🏆</Text>}
+                {isPremiumPath && !isCompleted && <Text style={styles.pathChipBadge}>👑</Text>}
+                {pathProg > 0 && !isCompleted && (
+                  <Text style={styles.pathChipProgress}>{pathProg}/{p.duration}</Text>
+                )}
               </TouchableOpacity>
             );
           })}
@@ -198,9 +210,34 @@ function LessonNode({ lesson, state, pathColor, onPress, t }) {
     `${lesson.order}`,
   );
 
+  // Pulse animation for current lesson
+  const pulse = useRef(new Animated.Value(1)).current;
+  useEffect(() => {
+    if (state !== 'current') return;
+    const loop = Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulse, {
+          toValue: 1.08,
+          duration: 800,
+          easing: Easing.inOut(Easing.quad),
+          useNativeDriver: true,
+        }),
+        Animated.timing(pulse, {
+          toValue: 1,
+          duration: 800,
+          easing: Easing.inOut(Easing.quad),
+          useNativeDriver: true,
+        }),
+      ]),
+    );
+    loop.start();
+    return () => loop.stop();
+  }, [state, pulse]);
+
   let bgColor = '#2A2A42';
   let icon = '🔒';
   let labelOpacity = 0.4;
+  let nodeBorder = null;
 
   if (state === 'completed') {
     bgColor = pathColor;
@@ -214,20 +251,27 @@ function LessonNode({ lesson, state, pathColor, onPress, t }) {
     bgColor = '#1F1F33';
     icon = '👑';
     labelOpacity = 0.6;
+    nodeBorder = '#FDE047';
   }
 
   return (
     <TouchableOpacity onPress={onPress} activeOpacity={0.7} style={styles.nodeContainer}>
-      <View
+      <Animated.View
         style={[
           styles.node,
-          { backgroundColor: bgColor },
+          { backgroundColor: bgColor, transform: [{ scale: pulse }] },
           state === 'current' && styles.nodeCurrent,
           state === 'current' && { shadowColor: pathColor },
+          nodeBorder && { borderWidth: 2, borderColor: nodeBorder },
         ]}
       >
         <Text style={styles.nodeIcon}>{icon}</Text>
-      </View>
+        {state === 'current' && (
+          <View style={styles.todayBadge}>
+            <Text style={styles.todayBadgeText}>BUGÜN</Text>
+          </View>
+        )}
+      </Animated.View>
       <Text style={[styles.nodeLabel, { opacity: labelOpacity }]} numberOfLines={2}>
         {lessonTitle}
       </Text>
@@ -303,6 +347,8 @@ const styles = StyleSheet.create({
   },
   pathChipIcon: { fontSize: 16 },
   pathChipLabel: { color: '#F5F5FA', fontSize: 12, fontWeight: '700' },
+  pathChipBadge: { fontSize: 12, marginLeft: 2 },
+  pathChipProgress: { color: '#9898B0', fontSize: 10, fontWeight: '600', marginLeft: 4 },
 
   tree: {
     paddingTop: 32,
@@ -332,6 +378,15 @@ const styles = StyleSheet.create({
     elevation: 8,
   },
   nodeIcon: { fontSize: 32 },
+  todayBadge: {
+    position: 'absolute',
+    bottom: -6,
+    backgroundColor: '#FDE047',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 10,
+  },
+  todayBadgeText: { fontSize: 9, color: '#0B0B14', fontWeight: '900', letterSpacing: 0.5 },
   nodeLabel: {
     color: '#F5F5FA',
     fontSize: 11,
