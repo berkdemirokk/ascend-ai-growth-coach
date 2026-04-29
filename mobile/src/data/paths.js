@@ -47,19 +47,32 @@ export const PATHS = [
   },
 ];
 
-// Lesson IDs are stable strings: <pathId>-<order>
-// e.g. dopamine-detox-1, dopamine-detox-2, ...
-// Each lesson references i18n keys for content:
+// Lesson IDs: <pathId>-<order> e.g. dopamine-detox-1
+// i18n schema (per-locale, in lessons.<lang>.json):
 //   lessons.<pathId>.<order>.title
-//   lessons.<pathId>.<order>.teaching
-//   lessons.<pathId>.<order>.action
-//   lessons.<pathId>.<order>.reflectionPrompt
+//   lessons.<pathId>.<order>.teaching       // 100-150 word read
+//   lessons.<pathId>.<order>.quiz           // array of MC questions (NEW)
+//     [{ q: "question", options: ["a","b","c","d"], correct: 0, explain: "..." }]
+//   lessons.<pathId>.<order>.action         // commit action text
+//   lessons.<pathId>.<order>.reflectionPrompt  // optional reflection
 export const buildLesson = (pathId, order) => ({
   id: `${pathId}-${order}`,
   pathId,
   order,
   i18nKey: `lessons.${pathId}.${order}`,
 });
+
+/**
+ * Get quiz questions for a lesson from i18n.
+ * @param {(key: string, fallback?: any) => any} t - i18n translator
+ * @param {string} pathId
+ * @param {number} order
+ * @returns {Array} array of quiz questions (may be empty)
+ */
+export const getQuizForLesson = (t, pathId, order) => {
+  const quiz = t(`lessons.${pathId}.${order}.quiz`, { returnObjects: true });
+  return Array.isArray(quiz) ? quiz : [];
+};
 
 export const getPathLessons = (path) =>
   Array.from({ length: path.duration }, (_, i) => buildLesson(path.id, i + 1));

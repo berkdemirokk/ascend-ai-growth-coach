@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect, useRef } from 'react';
+import React, { useMemo, useEffect, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -24,12 +24,37 @@ import {
   getPathById,
 } from '../data/paths';
 import { shareStreak } from '../services/share';
+import MonkMascot from '../components/MonkMascot';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 export default function PathScreen({ navigation }) {
   const { t } = useTranslation();
-  const { pathProgress, activePathId, setActivePath, isPremium, currentStreak, totalXP } = useApp();
+  const {
+    pathProgress,
+    activePathId,
+    setActivePath,
+    isPremium,
+    currentStreak,
+    totalXP,
+    hearts,
+    heartsRefillAt,
+  } = useApp();
+
+  // Refill countdown — re-renders every 30s
+  const [now, setNow] = useState(Date.now());
+  useEffect(() => {
+    if (!heartsRefillAt || hearts >= 5 || isPremium) return;
+    const id = setInterval(() => setNow(Date.now()), 30 * 1000);
+    return () => clearInterval(id);
+  }, [heartsRefillAt, hearts, isPremium]);
+
+  const refillMins = (() => {
+    if (isPremium || hearts >= 5 || !heartsRefillAt) return null;
+    const ms = new Date(heartsRefillAt).getTime() - now;
+    if (ms <= 0) return 0;
+    return Math.ceil(ms / 60000);
+  })();
 
   const activePath = useMemo(
     () => getPathById(activePathId) || PATHS[0],
@@ -81,6 +106,19 @@ export default function PathScreen({ navigation }) {
             </View>
           </TouchableOpacity>
           <View style={styles.streakRight}>
+            {!isPremium && (
+              <TouchableOpacity
+                onPress={() => navigation.navigate('Paywall')}
+                style={styles.heartsBox}
+                activeOpacity={0.7}
+              >
+                <Text style={styles.heartsIcon}>{hearts > 0 ? '❤️' : '💔'}</Text>
+                <Text style={styles.heartsValue}>{hearts}</Text>
+                {refillMins !== null && refillMins > 0 && (
+                  <Text style={styles.heartsTimer}>{refillMins}m</Text>
+                )}
+              </TouchableOpacity>
+            )}
             <View style={styles.xpBox}>
               <Text style={styles.xpValue}>⚡ {totalXP.toLocaleString()}</Text>
             </View>
@@ -90,8 +128,23 @@ export default function PathScreen({ navigation }) {
 
         {/* Header — selected path with gradient backdrop */}
         <View style={styles.header}>
-          <View style={[styles.iconBubble, { backgroundColor: `${activePath.color}22`, borderColor: activePath.color }]}>
-            <Text style={styles.icon}>{activePath.icon}</Text>
+          <View style={styles.headerRow}>
+            <MonkMascot
+              mood={
+                progress.completed === progress.total && progress.total > 0
+                  ? 'excited'
+                  : currentStreak >= 7
+                    ? 'proud'
+                    : currentStreak > 0
+                      ? 'happy'
+                      : 'idle'
+              }
+              size={56}
+              pulse
+            />
+            <View style={[styles.iconBubble, { backgroundColor: `${activePath.color}22`, borderColor: activePath.color, marginLeft: 12 }]}>
+              <Text style={styles.icon}>{activePath.icon}</Text>
+            </View>
           </View>
           <Text style={styles.title}>
             {t(`paths.${activePath.id}.title`, activePath.id)}
@@ -386,7 +439,21 @@ const styles = StyleSheet.create({
     letterSpacing: -0.5,
   },
   streakLabel: { color: '#9898B0', fontSize: 11, fontWeight: '600' },
-  streakRight: { alignItems: 'flex-end' },
+  streakRight: { alignItems: 'flex-end', flexDirection: 'row', gap: 8 },
+  heartsBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(239, 68, 68, 0.15)',
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(239, 68, 68, 0.3)',
+    gap: 4,
+  },
+  heartsIcon: { fontSize: 14 },
+  heartsValue: { color: '#EF4444', fontSize: 14, fontWeight: '900' },
+  heartsTimer: { color: '#9898B0', fontSize: 10, fontWeight: '700', marginLeft: 2 },
   xpBox: {
     backgroundColor: 'rgba(253, 224, 71, 0.15)',
     paddingHorizontal: 10,
@@ -404,6 +471,12 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
     alignItems: 'center',
   },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 12,
+  },
   iconBubble: {
     width: 64,
     height: 64,
@@ -411,7 +484,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 2,
-    marginBottom: 12,
   },
   icon: { fontSize: 32 },
   title: {

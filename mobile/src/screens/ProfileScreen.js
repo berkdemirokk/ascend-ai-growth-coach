@@ -54,7 +54,7 @@ export default function ProfileScreen({ navigation }) {
     unlockedAchievements,
   } = useApp();
 
-  // Path-based stats (replaces sprint history)
+  // Path-based stats
   const completedLessonsTotal = useMemo(() => {
     return Object.values(pathProgress || {}).reduce(
       (sum, p) => sum + (p?.completed?.length || 0),

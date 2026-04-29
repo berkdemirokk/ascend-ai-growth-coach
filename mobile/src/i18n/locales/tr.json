@@ -21,10 +21,10 @@
   },
   "onboarding": {
     "title": "Monk Mode",
-    "subtitle": "Disiplini seç. Sprint'ini tamamla. Kendini dönüştür.",
-    "bullet1": "Her gün tek görev",
-    "bullet2": "Alev sönerse her şey biter",
-    "bullet3": "Sprint bitir, rütbeni yükselt",
+    "subtitle": "Disiplini seç. Yolu yürü. Kendini dönüştür.",
+    "bullet1": "Her gün tek ders",
+    "bullet2": "Quiz ile pekiştir",
+    "bullet3": "Kalpleri kaybetme, seviyeni yükselt",
     "cta": "Başla"
   },
   "auth": {
@@ -44,51 +44,53 @@
     "invalidCredentials": "E-posta veya şifre hatalı"
   },
   "home": {
-    "streak": "{{count}} gün sprint",
+    "streak": "{{count}} gün streak",
     "todayLesson": "Bugünün dersi",
     "complete": "Tamamla",
     "completed": "Tamamlandı",
-    "streakActive": "Sprint aktif",
-    "streakStart": "Monk mode başlat",
-    "noActiveSprint": "Aktif sprint yok",
-    "selectSprint": "Sprint seç",
+    "streakActive": "Streak aktif",
+    "streakStart": "Yola başla",
     "openPath": "Yolu aç",
-    "todaysTasks": "Bugünün Görevleri",
-    "maintenanceTasks": "Bakım Görevleri",
-    "rules": "Kurallar",
-    "newSprint": "Yeni Sprint Seç",
-    "abandonSprint": "Sprint'i bırak"
+    "selectPath": "Yol seç",
+    "hearts": "Kalpler",
+    "heartsRefill": "{{minutes}} dk sonra dolar",
+    "outOfHearts": "Kalpler bitti",
+    "outOfHeartsBody": "Yenilenmesini bekle veya Premium'a geç",
+    "premium": "Premium"
   },
   "lesson": {
     "teaching": "Öğretim",
+    "quiz": "Quiz",
     "action": "Bugün yap",
     "reflection": "Yansıma",
-    "reflectionPlaceholder": "Bu görev sana ne öğretti?",
+    "reflectionPlaceholder": "Bu ders sana ne öğretti?",
     "completeLesson": "Dersi tamamla",
     "skipLesson": "Bugün atla",
-    "easier": "Kolaylaştır",
-    "harder": "Zorlaştır"
+    "correctAnswer": "Doğru!",
+    "wrongAnswer": "Yanlış",
+    "selectAnswer": "Bir cevap seç",
+    "checkAnswer": "Cevabı kontrol et",
+    "nextQuestion": "Sıradaki soru",
+    "questionOf": "{{current}} / {{total}}",
+    "earned": "+{{xp}} XP"
   },
   "profile": {
     "title": "Sen",
     "rank": "Rütbe",
     "stats": "İstatistikler",
     "totalXp": "Toplam XP",
-    "sprintsDone": "Tamamlanan Sprint",
-    "activeSprint": "Aktif Sprint",
-    "totalSprints": "Toplam Sprint",
+    "lessonsDone": "Tamamlanan Ders",
+    "pathsDone": "Tamamlanan Yol",
+    "currentStreak": "Mevcut Streak",
+    "longestStreak": "En Uzun Streak",
     "levelProgress": "Seviye İlerlemesi",
     "level": "Seviye",
     "maxLevel": "Max Seviye!",
     "recentAchievements": "Son Başarılar",
     "seeAll": "Tümünü gör",
-    "sprintHistory": "Sprint Geçmişi",
-    "noAchievements": "Başarı kazanmak için görev tamamla!",
-    "noSprintHistory": "Henüz tamamlanan sprint yok.",
+    "noAchievements": "Başarı kazanmak için ders tamamla!",
     "completed": "✓ Tamamlandı",
-    "abandoned": "✗ Bırakıldı",
     "navPath": "Yol",
-    "navHistory": "Geçmiş",
     "navAchievements": "Rütbeler",
     "navSettings": "Ayarlar"
   },
@@ -98,6 +100,8 @@
     "notifications": "Bildirimler",
     "dailyReminder": "Günlük Hatırlatma",
     "reminderTime": "Hatırlatma Saati",
+    "sound": "Ses",
+    "haptics": "Titreşim",
     "account": "Hesap",
     "logout": "Çıkış Yap",
     "deleteAccount": "Hesabı Sil",
@@ -113,11 +117,11 @@
   "paywall": {
     "title": "Tam Monk Mode",
     "subtitle": "İlk 7 gün ücretsiz",
-    "feature1": "Tüm sprint'lerin kilidi açık",
-    "feature2": "Daha fazla streak freeze",
-    "feature3": "Advanced analytics",
-    "feature4": "Sprint analizi ve haftalık review",
-    "feature5": "Cihazlar arası senkron",
+    "feature1": "Sınırsız kalpler",
+    "feature2": "Tüm yolların kilidi açık",
+    "feature3": "Reklamsız deneyim",
+    "feature4": "Cihazlar arası senkron",
+    "feature5": "Premium başarılar",
     "monthly": "Aylık",
     "yearly": "Yıllık",
     "saveAmount": "{{amount}} tasarruf",
@@ -126,20 +130,12 @@
     "autoRenew": "Otomatik yenilenir. App Store'dan iptal edilebilir.",
     "loading": "İşlem sürüyor..."
   },
-  "sprintComplete": {
-    "title": "Sprint Tamamlandı!",
-    "subtitle": "{{days}} gün boyunca dayandın",
+  "lessonComplete": {
+    "title": "Ders Tamamlandı!",
+    "subtitle": "{{correct}} / {{total}} doğru",
     "xpEarned": "{{xp}} XP kazandın",
-    "newRank": "Yeni rütbe: {{rank}}",
-    "share": "Paylaş",
-    "continue": "Yeni sprint seç"
-  },
-  "history": {
-    "title": "Geçmiş",
-    "filterAll": "Tümü",
-    "filterCompleted": "Tamamlanan",
-    "filterAbandoned": "Bırakılan",
-    "noHistory": "Henüz geçmiş yok"
+    "newLevel": "Yeni seviye: {{level}}",
+    "continue": "Devam"
   },
   "achievements": {
     "title": "Rütbeler",
@@ -156,12 +152,10 @@
     "title": "Yol",
     "current": "Mevcut",
     "locked": "Kilitli",
-    "completed": "Tamamlandı"
-  },
-  "sprintSelect": {
-    "title": "Sprint Seç",
-    "subtitle": "Hangi disipline odaklanacaksın?",
-    "duration": "{{days}} gün",
+    "completed": "Tamamlandı",
+    "selectTitle": "Bir yol seç",
+    "selectSubtitle": "Hangi disipline odaklanacaksın?",
+    "lessons": "{{count}} ders",
     "tier": "Tier {{tier}}",
     "premiumLocked": "Premium ile aç",
     "start": "Başla"
@@ -170,9 +164,9 @@
     "reminderTitleStart": "🔥 Monk mode başlasın",
     "reminderTitleDanger": "🔥 {{streak}} gün tehlikede",
     "reminderTitleProgress": "🔥 {{streak}} gün — disiplin",
-    "reminderBodyStart": "İlk adımı at. 5 dakika.",
-    "reminderBodyDanger": "Bu kadar emek söndürülmez. Bugünkü görev seni bekliyor.",
-    "reminderBodyProgress": "Bugün tamamla, sprint sürsün."
+    "reminderBodyStart": "İlk dersi tamamla. 5 dakika.",
+    "reminderBodyDanger": "Bu kadar emek söndürülmez. Bugünkü ders seni bekliyor.",
+    "reminderBodyProgress": "Bugün tamamla, streak sürsün."
   },
   "share": {
     "streakStart": "Monk mode başlatıyorum 🔥 Disiplin. Odak. Tekrar.",

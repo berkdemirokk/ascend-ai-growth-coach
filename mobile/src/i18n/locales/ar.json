@@ -21,10 +21,10 @@
   },
   "onboarding": {
     "title": "وضع الراهب",
-    "subtitle": "اختر انضباطك. أكمل تحديك. غيّر نفسك.",
-    "bullet1": "مهمة واحدة كل يوم",
-    "bullet2": "إن انطفأت الشعلة، انتهى كل شيء",
-    "bullet3": "أكمل التحدي، ارفع رتبتك",
+    "subtitle": "اختر انضباطك. اسلك المسار. غيّر نفسك.",
+    "bullet1": "درس واحد كل يوم",
+    "bullet2": "ثبّت بالاختبارات",
+    "bullet3": "لا تفقد قلوبك، ارفع مستواك",
     "cta": "ابدأ"
   },
   "auth": {
@@ -44,51 +44,53 @@
     "invalidCredentials": "البريد الإلكتروني أو كلمة المرور غير صحيحة"
   },
   "home": {
-    "streak": "{{count}} يوم تحدي",
+    "streak": "{{count}} يوم متتابع",
     "todayLesson": "درس اليوم",
     "complete": "إكمال",
     "completed": "مكتمل",
-    "streakActive": "التحدي نشط",
-    "streakStart": "ابدأ وضع الراهب",
-    "noActiveSprint": "لا يوجد تحدي نشط",
-    "selectSprint": "اختر تحدياً",
+    "streakActive": "التتابع نشط",
+    "streakStart": "ابدأ مسارك",
     "openPath": "افتح المسار",
-    "todaysTasks": "مهام اليوم",
-    "maintenanceTasks": "مهام الصيانة",
-    "rules": "القواعد",
-    "newSprint": "اختر تحدياً جديداً",
-    "abandonSprint": "ترك التحدي"
+    "selectPath": "اختر مساراً",
+    "hearts": "القلوب",
+    "heartsRefill": "تتجدد بعد {{minutes}} دقيقة",
+    "outOfHearts": "نفدت القلوب",
+    "outOfHeartsBody": "انتظر التجديد أو اشترك في البريميوم",
+    "premium": "بريميوم"
   },
   "lesson": {
     "teaching": "التعليم",
+    "quiz": "اختبار",
     "action": "افعل اليوم",
     "reflection": "تأمل",
-    "reflectionPlaceholder": "ماذا علمتك هذه المهمة؟",
+    "reflectionPlaceholder": "ماذا علمك هذا الدرس؟",
     "completeLesson": "أكمل الدرس",
     "skipLesson": "تخطى اليوم",
-    "easier": "اجعله أسهل",
-    "harder": "اجعله أصعب"
+    "correctAnswer": "صحيح!",
+    "wrongAnswer": "خطأ",
+    "selectAnswer": "اختر إجابة",
+    "checkAnswer": "تحقق من الإجابة",
+    "nextQuestion": "السؤال التالي",
+    "questionOf": "{{current}} / {{total}}",
+    "earned": "+{{xp}} XP"
   },
   "profile": {
     "title": "أنت",
     "rank": "الرتبة",
     "stats": "الإحصائيات",
     "totalXp": "إجمالي النقاط",
-    "sprintsDone": "تحديات منجزة",
-    "activeSprint": "تحدٍ نشط",
-    "totalSprints": "إجمالي التحديات",
+    "lessonsDone": "الدروس المكتملة",
+    "pathsDone": "المسارات المكتملة",
+    "currentStreak": "التتابع الحالي",
+    "longestStreak": "أطول تتابع",
     "levelProgress": "تقدم المستوى",
     "level": "المستوى",
     "maxLevel": "أعلى مستوى!",
     "recentAchievements": "الإنجازات الأخيرة",
     "seeAll": "عرض الكل",
-    "sprintHistory": "سجل التحديات",
-    "noAchievements": "أكمل المهام لفتح الإنجازات!",
-    "noSprintHistory": "لا توجد تحديات مكتملة بعد.",
+    "noAchievements": "أكمل الدروس لفتح الإنجازات!",
     "completed": "✓ مكتمل",
-    "abandoned": "✗ متروك",
     "navPath": "المسار",
-    "navHistory": "السجل",
     "navAchievements": "الرتب",
     "navSettings": "الإعدادات"
   },
@@ -98,6 +100,8 @@
     "notifications": "الإشعارات",
     "dailyReminder": "تذكير يومي",
     "reminderTime": "وقت التذكير",
+    "sound": "الصوت",
+    "haptics": "الاهتزاز",
     "account": "الحساب",
     "logout": "تسجيل الخروج",
     "deleteAccount": "حذف الحساب",
@@ -113,11 +117,11 @@
   "paywall": {
     "title": "وضع الراهب الكامل",
     "subtitle": "أول 7 أيام مجانية",
-    "feature1": "جميع التحديات مفتوحة",
-    "feature2": "المزيد من تجميد التتابع",
-    "feature3": "تحليلات متقدمة",
-    "feature4": "تحليل التحدي ومراجعة أسبوعية",
-    "feature5": "مزامنة بين الأجهزة",
+    "feature1": "قلوب غير محدودة",
+    "feature2": "جميع المسارات مفتوحة",
+    "feature3": "بدون إعلانات",
+    "feature4": "مزامنة بين الأجهزة",
+    "feature5": "إنجازات بريميوم",
     "monthly": "شهري",
     "yearly": "سنوي",
     "saveAmount": "وفر {{amount}}",
@@ -126,20 +130,12 @@
     "autoRenew": "يتجدد تلقائياً. يمكن الإلغاء من App Store.",
     "loading": "جار المعالجة..."
   },
-  "sprintComplete": {
-    "title": "اكتمل التحدي!",
-    "subtitle": "صمدت {{days}} يوماً",
+  "lessonComplete": {
+    "title": "اكتمل الدرس!",
+    "subtitle": "{{correct}} / {{total}} صحيح",
     "xpEarned": "ربحت {{xp}} نقطة",
-    "newRank": "رتبة جديدة: {{rank}}",
-    "share": "مشاركة",
-    "continue": "اختر تحدياً جديداً"
-  },
-  "history": {
-    "title": "السجل",
-    "filterAll": "الكل",
-    "filterCompleted": "المكتملة",
-    "filterAbandoned": "المتروكة",
-    "noHistory": "لا يوجد سجل بعد"
+    "newLevel": "مستوى جديد: {{level}}",
+    "continue": "متابعة"
   },
   "achievements": {
     "title": "الرتب",
@@ -156,12 +152,10 @@
     "title": "المسار",
     "current": "الحالي",
     "locked": "مقفل",
-    "completed": "مكتمل"
-  },
-  "sprintSelect": {
-    "title": "اختر تحدي",
-    "subtitle": "ما الانضباط الذي ستركز عليه؟",
-    "duration": "{{days}} يوم",
+    "completed": "مكتمل",
+    "selectTitle": "اختر مساراً",
+    "selectSubtitle": "ما الانضباط الذي ستركز عليه؟",
+    "lessons": "{{count}} درس",
     "tier": "المستوى {{tier}}",
     "premiumLocked": "افتح مع البريميوم",
     "start": "ابدأ"
@@ -171,8 +165,8 @@
     "reminderTitleDanger": "🔥 {{streak}} يوم في خطر",
     "reminderTitleProgress": "🔥 {{streak}} يوم — انضباط",
     "reminderBodyStart": "اخطُ أول خطوة. 5 دقائق.",
-    "reminderBodyDanger": "كل هذا الجهد لا يُهدر. مهمة اليوم بانتظارك.",
-    "reminderBodyProgress": "أكمل اليوم، أبقِ التحدي حياً."
+    "reminderBodyDanger": "كل هذا الجهد لا يُهدر. درس اليوم بانتظارك.",
+    "reminderBodyProgress": "أكمل اليوم، أبقِ التتابع حياً."
   },
   "share": {
     "streakStart": "أبدأ وضع الراهب 🔥 انضباط. تركيز. تكرار.",
