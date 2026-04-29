@@ -3,14 +3,36 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { STORAGE_KEYS, XP_REWARDS, checkLevelUp } from '../config/constants';
 import { checkAchievements } from '../config/achievements';
 import { checkPremiumStatus } from '../services/purchases';
+import {
+  getSprintById,
+  getSprintDay,
+  isSprintFinished,
+  getTodaysTasks,
+  getMaintenanceTasks,
+  getUnlockedTier,
+  getTierConfig,
+} from '../config/sprints';
+import { getDailyChallenge } from '../config/challenges';
+import { getRank } from '../config/ranks';
+import {
+  getLessonById,
+  getLessonsForSprint,
+  getUnlockedLessons,
+  calculateLessonXP,
+} from '../config/lessons';
+import { getFactOfTheDay } from '../config/facts';
+import { pullState, pushState, chooseWinner } from '../services/cloudSync';
+import { useAuth } from './AuthContext';
 
 // ─── Initial State ───────────────────────────────────────────────────────────
 
 const initialState = {
-  // User preferences
   selectedCategories: ['health', 'career', 'mindfulness', 'relationships', 'finance'],
   difficulty: 'beginner',
   onboarded: false,
+
+  // Personalization
+  userProfile: null, // { goals: string[], answers: { [qid]: string | string[] } }
 
   // Gamification
   totalXP: 0,
@@ -35,15 +57,30 @@ const initialState = {
   // Ad counter
   actionsSinceLastAd: 0,
 
+  // ── Monk Mode Sprint ────────────────────────────────────────────────────
+  // activeSprint: { sprintId, tier, startedAt (ISO), violations: [{ ruleId, date }] }
+  // sprintTaskCompletions: { [YYYY-MM-DD]: [taskId, ...] }
+  // sprintHistory: [{ sprintId, tier, startedAt, completedAt, status }]
+  // claimedChallenges: { [YYYY-MM-DD]: challengeId }
+  // maintenance: { sprintId, completions: { [YYYY-MM-DD]: [taskId, ...] } } | null
+  activeSprint: null,
+  sprintTaskCompletions: {},
+  sprintHistory: [],
+  claimedChallenges: {},
+  maintenance: null,
+
+  // ── Learning (Duolingo-style) ─────────────────────────────────────────
+  // lessonCompletions: { [lessonId]: { completedAt, correctAnswers, totalQuestions, xpEarned } }
+  // readFactIds: { [factId]: ISO string when first read }
+  lessonCompletions: {},
+  readFactIds: {},
+
   // Internal
   _loaded: false,
 };
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
-/**
- * Returns today's date as a YYYY-MM-DD string in the device's local timezone.
- */
 const getTodayDateString = () => {
   const now = new Date();
   const year = now.getFullYear();
@@ -52,9 +89,6 @@ const getTodayDateString = () => {
   return `${year}-${month}-${day}`;
 };
 
-/**
- * Returns yesterday's date as a YYYY-MM-DD string in the device's local timezone.
- */
 const getYesterdayDateString = () => {
   const now = new Date();
   now.setDate(now.getDate() - 1);
@@ -72,10 +106,22 @@ const ACTION_TYPES = {
   SET_CATEGORIES: 'SET_CATEGORIES',
   SET_DIFFICULTY: 'SET_DIFFICULTY',
   COMPLETE_ONBOARDING: 'COMPLETE_ONBOARDING',
+  SET_USER_PROFILE: 'SET_USER_PROFILE',
   SET_PREMIUM: 'SET_PREMIUM',
   USE_STREAK_FREEZE: 'USE_STREAK_FREEZE',
   DELETE_ACCOUNT: 'DELETE_ACCOUNT',
   REFRESH_TODAY: 'REFRESH_TODAY',
+  START_SPRINT: 'START_SPRINT',
+  COMPLETE_SPRINT_TASK: 'COMPLETE_SPRINT_TASK',
+  RECORD_SPRINT_VIOLATION: 'RECORD_SPRINT_VIOLATION',
+  ABANDON_SPRINT: 'ABANDON_SPRINT',
+  COMPLETE_SPRINT: 'COMPLETE_SPRINT',
+  CLAIM_DAILY_CHALLENGE: 'CLAIM_DAILY_CHALLENGE',
+  START_MAINTENANCE: 'START_MAINTENANCE',
+  COMPLETE_MAINTENANCE_TASK: 'COMPLETE_MAINTENANCE_TASK',
+  STOP_MAINTENANCE: 'STOP_MAINTENANCE',
+  COMPLETE_LESSON: 'COMPLETE_LESSON',
+  MARK_FACT_READ: 'MARK_FACT_READ',
 };
 
 function appReducer(state, action) {
@@ -95,13 +141,14 @@ function appReducer(state, action) {
     case ACTION_TYPES.COMPLETE_ONBOARDING:
       return { ...state, onboarded: true };
 
+    case ACTION_TYPES.SET_USER_PROFILE:
+      return { ...state, userProfile: action.payload };
+
     case ACTION_TYPES.SET_PREMIUM: {
       const becomingPremium = action.payload && !state.isPremium;
       return {
         ...state,
         isPremium: action.payload,
-        // Grant 3 streak-freeze tokens the first time a user transitions to
-        // premium. Downgrades don't revoke already-granted freezes.
         streakFreezes: becomingPremium
           ? state.streakFreezes + 3
           : state.streakFreezes,
@@ -117,6 +164,172 @@ function appReducer(state, action) {
     case ACTION_TYPES.REFRESH_TODAY:
       return { ...state, todayCompleted: action.payload };
 
+    case ACTION_TYPES.START_SPRINT:
+      return {
+        ...state,
+        activeSprint: {
+          sprintId: action.payload.sprintId,
+          tier: action.payload.tier || 1,
+          startedAt: action.payload.startedAt,
+          violations: [],
+        },
+        sprintTaskCompletions: {},
+        maintenance: null,
+      };
+
+    case ACTION_TYPES.COMPLETE_SPRINT_TASK: {
+      const { date, taskId, xpEarned } = action.payload;
+      const existing = state.sprintTaskCompletions[date] || [];
+      if (existing.includes(taskId)) return state;
+      const newTotalXP = state.totalXP + xpEarned;
+      const newLevel = checkLevelUp(newTotalXP, state.level);
+      return {
+        ...state,
+        totalXP: newTotalXP,
+        level: newLevel,
+        sprintTaskCompletions: {
+          ...state.sprintTaskCompletions,
+          [date]: [...existing, taskId],
+        },
+      };
+    }
+
+    case ACTION_TYPES.RECORD_SPRINT_VIOLATION: {
+      if (!state.activeSprint) return state;
+      return {
+        ...state,
+        activeSprint: {
+          ...state.activeSprint,
+          violations: [
+            ...(state.activeSprint.violations || []),
+            { ruleId: action.payload.ruleId, date: action.payload.date },
+          ],
+        },
+      };
+    }
+
+    case ACTION_TYPES.ABANDON_SPRINT: {
+      if (!state.activeSprint) return state;
+      const entry = {
+        ...state.activeSprint,
+        completedAt: action.payload.completedAt,
+        status: 'abandoned',
+      };
+      return {
+        ...state,
+        activeSprint: null,
+        sprintTaskCompletions: {},
+        sprintHistory: [...state.sprintHistory, entry],
+      };
+    }
+
+    case ACTION_TYPES.COMPLETE_SPRINT: {
+      if (!state.activeSprint) return state;
+      const entry = {
+        ...state.activeSprint,
+        completedAt: action.payload.completedAt,
+        status: 'completed',
+        taskCompletions: state.sprintTaskCompletions,
+      };
+      const bonusXP = action.payload.bonusXP || 0;
+      const newTotalXP = state.totalXP + bonusXP;
+      return {
+        ...state,
+        totalXP: newTotalXP,
+        level: checkLevelUp(newTotalXP, state.level),
+        activeSprint: null,
+        sprintTaskCompletions: {},
+        sprintHistory: [...state.sprintHistory, entry],
+        // Auto-start maintenance mode for the sprint just completed.
+        maintenance: {
+          sprintId: state.activeSprint.sprintId,
+          startedAt: action.payload.completedAt,
+          completions: {},
+        },
+      };
+    }
+
+    case ACTION_TYPES.CLAIM_DAILY_CHALLENGE: {
+      const { date, challengeId, xpEarned } = action.payload;
+      if (state.claimedChallenges[date]) return state;
+      const newTotalXP = state.totalXP + xpEarned;
+      return {
+        ...state,
+        totalXP: newTotalXP,
+        level: checkLevelUp(newTotalXP, state.level),
+        claimedChallenges: {
+          ...state.claimedChallenges,
+          [date]: challengeId,
+        },
+      };
+    }
+
+    case ACTION_TYPES.START_MAINTENANCE:
+      return {
+        ...state,
+        maintenance: {
+          sprintId: action.payload.sprintId,
+          startedAt: action.payload.startedAt,
+          completions: {},
+        },
+      };
+
+    case ACTION_TYPES.COMPLETE_MAINTENANCE_TASK: {
+      if (!state.maintenance) return state;
+      const { date, taskId, xpEarned } = action.payload;
+      const existing = state.maintenance.completions[date] || [];
+      if (existing.includes(taskId)) return state;
+      const newTotalXP = state.totalXP + xpEarned;
+      return {
+        ...state,
+        totalXP: newTotalXP,
+        level: checkLevelUp(newTotalXP, state.level),
+        maintenance: {
+          ...state.maintenance,
+          completions: {
+            ...state.maintenance.completions,
+            [date]: [...existing, taskId],
+          },
+        },
+      };
+    }
+
+    case ACTION_TYPES.STOP_MAINTENANCE:
+      return { ...state, maintenance: null };
+
+    case ACTION_TYPES.COMPLETE_LESSON: {
+      const { lessonId, correctAnswers, totalQuestions, xpEarned } =
+        action.payload;
+      if (state.lessonCompletions[lessonId]) return state;
+      const newTotalXP = state.totalXP + xpEarned;
+      return {
+        ...state,
+        totalXP: newTotalXP,
+        level: checkLevelUp(newTotalXP, state.level),
+        lessonCompletions: {
+          ...state.lessonCompletions,
+          [lessonId]: {
+            completedAt: new Date().toISOString(),
+            correctAnswers,
+            totalQuestions,
+            xpEarned,
+          },
+        },
+      };
+    }
+
+    case ACTION_TYPES.MARK_FACT_READ: {
+      const { factId } = action.payload;
+      if (state.readFactIds[factId]) return state;
+      return {
+        ...state,
+        readFactIds: {
+          ...state.readFactIds,
+          [factId]: new Date().toISOString(),
+        },
+      };
+    }
+
     default:
       return state;
   }
@@ -130,8 +343,8 @@ const AppContext = createContext(null);
 
 export function AppProvider({ children }) {
   const [state, dispatch] = useReducer(appReducer, initialState);
-
-  // ── Load persisted state on mount ────────────────────────────────────────
+  const { user, isAuthenticated } = useAuth();
+  const userId = user?.id || null;
 
   useEffect(() => {
     (async () => {
@@ -139,7 +352,6 @@ export function AppProvider({ children }) {
         const raw = await AsyncStorage.getItem(STORAGE_KEYS.USER_STATE);
         if (raw) {
           const parsed = JSON.parse(raw);
-          // Determine if today was already completed
           const today = getTodayDateString();
           const todayCompleted = parsed.lastCompletedDate === today;
           dispatch({
@@ -156,25 +368,53 @@ export function AppProvider({ children }) {
     })();
   }, []);
 
-  // ── Persist state whenever it changes (skip until initial load) ──────────
-
   useEffect(() => {
     if (!state._loaded) return;
-
     const toSave = { ...state };
     delete toSave._loaded;
-
     AsyncStorage.setItem(STORAGE_KEYS.USER_STATE, JSON.stringify(toSave)).catch(
       (e) => console.error('[AppContext] Failed to save state:', e),
     );
   }, [state]);
 
-  // ── Reconcile premium status with RevenueCat on launch ───────────────────
-  //
-  // Locally-persisted `isPremium` can drift from the real entitlement state
-  // (subscription expired, user restored on another device, refunded, etc.).
-  // After the initial state load we ask RevenueCat for the truth and sync.
-  // We only flip to `true` here; flipping to `false` happens too on expiry.
+  // Cloud pull: when a user first signs in, merge cloud snapshot with
+  // the local one using chooseWinner. Runs once per user id.
+  useEffect(() => {
+    if (!state._loaded || !isAuthenticated || !userId) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const { data, error } = await pullState(userId);
+        if (cancelled) return;
+        if (error) {
+          console.warn('[AppContext] cloud pull failed:', error?.message);
+          return;
+        }
+        if (!data?.payload) return;
+        const winner = chooseWinner(state, data.payload);
+        if (winner === 'cloud') {
+          dispatch({ type: ACTION_TYPES.LOAD_STATE, payload: data.payload });
+        }
+      } catch (e) {
+        console.warn('[AppContext] cloud pull error:', e?.message);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userId, isAuthenticated, state._loaded]);
+
+  // Cloud push: debounce state changes and upload snapshot.
+  useEffect(() => {
+    if (!state._loaded || !isAuthenticated || !userId) return;
+    const handle = setTimeout(() => {
+      pushState(userId, state).then(({ error }) => {
+        if (error) console.warn('[AppContext] cloud push failed:', error?.message);
+      });
+    }, 1500);
+    return () => clearTimeout(handle);
+  }, [state, userId, isAuthenticated]);
 
   useEffect(() => {
     if (!state._loaded) return;
@@ -187,80 +427,53 @@ export function AppProvider({ children }) {
           dispatch({ type: ACTION_TYPES.SET_PREMIUM, payload: !!active });
         }
       } catch (e) {
-        // RevenueCat not initialized yet (simulator, sandbox hiccup, no
-        // network); fall back to the persisted value silently.
         console.warn('[AppContext] premium reconcile skipped:', e?.message);
       }
     })();
     return () => {
       cancelled = true;
     };
-    // Run once after the initial load. `isPremium` intentionally omitted
-    // from deps to avoid re-running every time premium toggles.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state._loaded]);
 
   // ── Actions ──────────────────────────────────────────────────────────────
 
-  /**
-   * Complete today's action.
-   *
-   * @param {{ id: string, category: string, difficulty: string, title: string }} action
-   * @returns {{ xpEarned: number, newLevel: number|null, newAchievements: Array, streakCount: number } | null}
-   *   Returns null if today was already completed.
-   */
   const completeAction = useCallback(
     (action) => {
       const today = getTodayDateString();
       const yesterday = getYesterdayDateString();
 
-      // Already completed today – do nothing
       if (state.todayCompleted || state.lastCompletedDate === today) {
         return null;
       }
 
-      // ── Streak logic ─────────────────────────────────────────────────────
       let newStreak;
-
       if (state.lastCompletedDate === yesterday) {
-        // Consecutive day – keep building
         newStreak = state.currentStreak + 1;
       } else if (state.lastCompletedDate && state.lastCompletedDate !== yesterday) {
-        // Missed at least one day
         if (state.isPremium && state.streakFreezes > 0) {
-          // Use a streak freeze implicitly – streak continues
           newStreak = state.currentStreak + 1;
         } else {
-          // Streak broken – reset
           newStreak = 1;
         }
       } else {
-        // First ever completion (lastCompletedDate is null)
         newStreak = 1;
       }
 
       const newLongestStreak = Math.max(state.longestStreak, newStreak);
 
-      // ── XP calculation ────────────────────────────────────────────────────
       let xpEarned = XP_REWARDS.ACTION_COMPLETE;
-
-      // First-time bonus (first action ever)
       if (state.history.length === 0) {
         xpEarned += XP_REWARDS.FIRST_TIME_BONUS;
       }
-
-      // Streak milestone bonuses (awarded once when milestone is hit)
       if (newStreak === 10) xpEarned += XP_REWARDS.STREAK_10;
       if (newStreak === 30) xpEarned += XP_REWARDS.STREAK_30;
       if (newStreak === 100) xpEarned += XP_REWARDS.STREAK_100;
 
       const newTotalXP = state.totalXP + xpEarned;
-
-      // ── Level up detection ────────────────────────────────────────────────
       const newLevel = checkLevelUp(newTotalXP, state.level);
       const didLevelUp = newLevel > state.level;
 
-      // ── Streak freeze handling (if one was implicitly used) ───────────────
       const usedFreeze =
         state.lastCompletedDate &&
         state.lastCompletedDate !== yesterday &&
@@ -270,10 +483,6 @@ export function AppProvider({ children }) {
         ? state.streakFreezes - 1
         : state.streakFreezes;
 
-      // ── History entry ─────────────────────────────────────────────────────
-      // `completedAt` is an ISO timestamp used by HistoryScreen to order the
-      // timeline and render the exact time of each completion. `date` stays
-      // as a local YYYY-MM-DD string for grouping + streak detection.
       const historyEntry = {
         id: action.id,
         category: action.category,
@@ -285,7 +494,6 @@ export function AppProvider({ children }) {
       };
       const newHistory = [...state.history, historyEntry];
 
-      // ── Achievement checks ────────────────────────────────────────────────
       const prospectiveState = {
         currentStreak: newStreak,
         longestStreak: newLongestStreak,
@@ -300,10 +508,8 @@ export function AppProvider({ children }) {
         ...newlyUnlocked.map((a) => a.id),
       ];
 
-      // ── Ad counter ────────────────────────────────────────────────────────
       const newActionsSinceLastAd = state.actionsSinceLastAd + 1;
 
-      // ── Dispatch ──────────────────────────────────────────────────────────
       dispatch({
         type: ACTION_TYPES.COMPLETE_ACTION,
         payload: {
@@ -342,6 +548,10 @@ export function AppProvider({ children }) {
     dispatch({ type: ACTION_TYPES.COMPLETE_ONBOARDING });
   }, []);
 
+  const setUserProfile = useCallback((profile) => {
+    dispatch({ type: ACTION_TYPES.SET_USER_PROFILE, payload: profile });
+  }, []);
+
   const setPremium = useCallback((isPremium) => {
     dispatch({ type: ACTION_TYPES.SET_PREMIUM, payload: isPremium });
   }, []);
@@ -373,21 +583,235 @@ export function AppProvider({ children }) {
     }
   }, [state.lastCompletedDate, state.todayCompleted]);
 
-  // ── Context value ──────────────────────────────────────────────────────────
+  // ── Sprint actions ─────────────────────────────────────────────────────
+
+  const startSprint = useCallback(
+    (sprintId, tier) => {
+      const sprint = getSprintById(sprintId);
+      if (!sprint) return false;
+      const unlockedTier = getUnlockedTier(sprintId, state.sprintHistory);
+      const chosenTier = Math.min(tier || 1, unlockedTier);
+      dispatch({
+        type: ACTION_TYPES.START_SPRINT,
+        payload: {
+          sprintId,
+          tier: chosenTier,
+          startedAt: new Date().toISOString(),
+        },
+      });
+      return true;
+    },
+    [state.sprintHistory],
+  );
+
+  const completeSprintTask = useCallback(
+    (taskId) => {
+      if (!state.activeSprint) return null;
+      const sprint = getSprintById(state.activeSprint.sprintId);
+      if (!sprint) return null;
+      const todaysTasks = getTodaysTasks(state.activeSprint);
+      const task = todaysTasks.find((t) => t.id === taskId);
+      if (!task) return null;
+      const date = getTodayDateString();
+      const existing = state.sprintTaskCompletions[date] || [];
+      if (existing.includes(taskId)) return null;
+      const prevLevel = state.level;
+      dispatch({
+        type: ACTION_TYPES.COMPLETE_SPRINT_TASK,
+        payload: { date, taskId, xpEarned: task.xp },
+      });
+      const newLevel = checkLevelUp(state.totalXP + task.xp, prevLevel);
+      return {
+        xpEarned: task.xp,
+        newLevel: newLevel > prevLevel ? newLevel : null,
+      };
+    },
+    [state.activeSprint, state.sprintTaskCompletions, state.totalXP, state.level],
+  );
+
+  const recordSprintViolation = useCallback(
+    (ruleId) => {
+      if (!state.activeSprint) return;
+      dispatch({
+        type: ACTION_TYPES.RECORD_SPRINT_VIOLATION,
+        payload: { ruleId, date: getTodayDateString() },
+      });
+    },
+    [state.activeSprint],
+  );
+
+  const abandonSprint = useCallback(() => {
+    if (!state.activeSprint) return;
+    dispatch({
+      type: ACTION_TYPES.ABANDON_SPRINT,
+      payload: { completedAt: new Date().toISOString() },
+    });
+  }, [state.activeSprint]);
+
+  const completeSprint = useCallback(() => {
+    if (!state.activeSprint) return null;
+    const sprint = getSprintById(state.activeSprint.sprintId);
+    if (!sprint) return null;
+    const tier = state.activeSprint.tier || 1;
+    const { xpMultiplier } = getTierConfig(tier);
+    const bonusXP = Math.round(sprint.duration * 10 * xpMultiplier);
+    dispatch({
+      type: ACTION_TYPES.COMPLETE_SPRINT,
+      payload: { completedAt: new Date().toISOString(), bonusXP },
+    });
+    return { bonusXP, sprintId: sprint.id, tier };
+  }, [state.activeSprint]);
+
+  // ── Daily challenge ────────────────────────────────────────────────────
+
+  const claimDailyChallenge = useCallback(() => {
+    const date = getTodayDateString();
+    if (state.claimedChallenges[date]) return null;
+    const challenge = getDailyChallenge('user');
+    dispatch({
+      type: ACTION_TYPES.CLAIM_DAILY_CHALLENGE,
+      payload: { date, challengeId: challenge.id, xpEarned: challenge.xp },
+    });
+    return { xpEarned: challenge.xp, challenge };
+  }, [state.claimedChallenges]);
+
+  // ── Maintenance mode ───────────────────────────────────────────────────
+
+  const startMaintenance = useCallback((sprintId) => {
+    if (!sprintId) return;
+    dispatch({
+      type: ACTION_TYPES.START_MAINTENANCE,
+      payload: { sprintId, startedAt: new Date().toISOString() },
+    });
+  }, []);
+
+  const stopMaintenance = useCallback(() => {
+    dispatch({ type: ACTION_TYPES.STOP_MAINTENANCE });
+  }, []);
+
+  const completeMaintenanceTask = useCallback(
+    (taskId) => {
+      if (!state.maintenance) return null;
+      const tasks = getMaintenanceTasks(state.maintenance.sprintId);
+      const task = tasks.find((t) => t.id === taskId);
+      if (!task) return null;
+      const date = getTodayDateString();
+      const existing = state.maintenance.completions[date] || [];
+      if (existing.includes(taskId)) return null;
+      dispatch({
+        type: ACTION_TYPES.COMPLETE_MAINTENANCE_TASK,
+        payload: { date, taskId, xpEarned: task.xp },
+      });
+      return { xpEarned: task.xp };
+    },
+    [state.maintenance],
+  );
+
+  // ── Lessons & Facts ────────────────────────────────────────────────────
+
+  const completeLesson = useCallback(
+    (lessonId, correctAnswers = 0) => {
+      const lesson = getLessonById(lessonId);
+      if (!lesson) return null;
+      if (state.lessonCompletions[lessonId]) return null;
+      const xpEarned = calculateLessonXP(lesson, correctAnswers);
+      const totalQuestions = lesson.quiz?.length || 0;
+      const prevLevel = state.level;
+      dispatch({
+        type: ACTION_TYPES.COMPLETE_LESSON,
+        payload: { lessonId, correctAnswers, totalQuestions, xpEarned },
+      });
+      const newLevel = checkLevelUp(state.totalXP + xpEarned, prevLevel);
+      return {
+        xpEarned,
+        newLevel: newLevel > prevLevel ? newLevel : null,
+      };
+    },
+    [state.lessonCompletions, state.totalXP, state.level],
+  );
+
+  const markFactRead = useCallback((factId) => {
+    if (!factId) return;
+    dispatch({ type: ACTION_TYPES.MARK_FACT_READ, payload: { factId } });
+  }, []);
+
+  // ── Derived ────────────────────────────────────────────────────────────
+  const today = getTodayDateString();
+  const currentSprintDay = state.activeSprint
+    ? getSprintDay(state.activeSprint)
+    : 0;
+  const sprintFinished = isSprintFinished(state.activeSprint);
+  const todaySprintTaskIds = state.sprintTaskCompletions[today] || [];
+  const todaysTasks = state.activeSprint ? getTodaysTasks(state.activeSprint) : [];
+  const dailyChallenge = getDailyChallenge('user');
+  const dailyChallengeClaimed = !!state.claimedChallenges[today];
+  const completedSprintCount = state.sprintHistory.filter(
+    (h) => h?.status === 'completed',
+  ).length;
+  const rank = getRank(completedSprintCount);
+  const maintenanceTasks = state.maintenance
+    ? getMaintenanceTasks(state.maintenance.sprintId)
+    : [];
+  const maintenanceCompletionsToday = state.maintenance
+    ? state.maintenance.completions[today] || []
+    : [];
+
+  // Learning derived
+  const sprintLessons = state.activeSprint
+    ? getLessonsForSprint(state.activeSprint.sprintId)
+    : [];
+  const unlockedLessons = state.activeSprint
+    ? getUnlockedLessons(state.activeSprint.sprintId, currentSprintDay)
+    : [];
+  const nextLesson =
+    unlockedLessons.find((l) => !state.lessonCompletions[l.id]) || null;
+  const completedLessonCount = Object.keys(state.lessonCompletions).length;
+  const dailyFact = getFactOfTheDay(state.userProfile?.userId || 'guest');
+  const dailyFactRead = !!state.readFactIds[dailyFact.id];
 
   const value = {
-    // State
     ...state,
 
+    currentSprintDay,
+    sprintFinished,
+    todaySprintTaskIds,
+    todaysTasks,
+    dailyChallenge,
+    dailyChallengeClaimed,
+    completedSprintCount,
+    rank,
+    maintenanceTasks,
+    maintenanceCompletionsToday,
+
+    // Learning derived
+    sprintLessons,
+    unlockedLessons,
+    nextLesson,
+    completedLessonCount,
+    dailyFact,
+    dailyFactRead,
+
     // Actions
+    completeLesson,
+    markFactRead,
     completeAction,
     setCategories,
     setDifficulty,
     completeOnboarding,
+    setUserProfile,
     setPremium,
     useStreakFreeze,
     deleteAccount,
     refreshTodayStatus,
+    startSprint,
+    completeSprintTask,
+    recordSprintViolation,
+    abandonSprint,
+    completeSprint,
+    claimDailyChallenge,
+    startMaintenance,
+    stopMaintenance,
+    completeMaintenanceTask,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

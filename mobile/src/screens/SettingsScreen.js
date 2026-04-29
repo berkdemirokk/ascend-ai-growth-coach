@@ -11,7 +11,8 @@ import {
   Linking,
 } from 'react-native';
 import { useApp } from '../contexts/AppContext';
-import { CATEGORIES, DIFFICULTIES, COLORS, LEGAL } from '../config/constants';
+import { useAuth } from '../contexts/AuthContext';
+import { COLORS, LEGAL } from '../config/constants';
 
 const COLORS_THEME = {
   background: '#0B0B14',
@@ -26,24 +27,30 @@ const COLORS_THEME = {
 };
 
 export default function SettingsScreen({ navigation }) {
-  const {
-    selectedCategories,
-    difficulty,
-    isPremium,
-    setCategories,
-    setDifficulty,
-    deleteAccount,
-  } = useApp();
+  const { isPremium, deleteAccount } = useApp();
+  const { user, isAuthenticated, guestMode, signOut } = useAuth();
 
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
 
-  const toggleCategory = (categoryId) => {
-    if (selectedCategories.includes(categoryId)) {
-      if (selectedCategories.length === 1) return;
-      setCategories(selectedCategories.filter((c) => c !== categoryId));
-    } else {
-      setCategories([...selectedCategories, categoryId]);
-    }
+  const handleSignOut = () => {
+    Alert.alert(
+      'Çıkış yap',
+      'Hesabından çıkış yapmak istediğine emin misin? İlerlemen bu cihazda kalacak, tekrar giriş yaptığında bulutla senkronize olacak.',
+      [
+        { text: 'İptal', style: 'cancel' },
+        {
+          text: 'Çıkış Yap',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await signOut();
+            } catch (e) {
+              Alert.alert('Hata', 'Çıkış yapılamadı. Tekrar dene.');
+            }
+          },
+        },
+      ],
+    );
   };
 
   const handleDeleteAccount = () => {
@@ -101,61 +108,6 @@ export default function SettingsScreen({ navigation }) {
       >
         <Text style={styles.screenTitle}>Settings</Text>
 
-        {/* PREFERENCES */}
-        <SectionHeader title="Preferences" />
-        <View style={styles.card}>
-          <Text style={styles.cardSubLabel}>Categories</Text>
-          <View style={styles.categoryGrid}>
-            {CATEGORIES.map((cat) => {
-              const isSelected = selectedCategories.includes(cat.id);
-              return (
-                <TouchableOpacity
-                  key={cat.id}
-                  style={[styles.categoryChip, isSelected && styles.categoryChipSelected]}
-                  onPress={() => toggleCategory(cat.id)}
-                  activeOpacity={0.7}
-                >
-                  <Text style={styles.categoryChipEmoji}>{cat.icon || '✦'}</Text>
-                  <Text
-                    style={[
-                      styles.categoryChipText,
-                      isSelected && styles.categoryChipTextSelected,
-                    ]}
-                  >
-                    {cat.label || cat.name || cat.id}
-                  </Text>
-                </TouchableOpacity>
-              );
-            })}
-          </View>
-
-          <View style={styles.divider} />
-
-          <Text style={styles.cardSubLabel}>Difficulty</Text>
-          <View style={styles.difficultyRow}>
-            {DIFFICULTIES.map((diff) => {
-              const isSelected = difficulty === diff.id;
-              return (
-                <TouchableOpacity
-                  key={diff.id}
-                  style={[styles.difficultyChip, isSelected && styles.difficultyChipSelected]}
-                  onPress={() => setDifficulty(diff.id)}
-                  activeOpacity={0.7}
-                >
-                  <Text
-                    style={[
-                      styles.difficultyChipText,
-                      isSelected && styles.difficultyChipTextSelected,
-                    ]}
-                  >
-                    {diff.label || diff.name || diff.id}
-                  </Text>
-                </TouchableOpacity>
-              );
-            })}
-          </View>
-        </View>
-
         {/* PREMIUM */}
         <SectionHeader title="Premium" />
         <View style={styles.card}>
@@ -204,7 +156,7 @@ export default function SettingsScreen({ navigation }) {
         <View style={styles.card}>
           <TouchableOpacity
             style={styles.linkRow}
-            onPress={() => openURL(LEGAL?.privacyPolicyUrl || 'https://example.com/privacy')}
+            onPress={() => openURL(LEGAL?.PRIVACY_URL || 'https://example.com/privacy')}
             activeOpacity={0.7}
           >
             <Text style={styles.settingLabel}>Privacy Policy</Text>
@@ -213,7 +165,7 @@ export default function SettingsScreen({ navigation }) {
           <View style={styles.divider} />
           <TouchableOpacity
             style={[styles.linkRow, styles.noBorder]}
-            onPress={() => openURL(LEGAL?.termsOfServiceUrl || 'https://example.com/terms')}
+            onPress={() => openURL(LEGAL?.TERMS_URL || 'https://example.com/terms')}
             activeOpacity={0.7}
           >
             <Text style={styles.settingLabel}>Terms of Service</Text>
@@ -224,6 +176,28 @@ export default function SettingsScreen({ navigation }) {
         {/* ACCOUNT */}
         <SectionHeader title="Account" />
         <View style={styles.card}>
+          {isAuthenticated && user?.email ? (
+            <SettingRow label="E-posta">
+              <Text style={styles.infoValue} numberOfLines={1}>
+                {user.email}
+              </Text>
+            </SettingRow>
+          ) : guestMode ? (
+            <SettingRow label="Hesap">
+              <Text style={styles.infoValue}>Misafir</Text>
+            </SettingRow>
+          ) : null}
+
+          {isAuthenticated ? (
+            <TouchableOpacity
+              style={styles.signOutButton}
+              onPress={handleSignOut}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.signOutButtonText}>Çıkış Yap</Text>
+            </TouchableOpacity>
+          ) : null}
+
           <TouchableOpacity
             style={styles.deleteButton}
             onPress={handleDeleteAccount}
@@ -282,78 +256,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#2A2A42',
     overflow: 'hidden',
-  },
-  cardSubLabel: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: '#9898B0',
-    paddingHorizontal: 16,
-    paddingTop: 14,
-    paddingBottom: 10,
-    textTransform: 'uppercase',
-    letterSpacing: 0.8,
-  },
-  categoryGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    paddingHorizontal: 12,
-    paddingBottom: 12,
-    gap: 8,
-  },
-  categoryChip: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#0B0B14',
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: '#2A2A42',
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    gap: 6,
-  },
-  categoryChipSelected: {
-    backgroundColor: '#6366F120',
-    borderColor: '#6366F1',
-  },
-  categoryChipEmoji: {
-    fontSize: 14,
-  },
-  categoryChipText: {
-    fontSize: 13,
-    color: '#9898B0',
-    fontWeight: '500',
-  },
-  categoryChipTextSelected: {
-    color: '#6366F1',
-    fontWeight: '600',
-  },
-  difficultyRow: {
-    flexDirection: 'row',
-    paddingHorizontal: 12,
-    paddingBottom: 14,
-    gap: 8,
-  },
-  difficultyChip: {
-    flex: 1,
-    alignItems: 'center',
-    paddingVertical: 8,
-    borderRadius: 10,
-    backgroundColor: '#0B0B14',
-    borderWidth: 1,
-    borderColor: '#2A2A42',
-  },
-  difficultyChipSelected: {
-    backgroundColor: '#6366F120',
-    borderColor: '#6366F1',
-  },
-  difficultyChipText: {
-    fontSize: 13,
-    color: '#9898B0',
-    fontWeight: '500',
-  },
-  difficultyChipTextSelected: {
-    color: '#6366F1',
-    fontWeight: '600',
   },
   divider: {
     height: 1,
@@ -469,6 +371,21 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '700',
     color: '#EF4444',
+  },
+  signOutButton: {
+    marginHorizontal: 16,
+    marginTop: 16,
+    backgroundColor: '#2A2A42',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#2A2A42',
+    paddingVertical: 14,
+    alignItems: 'center',
+  },
+  signOutButtonText: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#F5F5FA',
   },
   madeWith: {
     textAlign: 'center',

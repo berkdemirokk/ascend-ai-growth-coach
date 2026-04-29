@@ -29,7 +29,11 @@ const THEME = {
   border: '#2A2A42',
 };
 
-const FILTERS = ['All', 'Unlocked', 'Locked'];
+const FILTERS = [
+  { id: 'All', label: 'Tümü' },
+  { id: 'Unlocked', label: 'Kazanılan' },
+  { id: 'Locked', label: 'Kilitli' },
+];
 
 const getRarityColor = (rarity) =>
   (RARITY_COLORS && RARITY_COLORS[rarity]) || THEME.primary;
@@ -37,7 +41,7 @@ const getRarityColor = (rarity) =>
 const capitalize = (str) =>
   str ? str.charAt(0).toUpperCase() + str.slice(1) : 'Common';
 
-export default function AchievementsScreen() {
+export default function AchievementsScreen({ navigation }) {
   const { unlockedAchievements } = useApp();
   const [activeFilter, setActiveFilter] = useState('All');
   const [selectedAchievement, setSelectedAchievement] = useState(null);
@@ -111,10 +115,17 @@ export default function AchievementsScreen() {
     <View style={styles.container}>
       {/* ── Header ── */}
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Achievements</Text>
+        <TouchableOpacity
+          onPress={() => navigation?.goBack?.()}
+          style={styles.closeBtn}
+          activeOpacity={0.7}
+        >
+          <Text style={styles.closeIcon}>✕</Text>
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Başarımlar</Text>
         <View style={styles.countBadge}>
           <Text style={styles.countText}>
-            {unlockedCount}/{totalCount} Unlocked
+            {unlockedCount}/{totalCount}
           </Text>
         </View>
       </View>
@@ -137,17 +148,17 @@ export default function AchievementsScreen() {
           contentContainerStyle={styles.filterRow}
         >
           {FILTERS.map((filter) => {
-            const isActive = activeFilter === filter;
+            const isActive = activeFilter === filter.id;
             return (
               <TouchableOpacity
-                key={filter}
+                key={filter.id}
                 style={styles.filterTab}
-                onPress={() => setActiveFilter(filter)}
+                onPress={() => setActiveFilter(filter.id)}
               >
                 <Text
                   style={[styles.filterLabel, isActive && styles.filterLabelActive]}
                 >
-                  {filter}
+                  {filter.label}
                 </Text>
                 {isActive && <View style={styles.filterUnderline} />}
               </TouchableOpacity>
@@ -172,13 +183,13 @@ export default function AchievementsScreen() {
             </Text>
             <Text style={styles.emptyStateTitle}>
               {activeFilter === 'Unlocked'
-                ? 'No achievements yet'
-                : 'All achievements unlocked!'}
+                ? 'Henüz başarım yok'
+                : 'Tüm başarımlar kazanıldı!'}
             </Text>
             <Text style={styles.emptyStateSubtitle}>
               {activeFilter === 'Unlocked'
-                ? 'Complete actions to earn your first achievement.'
-                : 'You have conquered every challenge. Legendary!'}
+                ? 'Görevleri tamamlayarak ilk başarımını kazan.'
+                : 'Her zorluğu fethettin. Efsane!'}
             </Text>
           </View>
         }
@@ -243,7 +254,7 @@ export default function AchievementsScreen() {
                     { color: getRarityColor(selectedAchievement.rarity) },
                   ]}
                 >
-                  ✅ Unlocked
+                  ✅ Kazanıldı
                 </Text>
               </View>
 
@@ -251,7 +262,7 @@ export default function AchievementsScreen() {
                 style={styles.modalCloseBtn}
                 onPress={() => setSelectedAchievement(null)}
               >
-                <Text style={styles.modalCloseBtnText}>Close</Text>
+                <Text style={styles.modalCloseBtnText}>Kapat</Text>
               </TouchableOpacity>
             </Pressable>
           </Pressable>
@@ -275,9 +286,26 @@ const styles = StyleSheet.create({
     paddingTop: 60,
     paddingBottom: 14,
     paddingHorizontal: GRID_PADDING,
+    gap: 12,
+  },
+  closeBtn: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: THEME.surface,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: THEME.border,
+  },
+  closeIcon: {
+    color: THEME.textSecondary,
+    fontSize: 16,
+    fontWeight: '700',
   },
   headerTitle: {
-    fontSize: 28,
+    flex: 1,
+    fontSize: 24,
     fontWeight: '800',
     color: THEME.text,
   },
