@@ -50,6 +50,21 @@ jobs:
           cd ios
           pod install --repo-update
 
+      - name: Import iOS distribution certificate
+        uses: apple-actions/import-codesign-certs@v3
+        with:
+          p12-file-base64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
+          p12-password: ${{ secrets.P12_PASSWORD }}
+
+      - name: Write App Store Connect API key file
+        working-directory: ${{ github.workspace }}
+        run: |
+          API_KEY_PATH="$RUNNER_TEMP/AuthKey_${{ secrets.APP_STORE_CONNECT_KEY_ID }}.p8"
+          cat > "$API_KEY_PATH" <<'EOF'
+          ${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY }}
+          EOF
+          echo "API_KEY_PATH=$API_KEY_PATH" >> "$GITHUB_ENV"
+
       - name: Download App Store provisioning profile via ASC API
         working-directory: ${{ github.workspace }}
         run: |
@@ -58,14 +73,7 @@ jobs:
           PROFILE_DIR="$RUNNER_TEMP/profiles"
           mkdir -p "$PROFILE_DIR"
 
-          fastlane sigh download_all \
-            --app_identifier "$BUNDLE_ID" \
-            --team_id "${{ secrets.APPLE_TEAM_ID }}" \
-            --api_key_path "$API_KEY_PATH" \
-            --output_path "$PROFILE_DIR" \
-            --platform ios \
-            --skip_certificate_verification true \
-          || fastlane sigh \
+          fastlane sigh \
             --app_identifier "$BUNDLE_ID" \
             --team_id "${{ secrets.APPLE_TEAM_ID }}" \
             --api_key_path "$API_KEY_PATH" \
@@ -76,9 +84,11 @@ jobs:
 
           ls -la "$PROFILE_DIR"
 
-          # Find the App Store profile (filename pattern from sigh)
-          PROFILE_FILE=$(find "$PROFILE_DIR" -name "*.mobileprovision" | head -n 1)
-          if [ -z "$PROFILE_FILE" ]; then
+          PROFILE_FILE="$PROFILE_DIR/AscendMonkMode.mobileprovision"
+          if [ ! -f "$PROFILE_FILE" ]; then
+            PROFILE_FILE=$(find "$PROFILE_DIR" -name "*.mobileprovision" | head -n 1)
+          fi
+          if [ -z "$PROFILE_FILE" ] || [ ! -f "$PROFILE_FILE" ]; then
             echo "No provisioning profile downloaded."
             exit 1
           fi
@@ -94,21 +104,6 @@ jobs:
           echo "PROFILE_UUID=$PROFILE_UUID" >> "$GITHUB_ENV"
           echo "PROFILE_NAME=$PROFILE_NAME" >> "$GITHUB_ENV"
           echo "Installed profile: $PROFILE_NAME ($PROFILE_UUID)"
-
-      - name: Import iOS distribution certificate
-        uses: apple-actions/import-codesign-certs@v3
-        with:
-          p12-file-base64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
-          p12-password: ${{ secrets.P12_PASSWORD }}
-
-      - name: Write App Store Connect API key file
-        working-directory: ${{ github.workspace }}
-        run: |
-          API_KEY_PATH="$RUNNER_TEMP/AuthKey_${{ secrets.APP_STORE_CONNECT_KEY_ID }}.p8"
-          cat > "$API_KEY_PATH" <<'EOF'
-          ${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY }}
-          EOF
-          echo "API_KEY_PATH=$API_KEY_PATH" >> "$GITHUB_ENV"
 
       - name: Discover scheme + workspace
         run: |
