@@ -100,26 +100,26 @@ export default function Onboarding({ onComplete, onShowRestore }: OnboardingProp
             </div>
             <div className="space-y-3">
               <h1 className="text-3xl sm:text-4xl font-bold text-slate-900 leading-tight">
-                90 gün sonra<br />farklı biri olacaksın
+                Monk Mode<br />başlıyor
               </h1>
               <p className="text-slate-600 text-base sm:text-lg max-w-xl mx-auto leading-relaxed">
-                Ascend her gün <span className="font-semibold text-slate-900">tek bir görev</span> verir.
-                Motivasyon değil, sistem. Yapay zekâ koçun ilerlemene göre rotanı sürekli yeniler.
+                Her gün <span className="font-semibold text-slate-900">tek bir disiplin görevi</span>.
+                Motivasyon yok, sistem var. Alev sönerse her şey biter.
               </p>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-left">
               <div className="rounded-2xl bg-white/60 border border-slate-100 px-4 py-3">
                 <p className="text-[11px] uppercase tracking-wider text-brand-600 font-bold">Gün 1</p>
-                <p className="text-sm text-slate-700 mt-1">Net ilk görev. 15 dakika.</p>
+                <p className="text-sm text-slate-700 mt-1">Disipline ilk adım.</p>
               </div>
               <div className="rounded-2xl bg-white/60 border border-slate-100 px-4 py-3">
                 <p className="text-[11px] uppercase tracking-wider text-brand-600 font-bold">Gün 30</p>
-                <p className="text-sm text-slate-700 mt-1">Seri kuruldu, alışkanlık yerleşti.</p>
+                <p className="text-sm text-slate-700 mt-1">Sprint tamamlandı. Yeni adam.</p>
               </div>
               <div className="rounded-2xl bg-white/60 border border-slate-100 px-4 py-3">
                 <p className="text-[11px] uppercase tracking-wider text-brand-600 font-bold">Gün 90</p>
-                <p className="text-sm text-slate-700 mt-1">Ölçülebilir gerçek değişim.</p>
+                <p className="text-sm text-slate-700 mt-1">Eski sen ölmüş, yeni sen oturmuş.</p>
               </div>
             </div>
 
@@ -128,7 +128,7 @@ export default function Onboarding({ onComplete, onShowRestore }: OnboardingProp
                 type="text"
                 value={name}
                 onChange={(event) => setName(event.target.value)}
-                placeholder="Sana nasıl hitap edelim?"
+                placeholder="İsmini yaz"
                 className="w-full px-6 sm:px-8 py-4 sm:py-5 bg-slate-50 border-2 border-transparent focus:border-brand-500 focus:bg-white rounded-2xl outline-none text-lg sm:text-xl text-center transition-all"
                 onKeyDown={(event) => event.key === 'Enter' && canContinue && moveToNextStep()}
               />
@@ -149,8 +149,8 @@ export default function Onboarding({ onComplete, onShowRestore }: OnboardingProp
         {step === 'focus' && (
           <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-6">
             <div className="text-center space-y-2">
-              <h2 className="text-2xl sm:text-3xl font-bold text-slate-900">Odak alanını seç</h2>
-              <p className="text-slate-500 text-base sm:text-lg">Planın bu seçime göre kişiselleştirilecek.</p>
+              <h2 className="text-2xl sm:text-3xl font-bold text-slate-900">Disiplin alanını seç</h2>
+              <p className="text-slate-500 text-base sm:text-lg">Sprint'in bu seçime göre kurulacak.</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -186,8 +186,8 @@ export default function Onboarding({ onComplete, onShowRestore }: OnboardingProp
         {step === 'pace' && (
           <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-6">
             <div className="text-center space-y-2">
-              <h2 className="text-2xl sm:text-3xl font-bold text-slate-900">Planının temposunu belirle</h2>
-              <p className="text-slate-500 text-base sm:text-lg">Sana uygun ritmi seç, sistem bunu günlük görevlere yansıtsın.</p>
+              <h2 className="text-2xl sm:text-3xl font-bold text-slate-900">Sprint temponu seç</h2>
+              <p className="text-slate-500 text-base sm:text-lg">Ne kadar sert, sana göre. Sistem ritmine uyacak.</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -285,10 +285,10 @@ export default function Onboarding({ onComplete, onShowRestore }: OnboardingProp
                 7 gün ücretsiz dene
               </span>
               <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mt-3">
-                Tam potansiyelini aç
+                Tam Monk Mode
               </h2>
               <p className="text-slate-600 max-w-md mx-auto">
-                İlk 7 gün ücretsiz. İstediğin zaman iptal et, ödemen olmaz.
+                İlk 7 gün ücretsiz. Tüm disiplin yolları, ek freeze'ler, sprint analizi açık.
               </p>
             </div>
 
@@ -298,10 +298,10 @@ export default function Onboarding({ onComplete, onShowRestore }: OnboardingProp
               </div>
               <p className="text-base font-bold text-slate-900">Premium</p>
               <ul className="space-y-2 text-sm text-slate-700">
-                <li className="flex items-start gap-2"><span className="text-brand-600 font-bold">✓</span> Sana özel uyarlanan haftalık plan</li>
-                <li className="flex items-start gap-2"><span className="text-brand-600 font-bold">✓</span> AI koç ile derin günlük rehberlik</li>
-                <li className="flex items-start gap-2"><span className="text-brand-600 font-bold">✓</span> Haftalık değerlendirme ve gerçek ilerleme</li>
-                <li className="flex items-start gap-2"><span className="text-brand-600 font-bold">✓</span> Streak koruma — 1 gün kaçırırsan korunursun</li>
+                <li className="flex items-start gap-2"><span className="text-brand-600 font-bold">✓</span> Tüm yolların kilidi açık (fitness, kariyer, kültür ve daha fazlası)</li>
+                <li className="flex items-start gap-2"><span className="text-brand-600 font-bold">✓</span> Daha hızlı ilerleyebileceğin esnek tempo seçenekleri</li>
+                <li className="flex items-start gap-2"><span className="text-brand-600 font-bold">✓</span> Haftalık değerlendirme ve gerçek ilerleme görünümü</li>
+                <li className="flex items-start gap-2"><span className="text-brand-600 font-bold">✓</span> Ek streak koruma — daha fazla freeze hakkı</li>
                 <li className="flex items-start gap-2"><span className="text-brand-600 font-bold">✓</span> Çoklu cihaz arasında senkron</li>
               </ul>
               <p className="text-[11px] text-slate-500 pt-2 border-t border-slate-100">

@@ -30,7 +30,7 @@ const AppShellFallback = () => (
       </div>
       <div className="space-y-1">
         <p className="text-base font-semibold text-slate-900">Ascend</p>
-        <p className="text-sm font-medium text-slate-500">Sistem yukleniyor...</p>
+        <p className="text-sm font-medium text-slate-500">Monk mode yukleniyor...</p>
       </div>
     </div>
   </div>

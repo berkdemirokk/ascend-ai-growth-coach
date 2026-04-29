@@ -42,6 +42,7 @@ import {
 } from '../lib/billing';
 
 const AuthenticatedApp = lazy(() => import('./AuthenticatedApp'));
+const CompletionCelebration = lazy(() => import('./CompletionCelebration'));
 
 interface AuthenticatedRuntimeProps {
   initialSeed: SessionSeed;
@@ -57,6 +58,7 @@ export default function AuthenticatedRuntime({ initialSeed, onLogout }: Authenti
   const [weeklyPlanSnapshot, setWeeklyPlanSnapshot] = useState<WeeklyPlanSnapshot | null>(initialSeed.weeklyPlanSnapshot);
   const [plannedMissions, setPlannedMissions] = useState<PlannedMission[]>(initialSeed.plannedMissions);
   const [sessionRevision, setSessionRevision] = useState(initialSeed.sessionRevision);
+  const [celebration, setCelebration] = useState<{ visible: boolean; xp: number; streak: number }>({ visible: false, xp: 0, streak: 0 });
   const [syncState, setSyncState] = useState<SessionSyncState>(accountToken ? 'synced' : 'idle');
   const [syncMessage, setSyncMessage] = useState<string | null>(
     accountToken ? 'Hesap verisi senkron görünüyor.' : null,
@@ -344,10 +346,10 @@ export default function AuthenticatedRuntime({ initialSeed, onLogout }: Authenti
     const apply = async () => {
       const granted = await ensureNotificationPermission();
       if (!granted) return;
-      await scheduleDailyReminder(hour, minute, profile.name);
+      await scheduleDailyReminder(hour, minute, profile.name, profile.streak);
     };
     void apply();
-  }, [profile.reminderEnabled, profile.reminderHour, profile.reminderMinute, profile.name]);
+  }, [profile.reminderEnabled, profile.reminderHour, profile.reminderMinute, profile.name, profile.streak]);
 
   const handleToggleTask = (id: string) => {
     const previousTask = tasks.find((task) => task.id === id);
@@ -359,6 +361,8 @@ export default function AuthenticatedRuntime({ initialSeed, onLogout }: Authenti
     const nextTask = seededTasks.find((task) => task.id === id);
     if (previousTask && nextTask && !previousTask.completed && nextTask.completed) {
       void hapticSuccess();
+      const xpGained = Math.max(0, (nextProfile.experience - profile.experience + (nextProfile.level - profile.level) * 100));
+      setCelebration({ visible: true, xp: xpGained || 10, streak: nextProfile.streak });
     } else if (previousTask?.completed && nextTask && !nextTask.completed) {
       void hapticLight();
     }
@@ -557,7 +561,7 @@ export default function AuthenticatedRuntime({ initialSeed, onLogout }: Authenti
     <Suspense
       fallback={
         <div className="min-h-screen flex items-center justify-center text-sm font-medium text-slate-500">
-          Ascend hazırlanıyor...
+          Monk mode hazırlanıyor...
         </div>
       }
     >
@@ -588,6 +592,14 @@ export default function AuthenticatedRuntime({ initialSeed, onLogout }: Authenti
         onRestorePurchases={handleRestorePurchases}
         onLogout={handleLogout}
       />
+      <Suspense fallback={null}>
+        <CompletionCelebration
+          visible={celebration.visible}
+          xp={celebration.xp}
+          streak={celebration.streak}
+          onDone={() => setCelebration((current) => ({ ...current, visible: false }))}
+        />
+      </Suspense>
     </Suspense>
   );
 }

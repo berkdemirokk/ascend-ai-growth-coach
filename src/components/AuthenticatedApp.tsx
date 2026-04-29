@@ -1,5 +1,5 @@
 import React, { Suspense, lazy, useMemo, useState } from 'react';
-import { BarChart3, Bell, BellOff, Home, Lock, LogOut, User as UserIcon, X, Zap } from 'lucide-react';
+import { BarChart3, Bell, BellOff, Flame, Home, Lock, LogOut, Share2, User as UserIcon, X, Zap } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { MissionPreview } from '../lib/missionEngine';
 import { getPlanTierLabel, isPremiumProfile } from '../lib/premium';
@@ -7,6 +7,7 @@ import { DailyTask, SessionSyncState, UserProfile, WeeklyPlanSnapshot } from '..
 import DeferredSection from './DeferredSection';
 import { getPathLabel } from '../lib/productCopy';
 import { cn } from '../lib/utils';
+import { shareStreak } from '../lib/share';
 
 const Coach = lazy(() => import('./Coach'));
 const JourneyPanel = lazy(() => import('./JourneyPanel'));
@@ -109,8 +110,8 @@ export default function AuthenticatedApp({
               <Zap size={17} />
             </div>
             <div>
-              <h1 className="text-lg font-bold tracking-tight text-slate-900 sm:text-xl">Ascend</h1>
-              <p className="text-[11px] text-slate-500">Günlük kişisel gelişim sistemin</p>
+              <h1 className="text-lg font-bold tracking-tight text-slate-900 sm:text-xl">Monk Mode</h1>
+              <p className="text-[11px] text-slate-500">Disiplin. Odak. Tekrar.</p>
             </div>
           </div>
 
@@ -131,18 +132,8 @@ export default function AuthenticatedApp({
         <div className="mx-auto max-w-6xl">
           {activeTab === 'today' && (
             <div className="space-y-6">
-              <div className="glass rounded-3xl p-6 sm:p-7 space-y-4">
-                <p className="text-[11px] uppercase tracking-[0.2em] text-brand-500 font-semibold">Bugün</p>
-                <h2 className="text-2xl sm:text-3xl font-bold text-slate-900">Bugünün tek odağı: görevi tamamlamak</h2>
-                <p className="text-sm text-slate-600 max-w-3xl">
-                  Her gün tek bir ana görevle ilerlersin. Görevi tamamla, kısa yansıtmanı yaz, yarına net geç.
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  <span className="rounded-full bg-slate-100 px-3 py-1 text-[11px] font-semibold text-slate-600">Odak: {getPathLabel(profile.selectedPath)}</span>
-                  <span className="rounded-full bg-slate-100 px-3 py-1 text-[11px] font-semibold text-slate-600">Seri: {profile.streak} gün</span>
-                  <span className="rounded-full bg-slate-100 px-3 py-1 text-[11px] font-semibold text-slate-600">Tamamlanan görev: {missionStats.completedMissions}</span>
-                </div>
-              </div>
+              <StreakHero profile={profile} missionStats={missionStats} />
+
 
               <Suspense fallback={<PanelFallback label="Bugünün görevi" />}>
                 <TaskManager
@@ -155,28 +146,6 @@ export default function AuthenticatedApp({
                 />
               </Suspense>
 
-              <div className="space-y-3">
-                <div className="flex items-center justify-between px-1">
-                  <div>
-                    <p className="text-[11px] uppercase tracking-[0.16em] text-slate-400 font-semibold">Destek</p>
-                    <h3 className="text-lg font-semibold text-slate-900">Göreve bağlı koç desteği</h3>
-                  </div>
-                  <button onClick={() => setShowCoach((current) => !current)} className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">
-                    {showCoach ? 'Koçu gizle' : 'Koçu aç'}
-                  </button>
-                </div>
-                <AnimatePresence initial={false}>
-                  {showCoach ? (
-                    <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}>
-                      <DeferredSection fallback={<PanelFallback label="Koç" />} minHeightClassName="min-h-[18rem]">
-                        <Suspense fallback={<PanelFallback label="Koç" />}>
-                          <Coach profile={profile} activeTask={activeTask} tasks={tasks} />
-                        </Suspense>
-                      </DeferredSection>
-                    </motion.div>
-                  ) : null}
-                </AnimatePresence>
-              </div>
             </div>
           )}
 
@@ -410,6 +379,92 @@ export default function AuthenticatedApp({
       </AnimatePresence>
     </motion.div>
   );
+}
+
+interface StreakHeroProps {
+  profile: UserProfile;
+  missionStats: {
+    completedMissions: number;
+  };
+}
+
+function StreakHero({ profile, missionStats }: StreakHeroProps) {
+  const streak = profile.streak;
+  const isHot = streak >= 3;
+  const milestone = getNextMilestone(streak);
+  const daysToMilestone = milestone - streak;
+
+  return (
+    <div className={cn(
+      'relative overflow-hidden rounded-3xl p-6 sm:p-7',
+      isHot
+        ? 'bg-gradient-to-br from-orange-500 via-orange-600 to-red-600 text-white shadow-2xl shadow-orange-200'
+        : 'glass'
+    )}>
+      <div className="relative z-10 flex items-center gap-5">
+        <div className={cn(
+          'flex h-20 w-20 items-center justify-center rounded-3xl',
+          isHot ? 'bg-white/20 backdrop-blur' : 'bg-orange-50'
+        )}>
+          <Flame size={44} className={cn(isHot ? 'text-yellow-200 fill-yellow-300' : 'text-orange-400')} strokeWidth={1.8} />
+        </div>
+        <div className="flex-1">
+          <p className={cn(
+            'text-[11px] uppercase tracking-[0.2em] font-bold',
+            isHot ? 'text-orange-100' : 'text-orange-600'
+          )}>
+            {streak === 0 ? 'Monk mode başlat' : streak === 1 ? 'Sprint günü 1' : 'Sprint aktif'}
+          </p>
+          <p className={cn(
+            'text-5xl sm:text-6xl font-black tracking-tight leading-none mt-1',
+            isHot ? 'text-white' : 'text-slate-900'
+          )}>
+            {streak}
+            <span className="text-2xl font-bold ml-2 opacity-80">gün</span>
+          </p>
+          <p className={cn(
+            'text-sm mt-2 font-medium',
+            isHot ? 'text-orange-50' : 'text-slate-600'
+          )}>
+            {streak === 0
+              ? 'Bugün ilk görevini tamamla, alev tutuşsun.'
+              : daysToMilestone === 0
+                ? `${milestone} gün! Yeni rank.`
+                : `${milestone} gün rütbesine ${daysToMilestone} gün kaldı.`}
+          </p>
+        </div>
+      </div>
+      <div className={cn(
+        'mt-5 pt-4 flex items-center justify-between text-xs font-semibold gap-3',
+        isHot ? 'border-t border-white/20 text-orange-100' : 'border-t border-slate-100 text-slate-500'
+      )}>
+        <div className="flex items-center gap-3">
+          <span>Toplam: {missionStats.completedMissions} görev</span>
+          <span>·</span>
+          <span>Seviye {profile.level}</span>
+        </div>
+        <button
+          onClick={() => void shareStreak(streak, profile.name)}
+          className={cn(
+            'flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-bold transition-colors',
+            isHot ? 'bg-white/20 text-white hover:bg-white/30' : 'bg-orange-50 text-orange-700 hover:bg-orange-100'
+          )}
+          aria-label="Serini paylaş"
+        >
+          <Share2 size={13} /> Paylaş
+        </button>
+      </div>
+    </div>
+  );
+}
+
+const STREAK_MILESTONES = [3, 7, 14, 30, 60, 100, 180, 365];
+
+function getNextMilestone(streak: number): number {
+  for (const m of STREAK_MILESTONES) {
+    if (streak < m) return m;
+  }
+  return Math.ceil((streak + 1) / 365) * 365;
 }
 
 interface ReminderCardProps {

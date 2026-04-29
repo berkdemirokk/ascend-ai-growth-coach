@@ -31,18 +31,33 @@ export async function ensureNotificationPermission(): Promise<boolean> {
   }
 }
 
-export async function scheduleDailyReminder(hour: number, minute: number, name?: string): Promise<boolean> {
+export async function scheduleDailyReminder(hour: number, minute: number, name?: string, streak?: number): Promise<boolean> {
   const mod = await load();
   if (!mod) return false;
   try {
     await mod.LocalNotifications.cancel({ notifications: [{ id: REMINDER_ID }] });
-    const greeting = name ? `${name}, bugünün görevi seni bekliyor.` : 'Bugünün görevi seni bekliyor.';
+
+    const personalize = name ? `${name}, ` : '';
+    let title: string;
+    let body: string;
+
+    if ((streak ?? 0) === 0) {
+      title = '🔥 Monk mode başlasın';
+      body = `${personalize}ilk adımı at. 5 dakika.`;
+    } else if ((streak ?? 0) >= 7) {
+      title = `🔥 ${streak} gün tehlikede`;
+      body = `${personalize}bu kadar emek söndürülmez. Bugünkü görev seni bekliyor.`;
+    } else {
+      title = `🔥 ${streak} gün — disiplin`;
+      body = `${personalize}bugün tamamla, sprint sürsün.`;
+    }
+
     await mod.LocalNotifications.schedule({
       notifications: [
         {
           id: REMINDER_ID,
-          title: 'Ascend',
-          body: greeting,
+          title,
+          body,
           schedule: {
             on: { hour, minute },
             allowWhileIdle: true,
