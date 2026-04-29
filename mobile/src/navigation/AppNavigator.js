@@ -1,11 +1,10 @@
 import React from 'react';
-import { Text, View, ActivityIndicator } from 'react-native';
+import { Text } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import { useApp } from '../contexts/AppContext';
-import { useAuth } from '../contexts/AuthContext';
 
 import OnboardingScreen from '../screens/OnboardingScreen';
 import HomeScreen from '../screens/HomeScreen';
@@ -13,21 +12,12 @@ import HistoryScreen from '../screens/HistoryScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import PaywallScreen from '../screens/PaywallScreen';
-import SprintCompleteScreen from '../screens/SprintCompleteScreen';
-import LessonScreen from '../screens/LessonScreen';
-import PathScreen from '../screens/PathScreen';
-import AchievementsScreen from '../screens/AchievementsScreen';
-import WelcomeScreen from '../screens/auth/WelcomeScreen';
-import LoginScreen from '../screens/auth/LoginScreen';
-import SignupScreen from '../screens/auth/SignupScreen';
-import ForgotPasswordScreen from '../screens/auth/ForgotPasswordScreen';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
 const TAB_ICON_MAP = {
-  Home: '🔥',
-  Path: '🎓',
+  Home: '🏠',
   History: '📋',
   Profile: '👤',
   Settings: '⚙️',
@@ -72,7 +62,6 @@ function MainTabs() {
       })}
     >
       <Tab.Screen name="Home" component={HomeScreen} />
-      <Tab.Screen name="Path" component={PathScreen} options={{ title: 'Yol' }} />
       <Tab.Screen name="History" component={HistoryScreen} />
       <Tab.Screen name="Profile" component={ProfileScreen} />
       <Tab.Screen name="Settings" component={SettingsScreen} />
@@ -80,30 +69,8 @@ function MainTabs() {
   );
 }
 
-function AuthLoading() {
-  return (
-    <View
-      style={{
-        flex: 1,
-        backgroundColor: '#0B0B14',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}
-    >
-      <ActivityIndicator color="#6366F1" size="large" />
-    </View>
-  );
-}
-
 export default function AppNavigator() {
   const { onboarded } = useApp();
-  const { isAuthenticated, guestMode, loading: authLoading } = useAuth();
-
-  if (authLoading) {
-    return <AuthLoading />;
-  }
-
-  const needsAuth = !isAuthenticated && !guestMode;
 
   return (
     <NavigationContainer>
@@ -113,17 +80,7 @@ export default function AppNavigator() {
           contentStyle: { backgroundColor: '#0B0B14' },
         }}
       >
-        {needsAuth ? (
-          <>
-            <Stack.Screen name="Welcome" component={WelcomeScreen} />
-            <Stack.Screen name="Login" component={LoginScreen} />
-            <Stack.Screen name="Signup" component={SignupScreen} />
-            <Stack.Screen
-              name="ForgotPassword"
-              component={ForgotPasswordScreen}
-            />
-          </>
-        ) : !onboarded ? (
+        {!onboarded ? (
           <Stack.Screen name="Onboarding" component={OnboardingScreen} />
         ) : (
           <Stack.Screen name="MainTabs" component={MainTabs} />
@@ -131,30 +88,6 @@ export default function AppNavigator() {
         <Stack.Screen
           name="Paywall"
           component={PaywallScreen}
-          options={{
-            presentation: 'modal',
-            animation: 'slide_from_bottom',
-          }}
-        />
-        <Stack.Screen
-          name="SprintComplete"
-          component={SprintCompleteScreen}
-          options={{
-            presentation: 'modal',
-            animation: 'slide_from_bottom',
-          }}
-        />
-        <Stack.Screen
-          name="Lesson"
-          component={LessonScreen}
-          options={{
-            presentation: 'modal',
-            animation: 'slide_from_bottom',
-          }}
-        />
-        <Stack.Screen
-          name="Achievements"
-          component={AchievementsScreen}
           options={{
             presentation: 'modal',
             animation: 'slide_from_bottom',
