@@ -93,21 +93,6 @@ export default function ProfileScreen({ navigation }) {
       .reverse();
   }, [unlockedAchievements]);
 
-  const sprintHistoryList = useMemo(() => {
-    return (sprintHistory || [])
-      .slice(-5)
-      .reverse()
-      .map((entry) => {
-        const sprint = getSprintById(entry.sprintId);
-        return {
-          ...entry,
-          title: sprint?.title ?? entry.sprintId,
-          icon: sprint?.icon ?? '🎯',
-          duration: sprint?.duration ?? 0,
-        };
-      });
-  }, [sprintHistory]);
-
   return (
     <ScrollView
       style={styles.container}

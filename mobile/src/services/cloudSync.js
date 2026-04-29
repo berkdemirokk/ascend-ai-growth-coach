@@ -2,12 +2,8 @@ import { supabase, SUPABASE_CONFIGURED } from './supabase';
 
 const TABLE = 'user_state';
 
-// Fields we persist to the cloud. We skip transient/UI-only fields
-// (_loaded, todayCompleted, actionsSinceLastAd) and premium status
-// (authoritative source is the store/purchase server).
+// Fields persisted to cloud. Skip transient/UI/premium (premium = store-authoritative).
 const SYNCED_KEYS = [
-  'selectedCategories',
-  'difficulty',
   'onboarded',
   'userProfile',
   'totalXP',
@@ -16,15 +12,11 @@ const SYNCED_KEYS = [
   'longestStreak',
   'lastCompletedDate',
   'streakFreezes',
-  'history',
   'unlockedAchievements',
-  'activeSprint',
-  'sprintTaskCompletions',
-  'sprintHistory',
-  'claimedChallenges',
-  'maintenance',
-  'lessonCompletions',
-  'readFactIds',
+  'hearts',
+  'heartsRefillAt',
+  'pathProgress',
+  'activePathId',
 ];
 
 export function pickSyncableState(state) {
@@ -36,32 +28,34 @@ export function pickSyncableState(state) {
 }
 
 /**
- * Pull the user's cloud snapshot.
- * Returns { data, error }. data is null if no row exists yet.
+ * Pull the user's cloud state. Returns the payload object or null.
  */
 export async function pullState(userId) {
-  if (!SUPABASE_CONFIGURED) return { data: null, error: null };
-  if (!userId) return { data: null, error: new Error('no userId') };
+  if (!SUPABASE_CONFIGURED) return null;
+  if (!userId) return null;
   try {
     const { data, error } = await supabase
       .from(TABLE)
       .select('payload, updated_at')
       .eq('user_id', userId)
       .maybeSingle();
-    if (error) return { data: null, error };
-    return { data: data || null, error: null };
+    if (error) {
+      console.warn('[cloudSync] pull error:', error.message);
+      return null;
+    }
+    return data?.payload || null;
   } catch (e) {
-    return { data: null, error: e };
+    console.warn('[cloudSync] pull exception:', e?.message);
+    return null;
   }
 }
 
 /**
- * Push a state snapshot. Uses upsert so the single row per user
- * is created on first save.
+ * Push a state snapshot. Upsert single row per user.
  */
 export async function pushState(userId, state) {
-  if (!SUPABASE_CONFIGURED) return { error: null };
-  if (!userId) return { error: new Error('no userId') };
+  if (!SUPABASE_CONFIGURED) return null;
+  if (!userId) return null;
   try {
     const payload = pickSyncableState(state);
     const { error } = await supabase.from(TABLE).upsert(
@@ -72,26 +66,36 @@ export async function pushState(userId, state) {
       },
       { onConflict: 'user_id' },
     );
-    return { error };
+    if (error) {
+      console.warn('[cloudSync] push error:', error.message);
+    }
+    return error;
   } catch (e) {
-    return { error: e };
+    console.warn('[cloudSync] push exception:', e?.message);
+    return e;
   }
 }
 
 /**
- * Decide which snapshot wins when local and cloud disagree.
- * Strategy: total XP + history length as tiebreakers, then newest
- * `lastCompletedDate`. Returns 'local' | 'cloud'.
+ * Compare local vs cloud snapshots; return whichever has more progress.
+ * Returns the winning payload (local or cloud).
  */
 export function chooseWinner(localState, cloudPayload) {
-  if (!cloudPayload) return 'local';
-  const localScore =
-    (localState.totalXP || 0) * 1000 + (localState.history?.length || 0);
-  const cloudScore =
-    (cloudPayload.totalXP || 0) * 1000 + (cloudPayload.history?.length || 0);
-  if (cloudScore > localScore) return 'cloud';
-  if (localScore > cloudScore) return 'local';
+  if (!cloudPayload) return localState;
+  const localLessons = countLessons(localState.pathProgress);
+  const cloudLessons = countLessons(cloudPayload.pathProgress);
+  if (cloudLessons > localLessons) return cloudPayload;
+  if (localLessons > cloudLessons) return localState;
+  // Tie: most recent lastCompletedDate wins
   const localDate = localState.lastCompletedDate || '';
   const cloudDate = cloudPayload.lastCompletedDate || '';
-  return cloudDate > localDate ? 'cloud' : 'local';
+  return cloudDate > localDate ? cloudPayload : localState;
+}
+
+function countLessons(pathProgress) {
+  if (!pathProgress) return 0;
+  return Object.values(pathProgress).reduce(
+    (sum, p) => sum + (p?.completed?.length || 0),
+    0,
+  );
 }
