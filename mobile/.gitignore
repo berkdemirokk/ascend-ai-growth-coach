@@ -8,5 +8,3 @@ web-build/
 .DS_Store
 ios/build/
 android/build/
-credentials/
-*.p8

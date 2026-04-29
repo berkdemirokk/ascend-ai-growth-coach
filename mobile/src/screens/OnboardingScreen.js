@@ -15,41 +15,20 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 import { useApp } from '../contexts/AppContext';
-import { COLORS } from '../config/constants';
-import { ASSESSMENT_QUESTIONS, buildUserProfile } from '../config/assessment';
+import { CATEGORIES, DIFFICULTIES, COLORS } from '../config/constants';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
-const INTRO_SLIDES = [
-  {
-    emoji: '🔥',
-    title: 'Ascend: Monk Mode',
-    subtitle: "Disiplini seç. Sprint'ini tamamla. Kendini dönüştür.",
-  },
-  {
-    emoji: '🎯',
-    title: '30 / 60 / 90 Gün',
-    subtitle:
-      "Dopamine Detox, Fitness, Business, Early Riser, Money, Reading — sana uygun sprint'i seç.",
-  },
-  {
-    emoji: '🏆',
-    title: "Kurallar, Görevler, Tier'lar",
-    subtitle:
-      "Her sprint'te günlük görevler rotasyonda. Bitirdikçe daha zor tier'lar açılıyor. Günlük mini challenge'lar bonus XP.",
-  },
-];
-
-const totalSlideCount = INTRO_SLIDES.length + ASSESSMENT_QUESTIONS.length;
-
 export default function OnboardingScreen() {
-  const { completeOnboarding, setUserProfile } = useApp();
+  const { completeOnboarding, setCategories, setDifficulty } = useApp();
 
   const scrollRef = useRef(null);
   const [currentPage, setCurrentPage] = useState(0);
-  const [answers, setAnswers] = useState({});
+  const [selectedCategories, setSelectedCategories] = useState([]);
+  const [selectedDifficulty, setSelectedDifficulty] = useState(null);
 
   const buttonScale = useSharedValue(1);
+
   const animatedButtonStyle = useAnimatedStyle(() => ({
     transform: [{ scale: buttonScale.value }],
   }));
@@ -59,54 +38,206 @@ export default function OnboardingScreen() {
     setCurrentPage(page);
   };
 
-  const isIntroPage = currentPage < INTRO_SLIDES.length;
-  const currentQuestionIndex = currentPage - INTRO_SLIDES.length;
-  const currentQuestion =
-    currentQuestionIndex >= 0
-      ? ASSESSMENT_QUESTIONS[currentQuestionIndex]
-      : null;
-
-  const currentAnswer = currentQuestion ? answers[currentQuestion.id] : null;
-  const hasAnswer = currentQuestion
-    ? currentQuestion.multi
-      ? Array.isArray(currentAnswer) && currentAnswer.length > 0
-      : !!currentAnswer
-    : true;
-
-  const toggleOption = (questionId, optionId, multi) => {
-    setAnswers((prev) => {
-      if (multi) {
-        const existing = Array.isArray(prev[questionId]) ? prev[questionId] : [];
-        const next = existing.includes(optionId)
-          ? existing.filter((id) => id !== optionId)
-          : [...existing, optionId];
-        return { ...prev, [questionId]: next };
-      }
-      return { ...prev, [questionId]: optionId };
-    });
+  const toggleCategory = (categoryKey) => {
+    setSelectedCategories((prev) =>
+      prev.includes(categoryKey)
+        ? prev.filter((k) => k !== categoryKey)
+        : [...prev, categoryKey]
+    );
   };
 
-  const handleNext = () => {
+  const handleGetStarted = () => {
     buttonScale.value = withSpring(0.95, {}, () => {
       buttonScale.value = withSpring(1);
     });
-    if (currentPage < totalSlideCount - 1) {
-      goToPage(currentPage + 1);
-    } else {
-      const profile = buildUserProfile(answers);
-      setUserProfile(profile);
-      completeOnboarding();
-    }
+    goToPage(1);
   };
 
-  const isLastSlide = currentPage === totalSlideCount - 1;
-  const canContinue = isIntroPage || hasAnswer;
+  const handleCategoryContinue = () => {
+    if (selectedCategories.length === 0) return;
+    buttonScale.value = withSpring(0.95, {}, () => {
+      buttonScale.value = withSpring(1);
+    });
+    goToPage(2);
+  };
+
+  const handleStartJourney = () => {
+    if (!selectedDifficulty) return;
+    buttonScale.value = withSpring(0.95, {}, () => {
+      buttonScale.value = withSpring(1);
+    });
+    setCategories(selectedCategories);
+    setDifficulty(selectedDifficulty);
+    completeOnboarding();
+  };
+
+  const handleScroll = (event) => {
+    const page = Math.round(event.nativeEvent.contentOffset.x / SCREEN_WIDTH);
+    setCurrentPage(page);
+  };
+
+  // --- Slide 1: Welcome ---
+  const WelcomeSlide = () => (
+    <View style={[styles.slide, { width: SCREEN_WIDTH }]}>
+      <View style={styles.slideInner}>
+        <Text style={styles.heroEmoji}>🚀</Text>
+        <Text style={styles.slideTitle}>Welcome to Ascend</Text>
+        <Text style={styles.slideSubtitle}>
+          Level up your life, one action at a time
+        </Text>
+      </View>
+      <Animated.View style={[styles.buttonWrapper, animatedButtonStyle]}>
+        <TouchableOpacity onPress={handleGetStarted} activeOpacity={0.85}>
+          <LinearGradient
+            colors={[COLORS.primary || '#6366F1', COLORS.accent || '#8B5CF6']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={styles.primaryButton}
+          >
+            <Text style={styles.primaryButtonText}>Get Started</Text>
+          </LinearGradient>
+        </TouchableOpacity>
+      </Animated.View>
+    </View>
+  );
+
+  // --- Slide 2: Category Selection ---
+  const CategorySlide = () => (
+    <View style={[styles.slide, { width: SCREEN_WIDTH }]}>
+      <View style={styles.slideInner}>
+        <Text style={styles.slideTitle}>Choose Your Focus Areas</Text>
+        <Text style={styles.slideSubtitle}>
+          Select the areas you want to improve
+        </Text>
+        <View style={styles.categoryGrid}>
+          {CATEGORIES.map((category) => {
+            const isSelected = selectedCategories.includes(category.id);
+            return (
+              <TouchableOpacity
+                key={category.id}
+                style={[
+                  styles.categoryCard,
+                  isSelected && styles.categoryCardSelected,
+                ]}
+                onPress={() => toggleCategory(category.id)}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.categoryEmoji}>{category.icon}</Text>
+                <Text style={styles.categoryLabel}>{category.label}</Text>
+                {category.description ? (
+                  <Text style={styles.categoryDescription} numberOfLines={2}>
+                    {category.description}
+                  </Text>
+                ) : null}
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+      </View>
+      <Animated.View style={[styles.buttonWrapper, animatedButtonStyle]}>
+        <TouchableOpacity
+          onPress={handleCategoryContinue}
+          activeOpacity={selectedCategories.length > 0 ? 0.85 : 1}
+        >
+          <LinearGradient
+            colors={
+              selectedCategories.length > 0
+                ? [COLORS.primary || '#6366F1', COLORS.accent || '#8B5CF6']
+                : ['#3a3a4a', '#3a3a4a']
+            }
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={[
+              styles.primaryButton,
+              selectedCategories.length === 0 && styles.primaryButtonDisabled,
+            ]}
+          >
+            <Text style={styles.primaryButtonText}>Continue</Text>
+          </LinearGradient>
+        </TouchableOpacity>
+      </Animated.View>
+    </View>
+  );
+
+  // --- Slide 3: Difficulty Selection ---
+  const DifficultySlide = () => (
+    <View style={[styles.slide, { width: SCREEN_WIDTH }]}>
+      <View style={styles.slideInner}>
+        <Text style={styles.slideTitle}>Choose Your Level</Text>
+        <Text style={styles.slideSubtitle}>
+          Pick a challenge level that suits your lifestyle
+        </Text>
+        <View style={styles.difficultyList}>
+          {DIFFICULTIES.map((difficulty) => {
+            const isSelected = selectedDifficulty === difficulty.id;
+            return (
+              <TouchableOpacity
+                key={difficulty.id}
+                style={[
+                  styles.difficultyCard,
+                  isSelected && styles.difficultyCardSelected,
+                ]}
+                onPress={() => setSelectedDifficulty(difficulty.id)}
+                activeOpacity={0.8}
+              >
+                <View style={styles.difficultyCardLeft}>
+                  <Text style={styles.difficultyIcon}>{difficulty.icon}</Text>
+                  <View style={styles.difficultyText}>
+                    <Text style={styles.difficultyLabel}>{difficulty.label}</Text>
+                    {difficulty.description ? (
+                      <Text style={styles.difficultyDescription}>
+                        {difficulty.description}
+                      </Text>
+                    ) : null}
+                  </View>
+                </View>
+                <View
+                  style={[
+                    styles.radioCircle,
+                    isSelected && styles.radioCircleSelected,
+                  ]}
+                >
+                  {isSelected && <View style={styles.radioDot} />}
+                </View>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+      </View>
+      <Animated.View style={[styles.buttonWrapper, animatedButtonStyle]}>
+        <TouchableOpacity
+          onPress={handleStartJourney}
+          activeOpacity={selectedDifficulty ? 0.85 : 1}
+        >
+          <LinearGradient
+            colors={
+              selectedDifficulty
+                ? [COLORS.primary || '#6366F1', COLORS.accent || '#8B5CF6']
+                : ['#3a3a4a', '#3a3a4a']
+            }
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={[
+              styles.primaryButton,
+              !selectedDifficulty && styles.primaryButtonDisabled,
+            ]}
+          >
+            <Text style={styles.primaryButtonText}>Start Your Journey</Text>
+          </LinearGradient>
+        </TouchableOpacity>
+      </Animated.View>
+    </View>
+  );
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <LinearGradient colors={['#0B0B14', '#161626']} style={styles.container}>
+      <LinearGradient
+        colors={['#0B0B14', '#161626']}
+        style={styles.container}
+      >
+        {/* Page indicator dots */}
         <View style={styles.dotsContainer}>
-          {Array.from({ length: totalSlideCount }).map((_, i) => (
+          {[0, 1, 2].map((i) => (
             <View
               key={i}
               style={[styles.dot, currentPage === i && styles.dotActive]}
@@ -114,99 +245,21 @@ export default function OnboardingScreen() {
           ))}
         </View>
 
+        {/* Paged ScrollView */}
         <ScrollView
           ref={scrollRef}
           horizontal
           pagingEnabled
           showsHorizontalScrollIndicator={false}
           scrollEnabled={false}
+          onMomentumScrollEnd={handleScroll}
           style={styles.scrollView}
+          contentContainerStyle={styles.scrollContent}
         >
-          {INTRO_SLIDES.map((slide, i) => (
-            <View
-              key={`intro-${i}`}
-              style={[styles.slide, { width: SCREEN_WIDTH }]}
-            >
-              <View style={styles.slideInner}>
-                <Text style={styles.heroEmoji}>{slide.emoji}</Text>
-                <Text style={styles.slideTitle}>{slide.title}</Text>
-                <Text style={styles.slideSubtitle}>{slide.subtitle}</Text>
-              </View>
-            </View>
-          ))}
-
-          {ASSESSMENT_QUESTIONS.map((q) => {
-            const answer = answers[q.id];
-            return (
-              <ScrollView
-                key={q.id}
-                style={{ width: SCREEN_WIDTH }}
-                contentContainerStyle={styles.qContent}
-                showsVerticalScrollIndicator={false}
-              >
-                <Text style={styles.qTitle}>{q.title}</Text>
-                <Text style={styles.qSubtitle}>{q.subtitle}</Text>
-                <View style={styles.optionsWrap}>
-                  {q.options.map((opt) => {
-                    const selected = q.multi
-                      ? Array.isArray(answer) && answer.includes(opt.id)
-                      : answer === opt.id;
-                    return (
-                      <TouchableOpacity
-                        key={opt.id}
-                        style={[
-                          styles.optionCard,
-                          selected && styles.optionCardSelected,
-                        ]}
-                        onPress={() => toggleOption(q.id, opt.id, q.multi)}
-                        activeOpacity={0.85}
-                      >
-                        <Text style={styles.optionEmoji}>{opt.emoji}</Text>
-                        <Text
-                          style={[
-                            styles.optionLabel,
-                            selected && styles.optionLabelSelected,
-                          ]}
-                        >
-                          {opt.label}
-                        </Text>
-                        {selected && <Text style={styles.optionCheck}>✓</Text>}
-                      </TouchableOpacity>
-                    );
-                  })}
-                </View>
-                {q.multi && (
-                  <Text style={styles.multiHint}>
-                    Birden fazla seçebilirsin
-                  </Text>
-                )}
-              </ScrollView>
-            );
-          })}
+          <WelcomeSlide />
+          <CategorySlide />
+          <DifficultySlide />
         </ScrollView>
-
-        <Animated.View style={[styles.buttonWrapper, animatedButtonStyle]}>
-          <TouchableOpacity
-            onPress={handleNext}
-            activeOpacity={0.85}
-            disabled={!canContinue}
-          >
-            <LinearGradient
-              colors={
-                canContinue
-                  ? [COLORS.primary, COLORS.accent]
-                  : ['#3a3a5a', '#3a3a5a']
-              }
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              style={styles.primaryButton}
-            >
-              <Text style={styles.primaryButtonText}>
-                {isLastSlide ? 'Sprint Seç' : 'Devam'}
-              </Text>
-            </LinearGradient>
-          </TouchableOpacity>
-        </Animated.View>
       </LinearGradient>
     </SafeAreaView>
   );
@@ -226,30 +279,34 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingTop: 16,
     paddingBottom: 8,
-    gap: 6,
-    flexWrap: 'wrap',
-    paddingHorizontal: 24,
+    gap: 8,
   },
   dot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
     backgroundColor: '#3a3a5a',
   },
   dotActive: {
-    backgroundColor: COLORS.primary,
-    width: 18,
+    backgroundColor: '#6366F1',
+    width: 24,
   },
   scrollView: {
     flex: 1,
   },
+  scrollContent: {
+    flexGrow: 1,
+  },
   slide: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'space-between',
+    paddingBottom: 32,
   },
   slideInner: {
+    flex: 1,
     alignItems: 'center',
-    paddingHorizontal: 32,
+    paddingHorizontal: 24,
+    paddingTop: 40,
   },
   heroEmoji: {
     fontSize: 96,
@@ -258,77 +315,20 @@ const styles = StyleSheet.create({
   slideTitle: {
     fontSize: 28,
     fontWeight: '700',
-    color: COLORS.text,
+    color: '#F5F5FA',
     textAlign: 'center',
     marginBottom: 12,
   },
   slideSubtitle: {
     fontSize: 16,
-    color: COLORS.textSecondary,
+    color: '#9B9BB0',
     textAlign: 'center',
     lineHeight: 24,
-  },
-  qContent: {
-    paddingHorizontal: 24,
-    paddingTop: 24,
-    paddingBottom: 32,
-  },
-  qTitle: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: COLORS.text,
-    textAlign: 'center',
-    marginBottom: 8,
-  },
-  qSubtitle: {
-    fontSize: 14,
-    color: COLORS.textSecondary,
-    textAlign: 'center',
-    marginBottom: 20,
-  },
-  optionsWrap: {
-    gap: 10,
-  },
-  optionCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#161626',
-    borderRadius: 14,
-    borderWidth: 1.5,
-    borderColor: '#2A2A42',
-    padding: 14,
-    gap: 12,
-  },
-  optionCardSelected: {
-    borderColor: COLORS.primary,
-    backgroundColor: '#6366F115',
-  },
-  optionEmoji: {
-    fontSize: 22,
-  },
-  optionLabel: {
-    fontSize: 15,
-    color: COLORS.text,
-    fontWeight: '500',
-    flex: 1,
-  },
-  optionLabelSelected: {
-    fontWeight: '700',
-  },
-  optionCheck: {
-    fontSize: 18,
-    color: COLORS.primary,
-    fontWeight: '700',
-  },
-  multiHint: {
-    fontSize: 12,
-    color: COLORS.textMuted,
-    textAlign: 'center',
-    marginTop: 12,
+    marginBottom: 32,
   },
   buttonWrapper: {
     paddingHorizontal: 24,
-    paddingBottom: 40,
+    marginTop: 16,
   },
   primaryButton: {
     borderRadius: 16,
@@ -336,10 +336,112 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  primaryButtonDisabled: {
+    opacity: 0.5,
+  },
   primaryButtonText: {
-    color: COLORS.text,
+    color: '#F5F5FA',
     fontSize: 17,
     fontWeight: '700',
     letterSpacing: 0.3,
+  },
+  // Category grid
+  categoryGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    gap: 12,
+    width: '100%',
+  },
+  categoryCard: {
+    width: (SCREEN_WIDTH - 72) / 2,
+    backgroundColor: '#161626',
+    borderRadius: 16,
+    padding: 16,
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: '#2a2a3a',
+  },
+  categoryCardSelected: {
+    borderColor: '#6366F1',
+    backgroundColor: '#1e1e32',
+  },
+  categoryEmoji: {
+    fontSize: 32,
+    marginBottom: 8,
+  },
+  categoryLabel: {
+    color: '#F5F5FA',
+    fontSize: 14,
+    fontWeight: '600',
+    textAlign: 'center',
+    marginBottom: 4,
+  },
+  categoryDescription: {
+    color: '#9B9BB0',
+    fontSize: 11,
+    textAlign: 'center',
+    lineHeight: 15,
+  },
+  // Difficulty list
+  difficultyList: {
+    width: '100%',
+    gap: 12,
+  },
+  difficultyCard: {
+    backgroundColor: '#161626',
+    borderRadius: 16,
+    padding: 18,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderWidth: 2,
+    borderColor: '#2a2a3a',
+  },
+  difficultyCardSelected: {
+    borderColor: '#6366F1',
+    backgroundColor: '#1e1e32',
+  },
+  difficultyCardLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  difficultyIcon: {
+    fontSize: 28,
+    marginRight: 14,
+  },
+  difficultyText: {
+    flex: 1,
+  },
+  difficultyLabel: {
+    color: '#F5F5FA',
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 3,
+  },
+  difficultyDescription: {
+    color: '#9B9BB0',
+    fontSize: 13,
+    lineHeight: 18,
+  },
+  radioCircle: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    borderWidth: 2,
+    borderColor: '#3a3a5a',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: 12,
+  },
+  radioCircleSelected: {
+    borderColor: '#6366F1',
+  },
+  radioDot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: '#6366F1',
   },
 });
