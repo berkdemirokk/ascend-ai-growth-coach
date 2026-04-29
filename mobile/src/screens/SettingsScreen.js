@@ -64,23 +64,37 @@ export default function SettingsScreen({ navigation }) {
 
   const handleDeleteAccount = () => {
     Alert.alert(
-      'Delete Account',
-      'Are you sure you want to delete your account? This action cannot be undone.',
+      t('settings.deleteAccount', 'Hesabı Sil'),
+      t('settings.deleteAccountWarning', 'Bu işlem GERİ ALINAMAZ. Tüm dersler, streak, ilerleme silinir. Premium aboneliğin App Store\'dan ayrı iptal edilmeli.'),
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: t('common.cancel', 'İptal'), style: 'cancel' },
         {
-          text: 'Delete',
+          text: t('settings.deleteAccountConfirm1', 'Devam et'),
           style: 'destructive',
-          onPress: async () => {
-            try {
-              await deleteAccount();
-              navigation.reset({ index: 0, routes: [{ name: 'Onboarding' }] });
-            } catch (e) {
-              Alert.alert('Error', 'Failed to delete account. Please try again.');
-            }
+          onPress: () => {
+            // Step 2 — final confirmation
+            Alert.alert(
+              t('settings.deleteAccountFinal', 'Son Onay'),
+              t('settings.deleteAccountFinalText', 'Bu son adım. Hesabını gerçekten silmek istiyor musun?'),
+              [
+                { text: t('common.cancel', 'İptal'), style: 'cancel' },
+                {
+                  text: t('settings.deleteAccountFinalBtn', 'Evet, sil'),
+                  style: 'destructive',
+                  onPress: async () => {
+                    try {
+                      await deleteAccount();
+                      navigation.reset({ index: 0, routes: [{ name: 'Onboarding' }] });
+                    } catch (e) {
+                      Alert.alert(t('common.error', 'Hata'), t('common.tryAgain', 'Tekrar dene'));
+                    }
+                  },
+                },
+              ],
+            );
           },
         },
-      ]
+      ],
     );
   };
 

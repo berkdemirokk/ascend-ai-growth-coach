@@ -20,11 +20,16 @@ export default function PaywallScreen({ navigation }) {
   const [isRestoring, setIsRestoring] = useState(false);
   const [selected, setSelected] = useState('yearly');
   const [packages, setPackages] = useState({ monthly: null, yearly: null });
+  const [loadingPackages, setLoadingPackages] = useState(true);
 
   useEffect(() => {
     (async () => {
-      const pkgs = await getAvailablePackages();
-      if (pkgs) setPackages(pkgs);
+      try {
+        const pkgs = await getAvailablePackages();
+        if (pkgs) setPackages(pkgs);
+      } finally {
+        setLoadingPackages(false);
+      }
     })();
   }, []);
 
@@ -91,6 +96,28 @@ export default function PaywallScreen({ navigation }) {
           <Text style={styles.crownEmoji}>🔥</Text>
           <Text style={styles.title}>{t('paywall.title')}</Text>
           <Text style={styles.subtitle}>{t('paywall.subtitle')}</Text>
+
+          {/* Trust signals */}
+          <View style={styles.trustRow}>
+            <View style={styles.trustItem}>
+              <Text style={styles.trustEmoji}>🔒</Text>
+              <Text style={styles.trustText}>
+                {t('paywall.trustPrivate', 'Gizli')}
+              </Text>
+            </View>
+            <View style={styles.trustItem}>
+              <Text style={styles.trustEmoji}>↩️</Text>
+              <Text style={styles.trustText}>
+                {t('paywall.trustCancel', 'Her an iptal')}
+              </Text>
+            </View>
+            <View style={styles.trustItem}>
+              <Text style={styles.trustEmoji}>📜</Text>
+              <Text style={styles.trustText}>
+                {t('paywall.trustNoTrack', 'İzleme yok')}
+              </Text>
+            </View>
+          </View>
         </View>
 
         <View style={styles.featuresContainer}>
@@ -102,34 +129,47 @@ export default function PaywallScreen({ navigation }) {
           ))}
         </View>
 
-        <TouchableOpacity
-          style={[styles.priceOption, selected === 'yearly' && styles.priceOptionSelected]}
-          onPress={() => setSelected('yearly')}
-          activeOpacity={0.85}
-        >
-          <View style={styles.priceLeft}>
-            <View style={styles.priceLabelRow}>
-              <Text style={styles.priceLabel}>{t('paywall.yearly')}</Text>
-              <View style={styles.bestValueBadge}>
-                <Text style={styles.bestValueText}>BEST</Text>
+        {loadingPackages ? (
+          <View style={styles.loadingPackages}>
+            <ActivityIndicator color="#6366F1" />
+            <Text style={styles.loadingText}>
+              {t('paywall.loadingPrices', 'Fiyatlar yükleniyor...')}
+            </Text>
+          </View>
+        ) : (
+          <>
+            <TouchableOpacity
+              style={[styles.priceOption, selected === 'yearly' && styles.priceOptionSelected]}
+              onPress={() => setSelected('yearly')}
+              activeOpacity={0.85}
+            >
+              <View style={styles.priceLeft}>
+                <View style={styles.priceLabelRow}>
+                  <Text style={styles.priceLabel}>{t('paywall.yearly')}</Text>
+                  <View style={styles.bestValueBadge}>
+                    <Text style={styles.bestValueText}>BEST</Text>
+                  </View>
+                </View>
+                <Text style={styles.priceSubLabel}>
+                  {yearlyMonthlyEquiv} / {t('paywall.monthly').toLowerCase()}
+                </Text>
               </View>
-            </View>
-            <Text style={styles.priceSubLabel}>{yearlyMonthlyEquiv} / {t('paywall.monthly').toLowerCase()}</Text>
-          </View>
-          <Text style={styles.priceAmount}>{yearlyPrice}</Text>
-        </TouchableOpacity>
+              <Text style={styles.priceAmount}>{yearlyPrice}</Text>
+            </TouchableOpacity>
 
-        <TouchableOpacity
-          style={[styles.priceOption, selected === 'monthly' && styles.priceOptionSelected]}
-          onPress={() => setSelected('monthly')}
-          activeOpacity={0.85}
-        >
-          <View style={styles.priceLeft}>
-            <Text style={styles.priceLabel}>{t('paywall.monthly')}</Text>
-            <Text style={styles.priceSubLabel}>{t('common.cancel')}</Text>
-          </View>
-          <Text style={styles.priceAmount}>{monthlyPrice}</Text>
-        </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.priceOption, selected === 'monthly' && styles.priceOptionSelected]}
+              onPress={() => setSelected('monthly')}
+              activeOpacity={0.85}
+            >
+              <View style={styles.priceLeft}>
+                <Text style={styles.priceLabel}>{t('paywall.monthly')}</Text>
+                <Text style={styles.priceSubLabel}>{t('common.cancel')}</Text>
+              </View>
+              <Text style={styles.priceAmount}>{monthlyPrice}</Text>
+            </TouchableOpacity>
+          </>
+        )}
 
         <TouchableOpacity
           style={[styles.subscribeButton, isSubscribing && styles.subscribeButtonDisabled]}
@@ -184,6 +224,22 @@ const styles = StyleSheet.create({
   crownEmoji: { fontSize: 56, marginBottom: 12 },
   title: { fontSize: 32, fontWeight: '800', color: '#F5F5FA', letterSpacing: -0.5 },
   subtitle: { fontSize: 15, color: '#F59E0B', marginTop: 8, fontWeight: '700' },
+  trustRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginTop: 16,
+    paddingHorizontal: 8,
+    width: '100%',
+  },
+  trustItem: { alignItems: 'center', flex: 1 },
+  trustEmoji: { fontSize: 18, marginBottom: 4 },
+  trustText: { color: '#9898B0', fontSize: 11, fontWeight: '600', textAlign: 'center' },
+  loadingPackages: {
+    paddingVertical: 32,
+    alignItems: 'center',
+    gap: 12,
+  },
+  loadingText: { color: '#9898B0', fontSize: 13 },
   featuresContainer: { gap: 10, marginBottom: 24 },
   featureRow: {
     flexDirection: 'row',
