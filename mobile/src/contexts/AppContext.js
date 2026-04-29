@@ -349,7 +349,7 @@ function appReducer(state, action) {
       if (current.completed.includes(lessonId)) return state;
 
       const newTotalXP = state.totalXP + (xp || 10);
-      const lvl = checkLevelUp(state.level, newTotalXP);
+      const newLevel = checkLevelUp(newTotalXP, state.level);
 
       // Streak update — completing a lesson counts as today's action
       let newStreak = state.currentStreak;
@@ -372,11 +372,11 @@ function appReducer(state, action) {
           },
         },
         totalXP: newTotalXP,
-        level: lvl.newLevel,
+        level: newLevel,
         currentStreak: newStreak,
-        longestStreak: Math.max(state.longestStreak, newStreak),
+        longestStreak: Math.max(state.longestStreak || 0, newStreak),
         lastCompletedDate: newLastDate,
-        actionsSinceLastAd: state.actionsSinceLastAd + 1,
+        actionsSinceLastAd: (state.actionsSinceLastAd || 0) + 1,
       };
     }
 

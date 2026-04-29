@@ -271,12 +271,12 @@ function LessonNode({ lesson, state, pathColor, onPress, t }) {
         ]}
       >
         <Text style={styles.nodeIcon}>{icon}</Text>
-        {state === 'current' && (
-          <View style={styles.todayBadge}>
-            <Text style={styles.todayBadgeText}>BUGÜN</Text>
-          </View>
-        )}
       </Animated.View>
+      {state === 'current' && (
+        <View style={styles.todayBadge}>
+          <Text style={styles.todayBadgeText}>BUGÜN</Text>
+        </View>
+      )}
       <Text style={[styles.nodeLabel, { opacity: labelOpacity }]} numberOfLines={2}>
         {lessonTitle}
       </Text>
@@ -334,24 +334,24 @@ const styles = StyleSheet.create({
   progressText: { color: '#9898B0', fontSize: 11, fontWeight: '600', marginTop: 6 },
 
   pathSwitcher: {
-    paddingHorizontal: 16,
+    paddingHorizontal: 12,
     paddingVertical: 8,
-    gap: 8,
+    alignItems: 'center',
   },
   pathChip: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 20,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: 22,
     borderWidth: 1.5,
     borderColor: '#2A2A42',
     backgroundColor: '#161626',
-    gap: 6,
-    marginRight: 6,
+    marginRight: 8,
+    minHeight: 40,
   },
-  pathChipIcon: { fontSize: 16 },
-  pathChipLabel: { color: '#F5F5FA', fontSize: 12, fontWeight: '700' },
+  pathChipIcon: { fontSize: 18, marginRight: 6 },
+  pathChipLabel: { color: '#F5F5FA', fontSize: 13, fontWeight: '700', flexShrink: 0 },
   pathChipBadge: { fontSize: 12, marginLeft: 2 },
   pathChipProgress: { color: '#9898B0', fontSize: 10, fontWeight: '600', marginLeft: 4 },
 
@@ -384,14 +384,19 @@ const styles = StyleSheet.create({
   },
   nodeIcon: { fontSize: 32 },
   todayBadge: {
-    position: 'absolute',
-    bottom: -6,
     backgroundColor: '#FDE047',
-    paddingHorizontal: 8,
-    paddingVertical: 2,
+    paddingHorizontal: 10,
+    paddingVertical: 3,
     borderRadius: 10,
+    marginTop: -10,
+    zIndex: 2,
+    shadowColor: '#FDE047',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.6,
+    shadowRadius: 8,
+    elevation: 4,
   },
-  todayBadgeText: { fontSize: 9, color: '#0B0B14', fontWeight: '900', letterSpacing: 0.5 },
+  todayBadgeText: { fontSize: 10, color: '#0B0B14', fontWeight: '900', letterSpacing: 0.5 },
   nodeLabel: {
     color: '#F5F5FA',
     fontSize: 11,

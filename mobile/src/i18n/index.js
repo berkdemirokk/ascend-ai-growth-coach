@@ -13,10 +13,30 @@ const STORAGE_KEY = 'ascend.language';
 const SUPPORTED = ['tr', 'en', 'ar'];
 const DEFAULT_LANG = 'tr';
 
+// Deep-merge so 'lessons' key is combined, not overwritten.
+const merge = (base, extra) => {
+  const out = { ...base };
+  Object.keys(extra).forEach((k) => {
+    if (
+      typeof extra[k] === 'object' &&
+      extra[k] !== null &&
+      !Array.isArray(extra[k]) &&
+      typeof out[k] === 'object' &&
+      out[k] !== null &&
+      !Array.isArray(out[k])
+    ) {
+      out[k] = merge(out[k], extra[k]);
+    } else {
+      out[k] = extra[k];
+    }
+  });
+  return out;
+};
+
 const resources = {
-  tr: { translation: { ...tr, ...lessonsTR } },
-  en: { translation: { ...en, ...lessonsEN } },
-  ar: { translation: { ...ar, ...lessonsTR } }, // AR fallback to TR for now (curriculum)
+  tr: { translation: merge(tr, lessonsTR) },
+  en: { translation: merge(en, lessonsEN) },
+  ar: { translation: merge(ar, lessonsTR) }, // AR fallback to TR for now (curriculum)
 };
 
 const getDeviceLanguageCode = () => {

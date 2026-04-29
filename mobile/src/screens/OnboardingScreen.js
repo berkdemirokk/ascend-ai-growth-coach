@@ -17,6 +17,7 @@ import { useTranslation } from 'react-i18next';
 import { useApp } from '../contexts/AppContext';
 import { COLORS } from '../config/constants';
 import { PATHS } from '../data/paths';
+import { setLanguage, getCurrentLanguage, SUPPORTED_LANGUAGES } from '../i18n';
 
 const STEPS = ['welcome', 'pickPath'];
 
@@ -88,6 +89,12 @@ export default function OnboardingScreen() {
 }
 
 function WelcomeStep({ t }) {
+  const [currentLang, setCurrentLang] = useState(getCurrentLanguage());
+  const handleChangeLang = async (code) => {
+    await setLanguage(code);
+    setCurrentLang(code);
+  };
+
   return (
     <View style={styles.welcomeContent}>
       <Text style={styles.emoji}>🔥</Text>
@@ -97,6 +104,26 @@ function WelcomeStep({ t }) {
         <Text style={styles.bullet}>• {t('onboarding.bullet1')}</Text>
         <Text style={styles.bullet}>• {t('onboarding.bullet2')}</Text>
         <Text style={styles.bullet}>• {t('onboarding.bullet3')}</Text>
+      </View>
+
+      {/* Language picker */}
+      <View style={styles.langRow}>
+        {SUPPORTED_LANGUAGES.map((l) => {
+          const active = currentLang === l.code;
+          return (
+            <TouchableOpacity
+              key={l.code}
+              onPress={() => handleChangeLang(l.code)}
+              activeOpacity={0.7}
+              style={[styles.langBtn, active && styles.langBtnActive]}
+            >
+              <Text style={styles.langFlag}>{l.flag}</Text>
+              <Text style={[styles.langLabel, active && styles.langLabelActive]}>
+                {l.label}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
       </View>
     </View>
   );
@@ -178,6 +205,29 @@ const styles = StyleSheet.create({
   },
   bullets: { alignSelf: 'stretch', gap: 8 },
   bullet: { fontSize: 14, color: COLORS.text, lineHeight: 22 },
+
+  langRow: {
+    flexDirection: 'row',
+    gap: 8,
+    marginTop: 32,
+    alignSelf: 'stretch',
+  },
+  langBtn: {
+    flex: 1,
+    alignItems: 'center',
+    paddingVertical: 10,
+    borderRadius: 10,
+    borderWidth: 1.5,
+    borderColor: '#2A2A42',
+    backgroundColor: '#161626',
+  },
+  langBtnActive: {
+    borderColor: COLORS.primary,
+    backgroundColor: '#6366F125',
+  },
+  langFlag: { fontSize: 18, marginBottom: 2 },
+  langLabel: { fontSize: 11, color: COLORS.textSecondary, fontWeight: '600' },
+  langLabelActive: { color: '#FFFFFF', fontWeight: '700' },
 
   pickPathContent: { flex: 1, paddingTop: 24 },
   pickTitle: {
