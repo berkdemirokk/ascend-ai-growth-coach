@@ -58,6 +58,11 @@ export interface UserProfile {
   experience: number;
   streak: number;
   lastCompletedDayKey: string | null;
+  reminderHour?: number;
+  reminderMinute?: number;
+  reminderEnabled?: boolean;
+  streakFreezesAvailable?: number;
+  lastStreakFreezeUsedDayKey?: string | null;
 }
 
 export interface Message {

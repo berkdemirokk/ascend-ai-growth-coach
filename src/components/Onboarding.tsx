@@ -70,6 +70,11 @@ export default function Onboarding({ onComplete, onShowRestore }: OnboardingProp
       experience: 0,
       streak: 0,
       lastCompletedDayKey: null,
+      reminderEnabled: true,
+      reminderHour: 20,
+      reminderMinute: 0,
+      streakFreezesAvailable: 1,
+      lastStreakFreezeUsedDayKey: null,
     });
   };
 
@@ -89,17 +94,36 @@ export default function Onboarding({ onComplete, onShowRestore }: OnboardingProp
         </div>
 
         {step === 'welcome' && (
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="glass p-6 sm:p-10 rounded-[2rem] sm:rounded-[2.5rem] text-center space-y-8">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="glass p-6 sm:p-10 rounded-[2rem] sm:rounded-[2.5rem] text-center space-y-7">
             <div className="w-20 h-20 bg-brand-500 rounded-3xl mx-auto flex items-center justify-center text-white shadow-2xl shadow-brand-200">
               <Sparkles size={38} />
             </div>
             <div className="space-y-3">
-              <h1 className="text-3xl sm:text-4xl font-bold text-slate-900">Her gün ne yapacağını bil</h1>
-              <p className="text-slate-500 text-base sm:text-lg max-w-xl mx-auto">
-                Ascend, seviyene göre günlük görev veren kişisel gelişim sistemidir. Kısa adımlarla net ilerlersin.
+              <h1 className="text-3xl sm:text-4xl font-bold text-slate-900 leading-tight">
+                90 gün sonra<br />farklı biri olacaksın
+              </h1>
+              <p className="text-slate-600 text-base sm:text-lg max-w-xl mx-auto leading-relaxed">
+                Ascend her gün <span className="font-semibold text-slate-900">tek bir görev</span> verir.
+                Motivasyon değil, sistem. Yapay zekâ koçun ilerlemene göre rotanı sürekli yeniler.
               </p>
             </div>
-            <div className="space-y-4">
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-left">
+              <div className="rounded-2xl bg-white/60 border border-slate-100 px-4 py-3">
+                <p className="text-[11px] uppercase tracking-wider text-brand-600 font-bold">Gün 1</p>
+                <p className="text-sm text-slate-700 mt-1">Net ilk görev. 15 dakika.</p>
+              </div>
+              <div className="rounded-2xl bg-white/60 border border-slate-100 px-4 py-3">
+                <p className="text-[11px] uppercase tracking-wider text-brand-600 font-bold">Gün 30</p>
+                <p className="text-sm text-slate-700 mt-1">Seri kuruldu, alışkanlık yerleşti.</p>
+              </div>
+              <div className="rounded-2xl bg-white/60 border border-slate-100 px-4 py-3">
+                <p className="text-[11px] uppercase tracking-wider text-brand-600 font-bold">Gün 90</p>
+                <p className="text-sm text-slate-700 mt-1">Ölçülebilir gerçek değişim.</p>
+              </div>
+            </div>
+
+            <div className="space-y-3">
               <input
                 type="text"
                 value={name}
@@ -113,10 +137,10 @@ export default function Onboarding({ onComplete, onShowRestore }: OnboardingProp
                 disabled={!canContinue}
                 className="w-full py-5 bg-brand-600 text-white rounded-2xl font-bold text-lg hover:bg-brand-700 disabled:opacity-50 transition-all shadow-xl shadow-brand-100 flex items-center justify-center gap-2"
               >
-                Devam et <ArrowRight size={20} />
+                Başla <ArrowRight size={20} />
               </button>
-              <button onClick={onShowRestore} className="w-full py-4 bg-slate-100 text-slate-700 rounded-2xl font-semibold text-base hover:bg-slate-200 transition-all">
-                Mevcut hesabımı geri yükle
+              <button onClick={onShowRestore} className="w-full py-3 text-slate-500 text-sm font-medium hover:text-slate-700 transition-all">
+                Mevcut hesabım var
               </button>
             </div>
           </motion.div>
@@ -257,27 +281,40 @@ export default function Onboarding({ onComplete, onShowRestore }: OnboardingProp
         {step === 'paywall' && (
           <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="glass rounded-[2.5rem] p-6 sm:p-8 space-y-6">
             <div className="space-y-2 text-center">
-              <h2 className="text-2xl sm:text-3xl font-bold text-slate-900">Planını aç</h2>
-              <p className="text-slate-500">Temel plan bu cihazda hemen aktif olur. Premium için App Store satın alma entegrasyonu gerekir.</p>
+              <span className="inline-block rounded-full bg-brand-100 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-brand-700">
+                7 gün ücretsiz dene
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mt-3">
+                Tam potansiyelini aç
+              </h2>
+              <p className="text-slate-600 max-w-md mx-auto">
+                İlk 7 gün ücretsiz. İstediğin zaman iptal et, ödemen olmaz.
+              </p>
             </div>
 
-            <div className="grid grid-cols-1 gap-3">
-              <div className="rounded-2xl border border-brand-100 bg-brand-50 p-4">
-                <p className="text-sm font-semibold text-brand-900">Premium Plan</p>
-                <p className="mt-1 text-xs leading-relaxed text-brand-800">Satın alma tamamlandığında adaptif haftalık plan ve gelişmiş analizler açılır.</p>
+            <div className="rounded-2xl border-2 border-brand-500 bg-gradient-to-br from-brand-50 to-white p-5 space-y-3 relative">
+              <div className="absolute -top-3 right-4 bg-brand-600 text-white text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full">
+                Önerilen
               </div>
-              <div className="rounded-2xl border border-slate-100 bg-white p-4">
-                <p className="text-sm font-semibold text-slate-900">Temel Plan</p>
-                <p className="mt-1 text-xs leading-relaxed text-slate-600">Günlük görev, görev tamamlama, seri takibi ve temel ilerleme görünümü.</p>
-              </div>
+              <p className="text-base font-bold text-slate-900">Premium</p>
+              <ul className="space-y-2 text-sm text-slate-700">
+                <li className="flex items-start gap-2"><span className="text-brand-600 font-bold">✓</span> Sana özel uyarlanan haftalık plan</li>
+                <li className="flex items-start gap-2"><span className="text-brand-600 font-bold">✓</span> AI koç ile derin günlük rehberlik</li>
+                <li className="flex items-start gap-2"><span className="text-brand-600 font-bold">✓</span> Haftalık değerlendirme ve gerçek ilerleme</li>
+                <li className="flex items-start gap-2"><span className="text-brand-600 font-bold">✓</span> Streak koruma — 1 gün kaçırırsan korunursun</li>
+                <li className="flex items-start gap-2"><span className="text-brand-600 font-bold">✓</span> Çoklu cihaz arasında senkron</li>
+              </ul>
+              <p className="text-[11px] text-slate-500 pt-2 border-t border-slate-100">
+                7 gün sonra otomatik yenilenir. App Store ayarlarından her an iptal.
+              </p>
             </div>
 
-            <div className="space-y-3">
-              <button onClick={handleFinish} className="w-full py-4 bg-slate-900 text-white rounded-2xl font-bold hover:bg-black transition-all">
-                Temel planla devam et
+            <div className="space-y-2">
+              <button onClick={handleFinish} className="w-full py-4 bg-brand-600 text-white rounded-2xl font-bold hover:bg-brand-700 transition-all shadow-xl shadow-brand-100">
+                7 gün ücretsiz başla
               </button>
-              <button onClick={onShowRestore} className="w-full py-3 text-sm text-slate-500 hover:text-slate-700 transition-colors">
-                Satın alma veya hesabını geri yükle
+              <button onClick={handleFinish} className="w-full py-3 text-sm text-slate-500 hover:text-slate-700 transition-colors">
+                Şimdilik temel planla devam et
               </button>
             </div>
           </motion.div>

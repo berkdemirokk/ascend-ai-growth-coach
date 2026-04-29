@@ -9,6 +9,8 @@ import {
   writeTasks,
 } from '../lib/storage';
 import { toggleTaskWithProgression } from '../lib/progression';
+import { hapticLight, hapticSuccess } from '../lib/haptics';
+import { cancelDailyReminder, ensureNotificationPermission, scheduleDailyReminder } from '../lib/notifications';
 import {
   buildPlannedMissionQueue,
   ensureDailyMission,
@@ -329,11 +331,37 @@ export default function AuthenticatedRuntime({ initialSeed, onLogout }: Authenti
     };
   }, [accountId, accountToken]);
 
+  useEffect(() => {
+    const enabled = profile.reminderEnabled !== false;
+    const hour = profile.reminderHour ?? 20;
+    const minute = profile.reminderMinute ?? 0;
+
+    if (!enabled) {
+      void cancelDailyReminder();
+      return;
+    }
+
+    const apply = async () => {
+      const granted = await ensureNotificationPermission();
+      if (!granted) return;
+      await scheduleDailyReminder(hour, minute, profile.name);
+    };
+    void apply();
+  }, [profile.reminderEnabled, profile.reminderHour, profile.reminderMinute, profile.name]);
+
   const handleToggleTask = (id: string) => {
+    const previousTask = tasks.find((task) => task.id === id);
     const { nextTasks, nextProfile } = toggleTaskWithProgression(tasks, profile, id);
     const { tasks: seededTasks } = ensureDailyMission(nextProfile, nextTasks);
     const nextWeeklyPlanSnapshot = ensureWeeklyPlanSnapshot(nextProfile, seededTasks, weeklyPlanSnapshot);
     const nextPlannedMissions = buildPlannedMissionQueue(nextProfile, seededTasks, nextWeeklyPlanSnapshot);
+
+    const nextTask = seededTasks.find((task) => task.id === id);
+    if (previousTask && nextTask && !previousTask.completed && nextTask.completed) {
+      void hapticSuccess();
+    } else if (previousTask?.completed && nextTask && !nextTask.completed) {
+      void hapticLight();
+    }
 
     setTasks(seededTasks);
     setProfile(nextProfile);
@@ -342,6 +370,18 @@ export default function AuthenticatedRuntime({ initialSeed, onLogout }: Authenti
     writeTasks(seededTasks);
     writeProfile(nextProfile);
     syncSession(nextProfile, seededTasks, nextWeeklyPlanSnapshot, nextPlannedMissions);
+  };
+
+  const handleUpdateReminder = (settings: { hour: number; minute: number; enabled: boolean }) => {
+    const nextProfile: UserProfile = {
+      ...profile,
+      reminderEnabled: settings.enabled,
+      reminderHour: settings.hour,
+      reminderMinute: settings.minute,
+    };
+    setProfile(nextProfile);
+    writeProfile(nextProfile);
+    syncSession(nextProfile, tasks, weeklyPlanSnapshot, plannedMissions);
   };
 
   const handleSaveReflection = (id: string, reflection: string) => {
@@ -531,6 +571,7 @@ export default function AuthenticatedRuntime({ initialSeed, onLogout }: Authenti
         weeklyPlanSnapshot={weeklyPlanSnapshot}
         onToggleTask={handleToggleTask}
         onSaveReflection={handleSaveReflection}
+        onUpdateReminder={handleUpdateReminder}
         accountEmail={accountEmail}
         onClaimAccount={handleClaimAccount}
         onDeleteAccount={handleDeleteAccount}

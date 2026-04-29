@@ -1,16 +1,24 @@
-import React, { useState } from 'react';
-import { ArrowLeft, ArrowRight, KeyRound } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Apple, ArrowLeft, ArrowRight, KeyRound } from 'lucide-react';
+import { isAppleSignInAvailable, signInWithApple } from '../lib/appleAuth';
 
 interface AccountAccessProps {
   onStartFresh: () => void;
   onRestore: (email: string, password: string) => Promise<string | null>;
+  onAppleSignIn?: (identityToken: string, authorizationCode: string, email: string | null) => Promise<string | null>;
 }
 
-export default function AccountAccess({ onStartFresh, onRestore }: AccountAccessProps) {
+export default function AccountAccess({ onStartFresh, onRestore, onAppleSignIn }: AccountAccessProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [appleAvailable, setAppleAvailable] = useState(false);
+  const [appleLoading, setAppleLoading] = useState(false);
+
+  useEffect(() => {
+    setAppleAvailable(isAppleSignInAvailable() && Boolean(onAppleSignIn));
+  }, [onAppleSignIn]);
 
   const handleRestore = async () => {
     setIsLoading(true);
@@ -18,6 +26,23 @@ export default function AccountAccess({ onStartFresh, onRestore }: AccountAccess
     const nextError = await onRestore(email.trim(), password);
     setError(nextError);
     setIsLoading(false);
+  };
+
+  const handleApple = async () => {
+    if (!onAppleSignIn) return;
+    setAppleLoading(true);
+    setError(null);
+    try {
+      const result = await signInWithApple();
+      if (!result) {
+        setError('Apple ile giriş tamamlanamadı.');
+        return;
+      }
+      const nextError = await onAppleSignIn(result.identityToken, result.authorizationCode, result.email);
+      if (nextError) setError(nextError);
+    } finally {
+      setAppleLoading(false);
+    }
   };
 
   return (
@@ -57,11 +82,29 @@ export default function AccountAccess({ onStartFresh, onRestore }: AccountAccess
         <div className="space-y-3">
           <button
             onClick={() => void handleRestore()}
-            disabled={!email.trim() || password.length < 1 || isLoading}
+            disabled={!email.trim() || password.length < 1 || isLoading || appleLoading}
             className="w-full py-4 bg-slate-900 text-white rounded-2xl font-semibold hover:bg-black disabled:opacity-50 transition-all flex items-center justify-center gap-2"
           >
             {isLoading ? 'Baglaniyor...' : 'Giris yap'} <ArrowRight size={18} />
           </button>
+
+          {appleAvailable ? (
+            <>
+              <div className="flex items-center gap-3 py-1">
+                <div className="h-px flex-1 bg-slate-200" />
+                <span className="text-xs text-slate-400">veya</span>
+                <div className="h-px flex-1 bg-slate-200" />
+              </div>
+              <button
+                onClick={() => void handleApple()}
+                disabled={appleLoading || isLoading}
+                className="w-full py-4 bg-black text-white rounded-2xl font-semibold disabled:opacity-50 transition-all flex items-center justify-center gap-2"
+              >
+                <Apple size={18} /> {appleLoading ? 'Apple ile baglaniyor...' : 'Apple ile devam et'}
+              </button>
+            </>
+          ) : null}
+
           <button
             onClick={onStartFresh}
             className="w-full py-4 bg-slate-100 text-slate-700 rounded-2xl font-semibold hover:bg-slate-200 transition-all flex items-center justify-center gap-2"

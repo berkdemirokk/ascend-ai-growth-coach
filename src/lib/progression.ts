@@ -49,12 +49,29 @@ export const toggleTaskWithProgression = (
 
     if (shouldAwardReward) {
       const totalExperience = profile.experience + EXPERIENCE_PER_TASK;
-      const streak =
-        profile.lastCompletedDayKey === task.dayKey
-          ? profile.streak
-          : profile.lastCompletedDayKey === getPreviousDayKey(task.dayKey)
-            ? profile.streak + 1
-            : 1;
+      const previousDayKey = getPreviousDayKey(task.dayKey);
+      const twoDaysAgoKey = getPreviousDayKey(previousDayKey);
+      const freezesAvailable = profile.streakFreezesAvailable ?? 0;
+
+      let streak: number;
+      let nextFreezesAvailable = freezesAvailable;
+      let nextFreezeUsedDayKey = profile.lastStreakFreezeUsedDayKey ?? null;
+
+      if (profile.lastCompletedDayKey === task.dayKey) {
+        streak = profile.streak;
+      } else if (profile.lastCompletedDayKey === previousDayKey) {
+        streak = profile.streak + 1;
+      } else if (profile.lastCompletedDayKey === twoDaysAgoKey && freezesAvailable > 0) {
+        streak = profile.streak + 1;
+        nextFreezesAvailable = freezesAvailable - 1;
+        nextFreezeUsedDayKey = previousDayKey;
+      } else {
+        streak = 1;
+      }
+
+      if (streak > 0 && streak % 7 === 0 && streak !== profile.streak) {
+        nextFreezesAvailable = Math.min(2, nextFreezesAvailable + 1);
+      }
 
       nextProfile = {
         ...profile,
@@ -62,6 +79,8 @@ export const toggleTaskWithProgression = (
         experience: totalExperience % EXPERIENCE_PER_LEVEL,
         streak,
         lastCompletedDayKey: task.dayKey,
+        streakFreezesAvailable: nextFreezesAvailable,
+        lastStreakFreezeUsedDayKey: nextFreezeUsedDayKey,
       };
     }
 

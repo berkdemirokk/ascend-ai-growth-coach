@@ -205,6 +205,29 @@ export const loginRemoteAccount = async (payload: { email: string; password: str
   return (await response.json()) as AccountLoginPayload;
 };
 
+export const appleSignInRemoteAccount = async (payload: {
+  identityToken: string;
+  authorizationCode: string;
+  email: string | null;
+}) => {
+  const accountUrl = buildAccountUrl();
+  if (!accountUrl) {
+    return null;
+  }
+
+  const response = await fetch(`${accountUrl}/apple-sign-in`, {
+    method: 'POST',
+    headers: createAuthHeaders(),
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    await throwPersistenceError('Apple sign-in failed', response);
+  }
+
+  return (await response.json()) as AccountLoginPayload;
+};
+
 export const verifyRemoteAccountEmail = async (payload: { token: string }) => {
   const accountUrl = buildAccountUrl();
   if (!accountUrl) {

@@ -1,5 +1,5 @@
 import React, { Suspense, lazy, useMemo, useState } from 'react';
-import { BarChart3, Home, Lock, LogOut, User as UserIcon, X, Zap } from 'lucide-react';
+import { BarChart3, Bell, BellOff, Home, Lock, LogOut, User as UserIcon, X, Zap } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { MissionPreview } from '../lib/missionEngine';
 import { getPlanTierLabel, isPremiumProfile } from '../lib/premium';
@@ -29,6 +29,7 @@ interface AuthenticatedAppProps {
   weeklyPlanSnapshot: WeeklyPlanSnapshot | null;
   onToggleTask: (id: string) => void;
   onSaveReflection: (id: string, reflection: string) => void;
+  onUpdateReminder: (settings: { hour: number; minute: number; enabled: boolean }) => void;
   accountEmail: string | null;
   onClaimAccount: (email: string, password: string) => Promise<string | null>;
   onDeleteAccount: () => Promise<string | null>;
@@ -62,6 +63,7 @@ export default function AuthenticatedApp({
   weeklyPlanSnapshot,
   onToggleTask,
   onSaveReflection,
+  onUpdateReminder,
   accountEmail,
   onClaimAccount,
   onDeleteAccount,
@@ -276,6 +278,13 @@ export default function AuthenticatedApp({
                 </div>
               </div>
 
+              <ReminderCard
+                enabled={profile.reminderEnabled !== false}
+                hour={profile.reminderHour ?? 20}
+                minute={profile.reminderMinute ?? 0}
+                onUpdate={onUpdateReminder}
+              />
+
               <Suspense fallback={<PanelFallback label="Hesap paneli" />}>
                 <AccountPanel
                   accountEmail={accountEmail}
@@ -400,5 +409,63 @@ export default function AuthenticatedApp({
         )}
       </AnimatePresence>
     </motion.div>
+  );
+}
+
+interface ReminderCardProps {
+  enabled: boolean;
+  hour: number;
+  minute: number;
+  onUpdate: (settings: { hour: number; minute: number; enabled: boolean }) => void;
+}
+
+function ReminderCard({ enabled, hour, minute, onUpdate }: ReminderCardProps) {
+  const timeValue = `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+
+  const handleTimeChange = (value: string) => {
+    const [h, m] = value.split(':').map((part) => Number.parseInt(part, 10));
+    if (Number.isFinite(h) && Number.isFinite(m)) {
+      onUpdate({ hour: h, minute: m, enabled: true });
+    }
+  };
+
+  return (
+    <div className="glass rounded-3xl p-6 space-y-4">
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex items-start gap-3">
+          <div className={cn('flex h-10 w-10 items-center justify-center rounded-xl', enabled ? 'bg-brand-50 text-brand-700' : 'bg-slate-100 text-slate-400')}>
+            {enabled ? <Bell size={18} /> : <BellOff size={18} />}
+          </div>
+          <div>
+            <p className="text-[11px] uppercase tracking-[0.16em] text-slate-400 font-semibold">Hatırlatma</p>
+            <h3 className="text-lg font-semibold text-slate-900">Günlük bildirim</h3>
+            <p className="text-xs text-slate-500 mt-1">
+              {enabled ? 'Her gün belirlediğin saatte görev hatırlatması alırsın.' : 'Hatırlatma kapalı. Açtığında günlük bildirim gelir.'}
+            </p>
+          </div>
+        </div>
+        <button
+          onClick={() => onUpdate({ hour, minute, enabled: !enabled })}
+          className={cn(
+            'rounded-full px-3 py-1 text-xs font-semibold transition-colors',
+            enabled ? 'bg-brand-600 text-white' : 'bg-slate-200 text-slate-600',
+          )}
+        >
+          {enabled ? 'Açık' : 'Kapalı'}
+        </button>
+      </div>
+
+      {enabled ? (
+        <div className="flex items-center gap-3">
+          <label className="text-sm text-slate-600">Saat</label>
+          <input
+            type="time"
+            value={timeValue}
+            onChange={(event) => handleTimeChange(event.target.value)}
+            className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800 focus:border-brand-400 outline-none"
+          />
+        </div>
+      ) : null}
+    </div>
   );
 }

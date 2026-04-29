@@ -16,7 +16,7 @@ import {
   provisionRemoteSessionSeed,
   SessionSeed,
 } from './lib/sessionBootstrap';
-import { loginRemoteAccount, PersistenceRequestError } from './lib/persistenceClient';
+import { appleSignInRemoteAccount, loginRemoteAccount, PersistenceRequestError } from './lib/persistenceClient';
 
 const Onboarding = lazy(() => import('./components/Onboarding'));
 const AuthenticatedRuntime = lazy(() => import('./components/AuthenticatedRuntime'));
@@ -131,12 +131,47 @@ export default function App() {
     }
   };
 
+  const handleAppleSignIn = async (identityToken: string, authorizationCode: string, email: string | null) => {
+    try {
+      const remoteAccount = await appleSignInRemoteAccount({ identityToken, authorizationCode, email });
+      if (!remoteAccount) {
+        return 'Apple ile giriş su an tamamlanamadi.';
+      }
+
+      writeAccountId(remoteAccount.accountId);
+      writeAccountToken(remoteAccount.accountToken);
+      if (remoteAccount.accountEmail) {
+        writeAccountEmail(remoteAccount.accountEmail);
+      }
+      writeProfile(remoteAccount.profile);
+      writeTasks(remoteAccount.tasks);
+
+      setSessionSeed(
+        createSessionSeedFromRemotePayload({
+          accountId: remoteAccount.accountId,
+          accountToken: remoteAccount.accountToken,
+          accountEmail: remoteAccount.accountEmail ?? null,
+          subscriptionStatus: remoteAccount.subscriptionStatus,
+          profile: remoteAccount.profile,
+          tasks: remoteAccount.tasks,
+          weeklyPlanSnapshot: remoteAccount.weeklyPlanSnapshot ?? null,
+          plannedMissions: remoteAccount.plannedMissions ?? [],
+          revision: remoteAccount.revision ?? 0,
+        }),
+      );
+      return null;
+    } catch (error) {
+      console.warn('Apple sign-in failed.', error);
+      return 'Apple ile giriş su an tamamlanamadi.';
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#F8FAFC]">
       <Suspense fallback={<AppShellFallback />}>
         {!sessionSeed ? (
           accessMode === 'restore' ? (
-            <AccountAccess onStartFresh={() => setAccessMode('new')} onRestore={handleRestoreAccount} />
+            <AccountAccess onStartFresh={() => setAccessMode('new')} onRestore={handleRestoreAccount} onAppleSignIn={handleAppleSignIn} />
           ) : (
             <Onboarding onComplete={handleOnboardingComplete} onShowRestore={() => setAccessMode('restore')} />
           )
