@@ -58,30 +58,41 @@ export default function PathScreen({ navigation }) {
   return (
     <SafeAreaView style={styles.safeArea}>
       <LinearGradient colors={['#0B0B14', '#161626']} style={styles.container}>
-        {/* Streak Hero */}
-        <View style={styles.streakHero}>
+        {/* Streak Hero with gradient background */}
+        <LinearGradient
+          colors={['#1F1F33', '#161626']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+          style={styles.streakHero}
+        >
           <TouchableOpacity
             style={styles.streakLeft}
             activeOpacity={0.7}
             onPress={() => shareStreak({ streak: currentStreak, lang: t('language', 'tr') })}
           >
-            <Text style={styles.streakIcon}>🔥</Text>
+            <View style={styles.streakIconBox}>
+              <Text style={styles.streakIcon}>🔥</Text>
+            </View>
             <View>
               <Text style={styles.streakValue}>{currentStreak}</Text>
               <Text style={styles.streakLabel}>
-                {t('home.streakDays', 'gün seri')} ↗
+                {t('home.streakDays', 'gün seri')}
               </Text>
             </View>
           </TouchableOpacity>
           <View style={styles.streakRight}>
-            <Text style={styles.xpValue}>⚡ {totalXP.toLocaleString()}</Text>
+            <View style={styles.xpBox}>
+              <Text style={styles.xpValue}>⚡ {totalXP.toLocaleString()}</Text>
+            </View>
             <Text style={styles.xpLabel}>XP</Text>
           </View>
-        </View>
+        </LinearGradient>
 
-        {/* Header — selected path */}
+        {/* Header — selected path with gradient backdrop */}
         <View style={styles.header}>
-          <Text style={styles.icon}>{activePath.icon}</Text>
+          <View style={[styles.iconBubble, { backgroundColor: `${activePath.color}22`, borderColor: activePath.color }]}>
+            <Text style={styles.icon}>{activePath.icon}</Text>
+          </View>
           <Text style={styles.title}>
             {t(`paths.${activePath.id}.title`, activePath.id)}
           </Text>
@@ -89,18 +100,18 @@ export default function PathScreen({ navigation }) {
             {t(`paths.${activePath.id}.subtitle`, '')}
           </Text>
           <View style={styles.progressBar}>
-            <View
-              style={[
-                styles.progressFill,
-                {
-                  width: `${progress.percent}%`,
-                  backgroundColor: activePath.color,
-                },
-              ]}
+            <LinearGradient
+              colors={[activePath.color, lighten(activePath.color, 0.2)]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={[styles.progressFill, { width: `${Math.max(progress.percent, 2)}%` }]}
             />
           </View>
           <Text style={styles.progressText}>
-            {progress.completed} / {progress.total}
+            <Text style={{ color: activePath.color, fontWeight: '900' }}>
+              {progress.completed}
+            </Text>
+            {' / '}{progress.total} {t('path.lessons', 'ders')}
           </Text>
         </View>
 
@@ -182,9 +193,13 @@ export default function PathScreen({ navigation }) {
 
           {/* Empty state — first-time user */}
           {progress.completed === 0 && (
-            <View style={styles.emptyHint}>
+            <View style={[styles.emptyHint, { borderColor: activePath.color }]}>
+              <Text style={styles.emptyHintIcon}>👇</Text>
               <Text style={styles.emptyHintText}>
-                {t('path.firstLessonHint', '👇 Bugün ilk dersini aç')}
+                {t('path.firstLessonHint', 'Bugün ilk dersini aç')}
+              </Text>
+              <Text style={styles.emptyHintSubtext}>
+                {t('path.firstLessonHintSub', '5 dakika. Tek görev. Sonra alev tutuşsun.')}
               </Text>
             </View>
           )}
@@ -217,71 +232,123 @@ function LessonNode({ lesson, state, pathColor, onPress, t }) {
 
   // Pulse animation for current lesson
   const pulse = useRef(new Animated.Value(1)).current;
+  const glow = useRef(new Animated.Value(0.6)).current;
+
   useEffect(() => {
     if (state !== 'current') return;
-    const loop = Animated.loop(
+    const pulseLoop = Animated.loop(
       Animated.sequence([
         Animated.timing(pulse, {
-          toValue: 1.08,
-          duration: 800,
+          toValue: 1.06,
+          duration: 1000,
           easing: Easing.inOut(Easing.quad),
           useNativeDriver: true,
         }),
         Animated.timing(pulse, {
           toValue: 1,
-          duration: 800,
+          duration: 1000,
           easing: Easing.inOut(Easing.quad),
           useNativeDriver: true,
         }),
       ]),
     );
-    loop.start();
-    return () => loop.stop();
-  }, [state, pulse]);
+    const glowLoop = Animated.loop(
+      Animated.sequence([
+        Animated.timing(glow, { toValue: 1, duration: 1000, useNativeDriver: false }),
+        Animated.timing(glow, { toValue: 0.6, duration: 1000, useNativeDriver: false }),
+      ]),
+    );
+    pulseLoop.start();
+    glowLoop.start();
+    return () => { pulseLoop.stop(); glowLoop.stop(); };
+  }, [state, pulse, glow]);
 
-  let bgColor = '#2A2A42';
-  let icon = '🔒';
-  let labelOpacity = 0.4;
-  let nodeBorder = null;
-
-  if (state === 'completed') {
-    bgColor = pathColor;
-    icon = '✓';
-    labelOpacity = 1;
-  } else if (state === 'current') {
-    bgColor = pathColor;
-    icon = '🔥';
-    labelOpacity = 1;
-  } else if (state === 'premium') {
-    bgColor = '#1F1F33';
-    icon = '👑';
-    labelOpacity = 0.6;
-    nodeBorder = '#FDE047';
-  }
+  // Style configs by state
+  const config = (() => {
+    if (state === 'completed') return {
+      gradient: [pathColor, darken(pathColor, 0.25)],
+      icon: '✓',
+      iconStyle: styles.nodeCheckmark,
+      ringColor: 'rgba(255,255,255,0.15)',
+      labelOpacity: 1,
+    };
+    if (state === 'current') return {
+      gradient: [lighten(pathColor, 0.15), pathColor],
+      icon: '🔥',
+      iconStyle: styles.nodeIcon,
+      ringColor: pathColor,
+      labelOpacity: 1,
+      glow: true,
+    };
+    if (state === 'premium') return {
+      gradient: ['#2A2A42', '#1F1F33'],
+      icon: '👑',
+      iconStyle: styles.nodeIconPremium,
+      ringColor: 'rgba(253,224,71,0.4)',
+      labelOpacity: 0.6,
+    };
+    return {
+      gradient: ['#2A2A42', '#1F1F33'],
+      icon: '🔒',
+      iconStyle: styles.nodeIconLocked,
+      ringColor: 'transparent',
+      labelOpacity: 0.4,
+    };
+  })();
 
   return (
-    <TouchableOpacity onPress={onPress} activeOpacity={0.7} style={styles.nodeContainer}>
-      <Animated.View
-        style={[
-          styles.node,
-          { backgroundColor: bgColor, transform: [{ scale: pulse }] },
-          state === 'current' && styles.nodeCurrent,
-          state === 'current' && { shadowColor: pathColor },
-          nodeBorder && { borderWidth: 2, borderColor: nodeBorder },
-        ]}
-      >
-        <Text style={styles.nodeIcon}>{icon}</Text>
+    <TouchableOpacity onPress={onPress} activeOpacity={0.85} style={styles.nodeContainer}>
+      <Animated.View style={[
+        styles.nodeRing,
+        { borderColor: config.ringColor },
+        config.glow && {
+          shadowColor: pathColor,
+          shadowOffset: { width: 0, height: 0 },
+          shadowOpacity: glow,
+          shadowRadius: 20,
+        },
+      ]}>
+        <Animated.View style={{ transform: [{ scale: pulse }] }}>
+          <LinearGradient
+            colors={config.gradient}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.nodeGradient}
+          >
+            <View style={styles.nodeInner}>
+              <Text style={config.iconStyle}>{config.icon}</Text>
+            </View>
+          </LinearGradient>
+        </Animated.View>
       </Animated.View>
+
       {state === 'current' && (
-        <View style={styles.todayBadge}>
+        <View style={[styles.todayBadge, { backgroundColor: '#FDE047' }]}>
           <Text style={styles.todayBadgeText}>BUGÜN</Text>
         </View>
       )}
-      <Text style={[styles.nodeLabel, { opacity: labelOpacity }]} numberOfLines={2}>
+
+      <Text style={[styles.nodeLabel, { opacity: config.labelOpacity }]} numberOfLines={2}>
         {lessonTitle}
       </Text>
     </TouchableOpacity>
   );
+}
+
+// Color utilities for shading
+function lighten(hex, amount) {
+  const c = parseInt(hex.replace('#', ''), 16);
+  const r = Math.min(255, ((c >> 16) & 0xff) + Math.round(255 * amount));
+  const g = Math.min(255, ((c >> 8) & 0xff) + Math.round(255 * amount));
+  const b = Math.min(255, (c & 0xff) + Math.round(255 * amount));
+  return `#${((r << 16) | (g << 8) | b).toString(16).padStart(6, '0')}`;
+}
+function darken(hex, amount) {
+  const c = parseInt(hex.replace('#', ''), 16);
+  const r = Math.max(0, ((c >> 16) & 0xff) - Math.round(255 * amount));
+  const g = Math.max(0, ((c >> 8) & 0xff) - Math.round(255 * amount));
+  const b = Math.max(0, (c & 0xff) - Math.round(255 * amount));
+  return `#${((r << 16) | (g << 8) | b).toString(16).padStart(6, '0')}`;
 }
 
 const NODE = 76;
@@ -294,44 +361,83 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#161626',
     borderBottomWidth: 1,
     borderBottomColor: '#2A2A42',
     paddingHorizontal: 20,
-    paddingVertical: 12,
+    paddingVertical: 14,
   },
-  streakLeft: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  streakIcon: { fontSize: 32 },
-  streakValue: { color: '#F59E0B', fontSize: 24, fontWeight: '900', lineHeight: 26 },
+  streakLeft: { flexDirection: 'row', alignItems: 'center', gap: 14 },
+  streakIconBox: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    backgroundColor: 'rgba(245, 158, 11, 0.15)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(245, 158, 11, 0.3)',
+  },
+  streakIcon: { fontSize: 26 },
+  streakValue: {
+    color: '#F59E0B',
+    fontSize: 26,
+    fontWeight: '900',
+    lineHeight: 28,
+    letterSpacing: -0.5,
+  },
   streakLabel: { color: '#9898B0', fontSize: 11, fontWeight: '600' },
   streakRight: { alignItems: 'flex-end' },
-  xpValue: { color: '#FDE047', fontSize: 16, fontWeight: '800' },
-  xpLabel: { color: '#9898B0', fontSize: 10, fontWeight: '600' },
+  xpBox: {
+    backgroundColor: 'rgba(253, 224, 71, 0.15)',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(253, 224, 71, 0.3)',
+  },
+  xpValue: { color: '#FDE047', fontSize: 14, fontWeight: '800' },
+  xpLabel: { color: '#9898B0', fontSize: 10, fontWeight: '600', marginTop: 2 },
 
   header: {
     paddingHorizontal: 24,
-    paddingTop: 16,
-    paddingBottom: 16,
+    paddingTop: 20,
+    paddingBottom: 20,
     alignItems: 'center',
   },
-  icon: { fontSize: 40, marginBottom: 8 },
-  title: { color: '#F5F5FA', fontSize: 24, fontWeight: '800', textAlign: 'center' },
+  iconBubble: {
+    width: 64,
+    height: 64,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 2,
+    marginBottom: 12,
+  },
+  icon: { fontSize: 32 },
+  title: {
+    color: '#F5F5FA',
+    fontSize: 26,
+    fontWeight: '900',
+    textAlign: 'center',
+    letterSpacing: -0.5,
+  },
   subtitle: {
     color: '#9898B0',
     fontSize: 13,
-    marginTop: 4,
+    marginTop: 6,
     textAlign: 'center',
+    fontWeight: '500',
   },
   progressBar: {
-    width: 220,
-    height: 6,
-    backgroundColor: '#2A2A42',
-    borderRadius: 3,
+    width: 240,
+    height: 8,
+    backgroundColor: 'rgba(255,255,255,0.08)',
+    borderRadius: 4,
     overflow: 'hidden',
-    marginTop: 14,
+    marginTop: 16,
   },
-  progressFill: { height: '100%', borderRadius: 3 },
-  progressText: { color: '#9898B0', fontSize: 11, fontWeight: '600', marginTop: 6 },
+  progressFill: { height: '100%', borderRadius: 4 },
+  progressText: { color: '#9898B0', fontSize: 12, fontWeight: '600', marginTop: 8 },
 
   pathSwitcher: {
     paddingHorizontal: 12,
@@ -362,27 +468,55 @@ const styles = StyleSheet.create({
   },
   lessonNodeWrap: { alignItems: 'center', marginBottom: 8 },
   connector: {
-    width: 4,
-    height: 24,
+    width: 3,
+    height: 28,
     backgroundColor: '#2A2A42',
-    borderRadius: 2,
+    borderRadius: 1.5,
     marginBottom: 4,
+    opacity: 0.6,
   },
-  nodeContainer: { alignItems: 'center', maxWidth: 120 },
-  node: {
+  nodeContainer: { alignItems: 'center', maxWidth: 130 },
+  nodeRing: {
+    width: NODE + 8,
+    height: NODE + 8,
+    borderRadius: (NODE + 8) / 2,
+    borderWidth: 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 6,
+  },
+  nodeGradient: {
     width: NODE,
     height: NODE,
     borderRadius: NODE / 2,
     alignItems: 'center',
     justifyContent: 'center',
+    overflow: 'hidden',
   },
-  nodeCurrent: {
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.6,
-    shadowRadius: 16,
-    elevation: 8,
+  nodeInner: {
+    width: NODE - 6,
+    height: NODE - 6,
+    borderRadius: (NODE - 6) / 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(255,255,255,0.05)',
   },
-  nodeIcon: { fontSize: 32 },
+  nodeIcon: {
+    fontSize: 36,
+    textShadowColor: 'rgba(0,0,0,0.4)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 4,
+  },
+  nodeCheckmark: {
+    fontSize: 36,
+    color: '#FFFFFF',
+    fontWeight: '900',
+    textShadowColor: 'rgba(0,0,0,0.3)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 3,
+  },
+  nodeIconPremium: { fontSize: 30, opacity: 0.8 },
+  nodeIconLocked: { fontSize: 26, opacity: 0.4 },
   todayBadge: {
     backgroundColor: '#FDE047',
     paddingHorizontal: 10,
@@ -408,14 +542,27 @@ const styles = StyleSheet.create({
   emptyHint: {
     backgroundColor: '#161626',
     borderRadius: 16,
-    padding: 16,
+    padding: 20,
     marginHorizontal: 24,
     marginBottom: 16,
-    borderWidth: 1,
-    borderColor: '#2A2A42',
+    borderWidth: 2,
+    borderStyle: 'dashed',
     alignItems: 'center',
   },
-  emptyHintText: { color: '#F59E0B', fontSize: 14, fontWeight: '700' },
+  emptyHintIcon: { fontSize: 28, marginBottom: 8 },
+  emptyHintText: {
+    color: '#F5F5FA',
+    fontSize: 15,
+    fontWeight: '800',
+    marginBottom: 4,
+    textAlign: 'center',
+  },
+  emptyHintSubtext: {
+    color: '#9898B0',
+    fontSize: 12,
+    fontWeight: '500',
+    textAlign: 'center',
+  },
 
   completion: {
     alignItems: 'center',

@@ -1,231 +1,191 @@
-"""Ascend Monk Mode app icon generator.
+"""Premium app icon — radial gradient flame on deep matte background.
 
-Stylized flame on deep matte black with warm radial glow.
-Uses Catmull-Rom spline interpolation for smooth curves + multi-layer composition.
+Layered approach:
+1. Black background with subtle warm vignette
+2. Outer glow halo (large blur)
+3. Outer flame (deep red-orange) with smooth bezier-like curves
+4. Mid flame (orange) layered above
+5. Core flame (gold-yellow)
+6. Hot center (white-yellow)
+7. Highlight specular at tip
 """
-from PIL import Image, ImageDraw, ImageFilter
+from PIL import Image, ImageDraw, ImageFilter, ImageChops
 import math
 import os
 
 SIZE = 1024
-BG_COLOR = (11, 11, 20, 255)  # #0B0B14
+BG = (8, 8, 16, 255)  # nearly black, slight blue
 
 
-def catmull_rom(points, samples_per_segment=24, closed=True):
-    """Smooth a polyline through control points using Catmull-Rom splines."""
+def catmull_rom(points, samples=32, closed=True):
     if closed:
         ctrl = points[-1:] + list(points) + points[:2]
     else:
         ctrl = [points[0]] + list(points) + [points[-1]]
-
     out = []
     for i in range(1, len(ctrl) - 2):
         p0, p1, p2, p3 = ctrl[i - 1], ctrl[i], ctrl[i + 1], ctrl[i + 2]
-        for t_step in range(samples_per_segment):
-            t = t_step / samples_per_segment
+        for s in range(samples):
+            t = s / samples
             t2, t3 = t * t, t * t * t
-            x = 0.5 * (
-                (2 * p1[0]) +
-                (-p0[0] + p2[0]) * t +
-                (2 * p0[0] - 5 * p1[0] + 4 * p2[0] - p3[0]) * t2 +
-                (-p0[0] + 3 * p1[0] - 3 * p2[0] + p3[0]) * t3
-            )
-            y = 0.5 * (
-                (2 * p1[1]) +
-                (-p0[1] + p2[1]) * t +
-                (2 * p0[1] - 5 * p1[1] + 4 * p2[1] - p3[1]) * t2 +
-                (-p0[1] + 3 * p1[1] - 3 * p2[1] + p3[1]) * t3
-            )
+            x = 0.5 * ((2 * p1[0]) + (-p0[0] + p2[0]) * t +
+                       (2 * p0[0] - 5 * p1[0] + 4 * p2[0] - p3[0]) * t2 +
+                       (-p0[0] + 3 * p1[0] - 3 * p2[0] + p3[0]) * t3)
+            y = 0.5 * ((2 * p1[1]) + (-p0[1] + p2[1]) * t +
+                       (2 * p0[1] - 5 * p1[1] + 4 * p2[1] - p3[1]) * t2 +
+                       (-p0[1] + 3 * p1[1] - 3 * p2[1] + p3[1]) * t3)
             out.append((x, y))
     return out
 
 
-def transform(pts, scale, dx, dy):
-    return [(p[0] * scale + dx, p[1] * scale + dy) for p in pts]
+def transform(pts, scale, dx, dy, sway=0):
+    """Apply scale + offset + slight horizontal sway for licking-flame look."""
+    out = []
+    for p in pts:
+        # Sway: more sway near top (small y), less at base
+        height_factor = max(0, (-p[1] + 200) / 400) if sway else 0
+        x_swayed = p[0] + sway * height_factor
+        out.append((x_swayed * scale + dx, p[1] * scale + dy))
+    return out
 
 
-# Asymmetric flame outline (slightly leaning, pointed top, rounded base).
-# Y axis points down. Origin at flame center.
-OUTER_FLAME = [
-    (0, -340),       # tip
-    (50, -280),      # right shoulder of tip
-    (115, -200),
-    (160, -100),
-    (185, -10),
-    (195, 70),
-    (170, 145),
-    (115, 200),
-    (45, 240),
-    (0, 260),        # base center
-    (-45, 240),
-    (-115, 200),
-    (-170, 145),
-    (-195, 70),
-    (-185, -10),
-    (-160, -100),
-    (-115, -200),
-    (-50, -280),
+# Asymmetric flame shapes for depth
+OUTER = [
+    (0, -360), (45, -310), (110, -220), (160, -130), (190, -40),
+    (200, 50), (180, 130), (130, 200), (70, 245), (10, 270),
+    (-40, 260), (-100, 230), (-160, 180), (-195, 110), (-200, 30),
+    (-185, -50), (-160, -130), (-115, -220), (-50, -310),
 ]
 
-MID_FLAME = [
-    (0, -240),
-    (35, -190),
-    (85, -120),
-    (120, -40),
-    (135, 35),
-    (115, 110),
-    (75, 160),
-    (30, 195),
-    (0, 210),
-    (-30, 195),
-    (-75, 160),
-    (-115, 110),
-    (-135, 35),
-    (-120, -40),
-    (-85, -120),
-    (-35, -190),
+MID = [
+    (5, -270), (45, -210), (90, -130), (125, -50), (140, 30),
+    (125, 105), (90, 165), (45, 200), (0, 215),
+    (-45, 200), (-90, 165), (-125, 105), (-140, 30),
+    (-125, -50), (-90, -130), (-45, -210),
 ]
 
-CORE_FLAME = [
-    (0, -150),
-    (22, -110),
-    (55, -55),
-    (75, 5),
-    (75, 70),
-    (50, 120),
-    (20, 145),
-    (0, 155),
-    (-20, 145),
-    (-50, 120),
-    (-75, 70),
-    (-75, 5),
-    (-55, -55),
-    (-22, -110),
+CORE = [
+    (8, -180), (35, -130), (65, -65), (80, 0), (78, 60),
+    (55, 115), (25, 145), (0, 155), (-25, 145), (-55, 115),
+    (-78, 60), (-80, 0), (-65, -65), (-35, -130),
 ]
 
-HOT_SPOT = [
-    (0, -85),
-    (15, -50),
-    (28, -10),
-    (32, 35),
-    (20, 75),
-    (0, 90),
-    (-20, 75),
-    (-32, 35),
-    (-28, -10),
-    (-15, -50),
+HOT = [
+    (5, -110), (20, -65), (32, -10), (35, 35), (25, 80),
+    (5, 100), (-15, 90), (-30, 60), (-38, 20), (-35, -20),
+    (-25, -65), (-10, -110),
 ]
 
 
-def draw_radial_glow(size, center, max_radius, color_inner, color_outer, blur_radius=60):
-    """Soft radial gradient glow."""
-    glow = Image.new('RGBA', (size, size), (0, 0, 0, 0))
+def radial_gradient(size, center, max_r, color_inner, color_outer, blur=0):
+    img = Image.new('RGBA', (size, size), (0, 0, 0, 0))
     cx, cy = center
-    steps = 60
+    steps = 80
     for i in range(steps, 0, -1):
         t = i / steps
-        r = int(max_radius * t)
+        r = int(max_r * t)
         if r <= 0:
             continue
         alpha = int(color_outer[3] + (color_inner[3] - color_outer[3]) * (1 - t))
         rgb = tuple(int(color_outer[k] + (color_inner[k] - color_outer[k]) * (1 - t)) for k in range(3))
-        d = ImageDraw.Draw(glow)
+        d = ImageDraw.Draw(img)
         d.ellipse((cx - r, cy - r, cx + r, cy + r), fill=(*rgb, alpha))
-    return glow.filter(ImageFilter.GaussianBlur(radius=blur_radius))
+    if blur:
+        img = img.filter(ImageFilter.GaussianBlur(radius=blur))
+    return img
 
 
-def render_icon(size=SIZE, bg=BG_COLOR):
-    img = Image.new('RGBA', (size, size), bg)
+def render_icon(size=SIZE):
+    img = Image.new('RGBA', (size, size), BG)
     cx = size // 2
-    cy = int(size * 0.54)  # bias slightly down for visual balance
+    cy = int(size * 0.55)  # bias down slightly
+    s = size / 1024.0
 
-    scale_unit = size / 1024.0
-
-    # Background subtle vignette warm-up
-    bg_glow = draw_radial_glow(
-        size,
-        (cx, cy - int(20 * scale_unit)),
-        int(520 * scale_unit),
-        color_inner=(245, 158, 11, 60),
-        color_outer=(245, 158, 11, 0),
-        blur_radius=int(80 * scale_unit),
+    # 1. Background warm vignette (subtle)
+    bg_glow = radial_gradient(
+        size, (cx, cy - int(40 * s)),
+        int(620 * s),
+        color_inner=(245, 140, 30, 80),
+        color_outer=(245, 140, 30, 0),
+        blur=int(120 * s),
     )
     img.alpha_composite(bg_glow)
 
-    # Outer flame — deep orange, smooth Catmull-Rom curve
-    outer_pts = catmull_rom(transform(OUTER_FLAME, 1.05 * scale_unit, cx, cy), samples_per_segment=24)
-    outer_layer = Image.new('RGBA', (size, size), (0, 0, 0, 0))
-    ImageDraw.Draw(outer_layer).polygon(outer_pts, fill=(245, 90, 31, 255))  # #F55A1F
-    outer_layer = outer_layer.filter(ImageFilter.GaussianBlur(radius=2.5))
-    img.alpha_composite(outer_layer)
-
-    # Mid flame — orange (#FB923C), nudged down for licking-flame feel
-    mid_pts = catmull_rom(
-        transform(MID_FLAME, 1.0 * scale_unit, cx, cy + int(35 * scale_unit)),
-        samples_per_segment=24,
+    # 2. Outer halo behind flame
+    halo = radial_gradient(
+        size, (cx, cy),
+        int(400 * s),
+        color_inner=(255, 100, 30, 140),
+        color_outer=(255, 100, 30, 0),
+        blur=int(80 * s),
     )
-    mid_layer = Image.new('RGBA', (size, size), (0, 0, 0, 0))
-    ImageDraw.Draw(mid_layer).polygon(mid_pts, fill=(251, 146, 60, 255))
-    mid_layer = mid_layer.filter(ImageFilter.GaussianBlur(radius=2))
-    img.alpha_composite(mid_layer)
+    img.alpha_composite(halo)
 
-    # Core flame — gold (#FDE047)
-    core_pts = catmull_rom(
-        transform(CORE_FLAME, 1.0 * scale_unit, cx, cy + int(55 * scale_unit)),
-        samples_per_segment=24,
-    )
-    core_layer = Image.new('RGBA', (size, size), (0, 0, 0, 0))
-    ImageDraw.Draw(core_layer).polygon(core_pts, fill=(253, 224, 71, 255))
-    core_layer = core_layer.filter(ImageFilter.GaussianBlur(radius=1.8))
-    img.alpha_composite(core_layer)
+    # 3. Outer flame — deep red-orange #DC2626
+    outer_pts = catmull_rom(transform(OUTER, 1.05 * s, cx, cy, sway=15))
+    layer = Image.new('RGBA', (size, size), (0, 0, 0, 0))
+    ImageDraw.Draw(layer).polygon(outer_pts, fill=(220, 38, 38, 255))
+    layer = layer.filter(ImageFilter.GaussianBlur(radius=3 * s))
+    img.alpha_composite(layer)
 
-    # Hot core — bright white-yellow center
-    hot_pts = catmull_rom(
-        transform(HOT_SPOT, 1.0 * scale_unit, cx, cy + int(60 * scale_unit)),
-        samples_per_segment=24,
-    )
-    hot_layer = Image.new('RGBA', (size, size), (0, 0, 0, 0))
-    ImageDraw.Draw(hot_layer).polygon(hot_pts, fill=(255, 246, 200, 235))
-    hot_layer = hot_layer.filter(ImageFilter.GaussianBlur(radius=4))
-    img.alpha_composite(hot_layer)
+    # 4. Mid flame — orange #F97316
+    mid_pts = catmull_rom(transform(MID, 1.0 * s, cx, cy + int(30 * s), sway=10))
+    layer = Image.new('RGBA', (size, size), (0, 0, 0, 0))
+    ImageDraw.Draw(layer).polygon(mid_pts, fill=(249, 115, 22, 255))
+    layer = layer.filter(ImageFilter.GaussianBlur(radius=2.5 * s))
+    img.alpha_composite(layer)
 
-    # Highlight glow at top of flame (small white halo at tip)
-    tip_glow = draw_radial_glow(
-        size,
-        (cx, cy - int(280 * scale_unit)),
-        int(80 * scale_unit),
-        color_inner=(255, 230, 150, 80),
-        color_outer=(255, 230, 150, 0),
-        blur_radius=int(20 * scale_unit),
+    # 5. Core flame — gold #FACC15
+    core_pts = catmull_rom(transform(CORE, 1.0 * s, cx, cy + int(60 * s), sway=5))
+    layer = Image.new('RGBA', (size, size), (0, 0, 0, 0))
+    ImageDraw.Draw(layer).polygon(core_pts, fill=(250, 204, 21, 255))
+    layer = layer.filter(ImageFilter.GaussianBlur(radius=2 * s))
+    img.alpha_composite(layer)
+
+    # 6. Hot center — pale yellow-white #FEF3C7
+    hot_pts = catmull_rom(transform(HOT, 1.0 * s, cx, cy + int(75 * s)))
+    layer = Image.new('RGBA', (size, size), (0, 0, 0, 0))
+    ImageDraw.Draw(layer).polygon(hot_pts, fill=(254, 243, 199, 240))
+    layer = layer.filter(ImageFilter.GaussianBlur(radius=4 * s))
+    img.alpha_composite(layer)
+
+    # 7. Tip highlight (small white halo at flame tip for depth)
+    tip_glow = radial_gradient(
+        size, (cx + int(8 * s), cy - int(310 * s)),
+        int(70 * s),
+        color_inner=(255, 250, 220, 150),
+        color_outer=(255, 250, 220, 0),
+        blur=int(15 * s),
     )
     img.alpha_composite(tip_glow)
+
+    # 8. Bottom shadow grounding
+    base_shadow = radial_gradient(
+        size, (cx, cy + int(290 * s)),
+        int(180 * s),
+        color_inner=(0, 0, 0, 100),
+        color_outer=(0, 0, 0, 0),
+        blur=int(40 * s),
+    )
+    img = Image.alpha_composite(img, base_shadow)
 
     return img
 
 
 def main():
-    out_dir = os.path.join(
-        os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-        'assets',
-    )
+    out_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'assets')
     os.makedirs(out_dir, exist_ok=True)
 
-    # Main 1024×1024 app icon
     icon = render_icon(SIZE)
-    icon_path = os.path.join(out_dir, 'icon.png')
-    icon.save(icon_path)
-    print(f'Saved: {icon_path}')
+    icon.save(os.path.join(out_dir, 'icon.png'))
+    print(f'Saved: assets/icon.png ({SIZE}x{SIZE})')
 
-    # Adaptive icon (Android)
-    adaptive_path = os.path.join(out_dir, 'adaptive-icon.png')
-    icon.save(adaptive_path)
-    print(f'Saved: {adaptive_path}')
+    icon.save(os.path.join(out_dir, 'adaptive-icon.png'))
+    print(f'Saved: assets/adaptive-icon.png')
 
-    # Notification icon (smaller). Render at 256 then downscale gives crisper result
     notif = render_icon(256)
-    notif_path = os.path.join(out_dir, 'notification-icon.png')
-    notif.save(notif_path)
-    print(f'Saved: {notif_path}')
+    notif.save(os.path.join(out_dir, 'notification-icon.png'))
+    print(f'Saved: assets/notification-icon.png (256x256)')
 
 
 if __name__ == '__main__':

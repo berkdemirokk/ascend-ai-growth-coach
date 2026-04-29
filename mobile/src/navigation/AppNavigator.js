@@ -112,11 +112,13 @@ export default function AppNavigator() {
         screenOptions={{
           headerShown: false,
           contentStyle: { backgroundColor: '#0B0B14' },
+          animation: 'slide_from_right',
+          animationDuration: 250,
         }}
       >
         {needsAuth ? (
           <>
-            <Stack.Screen name="Welcome" component={WelcomeScreen} />
+            <Stack.Screen name="Welcome" component={WelcomeScreen} options={{ animation: 'fade' }} />
             <Stack.Screen name="Login" component={LoginScreen} />
             <Stack.Screen name="Signup" component={SignupScreen} />
             <Stack.Screen
@@ -125,9 +127,9 @@ export default function AppNavigator() {
             />
           </>
         ) : !onboarded ? (
-          <Stack.Screen name="Onboarding" component={OnboardingScreen} />
+          <Stack.Screen name="Onboarding" component={OnboardingScreen} options={{ animation: 'fade' }} />
         ) : (
-          <Stack.Screen name="MainTabs" component={MainTabs} />
+          <Stack.Screen name="MainTabs" component={MainTabs} options={{ animation: 'fade' }} />
         )}
         <Stack.Screen
           name="Paywall"
