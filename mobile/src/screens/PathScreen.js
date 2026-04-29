@@ -23,6 +23,7 @@ import {
   getPathProgress,
   getPathById,
 } from '../data/paths';
+import { shareStreak } from '../services/share';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -59,15 +60,19 @@ export default function PathScreen({ navigation }) {
       <LinearGradient colors={['#0B0B14', '#161626']} style={styles.container}>
         {/* Streak Hero */}
         <View style={styles.streakHero}>
-          <View style={styles.streakLeft}>
+          <TouchableOpacity
+            style={styles.streakLeft}
+            activeOpacity={0.7}
+            onPress={() => shareStreak({ streak: currentStreak, lang: t('language', 'tr') })}
+          >
             <Text style={styles.streakIcon}>🔥</Text>
             <View>
               <Text style={styles.streakValue}>{currentStreak}</Text>
               <Text style={styles.streakLabel}>
-                {t('home.streakDays', 'gün seri')}
+                {t('home.streakDays', 'gün seri')} ↗
               </Text>
             </View>
-          </View>
+          </TouchableOpacity>
           <View style={styles.streakRight}>
             <Text style={styles.xpValue}>⚡ {totalXP.toLocaleString()}</Text>
             <Text style={styles.xpLabel}>XP</Text>

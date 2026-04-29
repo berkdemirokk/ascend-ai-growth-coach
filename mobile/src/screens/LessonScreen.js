@@ -18,11 +18,14 @@ import * as Haptics from 'expo-haptics';
 import { useApp } from '../contexts/AppContext';
 import { getPathById, getLessonById } from '../data/paths';
 import { showInterstitial, shouldShowAd } from '../services/ads';
+import MilestoneModal, { isMilestone } from '../components/MilestoneModal';
 
 export default function LessonScreen({ navigation, route }) {
   const { t } = useTranslation();
   const { pathId, lessonId } = route.params || {};
-  const { completePathLesson, pathProgress, isPremium } = useApp();
+  const { completePathLesson, pathProgress, isPremium, currentStreak } = useApp();
+  const [milestoneVisible, setMilestoneVisible] = useState(false);
+  const [milestoneStreak, setMilestoneStreak] = useState(0);
 
   const path = useMemo(() => getPathById(pathId), [pathId]);
   const lesson = useMemo(() => getLessonById(lessonId), [lessonId]);
@@ -89,6 +92,14 @@ export default function LessonScreen({ navigation, route }) {
     ]).start();
 
     setTimeout(async () => {
+      // Check if this completion hits a milestone (3, 7, 14, 21, 30, 60, 100, 365)
+      const newStreak = currentStreak + 1; // approx — actual streak updated by reducer
+      if (isMilestone(newStreak)) {
+        setMilestoneStreak(newStreak);
+        setMilestoneVisible(true);
+        return; // wait for user to dismiss milestone before going back
+      }
+
       // Ad after every 2-3 lesson completions for free users
       if (!isPremium && shouldShowAd(false)) {
         try {
@@ -97,6 +108,14 @@ export default function LessonScreen({ navigation, route }) {
       }
       navigation.goBack();
     }, 2200);
+  };
+
+  const handleMilestoneClose = async () => {
+    setMilestoneVisible(false);
+    if (!isPremium && shouldShowAd(false)) {
+      try { await showInterstitial(); } catch {}
+    }
+    navigation.goBack();
   };
 
   return (
@@ -215,6 +234,12 @@ export default function LessonScreen({ navigation, route }) {
 
           <View style={{ height: 40 }} />
         </ScrollView>
+
+        <MilestoneModal
+          visible={milestoneVisible}
+          streak={milestoneStreak}
+          onClose={handleMilestoneClose}
+        />
 
         {/* Celebration overlay */}
         {showCelebration && (
