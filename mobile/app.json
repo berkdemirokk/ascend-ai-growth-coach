@@ -38,8 +38,7 @@
           "color": "#6366F1"
         }
       ],
-      "expo-apple-authentication",
-      "expo-localization"
+      "expo-apple-authentication"
     ],
     "extra": {
       "supabase": {

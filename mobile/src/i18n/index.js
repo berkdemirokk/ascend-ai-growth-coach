@@ -1,8 +1,7 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
-import * as Localization from 'expo-localization';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { I18nManager } from 'react-native';
+import { I18nManager, NativeModules, Platform } from 'react-native';
 
 import tr from './locales/tr.json';
 import en from './locales/en.json';
@@ -18,17 +17,31 @@ const resources = {
   ar: { translation: ar },
 };
 
+const getDeviceLanguageCode = () => {
+  try {
+    let raw;
+    if (Platform.OS === 'ios') {
+      raw =
+        NativeModules.SettingsManager?.settings?.AppleLocale ||
+        NativeModules.SettingsManager?.settings?.AppleLanguages?.[0];
+    } else {
+      raw = NativeModules.I18nManager?.localeIdentifier;
+    }
+    if (!raw) return null;
+    return String(raw).split(/[-_]/)[0]?.toLowerCase() || null;
+  } catch {
+    return null;
+  }
+};
+
 const detectInitialLanguage = async () => {
   try {
     const stored = await AsyncStorage.getItem(STORAGE_KEY);
     if (stored && SUPPORTED.includes(stored)) return stored;
   } catch {}
 
-  try {
-    const locales = Localization.getLocales();
-    const code = locales?.[0]?.languageCode;
-    if (code && SUPPORTED.includes(code)) return code;
-  } catch {}
+  const code = getDeviceLanguageCode();
+  if (code && SUPPORTED.includes(code)) return code;
 
   return DEFAULT_LANG;
 };
