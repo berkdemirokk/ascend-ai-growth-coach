@@ -12,7 +12,6 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useApp } from '../contexts/AppContext';
 import { LEVEL_THRESHOLDS, getNextLevel, COLORS } from '../config/constants';
 import { ACHIEVEMENTS, RARITY_COLORS } from '../config/achievements';
-import { getSprintById } from '../config/sprints';
 import { getRank, getNextRank } from '../config/ranks';
 
 const { width } = Dimensions.get('window');
@@ -155,33 +154,9 @@ export default function ProfileScreen({ navigation }) {
         </View>
       </View>
 
-      {/* ── Quick Nav (Settings / Path / History) ── */}
+      {/* ── Quick Nav ── */}
       <View style={styles.section}>
         <View style={styles.quickNavRow}>
-          <TouchableOpacity
-            style={styles.quickNavBtn}
-            onPress={() => navigation?.navigate('Path')}
-            activeOpacity={0.7}
-          >
-            <Text style={styles.quickNavEmoji}>🎓</Text>
-            <Text style={styles.quickNavLabel}>{t('profile.navPath')}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.quickNavBtn}
-            onPress={() => navigation?.navigate('History')}
-            activeOpacity={0.7}
-          >
-            <Text style={styles.quickNavEmoji}>📋</Text>
-            <Text style={styles.quickNavLabel}>{t('profile.navHistory')}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.quickNavBtn}
-            onPress={() => navigation?.navigate('Achievements')}
-            activeOpacity={0.7}
-          >
-            <Text style={styles.quickNavEmoji}>🏆</Text>
-            <Text style={styles.quickNavLabel}>{t('profile.navAchievements')}</Text>
-          </TouchableOpacity>
           <TouchableOpacity
             style={styles.quickNavBtn}
             onPress={() => navigation?.navigate('Settings')}
@@ -236,9 +211,6 @@ export default function ProfileScreen({ navigation }) {
       <View style={styles.section}>
         <View style={styles.rowBetween}>
           <Text style={styles.sectionTitle}>{t('profile.recentAchievements')}</Text>
-          <TouchableOpacity onPress={() => navigation?.navigate('Achievements')}>
-            <Text style={styles.seeAllText}>{t('profile.seeAll')}</Text>
-          </TouchableOpacity>
         </View>
 
         {recentAchievements.length === 0 ? (

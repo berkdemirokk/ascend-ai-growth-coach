@@ -8,13 +8,11 @@ import { useApp } from '../contexts/AppContext';
 import { useAuth } from '../contexts/AuthContext';
 
 import OnboardingScreen from '../screens/OnboardingScreen';
-import HistoryScreen from '../screens/HistoryScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import PaywallScreen from '../screens/PaywallScreen';
 import LessonScreen from '../screens/LessonScreen';
 import PathScreen from '../screens/PathScreen';
-import AchievementsScreen from '../screens/AchievementsScreen';
 import WelcomeScreen from '../screens/auth/WelcomeScreen';
 import LoginScreen from '../screens/auth/LoginScreen';
 import SignupScreen from '../screens/auth/SignupScreen';
@@ -148,32 +146,8 @@ export default function AppNavigator() {
           }}
         />
         <Stack.Screen
-          name="Achievements"
-          component={AchievementsScreen}
-          options={{
-            presentation: 'modal',
-            animation: 'slide_from_bottom',
-          }}
-        />
-        <Stack.Screen
-          name="History"
-          component={HistoryScreen}
-          options={{
-            presentation: 'modal',
-            animation: 'slide_from_bottom',
-          }}
-        />
-        <Stack.Screen
           name="Settings"
           component={SettingsScreen}
-          options={{
-            presentation: 'modal',
-            animation: 'slide_from_bottom',
-          }}
-        />
-        <Stack.Screen
-          name="Path"
-          component={PathScreen}
           options={{
             presentation: 'modal',
             animation: 'slide_from_bottom',
