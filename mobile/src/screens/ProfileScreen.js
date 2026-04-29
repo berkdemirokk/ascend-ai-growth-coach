@@ -49,21 +49,30 @@ export default function ProfileScreen({ navigation }) {
   const {
     totalXP,
     level,
-    currentSprintDay,
-    activeSprint,
-    sprintHistory,
+    currentStreak,
+    longestStreak,
+    pathProgress,
     unlockedAchievements,
   } = useApp();
 
-  const completedSprints = (sprintHistory || []).filter(
-    (s) => s.status === 'completed',
-  ).length;
+  // Path-based stats (replaces sprint history)
+  const completedLessonsTotal = useMemo(() => {
+    return Object.values(pathProgress || {}).reduce(
+      (sum, p) => sum + (p?.completed?.length || 0),
+      0,
+    );
+  }, [pathProgress]);
 
-  const rank = useMemo(() => getRank(completedSprints), [completedSprints]);
-  const nextRank = useMemo(
-    () => getNextRank(completedSprints),
-    [completedSprints],
-  );
+  const completedPaths = useMemo(() => {
+    // A path is "completed" if its completed array has lessons covering full duration.
+    // Estimate: count paths where completed.length >= 21 (smallest path)
+    return Object.values(pathProgress || {}).filter(
+      (p) => (p?.completed?.length || 0) >= 21,
+    ).length;
+  }, [pathProgress]);
+
+  const rank = useMemo(() => getRank(completedPaths), [completedPaths]);
+  const nextRank = useMemo(() => getNextRank(completedPaths), [completedPaths]);
 
   const nextLevel = useMemo(() => getNextLevel(level), [level]);
   const currentLevelThreshold =
@@ -135,8 +144,7 @@ export default function ProfileScreen({ navigation }) {
             <Text style={styles.rankSubtitle}>{rank.subtitle}</Text>
             {nextRank ? (
               <Text style={styles.rankProgress}>
-                {nextRank.minSprints - completedSprints} sprint kaldı →{' '}
-                {nextRank.title}
+                {Math.max(0, nextRank.minSprints - completedPaths)} {t('profile.pathsToNextRank', 'yol kaldı →')} {nextRank.title}
               </Text>
             ) : (
               <Text style={[styles.rankProgress, { color: THEME.accent }]}>
@@ -190,17 +198,9 @@ export default function ProfileScreen({ navigation }) {
         <Text style={styles.sectionTitle}>{t('profile.stats')}</Text>
         <View style={styles.statsGrid}>
           <StatCard emoji="⭐" value={totalXP.toLocaleString()} label={t('profile.totalXp')} />
-          <StatCard emoji="🏆" value={completedSprints} label={t('profile.sprintsDone')} />
-          <StatCard
-            emoji="🔥"
-            value={activeSprint ? `${currentSprintDay}` : '—'}
-            label={t('profile.activeSprint')}
-          />
-          <StatCard
-            emoji="📋"
-            value={(sprintHistory || []).length}
-            label={t('profile.totalSprints')}
-          />
+          <StatCard emoji="📚" value={completedLessonsTotal} label={t('profile.lessonsCompleted', 'Tamamlanan Ders')} />
+          <StatCard emoji="🔥" value={`${currentStreak}`} label={t('profile.currentStreak', 'Aktif Seri')} />
+          <StatCard emoji="🏆" value={completedPaths} label={t('profile.pathsCompleted', 'Tamamlanan Yol')} />
         </View>
       </View>
 
@@ -274,58 +274,52 @@ export default function ProfileScreen({ navigation }) {
         )}
       </View>
 
-      {/* ── Sprint History ── */}
+      {/* ── Path Progress ── */}
       <View style={[styles.section, styles.lastSection]}>
-        <Text style={styles.sectionTitle}>{t('profile.sprintHistory')}</Text>
-        {sprintHistoryList.length === 0 ? (
-          <View style={styles.emptyCard}>
-            <Text style={styles.emptyCardEmoji}>🎯</Text>
-            <Text style={styles.emptyCardText}>
-              Henüz tamamlanan sprint yok.
-            </Text>
-          </View>
-        ) : (
-          sprintHistoryList.map((entry, idx) => (
-            <View key={idx} style={styles.categoryRow}>
-              <Text style={styles.categoryEmoji}>{entry.icon}</Text>
-              <View style={styles.categoryInfo}>
-                <View style={styles.rowBetween}>
-                  <Text style={styles.categoryName}>{entry.title}</Text>
-                  <Text
-                    style={[
-                      styles.categoryCount,
-                      {
-                        color:
-                          entry.status === 'completed'
-                            ? COLORS.success
-                            : COLORS.error,
-                      },
-                    ]}
-                  >
-                    {entry.status === 'completed' ? '✓ Tamamlandı' : '✗ Bırakıldı'}
-                  </Text>
-                </View>
-                <View style={styles.categoryBarTrack}>
-                  <View
-                    style={[
-                      styles.categoryBarFill,
-                      {
-                        width: '100%',
-                        backgroundColor:
-                          entry.status === 'completed'
-                            ? COLORS.success
-                            : COLORS.error,
-                      },
-                    ]}
-                  />
-                </View>
-              </View>
-            </View>
-          ))
-        )}
+        <Text style={styles.sectionTitle}>{t('profile.pathProgress', 'Yol İlerlemesi')}</Text>
+        <PathProgressList pathProgress={pathProgress} t={t} />
       </View>
     </ScrollView>
   );
+}
+
+function PathProgressList({ pathProgress, t }) {
+  const PATHS_META = [
+    { id: 'dopamine-detox', icon: '🚫', total: 30 },
+    { id: 'silent-morning', icon: '🌅', total: 21 },
+    { id: 'mind-discipline', icon: '🧠', total: 28 },
+    { id: 'body-discipline', icon: '💪', total: 30 },
+    { id: 'money-discipline', icon: '💰', total: 21 },
+  ];
+
+  return PATHS_META.map((p) => {
+    const completed = pathProgress?.[p.id]?.completed?.length || 0;
+    const percent = Math.min(100, Math.round((completed / p.total) * 100));
+    return (
+      <View key={p.id} style={styles.categoryRow}>
+        <Text style={styles.categoryEmoji}>{p.icon}</Text>
+        <View style={styles.categoryInfo}>
+          <View style={styles.rowBetween}>
+            <Text style={styles.categoryName}>{t(`paths.${p.id}.title`, p.id)}</Text>
+            <Text style={styles.categoryCount}>
+              {completed} / {p.total}
+            </Text>
+          </View>
+          <View style={styles.categoryBarTrack}>
+            <View
+              style={[
+                styles.categoryBarFill,
+                {
+                  width: `${percent}%`,
+                  backgroundColor: completed === p.total ? '#10B981' : '#6366F1',
+                },
+              ]}
+            />
+          </View>
+        </View>
+      </View>
+    );
+  });
 }
 
 const styles = StyleSheet.create({

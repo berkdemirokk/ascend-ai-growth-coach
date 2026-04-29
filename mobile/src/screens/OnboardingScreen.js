@@ -18,7 +18,7 @@ import { COLORS } from '../config/constants';
 
 export default function OnboardingScreen() {
   const { t } = useTranslation();
-  const { completeOnboarding, setUserProfile } = useApp();
+  const { completeOnboarding, setUserProfile, setActivePath } = useApp();
 
   const buttonScale = useSharedValue(1);
   const animatedButtonStyle = useAnimatedStyle(() => ({
@@ -30,6 +30,7 @@ export default function OnboardingScreen() {
       buttonScale.value = withSpring(1);
     });
     setUserProfile({ goals: ['discipline'], answers: {} });
+    setActivePath('dopamine-detox'); // start with the most viral path
     completeOnboarding();
   };
 

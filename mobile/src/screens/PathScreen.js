@@ -25,7 +25,7 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 export default function PathScreen({ navigation }) {
   const { t } = useTranslation();
-  const { pathProgress, activePathId, setActivePath, isPremium } = useApp();
+  const { pathProgress, activePathId, setActivePath, isPremium, currentStreak, totalXP } = useApp();
 
   const activePath = useMemo(
     () => getPathById(activePathId) || PATHS[0],
@@ -54,6 +54,23 @@ export default function PathScreen({ navigation }) {
   return (
     <SafeAreaView style={styles.safeArea}>
       <LinearGradient colors={['#0B0B14', '#161626']} style={styles.container}>
+        {/* Streak Hero */}
+        <View style={styles.streakHero}>
+          <View style={styles.streakLeft}>
+            <Text style={styles.streakIcon}>🔥</Text>
+            <View>
+              <Text style={styles.streakValue}>{currentStreak}</Text>
+              <Text style={styles.streakLabel}>
+                {t('home.streakDays', 'gün seri')}
+              </Text>
+            </View>
+          </View>
+          <View style={styles.streakRight}>
+            <Text style={styles.xpValue}>⚡ {totalXP.toLocaleString()}</Text>
+            <Text style={styles.xpLabel}>XP</Text>
+          </View>
+        </View>
+
         {/* Header — selected path */}
         <View style={styles.header}>
           <Text style={styles.icon}>{activePath.icon}</Text>
@@ -146,12 +163,24 @@ export default function PathScreen({ navigation }) {
             );
           })}
 
+          {/* Empty state — first-time user */}
+          {progress.completed === 0 && (
+            <View style={styles.emptyHint}>
+              <Text style={styles.emptyHintText}>
+                {t('path.firstLessonHint', '👇 Bugün ilk dersini aç')}
+              </Text>
+            </View>
+          )}
+
           {/* Path complete celebration */}
-          {progress.completed === progress.total && (
+          {progress.completed === progress.total && progress.total > 0 && (
             <View style={styles.completion}>
               <Text style={styles.completionEmoji}>🏆</Text>
               <Text style={styles.completionText}>
                 {t('path.completed', 'Tamamlandı')}
+              </Text>
+              <Text style={styles.completionSubtext}>
+                {t('path.completedHint', 'Yeni bir yol seç ve devam et')}
               </Text>
             </View>
           )}
@@ -211,6 +240,25 @@ const NODE = 76;
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: '#0B0B14' },
   container: { flex: 1 },
+
+  streakHero: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: '#161626',
+    borderBottomWidth: 1,
+    borderBottomColor: '#2A2A42',
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+  },
+  streakLeft: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  streakIcon: { fontSize: 32 },
+  streakValue: { color: '#F59E0B', fontSize: 24, fontWeight: '900', lineHeight: 26 },
+  streakLabel: { color: '#9898B0', fontSize: 11, fontWeight: '600' },
+  streakRight: { alignItems: 'flex-end' },
+  xpValue: { color: '#FDE047', fontSize: 16, fontWeight: '800' },
+  xpLabel: { color: '#9898B0', fontSize: 10, fontWeight: '600' },
+
   header: {
     paddingHorizontal: 24,
     paddingTop: 16,
@@ -292,6 +340,18 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 
+  emptyHint: {
+    backgroundColor: '#161626',
+    borderRadius: 16,
+    padding: 16,
+    marginHorizontal: 24,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: '#2A2A42',
+    alignItems: 'center',
+  },
+  emptyHintText: { color: '#F59E0B', fontSize: 14, fontWeight: '700' },
+
   completion: {
     alignItems: 'center',
     marginTop: 24,
@@ -299,4 +359,5 @@ const styles = StyleSheet.create({
   },
   completionEmoji: { fontSize: 48 },
   completionText: { color: '#F5F5FA', fontSize: 18, fontWeight: '700', marginTop: 8 },
+  completionSubtext: { color: '#9898B0', fontSize: 13, marginTop: 4, textAlign: 'center' },
 });
