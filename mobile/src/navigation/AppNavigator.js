@@ -8,12 +8,10 @@ import { useApp } from '../contexts/AppContext';
 import { useAuth } from '../contexts/AuthContext';
 
 import OnboardingScreen from '../screens/OnboardingScreen';
-import HomeScreen from '../screens/HomeScreen';
 import HistoryScreen from '../screens/HistoryScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import PaywallScreen from '../screens/PaywallScreen';
-import SprintCompleteScreen from '../screens/SprintCompleteScreen';
 import LessonScreen from '../screens/LessonScreen';
 import PathScreen from '../screens/PathScreen';
 import AchievementsScreen from '../screens/AchievementsScreen';
@@ -138,14 +136,6 @@ export default function AppNavigator() {
         <Stack.Screen
           name="Paywall"
           component={PaywallScreen}
-          options={{
-            presentation: 'modal',
-            animation: 'slide_from_bottom',
-          }}
-        />
-        <Stack.Screen
-          name="SprintComplete"
-          component={SprintCompleteScreen}
           options={{
             presentation: 'modal',
             animation: 'slide_from_bottom',

@@ -30,6 +30,8 @@ export default function LessonScreen({ navigation, route }) {
   const [reflection, setReflection] = useState('');
   const [completing, setCompleting] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
+  const celebrationScale = React.useRef(new Animated.Value(0)).current;
+  const xpY = React.useRef(new Animated.Value(0)).current;
 
   const alreadyCompleted = pathProgress?.[pathId]?.completed?.includes(lessonId);
 
@@ -69,6 +71,22 @@ export default function LessonScreen({ navigation, route }) {
 
     setShowCelebration(true);
 
+    // Animate celebration: flame pop in, XP rise up
+    Animated.sequence([
+      Animated.spring(celebrationScale, {
+        toValue: 1,
+        damping: 8,
+        stiffness: 180,
+        useNativeDriver: true,
+      }),
+      Animated.timing(xpY, {
+        toValue: -60,
+        duration: 800,
+        easing: Easing.out(Easing.cubic),
+        useNativeDriver: true,
+      }),
+    ]).start();
+
     setTimeout(async () => {
       // Ad after every 2-3 lesson completions for free users
       if (!isPremium && shouldShowAd(false)) {
@@ -77,7 +95,7 @@ export default function LessonScreen({ navigation, route }) {
         } catch {}
       }
       navigation.goBack();
-    }, 1500);
+    }, 2200);
   };
 
   return (
@@ -173,9 +191,30 @@ export default function LessonScreen({ navigation, route }) {
 
         {/* Celebration overlay */}
         {showCelebration && (
-          <View style={styles.celebration}>
-            <Text style={styles.celebrationEmoji}>🔥</Text>
-            <Text style={styles.celebrationText}>+15 XP</Text>
+          <View style={styles.celebration} pointerEvents="none">
+            <Animated.Text
+              style={[
+                styles.celebrationEmoji,
+                {
+                  transform: [{ scale: celebrationScale }],
+                },
+              ]}
+            >
+              🔥
+            </Animated.Text>
+            <Animated.Text
+              style={[
+                styles.celebrationText,
+                {
+                  transform: [{ translateY: xpY }],
+                },
+              ]}
+            >
+              +15 XP
+            </Animated.Text>
+            <Text style={styles.celebrationHint}>
+              {t('lesson.greatWork', 'Harika iş, devam et!')}
+            </Text>
           </View>
         )}
       </LinearGradient>
@@ -289,11 +328,18 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: 'rgba(11, 11, 20, 0.85)',
   },
-  celebrationEmoji: { fontSize: 96 },
+  celebrationEmoji: { fontSize: 120 },
   celebrationText: {
     color: '#FDE047',
-    fontSize: 32,
-    fontWeight: '800',
+    fontSize: 36,
+    fontWeight: '900',
     marginTop: 16,
+  },
+  celebrationHint: {
+    color: '#F5F5FA',
+    fontSize: 14,
+    fontWeight: '600',
+    marginTop: 24,
+    opacity: 0.8,
   },
 });
