@@ -28,6 +28,7 @@ export default function LessonScreen({ navigation, route }) {
   const lesson = useMemo(() => getLessonById(lessonId), [lessonId]);
 
   const [reflection, setReflection] = useState('');
+  const [actionDone, setActionDone] = useState(false);
   const [completing, setCompleting] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
   const celebrationScale = React.useRef(new Animated.Value(0)).current;
@@ -127,16 +128,38 @@ export default function LessonScreen({ navigation, route }) {
             </View>
           </View>
 
-          {/* Action */}
+          {/* Action with checkbox */}
           <View style={styles.section}>
             <Text style={[styles.sectionLabel, { color: path.color }]}>
               🎯 {t('lesson.action', 'Bugün yap')}
             </Text>
-            <View style={[styles.card, styles.actionCard, { borderColor: path.color }]}>
-              <Text style={[styles.cardText, { color: '#FFFFFF', fontWeight: '600' }]}>
-                {action}
-              </Text>
-            </View>
+            <TouchableOpacity
+              style={[styles.card, styles.actionCard, { borderColor: path.color }]}
+              onPress={() => !alreadyCompleted && setActionDone(!actionDone)}
+              activeOpacity={alreadyCompleted ? 1 : 0.8}
+            >
+              <View style={styles.actionRow}>
+                <View
+                  style={[
+                    styles.checkbox,
+                    {
+                      borderColor: path.color,
+                      backgroundColor: actionDone || alreadyCompleted ? path.color : 'transparent',
+                    },
+                  ]}
+                >
+                  {(actionDone || alreadyCompleted) && (
+                    <Text style={styles.checkmark}>✓</Text>
+                  )}
+                </View>
+                <Text style={[styles.cardText, styles.actionText]}>{action}</Text>
+              </View>
+              {!alreadyCompleted && !actionDone && (
+                <Text style={styles.actionHint}>
+                  {t('lesson.tapToCheck', 'Yaptığında kareyi işaretle')}
+                </Text>
+              )}
+            </TouchableOpacity>
           </View>
 
           {/* Reflection */}
@@ -161,18 +184,20 @@ export default function LessonScreen({ navigation, route }) {
             </View>
           ) : null}
 
-          {/* Complete button */}
+          {/* Complete button — only enabled if action checked */}
           <TouchableOpacity
             onPress={handleComplete}
-            disabled={completing || alreadyCompleted}
+            disabled={completing || alreadyCompleted || !actionDone}
             activeOpacity={0.85}
-            style={styles.completeBtn}
+            style={[styles.completeBtn, !actionDone && !alreadyCompleted && styles.completeBtnDisabled]}
           >
             <LinearGradient
               colors={
                 alreadyCompleted
                   ? ['#10B981', '#059669']
-                  : [path.color, path.color]
+                  : actionDone
+                    ? [path.color, path.color]
+                    : ['#3a3a5a', '#3a3a5a']
               }
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
@@ -181,7 +206,9 @@ export default function LessonScreen({ navigation, route }) {
               <Text style={styles.completeText}>
                 {alreadyCompleted
                   ? `✓ ${t('lesson.completed', 'Tamamlandı')}`
-                  : `✓ ${t('lesson.completeLesson', 'Dersi tamamla')}`}
+                  : actionDone
+                    ? `✓ ${t('lesson.completeLesson', 'Dersi tamamla')}`
+                    : t('lesson.checkActionFirst', 'Önce eylemi işaretle')}
               </Text>
             </LinearGradient>
           </TouchableOpacity>
@@ -281,6 +308,36 @@ const styles = StyleSheet.create({
   actionCard: {
     borderWidth: 2,
   },
+  actionRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 12,
+  },
+  actionText: {
+    flex: 1,
+    color: '#FFFFFF',
+    fontWeight: '600',
+  },
+  checkbox: {
+    width: 24,
+    height: 24,
+    borderRadius: 8,
+    borderWidth: 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 2,
+  },
+  checkmark: { color: '#FFFFFF', fontSize: 14, fontWeight: '900' },
+  actionHint: {
+    color: '#9898B0',
+    fontSize: 11,
+    fontStyle: 'italic',
+    marginTop: 12,
+    marginLeft: 36,
+  },
+  completeBtnDisabled: {
+    opacity: 0.6,
+  },
   cardText: {
     color: '#F5F5FA',
     fontSize: 15,
@@ -326,7 +383,9 @@ const styles = StyleSheet.create({
     top: 0, left: 0, right: 0, bottom: 0,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(11, 11, 20, 0.85)',
+    backgroundColor: 'rgba(11, 11, 20, 0.92)',
+    zIndex: 999,
+    elevation: 999,
   },
   celebrationEmoji: { fontSize: 120 },
   celebrationText: {
