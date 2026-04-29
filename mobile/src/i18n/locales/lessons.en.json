@@ -208,6 +208,134 @@
         "action": "Today, celebrate the whole sprint. Meaningfully — not with a big meal but with a real meeting with loved ones. Phone in bag, off.",
         "reflectionPrompt": "After 30 days, what's the MOST IMPORTANT change for you? How will you protect it?"
       }
+    },
+    "silent-morning": {
+      "1": {
+        "title": "The Key to Waking Early: Sleep Early",
+        "teaching": "The secret of waking early is not the morning hour, it is the night hour. Without bringing bedtime earlier, waking early is not sustainable.\n\nThe melatonin cycle is optimal between 22:00 and 06:00. Brains that do not sleep in this window miss deep sleep stages, the main reason for tired mornings.\n\nToday you reverse the equation: sleep early, wake early. Start with a 21:30 bedtime goal.",
+        "action": "Tonight, get in bed by 21:30. Leave the phone outside the bedroom. Try to sleep by 22:00.",
+        "reflectionPrompt": "What resisted sleeping early?"
+      },
+      "2": {
+        "title": "Phoneless Alarm",
+        "teaching": "Alarm = phone = scroll = the day already lost. Separating the alarm function from the phone is creating a mental boundary.\n\nGet a physical alarm clock. Leave the phone outside the room. The first thing your hand touches in the morning should be the alarm button, not a screen.",
+        "action": "Buy or order a physical alarm clock today. Leave the phone outside the room before bed.",
+        "reflectionPrompt": "How hard will it be to switch from screen-on to alarm-button?"
+      },
+      "3": {
+        "title": "Water, Face, Window",
+        "teaching": "When you wake, build a 3-step chain: drink a glass of water, wash your face, open a window or step outside for 1 minute.\n\nWater breaks overnight dehydration. Face wash pulls you out of parasympathetic. Natural light resets circadian rhythm.\n\nThis 3-minute chain makes mornings 10x clearer than before.",
+        "action": "Tomorrow apply this chain. Right after waking: water then face then window. Phoneless.",
+        "reflectionPrompt": "How did you feel after the triple chain?"
+      },
+      "4": {
+        "title": "Morning Silence",
+        "teaching": "Most people turn morning into a noise bath: notifications, news, podcasts, calls. The brain is exhausted before the day starts.\n\nSilence is not a luxury, it is a basic need. Spending the first 60 minutes silent makes you less reactive all day.\n\nSilence is not doing nothing. It is making space to think.",
+        "action": "Tomorrow spend the first 60 minutes silent: no music, no podcasts, no sound.",
+        "reflectionPrompt": "Did silent morning make you more tired or more calm?"
+      },
+      "5": {
+        "title": "5-Minute Morning Intent",
+        "teaching": "Most start the day reactive: email, WhatsApp, notifications. You react to what comes to you, not what you intended.\n\n5 minutes of intent changes this. Three questions: (1) Today is main priority? (2) Which habits will I sustain? (3) What will I be proud of tonight?\n\nThese 5 minutes shape the rest of the day.",
+        "action": "Practice morning intent for 5 minutes tomorrow. Pen and paper, answer the three questions.",
+        "reflectionPrompt": "Did written intent influence your decisions throughout the day?"
+      }
+    },
+    "mind-discipline": {
+      "1": {
+        "title": "Single-Focus Rule",
+        "teaching": "The brain evolved to do one task at a time. Multitasking is an illusion: the brain just switches fast and performance drops at every switch.\n\nDeep work means single focus. One window, one sound, one intent. This requires training.\n\nMental muscle. Trainable. You start today.",
+        "action": "Do one 25-minute single-focus block (Pomodoro) today. Phone in another room. Only relevant tab open.",
+        "reflectionPrompt": "After 25 minutes was your mind tired or clearer?"
+      },
+      "2": {
+        "title": "Distraction Kill List",
+        "teaching": "Distractions are invisible enemies. Every day list their names: which apps, which people, which thoughts split your attention?\n\nList means notice. What you notice loses its power.\n\nToday look at the list and build a defense for each.",
+        "action": "In 5 minutes list 5 things that split your attention today. For each write a defense.",
+        "reflectionPrompt": "What was the most surprising item on the list?"
+      },
+      "3": {
+        "title": "Deep Work Block",
+        "teaching": "Cal Newport: deep work = deep value. Shallow work is easily replicated, produces little value. Deep work is hard, rare, very valuable.\n\n90 minutes of true deep work per day produces 10x more output than 8 hours of shallow.\n\nReaching this requires gradual training.",
+        "action": "Do one 90-minute single-task block today. 90 min uninterrupted.",
+        "reflectionPrompt": "How long would the same task have taken in shallow mode?"
+      },
+      "4": {
+        "title": "Morning Rule: Important First",
+        "teaching": "Willpower is highest in the morning. By night you are depleted. Move important work to morning.\n\nFirst 90 minutes is the day golden window. Doing shallow work in this window is a crime.\n\nPriority rule: hardest task first. Everything else can wait.",
+        "action": "Tomorrow do your hardest task between 9:00 and 10:30. No email or WhatsApp.",
+        "reflectionPrompt": "When you started with deep work first, how did the rest of the day go?"
+      },
+      "5": {
+        "title": "Phone Interval Rule",
+        "teaching": "A phone always on means constant interruption. If you check 50 times in 8 work hours, you have 50 micro-interruptions.\n\nPhone interval rule: keep the phone off outside 2 to 3 designated times per day. Other times: airplane mode.\n\nFirst week is hard. Second week normalizes.",
+        "action": "Try the interval rule today: 12:00, 17:00, 20:00 — 15-minute checks. Airplane mode all other times.",
+        "reflectionPrompt": "How many times did the phone want you in airplane mode?"
+      }
+    },
+    "body-discipline": {
+      "1": {
+        "title": "Movement Threshold",
+        "teaching": "Modern life is sedentary. 8 hours of sitting is the main reason for the fog over your head. Blood flow slows, brain gets less oxygen, motivation drops.\n\nSolution is not complex: 30 minutes of movement daily. What matters is increasing blood flow.\n\nNo gym needed. Start with your body.",
+        "action": "Take a 30-minute brisk walk today.",
+        "reflectionPrompt": "Did you feel mental clarity after the walk?"
+      },
+      "2": {
+        "title": "Cold Shower Protocol",
+        "teaching": "Cold shock = sympathetic activation = adrenaline + dopamine = clear mind.\n\nWim Hof science: cold exposure strengthens immunity, reduces depression, increases motivation.\n\nDay 1 unbearable. Day 7 routine. Day 30 you miss it.",
+        "action": "End your shower with 30 seconds of cold water today.",
+        "reflectionPrompt": "What did you feel in the first minute after?"
+      },
+      "3": {
+        "title": "Nutrition Foundation: Protein",
+        "teaching": "The body is built from protein. Insufficient protein = low energy, slow tissue repair, low satiety.\n\nRule: 1g of protein per kilogram of body weight.\n\nSources: meat, fish, eggs, legumes, dairy.",
+        "action": "Add a protein source to every meal today. Calculate total protein grams in the evening.",
+        "reflectionPrompt": "How was your energy when you got enough protein?"
+      },
+      "4": {
+        "title": "Cut Sugar",
+        "teaching": "Processed sugar is the oldest form of dopamine exploitation. Spike, crash, fatigue, more sugar — the loop.\n\n7-day sugar cut: clear thinking, stable energy, better sleep, weight loss.\n\nThe addiction breaks in 7 days.",
+        "action": "Today eat zero processed sugar. Sweets, sodas, packaged snacks — none. Natural fruit OK.",
+        "reflectionPrompt": "Did you feel an afternoon sugar crash?"
+      },
+      "5": {
+        "title": "Sleep Hardness",
+        "teaching": "Sleep quality is the foundation of all discipline. Decision-making weakens, willpower battery low.\n\nSleep hardness: 7–8 hours, sleep before 22:00, dark room, cool 18–20°C.\n\nNon-negotiable. Every other part of your life depends on it.",
+        "action": "Today harden your sleep environment. Lights out by 22:30.",
+        "reflectionPrompt": "Did your time-to-sleep change?"
+      }
+    },
+    "money-discipline": {
+      "1": {
+        "title": "Invisible Spending Danger",
+        "teaching": "Most dangerous spending is invisible: subscriptions, auto-debits, small but accumulating.\n\nEveryone has 5–15 forgotten subscriptions. Thousands lost annually.\n\nToday we make the invisible visible.",
+        "action": "Go through last 3 months of bank statements. List every subscription. Cancel ones you do not use.",
+        "reflectionPrompt": "How many subscriptions? Annual cost?"
+      },
+      "2": {
+        "title": "Budget = Freedom",
+        "teaching": "Most hear budget as restriction. Really, budget = freedom.\n\nYou cannot control what you do not know.\n\n50/30/20 rule: 50% essentials, 30% wants, 20% savings.",
+        "action": "Open a sheet. Write monthly income. Split into 50/30/20. Compare against actual.",
+        "reflectionPrompt": "Which category went over its limit?"
+      },
+      "3": {
+        "title": "24-Hour Wait Rule",
+        "teaching": "Impulse buying = dopamine, not real need. After 24 hours, you realize 80% was not necessary.\n\nRule: any purchase over $10 — wait 24 hours.\n\nThis simple rule saves thousands annually.",
+        "action": "Postpone every $10+ purchase by 24 hours. Keep a waiting list.",
+        "reflectionPrompt": "What did you postpone today?"
+      },
+      "4": {
+        "title": "Food Cost Visibility",
+        "teaching": "Eating out vs cooking is a 5–10x cost difference. Most do not see it.\n\nEating out should be a vacation experience, not daily routine.",
+        "action": "Cook one meal at home today. Calculate cost.",
+        "reflectionPrompt": "How much did cooking save?"
+      },
+      "5": {
+        "title": "Emergency Fund",
+        "teaching": "Financial stress leads to bad decisions.\n\nEmergency fund = 3 months of essential expenses.\n\nWithout this fund, financial discipline is artificial.",
+        "action": "Open a separate account. Transfer 10% of your salary.",
+        "reflectionPrompt": "Where will the 10% come from?"
+      }
     }
   }
 }
