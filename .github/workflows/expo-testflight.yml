@@ -65,45 +65,30 @@ jobs:
           EOF
           echo "API_KEY_PATH=$API_KEY_PATH" >> "$GITHUB_ENV"
 
-      - name: Download App Store provisioning profile via ASC API
-        working-directory: ${{ github.workspace }}
+      - name: Download App Store provisioning profile
+        uses: apple-actions/download-provisioning-profiles@v3
+        with:
+          bundle-id: com.ascend.growth
+          profile-type: IOS_APP_STORE
+          issuer-id: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+          api-key-id: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          api-private-key: ${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY }}
+
+      - name: Resolve provisioning profile name
         run: |
-          # Use fastlane sigh (preinstalled on macos-latest) to fetch the latest
-          # App Store distribution profile from Apple Developer Portal.
-          PROFILE_DIR="$RUNNER_TEMP/profiles"
-          mkdir -p "$PROFILE_DIR"
-
-          fastlane sigh \
-            --app_identifier "$BUNDLE_ID" \
-            --team_id "${{ secrets.APPLE_TEAM_ID }}" \
-            --api_key_path "$API_KEY_PATH" \
-            --output_path "$PROFILE_DIR" \
-            --filename "AscendMonkMode.mobileprovision" \
-            --platform ios \
-            --skip_certificate_verification true
-
-          ls -la "$PROFILE_DIR"
-
-          PROFILE_FILE="$PROFILE_DIR/AscendMonkMode.mobileprovision"
-          if [ ! -f "$PROFILE_FILE" ]; then
-            PROFILE_FILE=$(find "$PROFILE_DIR" -name "*.mobileprovision" | head -n 1)
-          fi
-          if [ -z "$PROFILE_FILE" ] || [ ! -f "$PROFILE_FILE" ]; then
-            echo "No provisioning profile downloaded."
+          PROFILE_FILE=$(ls "$HOME/Library/MobileDevice/Provisioning Profiles"/*.mobileprovision | head -n 1)
+          if [ -z "$PROFILE_FILE" ]; then
+            echo "No mobileprovision installed."
+            ls "$HOME/Library/MobileDevice/Provisioning Profiles/" || true
             exit 1
           fi
-          echo "Found profile: $PROFILE_FILE"
-
-          # Install profile into Xcode's profile directory
           PP_PLIST="$RUNNER_TEMP/profile.plist"
           security cms -D -i "$PROFILE_FILE" > "$PP_PLIST"
-          PROFILE_UUID=$(/usr/libexec/PlistBuddy -c "Print :UUID" "$PP_PLIST")
           PROFILE_NAME=$(/usr/libexec/PlistBuddy -c "Print :Name" "$PP_PLIST")
-          mkdir -p "$HOME/Library/MobileDevice/Provisioning Profiles"
-          cp "$PROFILE_FILE" "$HOME/Library/MobileDevice/Provisioning Profiles/$PROFILE_UUID.mobileprovision"
-          echo "PROFILE_UUID=$PROFILE_UUID" >> "$GITHUB_ENV"
+          PROFILE_UUID=$(/usr/libexec/PlistBuddy -c "Print :UUID" "$PP_PLIST")
           echo "PROFILE_NAME=$PROFILE_NAME" >> "$GITHUB_ENV"
-          echo "Installed profile: $PROFILE_NAME ($PROFILE_UUID)"
+          echo "PROFILE_UUID=$PROFILE_UUID" >> "$GITHUB_ENV"
+          echo "Profile: $PROFILE_NAME ($PROFILE_UUID)"
 
       - name: Discover scheme + workspace
         run: |
