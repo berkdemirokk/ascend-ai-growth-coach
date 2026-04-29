@@ -1,0 +1,63 @@
+{
+  "paths": {
+    "dopamine-detox": {
+      "title": "Dopamine Detox",
+      "subtitle": "Break digital addiction in 30 days",
+      "description": "Step out of phones, social media, and fast dopamine. Reset your brain."
+    },
+    "silent-morning": {
+      "title": "Silent Morning",
+      "subtitle": "21 days to a monk mode morning ritual",
+      "description": "Wake early. Don't open your phone. Live the first hour in silence."
+    },
+    "mind-discipline": {
+      "title": "Mind Discipline",
+      "subtitle": "28 days to deep focus mastery",
+      "description": "Single focus. Distraction-free work. Build your deep work muscle."
+    },
+    "body-discipline": {
+      "title": "Body Discipline",
+      "subtitle": "30 days to reclaim your body",
+      "description": "Movement, food, cold shower. Hardness for your body."
+    },
+    "money-discipline": {
+      "title": "Money Discipline",
+      "subtitle": "21 days to financial hardness",
+      "description": "Stop wasteful spending. Build a budget. Form saving habits."
+    }
+  },
+  "lessons": {
+    "dopamine-detox": {
+      "1": {
+        "title": "The Science of Addiction",
+        "teaching": "Dopamine isn't a reward chemical — it's an anticipation chemical. Your brain releases dopamine while imagining a future reward, not when the reward arrives.\n\nWhile scrolling your phone, every video, every notification is a small dopamine hit. Your brain learns: 'Phone = reward exists.' Result: constantly checking your phone, reaching for it when bored, real life feeling 'flat.'\n\nGood news: this learning is reversible. Your brain settles into a new baseline in 7–30 days. You're starting now.",
+        "action": "Every time you open your phone today, wait 10 seconds before looking at the screen. Just wait. Then do what you wanted.",
+        "reflectionPrompt": "Did you notice how many times you opened your phone 'without thinking' today?"
+      },
+      "2": {
+        "title": "Kill Notifications",
+        "teaching": "Every notification creates a micro-explosion in your attention. Research: it takes 23 minutes to fully refocus after one notification.\n\nIf you get 50 notifications a day, you're never fully focused. Your brain is in constant 'is something incoming?' mode.\n\nNotifications don't serve you — they serve apps. Their growth metrics. You pay the cost.",
+        "action": "Turn OFF every notification on your phone. Keep only calls and direct messages. Do this now. If you postpone, you won't.",
+        "reflectionPrompt": "Which notification was hardest to disable? Why?"
+      },
+      "3": {
+        "title": "Social Media Fast",
+        "teaching": "Social media is one of the fastest dopamine sources. Infinite scroll, unpredictable content, social comparison — you've plugged your brain into an optimized exploitation machine.\n\nToday you start a test: 24 hours, no social media. Instagram, TikTok, Twitter, YouTube Shorts — all of it.\n\nThe first few hours will be hard. You'll auto-unlock your phone and reach for the app. This is 'phantom reaching.' Normal. It passes.",
+        "action": "Remove all social media apps from your home screen. Put them in a folder named 'Enemies.' Don't open any of them for 24 hours.",
+        "reflectionPrompt": "When did the urge 'just one quick check' come up? What were you feeling at that moment?"
+      },
+      "4": {
+        "title": "Cut Junk Content",
+        "teaching": "Junk content = empty calories for your brain. Random YouTube videos, Reddit scrolling, news refreshing, podcasts only as background.\n\nWhat you don't notice: this content isn't just making you dumber — it's making you an accessory. Your brain gets used to consuming others' thoughts and forgets how to produce its own.\n\nToday we install a filter: every piece of content you consume must serve a purpose.",
+        "action": "Don't consume any content today. Only produce. Write, draw, walk and think, have a real conversation. No information consumption today.",
+        "reflectionPrompt": "How many times today did you feel 'information hunger'? What was that hunger really for?"
+      },
+      "5": {
+        "title": "Allow Boredom",
+        "teaching": "Modern life is programmed to fill every empty moment. Phone in the elevator. Phone in the bathroom. Headphones while walking. Video while eating.\n\nResult: your brain never enters idle mode. Creativity is born in idle mode. Solutions come in idle mode. Self-knowledge happens in idle mode.\n\nBoredom isn't a sickness — it's a signal. Your brain saying: 'I need empty time.' Listen to it.",
+        "action": "Do nothing for 30 minutes today. No phone, no music, no book. Just sit or walk. Observe your thoughts. If you get bored, great — keep going.",
+        "reflectionPrompt": "What thought emerged in your mind by the end of 30 minutes? Were you aware of it before?"
+      }
+    }
+  }
+}

@@ -20,7 +20,9 @@
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "CFBundleLocalizations": ["tr", "en", "ar"],
-        "CFBundleAllowMixedLocalizations": true
+        "CFBundleAllowMixedLocalizations": true,
+        "NSUserTrackingUsageDescription": "We use this to deliver more relevant ads. Premium users see no ads.",
+        "SKAdNetworkItems": []
       }
     },
     "android": {
@@ -38,7 +40,16 @@
           "color": "#6366F1"
         }
       ],
-      "expo-apple-authentication"
+      "expo-apple-authentication",
+      [
+        "react-native-google-mobile-ads",
+        {
+          "iosAppId": "ca-app-pub-9898903071826160~9553442066",
+          "androidAppId": "ca-app-pub-9898903071826160~9553442066",
+          "userTrackingUsageDescription": "We use this to deliver more relevant ads. Premium users see no ads."
+        }
+      ],
+      "expo-tracking-transparency"
     ],
     "extra": {
       "supabase": {

@@ -57,9 +57,9 @@ const requestTrackingPermissionIfNeeded = async () => {
   }
 };
 
-// Monk Mode: ads disabled. Premium subscription is the only monetization.
-// To re-enable, set ADS_ENABLED=true.
-const ADS_ENABLED = false;
+// Hybrid monetization: free users see ads, premium users don't.
+// AdMob is shown after every 2-3 lesson completions.
+const ADS_ENABLED = true;
 
 export const initAds = async () => {
   if (!ADS_ENABLED) {

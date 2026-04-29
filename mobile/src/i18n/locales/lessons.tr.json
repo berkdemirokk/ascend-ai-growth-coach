@@ -1,0 +1,63 @@
+{
+  "paths": {
+    "dopamine-detox": {
+      "title": "Dopamin Detoksu",
+      "subtitle": "30 günde dijital bağımlılığı kır",
+      "description": "Telefondan, sosyal medyadan, hızlı dopamin kaynaklarından adım adım çık. Beyin yeniden sıfırlansın."
+    },
+    "silent-morning": {
+      "title": "Sessiz Sabah",
+      "subtitle": "21 günde monk mode sabah ritüeli",
+      "description": "Erken kalk. Telefonu açma. İlk saatini sessizlikte yaşa."
+    },
+    "mind-discipline": {
+      "title": "Zihin Disiplini",
+      "subtitle": "28 günde derin odak ustası ol",
+      "description": "Tek odak. Dikkat dağıtmayan iş. Deep work zihinsel kasını kur."
+    },
+    "body-discipline": {
+      "title": "Beden Disiplini",
+      "subtitle": "30 günde bedeni geri kazan",
+      "description": "Hareket, beslenme, soğuk duş. Bedenin için sertlik."
+    },
+    "money-discipline": {
+      "title": "Para Disiplini",
+      "subtitle": "21 günde finansal sertlik",
+      "description": "Gereksiz harcamayı bitir. Bütçe yap. Tasarruf alışkanlığı kur."
+    }
+  },
+  "lessons": {
+    "dopamine-detox": {
+      "1": {
+        "title": "Bağımlılığın Bilimi",
+        "teaching": "Dopamin bir ödül kimyasalı değil — beklenti kimyasalı. Beyin, gelecek ödülü hayal ederken dopamin salıyor, asıl ödül geldiğinde değil.\n\nTelefon ekranını kaydırırken her video, her bildirim küçük bir dopamin atışı veriyor. Beyin bunu öğreniyor: 'Telefon = ödül var.' Sonuç: telefonu sürekli kontrol etme, sıkıldıkça telefona uzanma, gerçek hayatın 'tatsız' gelmesi.\n\nİyi haber: bu öğrenme tersine çevrilebilir. Beyin 7-30 günde yeni baseline'a oturur. Şu an başlıyorsun.",
+        "action": "Bugün telefonunu açtığın her seferinde, ekrana bakmadan 10 saniye bekle. Sadece bekle. Sonra istediğini yap.",
+        "reflectionPrompt": "Bugün telefonu kaç kez 'düşünmeden' açtığını fark ettin mi?"
+      },
+      "2": {
+        "title": "Bildirimleri Söndür",
+        "teaching": "Her bildirim dikkatinde bir mikro patlama yaratır. Araştırmalar: bir bildirimle dikkatin tam olarak işe geri dönmesi 23 dakika sürüyor.\n\nGünde 50 bildirim alıyorsan, gerçekte hiçbir an tam odakta değilsin. Beyin sürekli 'bir şey gelmiş mi' diye kontrol modunda.\n\nBildirimler sana hizmet etmiyor — uygulamalara hizmet ediyor. Onların büyüme metriklerine. Sen bunun maliyetini ödüyorsun.",
+        "action": "Telefonundaki TÜM uygulamaların bildirimlerini kapat. Sadece arama ve doğrudan mesaj kalsın. Bunu şu anda yap, ertelersen yapmazsın.",
+        "reflectionPrompt": "En zor kapatılan bildirim hangisiydi? Niye?"
+      },
+      "3": {
+        "title": "Sosyal Medya Orucu",
+        "teaching": "Sosyal medya en hızlı dopamin kaynaklarından biri. Sonsuz scroll, beklenmedik içerikler, sosyal kıyaslama — beynini optimize edilmiş bir sömürü makinesine bağlıyorsun.\n\nBugün bir denemeyi başlatıyorsun: 24 saat sosyal medya yok. Instagram, TikTok, Twitter, YouTube Shorts — hepsi.\n\nİlk birkaç saat zor olacak. Telefonunu otomatik açıp uygulamaya gideceksin. Buna 'phantom reaching' denir. Normal. Geçer.",
+        "action": "Tüm sosyal medya uygulamalarını ana ekrandan kaldır. Bir klasöre koy ve klasörün adını 'Düşmanlar' yap. Bugün 24 saat hiçbirini açma.",
+        "reflectionPrompt": "Hangi an 'Sadece bir kere bakayım' dürtüsü geldi? O an ne hissediyordun?"
+      },
+      "4": {
+        "title": "Junk İçerik Tüketimini Kes",
+        "teaching": "Junk içerik = beynine boş kalori. YouTube'da rastgele video, Reddit'te scroll, sürekli haber kontrolü, podcast'leri sadece arka planda dinlemek.\n\nFark etmediğin şey: bu içerikler seni daha aptal yapmıyor sadece — daha aksesuar yapıyor. Beynin başkalarının düşüncelerini tüketmeye alışıyor, kendi düşüncelerini üretemez hale geliyor.\n\nBugün filtreyi kuruyoruz: tükettiğin her içerik bir amaç taşımalı.",
+        "action": "Bugün hiçbir içerik tüketme. Yalnızca üret. Yazı yaz, çiz, yürüyüşe çık ve düşün, biriyle gerçek konuşma yap. Bilgi tüketmek yok bugün.",
+        "reflectionPrompt": "Bugün kaç kez 'bilgi açlığı' duydun? O açlık aslında ne için?"
+      },
+      "5": {
+        "title": "Sıkılmaya İzin Ver",
+        "teaching": "Modern hayat her boş anı doldurmaya programlandı. Asansörde telefon. Tuvalette telefon. Yürürken kulaklık. Yemek yerken video.\n\nSonuç: beyin asla idle moduna geçmiyor. Yaratıcılık idle modda doğar. Çözümler idle modda gelir. Kendini tanıma idle modda olur.\n\nSıkıntı bir hastalık değil — sinyal. 'Beynim boş zaman istiyor' diyor. Onu dinle.",
+        "action": "Bugün 30 dakika hiçbir şey yapma. Telefonsuz, müziksiz, kitapsız. Sadece otur ya da yürü. Düşüncelerini gözlemle. Sıkılırsan harika, devam et.",
+        "reflectionPrompt": "30 dakikanın sonunda zihninde hangi düşünce belirdi? Önceden farkında mıydın?"
+      }
+    }
+  }
+}
