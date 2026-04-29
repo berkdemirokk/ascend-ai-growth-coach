@@ -67,17 +67,21 @@ jobs:
 
       - name: Discover scheme + workspace
         run: |
-          # Expo prebuild generates ios/<Scheme>.xcworkspace based on app.json name
-          WORKSPACE=$(ls ios/*.xcworkspace 2>/dev/null | head -n 1)
+          # Expo prebuild generates ios/<Scheme>.xcworkspace (a directory).
+          # Use find with -type d so we don't descend into it.
+          WORKSPACE=$(find ios -maxdepth 1 -name "*.xcworkspace" -type d | head -n 1)
           if [ -z "$WORKSPACE" ]; then
             echo "No xcworkspace found in ios/"
             ls ios/
             exit 1
           fi
-          echo "WORKSPACE=$WORKSPACE" >> "$GITHUB_ENV"
+          # Get absolute path to avoid path issues
+          WORKSPACE_ABS=$(cd "$WORKSPACE" && pwd)
+          echo "WORKSPACE=$WORKSPACE_ABS" >> "$GITHUB_ENV"
 
           SCHEME=$(basename "$WORKSPACE" .xcworkspace)
           echo "SCHEME=$SCHEME" >> "$GITHUB_ENV"
+          echo "Discovered workspace: $WORKSPACE_ABS"
           echo "Discovered scheme: $SCHEME"
 
       - name: Create export options plist
