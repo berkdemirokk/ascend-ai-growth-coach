@@ -9,8 +9,10 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useApp } from '../contexts/AppContext';
-import { LEVEL_THRESHOLDS, getNextLevel, COLORS, CATEGORIES } from '../config/constants';
+import { LEVEL_THRESHOLDS, getNextLevel, COLORS } from '../config/constants';
 import { ACHIEVEMENTS, RARITY_COLORS } from '../config/achievements';
+import { getSprintById } from '../config/sprints';
+import { getRank, getNextRank } from '../config/ranks';
 
 const { width } = Dimensions.get('window');
 const CARD_WIDTH = (width - 48) / 2;
@@ -45,11 +47,21 @@ export default function ProfileScreen({ navigation }) {
   const {
     totalXP,
     level,
-    currentStreak,
-    longestStreak,
-    history,
+    currentSprintDay,
+    activeSprint,
+    sprintHistory,
     unlockedAchievements,
   } = useApp();
+
+  const completedSprints = (sprintHistory || []).filter(
+    (s) => s.status === 'completed',
+  ).length;
+
+  const rank = useMemo(() => getRank(completedSprints), [completedSprints]);
+  const nextRank = useMemo(
+    () => getNextRank(completedSprints),
+    [completedSprints],
+  );
 
   const nextLevel = useMemo(() => getNextLevel(level), [level]);
   const currentLevelThreshold =
@@ -71,26 +83,20 @@ export default function ProfileScreen({ navigation }) {
       .reverse();
   }, [unlockedAchievements]);
 
-  const categoryBreakdown = useMemo(() => {
-    const counts = {};
-    (history || []).forEach((entry) => {
-      const cat = entry.category || 'Unknown';
-      counts[cat] = (counts[cat] || 0) + 1;
-    });
-    const total = Object.values(counts).reduce((s, v) => s + v, 0) || 1;
-    return Object.entries(counts).map(([cat, count]) => {
-      const catInfo = Array.isArray(CATEGORIES)
-        ? CATEGORIES.find((c) => c.id === cat || c.name === cat)
-        : CATEGORIES?.[cat];
-      return {
-        cat,
-        count,
-        percent: (count / total) * 100,
-        color: catInfo?.color ?? THEME.primary,
-        emoji: catInfo?.emoji ?? catInfo?.icon ?? '⚡',
-      };
-    });
-  }, [history]);
+  const sprintHistoryList = useMemo(() => {
+    return (sprintHistory || [])
+      .slice(-5)
+      .reverse()
+      .map((entry) => {
+        const sprint = getSprintById(entry.sprintId);
+        return {
+          ...entry,
+          title: sprint?.title ?? entry.sprintId,
+          icon: sprint?.icon ?? '🎯',
+          duration: sprint?.duration ?? 0,
+        };
+      });
+  }, [sprintHistory]);
 
   return (
     <ScrollView
@@ -115,14 +121,46 @@ export default function ProfileScreen({ navigation }) {
         </View>
       </LinearGradient>
 
+      {/* ── Rank ── */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Rank</Text>
+        <View style={[styles.rankCard, { borderColor: rank.color }]}>
+          <Text style={styles.rankEmoji}>{rank.emoji}</Text>
+          <View style={{ flex: 1 }}>
+            <Text style={[styles.rankTitle, { color: rank.color }]}>
+              {rank.title}
+            </Text>
+            <Text style={styles.rankSubtitle}>{rank.subtitle}</Text>
+            {nextRank ? (
+              <Text style={styles.rankProgress}>
+                {nextRank.minSprints - completedSprints} sprint kaldı →{' '}
+                {nextRank.title}
+              </Text>
+            ) : (
+              <Text style={[styles.rankProgress, { color: THEME.accent }]}>
+                Max rank!
+              </Text>
+            )}
+          </View>
+        </View>
+      </View>
+
       {/* ── Stats Grid ── */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Stats</Text>
         <View style={styles.statsGrid}>
           <StatCard emoji="⭐" value={totalXP.toLocaleString()} label="Total XP" />
-          <StatCard emoji="🔥" value={currentStreak} label="Current Streak" />
-          <StatCard emoji="✅" value={history?.length ?? 0} label="Actions Completed" />
-          <StatCard emoji="🏆" value={longestStreak} label="Longest Streak" />
+          <StatCard emoji="🏆" value={completedSprints} label="Sprints Done" />
+          <StatCard
+            emoji="🔥"
+            value={activeSprint ? `${currentSprintDay}. gün` : '—'}
+            label="Active Sprint"
+          />
+          <StatCard
+            emoji="📋"
+            value={(sprintHistory || []).length}
+            label="Total Sprints"
+          />
         </View>
       </View>
 
@@ -196,27 +234,48 @@ export default function ProfileScreen({ navigation }) {
         )}
       </View>
 
-      {/* ── Category Breakdown ── */}
+      {/* ── Sprint History ── */}
       <View style={[styles.section, styles.lastSection]}>
-        <Text style={styles.sectionTitle}>Category Breakdown</Text>
-        {categoryBreakdown.length === 0 ? (
+        <Text style={styles.sectionTitle}>Sprint Geçmişi</Text>
+        {sprintHistoryList.length === 0 ? (
           <View style={styles.emptyCard}>
-            <Text style={styles.emptyCardText}>No actions completed yet.</Text>
+            <Text style={styles.emptyCardEmoji}>🎯</Text>
+            <Text style={styles.emptyCardText}>
+              Henüz tamamlanan sprint yok.
+            </Text>
           </View>
         ) : (
-          categoryBreakdown.map(({ cat, count, percent, color, emoji }) => (
-            <View key={cat} style={styles.categoryRow}>
-              <Text style={styles.categoryEmoji}>{emoji}</Text>
+          sprintHistoryList.map((entry, idx) => (
+            <View key={idx} style={styles.categoryRow}>
+              <Text style={styles.categoryEmoji}>{entry.icon}</Text>
               <View style={styles.categoryInfo}>
                 <View style={styles.rowBetween}>
-                  <Text style={styles.categoryName}>{cat}</Text>
-                  <Text style={styles.categoryCount}>{count} action{count !== 1 ? 's' : ''}</Text>
+                  <Text style={styles.categoryName}>{entry.title}</Text>
+                  <Text
+                    style={[
+                      styles.categoryCount,
+                      {
+                        color:
+                          entry.status === 'completed'
+                            ? COLORS.success
+                            : COLORS.error,
+                      },
+                    ]}
+                  >
+                    {entry.status === 'completed' ? '✓ Tamamlandı' : '✗ Bırakıldı'}
+                  </Text>
                 </View>
                 <View style={styles.categoryBarTrack}>
                   <View
                     style={[
                       styles.categoryBarFill,
-                      { width: `${percent}%`, backgroundColor: color },
+                      {
+                        width: '100%',
+                        backgroundColor:
+                          entry.status === 'completed'
+                            ? COLORS.success
+                            : COLORS.error,
+                      },
                     ]}
                   />
                 </View>
@@ -458,5 +517,35 @@ const styles = StyleSheet.create({
     height: '100%',
     borderRadius: 3,
     minWidth: 4,
+  },
+
+  // ── Rank ──
+  rankCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: THEME.surface,
+    borderWidth: 2,
+    borderRadius: 16,
+    padding: 16,
+    gap: 14,
+  },
+  rankEmoji: {
+    fontSize: 40,
+  },
+  rankTitle: {
+    fontSize: 20,
+    fontWeight: '800',
+    letterSpacing: 0.3,
+  },
+  rankSubtitle: {
+    fontSize: 13,
+    color: THEME.textSecondary,
+    marginTop: 2,
+  },
+  rankProgress: {
+    fontSize: 12,
+    color: THEME.textSecondary,
+    marginTop: 6,
+    fontWeight: '600',
   },
 });
