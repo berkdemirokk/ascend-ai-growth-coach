@@ -23,14 +23,11 @@ import ForgotPasswordScreen from '../screens/auth/ForgotPasswordScreen';
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
+import { useTranslation } from 'react-i18next';
+
 const TAB_ICON_MAP = {
   Home: '🔥',
   Profile: '👤',
-};
-
-const TAB_LABEL_MAP = {
-  Home: 'Bugün',
-  Profile: 'Sen',
 };
 
 function TabIcon({ name, focused }) {
@@ -47,6 +44,7 @@ function TabIcon({ name, focused }) {
 }
 
 function MainTabs() {
+  const { t } = useTranslation();
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -74,12 +72,12 @@ function MainTabs() {
       <Tab.Screen
         name="Home"
         component={PathScreen}
-        options={{ title: TAB_LABEL_MAP.Home }}
+        options={{ title: t('common.today', 'Today') }}
       />
       <Tab.Screen
         name="Profile"
         component={ProfileScreen}
-        options={{ title: TAB_LABEL_MAP.Profile }}
+        options={{ title: t('common.you', 'You') }}
       />
     </Tab.Navigator>
   );
