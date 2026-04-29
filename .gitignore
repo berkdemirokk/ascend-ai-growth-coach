@@ -10,3 +10,7 @@ server/data/
 
 # ASC API keys - never commit
 mobile/credentials/
+
+# Local env (never commit)
+**/.env.local
+.env.local

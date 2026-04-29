@@ -84,9 +84,10 @@ export const REVENUECAT_CONFIG = {
   API_KEY_IOS: 'appl_GdTXEiIwMXBaFuHLGjwBhzlrruB',
   ENTITLEMENT_ID: 'premium',
   OFFERING_ID: 'default',
-  PRODUCT_ID_MONTHLY: 'ascend_super_monthly',
-  PRODUCT_ID_YEARLY: 'ascend_super_yearly',
-  PRODUCT_ID: 'ascend_super_monthly',
+  // Match App Store Connect product IDs (verified via ASC API)
+  PRODUCT_ID_MONTHLY: 'com.ascend.premium.monthly',
+  PRODUCT_ID_YEARLY: 'com.ascend.premium.yearly',
+  PRODUCT_ID: 'com.ascend.premium.monthly',
 };
 
 export const ADMOB_IDS = {

@@ -30,7 +30,7 @@ Build sonrası senin yapacakların. Sırayla. Her birinin yanına ✅ at.
 ### 1.2 Aylık subscription
 1. **+ Create Subscription**
 2. Reference Name: `Monthly Premium`
-3. Product ID: **`ascend_super_monthly`** ⚠️ tam bu, kod bunu bekliyor
+3. Product ID: **`com.ascend.premium.monthly`** ⚠️ tam bu, kod bunu bekliyor
 4. Subscription Group: Premium
 5. Duration: **1 Month**
 6. Price: **149 TL** (Türkiye için), **$4.99** (US baseline)
@@ -42,7 +42,7 @@ Build sonrası senin yapacakların. Sırayla. Her birinin yanına ✅ at.
 ### 1.3 Yıllık subscription
 1. **+ Create Subscription**
 2. Reference Name: `Yearly Premium`
-3. Product ID: **`ascend_super_yearly`**
+3. Product ID: **`com.ascend.premium.yearly`**
 4. Subscription Group: Premium (aynı grup!)
 5. Duration: **1 Year**
 6. Price: **749 TL**, **$39.99**
@@ -73,14 +73,14 @@ Her iki subscription için:
    - Key ID: `CV8FXZNAR8`
    - .p8 file: önceden indirdiğin (`mobile/credentials/AuthKey_CV8FXZNAR8.p8`)
 5. **Products** → **Import from App Store Connect**:
-   - `ascend_super_monthly`
-   - `ascend_super_yearly`
+   - `com.ascend.premium.monthly`
+   - `com.ascend.premium.yearly`
 6. **Entitlements** → **+ New** → Identifier: **`premium`**
    - Both products bu entitlement'a eklenir
 7. **Offerings** → **+ New** → Identifier: **`default`**
    - Add packages:
-     - Type: **Monthly** → `ascend_super_monthly`
-     - Type: **Annual** → `ascend_super_yearly`
+     - Type: **Monthly** → `com.ascend.premium.monthly`
+     - Type: **Annual** → `com.ascend.premium.yearly`
    - **Make Current** (kritik!)
 8. **API Keys** → iOS public key kopyala
    - Mevcut: `appl_GdTXEiIwMXBaFuHLGjwBhzlrruB`
