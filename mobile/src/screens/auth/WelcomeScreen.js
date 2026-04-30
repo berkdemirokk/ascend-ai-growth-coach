@@ -8,17 +8,20 @@ import {
   Image,
   Platform,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
-import { COLORS } from '../../config/constants';
+import { MaterialIcons } from '@expo/vector-icons';
 import { useAuth } from '../../contexts/AuthContext';
+import { setLanguage, getCurrentLanguage, SUPPORTED_LANGUAGES } from '../../i18n';
 
 export default function WelcomeScreen({ navigation }) {
   const { t } = useTranslation();
   const { continueAsGuest, configured, signInWithApple } = useAuth();
   const [appleAvailable, setAppleAvailable] = useState(false);
   const [appleLoading, setAppleLoading] = useState(false);
+  const [currentLang, setCurrentLang] = useState(getCurrentLanguage());
 
   useEffect(() => {
     if (Platform.OS !== 'ios') return;
@@ -46,19 +49,33 @@ export default function WelcomeScreen({ navigation }) {
     }
   };
 
+  const handleChangeLang = async (code) => {
+    await setLanguage(code);
+    setCurrentLang(code);
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
-      <LinearGradient
-        colors={['#0B0B14', '#1F1F33', '#0B0B14']}
-        style={styles.container}
-      >
+      <View style={styles.container}>
+        {/* Ambient glow background */}
+        <View style={styles.heroGlow} pointerEvents="none" />
+
+        {/* Hero */}
         <View style={styles.hero}>
-          <Text style={styles.logo}>🔥</Text>
-          <Text style={styles.title}>Ascend</Text>
-          <Text style={styles.tagline}>{t('onboarding.title')}</Text>
-          <Text style={styles.pitch}>{t('onboarding.subtitle')}</Text>
+          <View style={styles.iconCircle}>
+            <Image
+              source={require('../../../assets/icon.png')}
+              style={styles.iconImage}
+              resizeMode="cover"
+            />
+          </View>
+          <Text style={styles.brand}>MONK MODE</Text>
+          <Text style={styles.tagline}>
+            {t('auth.tagline', 'Disiplin. Odak. Tekrar.')}
+          </Text>
         </View>
 
+        {/* Buttons */}
         <View style={styles.buttons}>
           {appleAvailable ? (
             <TouchableOpacity
@@ -67,34 +84,45 @@ export default function WelcomeScreen({ navigation }) {
               onPress={handleApple}
               disabled={appleLoading}
             >
-              <Text style={styles.appleIcon}></Text>
-              <Text style={styles.appleText}>
-                {appleLoading ? t('paywall.loading') : t('auth.signInWithApple')}
-              </Text>
+              {appleLoading ? (
+                <ActivityIndicator color="#0B0B14" />
+              ) : (
+                <>
+                  <Text style={styles.appleIcon}></Text>
+                  <Text style={styles.appleText}>
+                    {t('auth.signInWithApple', 'Apple ile devam et')}
+                  </Text>
+                </>
+              )}
             </TouchableOpacity>
           ) : null}
 
           <TouchableOpacity
-            style={styles.primaryBtn}
-            activeOpacity={0.85}
+            style={styles.primaryBtnWrap}
+            activeOpacity={0.9}
             onPress={() => navigation.navigate('Signup')}
           >
             <LinearGradient
-              colors={[COLORS.primary, COLORS.accent]}
+              colors={['#6366F1', '#8B5CF6']}
               start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              style={styles.primaryGrad}
+              end={{ x: 1, y: 1 }}
+              style={styles.primaryBtn}
             >
-              <Text style={styles.primaryText}>{t('auth.signup')}</Text>
+              <MaterialIcons name="email" size={18} color="#FFFFFF" />
+              <Text style={styles.primaryText}>
+                {t('auth.signupWithEmail', 'E-posta ile kayıt ol')}
+              </Text>
             </LinearGradient>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={styles.secondaryBtn}
-            activeOpacity={0.85}
+            activeOpacity={0.7}
             onPress={() => navigation.navigate('Login')}
           >
-            <Text style={styles.secondaryText}>{t('auth.login')}</Text>
+            <Text style={styles.secondaryText}>
+              {t('auth.haveAccount', 'Zaten hesabım var')}
+            </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -102,77 +130,179 @@ export default function WelcomeScreen({ navigation }) {
             activeOpacity={0.7}
             onPress={continueAsGuest}
           >
-            <Text style={styles.guestText}>{t('auth.guestMode')}</Text>
+            <Text style={styles.guestText}>
+              {t('auth.guestMode', 'Misafir olarak devam et')}
+            </Text>
           </TouchableOpacity>
         </View>
 
-        <Text style={styles.footer}>{t('settings.termsOfService')}</Text>
-      </LinearGradient>
+        {/* Language switcher */}
+        <View style={styles.langRow}>
+          {SUPPORTED_LANGUAGES.map((l) => {
+            const active = currentLang === l.code;
+            return (
+              <TouchableOpacity
+                key={l.code}
+                onPress={() => handleChangeLang(l.code)}
+                activeOpacity={0.7}
+                style={[styles.langChip, active && styles.langChipActive]}
+              >
+                <Text style={styles.langFlag}>{l.flag}</Text>
+                <Text
+                  style={[
+                    styles.langLabel,
+                    active && styles.langLabelActive,
+                  ]}
+                >
+                  {l.code.toUpperCase()}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+
+        {!configured ? (
+          <Text style={styles.warningText}>
+            ⚠ {t('auth.notConfigured', 'Bulut bağlantısı yok — sadece misafir modu çalışır')}
+          </Text>
+        ) : null}
+      </View>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: COLORS.background },
+  safeArea: { flex: 1, backgroundColor: '#13131b' },
   container: {
     flex: 1,
-    paddingHorizontal: 28,
-    paddingVertical: 40,
+    paddingHorizontal: 24,
+    paddingVertical: 24,
     justifyContent: 'space-between',
   },
-  hero: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  logo: { fontSize: 88, marginBottom: 24 },
-  title: {
-    color: COLORS.text,
-    fontSize: 42,
-    fontWeight: '800',
-    letterSpacing: 0.5,
+
+  heroGlow: {
+    position: 'absolute',
+    top: '15%',
+    left: '50%',
+    width: 320,
+    height: 320,
+    marginLeft: -160,
+    borderRadius: 160,
+    backgroundColor: 'rgba(99, 102, 241, 0.15)',
+    opacity: 0.5,
+  },
+
+  hero: {
+    alignItems: 'center',
+    marginTop: 32,
+    flex: 1,
+    justifyContent: 'center',
+  },
+  iconCircle: {
+    width: 144,
+    height: 144,
+    borderRadius: 72,
+    overflow: 'hidden',
+    backgroundColor: '#1F1F27',
+    borderWidth: 2,
+    borderColor: 'rgba(99, 102, 241, 0.3)',
+    marginBottom: 24,
+    shadowColor: '#6366F1',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.4,
+    shadowRadius: 30,
+    elevation: 12,
+  },
+  iconImage: { width: '100%', height: '100%' },
+  brand: {
+    color: '#FFFFFF',
+    fontSize: 36,
+    fontWeight: '900',
+    letterSpacing: -1,
+    marginBottom: 10,
   },
   tagline: {
-    color: COLORS.gold,
-    fontSize: 18,
+    color: '#C7C4D7',
+    fontSize: 14,
     fontWeight: '700',
     letterSpacing: 3,
-    marginTop: 4,
-    marginBottom: 24,
+    textTransform: 'uppercase',
   },
-  pitch: {
-    color: COLORS.textSecondary,
-    fontSize: 15,
-    textAlign: 'center',
-    lineHeight: 24,
+
+  buttons: {
+    width: '100%',
+    gap: 10,
+    marginBottom: 16,
   },
-  buttons: { marginBottom: 16 },
-  primaryBtn: { borderRadius: 14, overflow: 'hidden', marginBottom: 12 },
-  primaryGrad: { paddingVertical: 16, alignItems: 'center' },
-  primaryText: { color: COLORS.text, fontWeight: '700', fontSize: 16 },
-  secondaryBtn: {
-    borderRadius: 14,
-    paddingVertical: 16,
-    alignItems: 'center',
-    backgroundColor: COLORS.surface,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    marginBottom: 12,
-  },
-  secondaryText: { color: COLORS.text, fontWeight: '700', fontSize: 16 },
   appleBtn: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 14,
+    paddingVertical: 14,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#000000',
-    borderRadius: 14,
-    paddingVertical: 16,
-    marginBottom: 12,
     gap: 8,
   },
-  appleIcon: { fontSize: 18, color: '#FFFFFF' },
-  appleText: { color: '#FFFFFF', fontWeight: '700', fontSize: 16 },
-  guestBtn: { paddingVertical: 12, alignItems: 'center' },
-  guestText: { color: COLORS.textMuted, fontSize: 13 },
-  footer: {
-    color: COLORS.textMuted,
+  appleIcon: { fontSize: 18, color: '#0B0B14' },
+  appleText: { color: '#0B0B14', fontSize: 15, fontWeight: '700' },
+  primaryBtnWrap: {
+    borderRadius: 14,
+    overflow: 'hidden',
+    shadowColor: '#6366F1',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.4,
+    shadowRadius: 16,
+    elevation: 8,
+  },
+  primaryBtn: {
+    paddingVertical: 14,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+  },
+  primaryText: { color: '#FFFFFF', fontSize: 15, fontWeight: '800' },
+  secondaryBtn: {
+    backgroundColor: 'rgba(31, 31, 39, 0.8)',
+    borderRadius: 14,
+    paddingVertical: 14,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(70, 69, 84, 0.6)',
+  },
+  secondaryText: { color: '#C0C1FF', fontSize: 14, fontWeight: '700' },
+  guestBtn: { paddingVertical: 12, alignItems: 'center', marginTop: 4 },
+  guestText: { color: '#908FA0', fontSize: 13, fontWeight: '600' },
+
+  langRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 8,
+    marginBottom: 12,
+  },
+  langChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: 'rgba(70, 69, 84, 0.5)',
+    backgroundColor: 'rgba(31, 31, 39, 0.4)',
+  },
+  langChipActive: {
+    borderColor: '#C0C1FF',
+    backgroundColor: 'rgba(192, 193, 255, 0.15)',
+  },
+  langFlag: { fontSize: 14 },
+  langLabel: { color: '#908FA0', fontSize: 11, fontWeight: '800', letterSpacing: 1 },
+  langLabelActive: { color: '#C0C1FF' },
+
+  warningText: {
+    color: '#FFB783',
     fontSize: 11,
+    fontWeight: '600',
     textAlign: 'center',
   },
 });

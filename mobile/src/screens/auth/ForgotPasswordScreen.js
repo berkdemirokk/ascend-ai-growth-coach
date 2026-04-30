@@ -14,7 +14,7 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
-import { COLORS } from '../../config/constants';
+import { MaterialIcons } from '@expo/vector-icons';
 import { useAuth } from '../../contexts/AuthContext';
 
 export default function ForgotPasswordScreen({ navigation }) {
@@ -23,10 +23,11 @@ export default function ForgotPasswordScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
+  const [emailFocused, setEmailFocused] = useState(false);
 
   const handleReset = async () => {
-    if (!email.includes('@') || !email.includes('.')) {
-      Alert.alert(t('common.error'), t('auth.invalidCredentials'));
+    if (!email.includes('@')) {
+      Alert.alert(t('common.error'), t('auth.invalidEmail', 'Geçerli bir e-posta gir'));
       return;
     }
     setLoading(true);
@@ -48,78 +49,118 @@ export default function ForgotPasswordScreen({ navigation }) {
         <ScrollView
           contentContainerStyle={styles.scroll}
           keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
         >
-          <TouchableOpacity
-            onPress={() => navigation.goBack()}
-            style={styles.backBtn}
-          >
-            <Text style={styles.backIcon}>←</Text>
-          </TouchableOpacity>
+          <View style={styles.bgGlow} pointerEvents="none" />
 
-          <Text style={styles.title}>{t('auth.forgotPassword')}</Text>
-          <Text style={styles.subtitle}>{t('auth.welcomeSubtitle')}</Text>
+          <View style={styles.topBar}>
+            <TouchableOpacity
+              onPress={() => navigation.goBack()}
+              style={styles.backBtn}
+            >
+              <MaterialIcons name="arrow-back" size={22} color="#C7C4D7" />
+            </TouchableOpacity>
+          </View>
 
-          {sent ? (
-            <View style={styles.successBox}>
-              <Text style={styles.successTitle}>{t('auth.passwordResetSent')}</Text>
-              <Text style={styles.successText}>{email}</Text>
+          <View style={styles.hero}>
+            <View style={styles.iconWrap}>
+              <MaterialIcons
+                name={sent ? 'mark-email-read' : 'lock-reset'}
+                size={32}
+                color={sent ? '#10B981' : '#C0C1FF'}
+              />
+            </View>
+            <Text style={styles.title}>
+              {sent
+                ? t('auth.checkEmail', 'E-postanı kontrol et')
+                : t('auth.forgotPasswordTitle', 'Şifreni mi unuttun?')}
+            </Text>
+            <Text style={styles.subtitle}>
+              {sent
+                ? t(
+                    'auth.resetSentBody',
+                    'Sıfırlama linki gönderildi. Spam klasörüne de bakmayı unutma.',
+                  )
+                : t(
+                    'auth.forgotPasswordSub',
+                    'E-posta adresine sıfırlama linki gönderelim.',
+                  )}
+            </Text>
+          </View>
+
+          {!sent ? (
+            <View style={styles.form}>
+              <View style={styles.field}>
+                <Text style={styles.label}>{t('auth.email', 'E-posta')}</Text>
+                <View
+                  style={[
+                    styles.inputWrap,
+                    emailFocused && styles.inputWrapFocused,
+                  ]}
+                >
+                  <MaterialIcons name="mail-outline" size={18} color="#908FA0" />
+                  <TextInput
+                    value={email}
+                    onChangeText={setEmail}
+                    placeholder="example@mail.com"
+                    placeholderTextColor="#5B5B70"
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    onFocus={() => setEmailFocused(true)}
+                    onBlur={() => setEmailFocused(false)}
+                    style={styles.input}
+                  />
+                </View>
+              </View>
+
               <TouchableOpacity
-                style={styles.primaryBtn}
-                activeOpacity={0.85}
-                onPress={() => navigation.replace('Login')}
+                onPress={handleReset}
+                disabled={loading}
+                activeOpacity={0.9}
+                style={[styles.ctaShadow, { marginTop: 8 }]}
               >
                 <LinearGradient
-                  colors={[COLORS.primary, COLORS.accent]}
+                  colors={['#6366F1', '#8B5CF6']}
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 0 }}
-                  style={styles.primaryGrad}
+                  style={[styles.ctaButton, loading && { opacity: 0.7 }]}
                 >
-                  <Text style={styles.primaryText}>{t('auth.login')}</Text>
+                  {loading ? (
+                    <ActivityIndicator color="#FFFFFF" />
+                  ) : (
+                    <>
+                      <MaterialIcons name="send" size={18} color="#FFFFFF" />
+                      <Text style={styles.ctaText}>
+                        {t('auth.sendResetLink', 'Sıfırlama linki gönder')}
+                      </Text>
+                    </>
+                  )}
                 </LinearGradient>
               </TouchableOpacity>
             </View>
           ) : (
-            <View style={styles.form}>
-              <Text style={styles.label}>{t('auth.email')}</Text>
-              <TextInput
-                value={email}
-                onChangeText={setEmail}
-                placeholder="example@mail.com"
-                placeholderTextColor={COLORS.textMuted}
-                keyboardType="email-address"
-                autoCapitalize="none"
-                autoCorrect={false}
-                style={styles.input}
-              />
-
+            <View style={styles.successBox}>
+              <View style={styles.successCheckCircle}>
+                <MaterialIcons name="check" size={32} color="#10B981" />
+              </View>
+              <Text style={styles.successText}>{email}</Text>
               <TouchableOpacity
-                style={styles.primaryBtn}
-                activeOpacity={0.85}
-                onPress={handleReset}
-                disabled={loading}
+                onPress={() => navigation.goBack()}
+                style={[styles.ctaShadow, { width: '100%', marginTop: 24 }]}
+                activeOpacity={0.9}
               >
                 <LinearGradient
-                  colors={[COLORS.primary, COLORS.accent]}
+                  colors={['#6366F1', '#8B5CF6']}
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 0 }}
-                  style={styles.primaryGrad}
+                  style={styles.ctaButton}
                 >
-                  {loading ? (
-                    <ActivityIndicator color={COLORS.text} />
-                  ) : (
-                    <Text style={styles.primaryText}>Bağlantı Gönder</Text>
-                  )}
+                  <Text style={styles.ctaText}>
+                    {t('auth.backToLogin', 'Girişe dön')}
+                  </Text>
+                  <MaterialIcons name="arrow-forward" size={20} color="#FFFFFF" />
                 </LinearGradient>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                onPress={() => navigation.replace('Login')}
-                style={styles.switchBtn}
-              >
-                <Text style={styles.switchText}>
-                  Hatırladın mı?{' '}
-                  <Text style={styles.switchLink}>Giriş yap</Text>
-                </Text>
               </TouchableOpacity>
             </View>
           )}
@@ -130,71 +171,138 @@ export default function ForgotPasswordScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: COLORS.background },
-  scroll: { padding: 24, paddingBottom: 40 },
+  safeArea: { flex: 1, backgroundColor: '#13131b' },
+  scroll: { padding: 24, paddingBottom: 40, flexGrow: 1 },
+
+  bgGlow: {
+    position: 'absolute',
+    top: -80,
+    right: -60,
+    width: 280,
+    height: 280,
+    borderRadius: 140,
+    backgroundColor: 'rgba(99, 102, 241, 0.12)',
+    opacity: 0.6,
+  },
+
+  topBar: { marginBottom: 24 },
   backBtn: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: COLORS.surface,
+    backgroundColor: '#1F1F27',
+    borderWidth: 1,
+    borderColor: '#464554',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 24,
   },
-  backIcon: { color: COLORS.text, fontSize: 20, fontWeight: '600' },
+
+  hero: { alignItems: 'center', marginBottom: 32 },
+  iconWrap: {
+    width: 72,
+    height: 72,
+    borderRadius: 36,
+    backgroundColor: 'rgba(99, 102, 241, 0.15)',
+    borderWidth: 1,
+    borderColor: 'rgba(99, 102, 241, 0.3)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 18,
+  },
   title: {
-    color: COLORS.text,
+    color: '#FFFFFF',
     fontSize: 28,
-    fontWeight: '800',
+    fontWeight: '900',
+    letterSpacing: -0.5,
+    textAlign: 'center',
     marginBottom: 8,
+    paddingHorizontal: 12,
   },
   subtitle: {
-    color: COLORS.textSecondary,
-    fontSize: 15,
-    marginBottom: 32,
-    lineHeight: 22,
+    color: '#C7C4D7',
+    fontSize: 14,
+    fontWeight: '500',
+    textAlign: 'center',
+    lineHeight: 20,
+    paddingHorizontal: 12,
   },
-  form: {},
+
+  form: { marginBottom: 24 },
+  field: { marginBottom: 12 },
   label: {
-    color: COLORS.textSecondary,
-    fontSize: 13,
-    fontWeight: '600',
+    color: '#C7C4D7',
+    fontSize: 11,
+    fontWeight: '800',
+    letterSpacing: 1.5,
+    textTransform: 'uppercase',
     marginBottom: 6,
-    marginTop: 12,
+  },
+  inputWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    backgroundColor: '#1B1B23',
+    borderWidth: 1.5,
+    borderColor: '#464554',
+    borderRadius: 12,
+    paddingHorizontal: 14,
+  },
+  inputWrapFocused: {
+    borderColor: '#C0C1FF',
+    shadowColor: '#6366F1',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
   },
   input: {
-    backgroundColor: COLORS.surface,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    borderRadius: 12,
-    paddingHorizontal: 16,
+    flex: 1,
     paddingVertical: 14,
-    color: COLORS.text,
+    color: '#E4E1ED',
     fontSize: 15,
+    fontWeight: '500',
   },
-  primaryBtn: { borderRadius: 14, overflow: 'hidden', marginTop: 24 },
-  primaryGrad: { paddingVertical: 16, alignItems: 'center' },
-  primaryText: { color: COLORS.text, fontWeight: '700', fontSize: 16 },
-  switchBtn: { alignItems: 'center', marginTop: 20, paddingVertical: 8 },
-  switchText: { color: COLORS.textSecondary, fontSize: 14 },
-  switchLink: { color: COLORS.primary, fontWeight: '700' },
+
   successBox: {
-    backgroundColor: COLORS.surface,
-    borderRadius: 14,
-    padding: 20,
-    borderWidth: 1,
-    borderColor: COLORS.border,
+    alignItems: 'center',
+    paddingHorizontal: 12,
   },
-  successTitle: {
-    color: COLORS.text,
-    fontSize: 18,
-    fontWeight: '700',
-    marginBottom: 8,
+  successCheckCircle: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: 'rgba(16, 185, 129, 0.15)',
+    borderWidth: 1,
+    borderColor: 'rgba(16, 185, 129, 0.4)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 16,
   },
   successText: {
-    color: COLORS.textSecondary,
+    color: '#E4E1ED',
     fontSize: 14,
-    lineHeight: 21,
-    marginBottom: 16,
+    fontWeight: '700',
+  },
+
+  ctaShadow: {
+    borderRadius: 16,
+    shadowColor: '#6366F1',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.4,
+    shadowRadius: 16,
+    elevation: 8,
+  },
+  ctaButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    paddingVertical: 16,
+    borderRadius: 16,
+  },
+  ctaText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '800',
+    letterSpacing: 0.3,
   },
 });
