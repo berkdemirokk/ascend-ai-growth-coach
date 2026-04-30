@@ -1,5 +1,6 @@
 import React from 'react';
 import { Text, View, ActivityIndicator } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -14,6 +15,7 @@ import PaywallScreen from '../screens/PaywallScreen';
 import LessonScreen from '../screens/LessonScreen';
 import PathScreen from '../screens/PathScreen';
 import ReflectionsScreen from '../screens/ReflectionsScreen';
+import InsightsScreen from '../screens/InsightsScreen';
 import WelcomeScreen from '../screens/auth/WelcomeScreen';
 import LoginScreen from '../screens/auth/LoginScreen';
 import SignupScreen from '../screens/auth/SignupScreen';
@@ -24,21 +26,20 @@ const Tab = createBottomTabNavigator();
 
 import { useTranslation } from 'react-i18next';
 
-const TAB_ICON_MAP = {
-  Home: '🔥',
-  Profile: '👤',
+const TAB_ICONS = {
+  Home: 'auto-awesome',
+  Insights: 'bar-chart',
+  Profile: 'person',
 };
 
-function TabIcon({ name, focused }) {
+function TabIcon({ name, focused, color }) {
   return (
-    <Text
-      style={{
-        fontSize: 20,
-        opacity: focused ? 1 : 0.5,
-      }}
-    >
-      {TAB_ICON_MAP[name] || '●'}
-    </Text>
+    <MaterialIcons
+      name={TAB_ICONS[name] || 'circle'}
+      size={22}
+      color={color}
+      style={{ opacity: focused ? 1 : 0.5 }}
+    />
   );
 }
 
@@ -49,34 +50,41 @@ function MainTabs() {
       screenOptions={({ route }) => ({
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: '#0B0B14',
+          backgroundColor: '#0D0D15',
           borderTopWidth: 1,
-          borderTopColor: '#2A2A42',
-          height: 60,
-          paddingBottom: 8,
+          borderTopColor: '#34343D',
+          height: 70,
+          paddingBottom: 10,
           paddingTop: 8,
         },
-        tabBarActiveTintColor: '#6366F1',
+        tabBarActiveTintColor: '#C0C1FF',
         tabBarInactiveTintColor: '#6B6B85',
         tabBarLabelStyle: {
-          fontSize: 11,
-          fontWeight: '600',
-          marginTop: 0,
+          fontSize: 10,
+          fontWeight: '800',
+          letterSpacing: 1,
+          textTransform: 'uppercase',
+          marginTop: 2,
         },
-        tabBarIcon: ({ focused }) => (
-          <TabIcon name={route.name} focused={focused} />
+        tabBarIcon: ({ focused, color }) => (
+          <TabIcon name={route.name} focused={focused} color={color} />
         ),
       })}
     >
       <Tab.Screen
         name="Home"
         component={PathScreen}
-        options={{ title: t('common.today', 'Today') }}
+        options={{ title: t('nav.path', 'Path') }}
+      />
+      <Tab.Screen
+        name="Insights"
+        component={InsightsScreen}
+        options={{ title: t('nav.insights', 'Stats') }}
       />
       <Tab.Screen
         name="Profile"
         component={ProfileScreen}
-        options={{ title: t('common.you', 'You') }}
+        options={{ title: t('nav.profile', 'Profile') }}
       />
     </Tab.Navigator>
   );
