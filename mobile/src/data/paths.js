@@ -4,19 +4,22 @@
 // Each path has ordered lessons. Lessons unlock sequentially.
 // All teaching/action/reflection text is in i18n keys (per-locale).
 
+// Each path has both an emoji (legacy) and a materialIcon (Stitch design).
 export const PATHS = [
   {
     id: 'dopamine-detox',
     icon: '🚫',
-    color: '#F55A1F',
+    materialIcon: 'leak-remove',
+    color: '#FF6B6B',
     duration: 30,
     order: 1,
-    freeLessons: 5, // first N free, rest premium
+    freeLessons: 5,
   },
   {
     id: 'silent-morning',
     icon: '🌅',
-    color: '#F59E0B',
+    materialIcon: 'wb-twilight',
+    color: '#FDE047',
     duration: 21,
     order: 2,
     freeLessons: 3,
@@ -24,6 +27,7 @@ export const PATHS = [
   {
     id: 'mind-discipline',
     icon: '🧠',
+    materialIcon: 'psychology',
     color: '#6366F1',
     duration: 28,
     order: 3,
@@ -32,7 +36,8 @@ export const PATHS = [
   {
     id: 'body-discipline',
     icon: '💪',
-    color: '#EF4444',
+    materialIcon: 'fitness-center',
+    color: '#10B981',
     duration: 30,
     order: 4,
     freeLessons: 3,
@@ -40,7 +45,8 @@ export const PATHS = [
   {
     id: 'money-discipline',
     icon: '💰',
-    color: '#10B981',
+    materialIcon: 'account-balance-wallet',
+    color: '#F59E0B',
     duration: 21,
     order: 5,
     freeLessons: 3,

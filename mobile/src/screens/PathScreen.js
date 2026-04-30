@@ -9,22 +9,20 @@ import {
   Dimensions,
   Animated,
   Easing,
-  RefreshControl,
+  Image,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { LinearGradient } from 'expo-linear-gradient';
+import { MaterialIcons } from '@expo/vector-icons';
 
 import { useApp } from '../contexts/AppContext';
 import {
   PATHS,
   getPathLessons,
   getLessonState,
-  getCurrentLesson,
   getPathProgress,
   getPathById,
 } from '../data/paths';
-import { shareStreak } from '../services/share';
-import MonkMascot from '../components/MonkMascot';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -41,7 +39,18 @@ export default function PathScreen({ navigation }) {
     heartsRefillAt,
   } = useApp();
 
-  // Refill countdown — re-renders every 30s
+  const activePath = useMemo(
+    () => getPathById(activePathId) || PATHS[0],
+    [activePathId],
+  );
+
+  const lessons = useMemo(() => getPathLessons(activePath), [activePath]);
+  const progress = useMemo(
+    () => getPathProgress(activePath, pathProgress),
+    [activePath, pathProgress],
+  );
+
+  // Hearts refill countdown — re-renders every 30s
   const [now, setNow] = useState(Date.now());
   useEffect(() => {
     if (!heartsRefillAt || hearts >= 5 || isPremium) return;
@@ -55,17 +64,6 @@ export default function PathScreen({ navigation }) {
     if (ms <= 0) return 0;
     return Math.ceil(ms / 60000);
   })();
-
-  const activePath = useMemo(
-    () => getPathById(activePathId) || PATHS[0],
-    [activePathId],
-  );
-
-  const lessons = useMemo(() => getPathLessons(activePath), [activePath]);
-  const progress = useMemo(
-    () => getPathProgress(activePath, pathProgress),
-    [activePath, pathProgress],
-  );
 
   const handleLessonTap = (lesson, state) => {
     if (state === 'locked') {
@@ -82,197 +80,239 @@ export default function PathScreen({ navigation }) {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <LinearGradient colors={['#0B0B14', '#161626']} style={styles.container}>
-        {/* Streak Hero with gradient background */}
-        <LinearGradient
-          colors={['#1F1F33', '#161626']}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 0 }}
-          style={styles.streakHero}
-        >
-          <TouchableOpacity
-            style={styles.streakLeft}
-            activeOpacity={0.7}
-            onPress={() => shareStreak({ streak: currentStreak, lang: t('language', 'tr') })}
-          >
-            <View style={styles.streakIconBox}>
-              <Text style={styles.streakIcon}>🔥</Text>
-            </View>
-            <View>
-              <Text style={styles.streakValue}>{currentStreak}</Text>
-              <Text style={styles.streakLabel}>
-                {t('home.streakDays', 'gün seri')}
-              </Text>
-            </View>
-          </TouchableOpacity>
-          <View style={styles.streakRight}>
-            {!isPremium && (
-              <TouchableOpacity
-                onPress={() => navigation.navigate('Paywall')}
-                style={styles.heartsBox}
-                activeOpacity={0.7}
-              >
-                <Text style={styles.heartsIcon}>{hearts > 0 ? '❤️' : '💔'}</Text>
-                <Text style={styles.heartsValue}>{hearts}</Text>
-                {refillMins !== null && refillMins > 0 && (
-                  <Text style={styles.heartsTimer}>{refillMins}m</Text>
-                )}
-              </TouchableOpacity>
-            )}
-            <View style={styles.xpBox}>
-              <Text style={styles.xpValue}>⚡ {totalXP.toLocaleString()}</Text>
-            </View>
-            <Text style={styles.xpLabel}>XP</Text>
-          </View>
-        </LinearGradient>
-
-        {/* Header — selected path with gradient backdrop */}
-        <View style={styles.header}>
-          <View style={styles.headerRow}>
-            <MonkMascot
-              mood={
-                progress.completed === progress.total && progress.total > 0
-                  ? 'excited'
-                  : currentStreak >= 7
-                    ? 'proud'
-                    : currentStreak > 0
-                      ? 'happy'
-                      : 'idle'
-              }
-              size={56}
-              pulse
-            />
-            <View style={[styles.iconBubble, { backgroundColor: `${activePath.color}22`, borderColor: activePath.color, marginLeft: 12 }]}>
-              <Text style={styles.icon}>{activePath.icon}</Text>
-            </View>
-          </View>
-          <Text style={styles.title}>
-            {t(`paths.${activePath.id}.title`, activePath.id)}
-          </Text>
-          <Text style={styles.subtitle}>
-            {t(`paths.${activePath.id}.subtitle`, '')}
-          </Text>
-          <View style={styles.progressBar}>
+      <View style={styles.container}>
+        {/* Top App Bar */}
+        <View style={styles.topAppBar}>
+          <View style={styles.topLeft}>
             <LinearGradient
-              colors={[activePath.color, lighten(activePath.color, 0.2)]}
+              colors={['#6366F1', '#8B5CF6']}
               start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              style={[styles.progressFill, { width: `${Math.max(progress.percent, 2)}%` }]}
-            />
+              end={{ x: 1, y: 1 }}
+              style={styles.logoBadge}
+            >
+              <MaterialIcons name="star" size={16} color="#FFFFFF" />
+            </LinearGradient>
+            <Text style={styles.brandTitle}>MONK MODE</Text>
           </View>
-          <Text style={styles.progressText}>
-            <Text style={{ color: activePath.color, fontWeight: '900' }}>
-              {progress.completed}
-            </Text>
-            {' / '}{progress.total} {t('path.lessons', 'ders')}
-          </Text>
+          <TouchableOpacity
+            onPress={() => navigation.navigate('Settings')}
+            style={styles.xpPill}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.xpPillText}>XP: {totalXP.toLocaleString()}</Text>
+          </TouchableOpacity>
         </View>
 
-        {/* Path switcher */}
         <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.pathSwitcher}
-        >
-          {PATHS.map((p) => {
-            const isActive = p.id === activePathId;
-            const pathProg = pathProgress?.[p.id]?.completed?.length || 0;
-            const isCompleted = pathProg >= p.duration;
-            // First path is free, others are premium
-            const isPremiumPath = !isPremium && p.order > 1;
-            return (
-              <TouchableOpacity
-                key={p.id}
-                style={[
-                  styles.pathChip,
-                  isActive && { borderColor: p.color, backgroundColor: `${p.color}22` },
-                ]}
-                onPress={() => setActivePath(p.id)}
-                activeOpacity={0.7}
-              >
-                <Text style={styles.pathChipIcon}>{p.icon}</Text>
-                <Text style={styles.pathChipLabel}>
-                  {t(`paths.${p.id}.title`, p.id)}
-                </Text>
-                {isCompleted && <Text style={styles.pathChipBadge}>🏆</Text>}
-                {isPremiumPath && !isCompleted && <Text style={styles.pathChipBadge}>👑</Text>}
-                {pathProg > 0 && !isCompleted && (
-                  <Text style={styles.pathChipProgress}>{pathProg}/{p.duration}</Text>
-                )}
-              </TouchableOpacity>
-            );
-          })}
-        </ScrollView>
-
-        {/* Duolingo zigzag tree */}
-        <ScrollView
-          contentContainerStyle={styles.tree}
+          contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
-          {lessons.map((lesson, index) => {
-            const state = getLessonState(lesson, pathProgress);
-            const isLockedByPremium =
-              !isPremium && lesson.order > (activePath.freeLessons || 5);
-            const finalState =
-              isLockedByPremium && state !== 'completed' ? 'premium' : state;
-            const offset = (index % 4) - 1.5;
-            const xOffset = offset * 50;
+          {/* Streak / Hearts / XP hero */}
+          <View style={styles.heroCard}>
+            <View style={styles.heroLeft}>
+              <MaterialIcons name="local-fire-department" size={26} color="#F59E0B" />
+              <Text style={styles.streakValue}>{currentStreak}</Text>
+              <Text style={styles.streakLabel}>
+                {t('home.dayStreak', 'GÜN SERİ')}
+              </Text>
+            </View>
+            <View style={styles.heroRight}>
+              {!isPremium && (
+                <TouchableOpacity
+                  onPress={() => navigation.navigate('Paywall')}
+                  style={styles.heroChip}
+                  activeOpacity={0.7}
+                >
+                  <MaterialIcons name="favorite" size={18} color="#EF4444" />
+                  <Text style={styles.heroChipText}>{hearts}</Text>
+                  {refillMins !== null && refillMins > 0 && (
+                    <Text style={styles.heroChipTimer}>{refillMins}m</Text>
+                  )}
+                </TouchableOpacity>
+              )}
+              <View style={[styles.heroChip, styles.xpChip]}>
+                <MaterialIcons name="bolt" size={18} color="#A5B4FC" />
+                <Text style={[styles.heroChipText, { color: '#A5B4FC' }]}>
+                  {totalXP.toLocaleString()}
+                </Text>
+              </View>
+            </View>
+          </View>
 
-            return (
-              <View
-                key={lesson.id}
-                style={[styles.lessonNodeWrap, { transform: [{ translateX: xOffset }] }]}
+          {/* Profile / active path with progress */}
+          <View style={styles.profileSection}>
+            <View style={styles.avatarWrap}>
+              <LinearGradient
+                colors={['#1E1B4B', '#0F172A']}
+                style={styles.avatarBg}
               >
-                {index > 0 && (
-                  <View
-                    style={[
-                      styles.connector,
-                      finalState === 'completed'
-                        ? { backgroundColor: activePath.color }
-                        : null,
-                    ]}
-                  />
-                )}
-                <LessonNode
-                  lesson={lesson}
-                  state={finalState}
-                  pathColor={activePath.color}
-                  onPress={() => handleLessonTap(lesson, state)}
-                  t={t}
+                <Image
+                  source={require('../../assets/icon.png')}
+                  style={styles.avatarImg}
+                  resizeMode="cover"
+                />
+              </LinearGradient>
+              <View style={[styles.avatarBadge, { backgroundColor: activePath.color }]}>
+                <MaterialIcons
+                  name={activePath.materialIcon}
+                  size={11}
+                  color="#FFFFFF"
                 />
               </View>
-            );
-          })}
-
-          {/* Empty state — first-time user */}
-          {progress.completed === 0 && (
-            <View style={[styles.emptyHint, { borderColor: activePath.color }]}>
-              <Text style={styles.emptyHintIcon}>👇</Text>
-              <Text style={styles.emptyHintText}>
-                {t('path.firstLessonHint', 'Bugün ilk dersini aç')}
+            </View>
+            <View style={styles.profileText}>
+              <Text style={styles.profileName}>
+                {t(`paths.${activePath.id}.title`, activePath.id)}
               </Text>
-              <Text style={styles.emptyHintSubtext}>
-                {t('path.firstLessonHintSub', '5 dakika. Tek görev. Sonra alev tutuşsun.')}
+              <View style={styles.progressBar}>
+                <LinearGradient
+                  colors={[activePath.color, lighten(activePath.color, 0.25)]}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                  style={[
+                    styles.progressFill,
+                    { width: `${Math.max(progress.percent, 2)}%` },
+                  ]}
+                />
+              </View>
+              <Text style={styles.progressLabel}>
+                {progress.completed} / {progress.total}{' '}
+                {t('path.lessons', 'ders')}
               </Text>
             </View>
-          )}
+          </View>
 
-          {/* Path complete celebration */}
-          {progress.completed === progress.total && progress.total > 0 && (
-            <View style={styles.completion}>
-              <Text style={styles.completionEmoji}>🏆</Text>
-              <Text style={styles.completionText}>
-                {t('path.completed', 'Tamamlandı')}
-              </Text>
-              <Text style={styles.completionSubtext}>
-                {t('path.completedHint', 'Yeni bir yol seç ve devam et')}
-              </Text>
-            </View>
-          )}
+          {/* Path switcher chips */}
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.chipsRow}
+          >
+            {PATHS.map((p) => {
+              const isActive = p.id === activePathId;
+              const pathProg = pathProgress?.[p.id]?.completed?.length || 0;
+              const isCompleted = pathProg >= p.duration;
+              return (
+                <TouchableOpacity
+                  key={p.id}
+                  onPress={() => setActivePath(p.id)}
+                  activeOpacity={0.7}
+                  style={[
+                    styles.chip,
+                    isActive && {
+                      backgroundColor: p.color,
+                      borderColor: p.color,
+                    },
+                  ]}
+                >
+                  <Text
+                    style={[
+                      styles.chipLabel,
+                      isActive && { color: '#FFFFFF' },
+                    ]}
+                  >
+                    {t(`paths.${p.id}.title`, p.id)}
+                  </Text>
+                  <View
+                    style={[
+                      styles.chipBadge,
+                      isActive && { backgroundColor: 'rgba(0,0,0,0.25)' },
+                    ]}
+                  >
+                    <Text
+                      style={[
+                        styles.chipBadgeText,
+                        isActive && { color: '#FFFFFF' },
+                      ]}
+                    >
+                      {pathProg}/{p.duration}
+                    </Text>
+                  </View>
+                  {isCompleted && (
+                    <MaterialIcons
+                      name="check-circle"
+                      size={14}
+                      color={isActive ? '#FFFFFF' : '#10B981'}
+                      style={{ marginLeft: 2 }}
+                    />
+                  )}
+                </TouchableOpacity>
+              );
+            })}
+          </ScrollView>
 
-          <View style={{ height: 80 }} />
+          {/* Lesson zigzag tree */}
+          <View style={styles.tree}>
+            {lessons.map((lesson, index) => {
+              const state = getLessonState(lesson, pathProgress);
+              const isLockedByPremium =
+                !isPremium && lesson.order > (activePath.freeLessons || 5);
+              const finalState =
+                isLockedByPremium && state !== 'completed' ? 'premium' : state;
+
+              // Zigzag pattern: alternate left/right
+              const isOdd = index % 2 === 1;
+              const xOffset = isOdd ? 56 : -56;
+
+              return (
+                <View
+                  key={lesson.id}
+                  style={[
+                    styles.lessonNodeWrap,
+                    { transform: [{ translateX: xOffset }] },
+                  ]}
+                >
+                  <LessonNode
+                    lesson={lesson}
+                    state={finalState}
+                    pathColor={activePath.color}
+                    onPress={() => handleLessonTap(lesson, state)}
+                    t={t}
+                  />
+                </View>
+              );
+            })}
+
+            {progress.completed === 0 && (
+              <View
+                style={[styles.emptyHint, { borderColor: activePath.color }]}
+              >
+                <MaterialIcons
+                  name="touch-app"
+                  size={28}
+                  color={activePath.color}
+                />
+                <Text style={styles.emptyHintText}>
+                  {t('path.firstLessonHint', 'Bugün ilk dersini aç')}
+                </Text>
+                <Text style={styles.emptyHintSubtext}>
+                  {t(
+                    'path.firstLessonHintSub',
+                    '5 dakika. Tek görev. Sonra alev tutuşsun.',
+                  )}
+                </Text>
+              </View>
+            )}
+
+            {progress.completed === progress.total && progress.total > 0 && (
+              <View style={styles.completion}>
+                <MaterialIcons name="emoji-events" size={48} color="#FDE047" />
+                <Text style={styles.completionText}>
+                  {t('path.completed', 'Tamamlandı')}
+                </Text>
+                <Text style={styles.completionSubtext}>
+                  {t(
+                    'path.completedHint',
+                    'Yeni bir yol seç ve devam et',
+                  )}
+                </Text>
+              </View>
+            )}
+
+            <View style={{ height: 80 }} />
+          </View>
         </ScrollView>
-      </LinearGradient>
+      </View>
     </SafeAreaView>
   );
 }
@@ -285,14 +325,14 @@ function LessonNode({ lesson, state, pathColor, onPress, t }) {
 
   // Pulse animation for current lesson
   const pulse = useRef(new Animated.Value(1)).current;
-  const glow = useRef(new Animated.Value(0.6)).current;
+  const glow = useRef(new Animated.Value(0.4)).current;
 
   useEffect(() => {
     if (state !== 'current') return;
     const pulseLoop = Animated.loop(
       Animated.sequence([
         Animated.timing(pulse, {
-          toValue: 1.06,
+          toValue: 1.08,
           duration: 1000,
           easing: Easing.inOut(Easing.quad),
           useNativeDriver: true,
@@ -307,88 +347,126 @@ function LessonNode({ lesson, state, pathColor, onPress, t }) {
     );
     const glowLoop = Animated.loop(
       Animated.sequence([
-        Animated.timing(glow, { toValue: 1, duration: 1000, useNativeDriver: false }),
-        Animated.timing(glow, { toValue: 0.6, duration: 1000, useNativeDriver: false }),
+        Animated.timing(glow, {
+          toValue: 0.9,
+          duration: 1000,
+          useNativeDriver: false,
+        }),
+        Animated.timing(glow, {
+          toValue: 0.4,
+          duration: 1000,
+          useNativeDriver: false,
+        }),
       ]),
     );
     pulseLoop.start();
     glowLoop.start();
-    return () => { pulseLoop.stop(); glowLoop.stop(); };
+    return () => {
+      pulseLoop.stop();
+      glowLoop.stop();
+    };
   }, [state, pulse, glow]);
 
-  // Style configs by state
   const config = (() => {
-    if (state === 'completed') return {
-      gradient: [pathColor, darken(pathColor, 0.25)],
-      icon: '✓',
-      iconStyle: styles.nodeCheckmark,
-      ringColor: 'rgba(255,255,255,0.15)',
-      labelOpacity: 1,
-    };
-    if (state === 'current') return {
-      gradient: [lighten(pathColor, 0.15), pathColor],
-      icon: '🔥',
-      iconStyle: styles.nodeIcon,
-      ringColor: pathColor,
-      labelOpacity: 1,
-      glow: true,
-    };
-    if (state === 'premium') return {
-      gradient: ['#2A2A42', '#1F1F33'],
-      icon: '👑',
-      iconStyle: styles.nodeIconPremium,
-      ringColor: 'rgba(253,224,71,0.4)',
-      labelOpacity: 0.6,
-    };
+    if (state === 'completed')
+      return {
+        bg: pathColor,
+        icon: 'check',
+        iconColor: '#FFFFFF',
+        size: 64,
+        labelOpacity: 0.7,
+        ringColor: 'rgba(255,255,255,0.15)',
+      };
+    if (state === 'current')
+      return {
+        bg: '#FDE047',
+        icon: 'local-fire-department',
+        iconColor: '#0B0B14',
+        size: 80,
+        labelOpacity: 1,
+        ringColor: '#FDE047',
+        showBadge: true,
+      };
+    if (state === 'premium')
+      return {
+        bg: '#1F1F33',
+        icon: 'workspace-premium',
+        iconColor: '#FDE047',
+        size: 64,
+        labelOpacity: 0.5,
+        ringColor: 'rgba(253,224,71,0.3)',
+      };
     return {
-      gradient: ['#2A2A42', '#1F1F33'],
-      icon: '🔒',
-      iconStyle: styles.nodeIconLocked,
-      ringColor: 'transparent',
+      bg: '#1F1F33',
+      icon: 'lock',
+      iconColor: '#6B6B85',
+      size: 64,
       labelOpacity: 0.4,
+      ringColor: 'transparent',
     };
   })();
 
   return (
-    <TouchableOpacity onPress={onPress} activeOpacity={0.85} style={styles.nodeContainer}>
-      <Animated.View style={[
-        styles.nodeRing,
-        { borderColor: config.ringColor },
-        config.glow && {
-          shadowColor: pathColor,
-          shadowOffset: { width: 0, height: 0 },
-          shadowOpacity: glow,
-          shadowRadius: 20,
-        },
-      ]}>
+    <TouchableOpacity
+      onPress={onPress}
+      activeOpacity={0.85}
+      style={styles.nodeContainer}
+    >
+      <Animated.View
+        style={[
+          styles.nodeRing,
+          {
+            width: config.size + 8,
+            height: config.size + 8,
+            borderRadius: (config.size + 8) / 2,
+            borderColor: config.ringColor,
+          },
+          state === 'current' && {
+            shadowColor: '#FDE047',
+            shadowOffset: { width: 0, height: 0 },
+            shadowOpacity: glow,
+            shadowRadius: 20,
+            elevation: 12,
+          },
+        ]}
+      >
         <Animated.View style={{ transform: [{ scale: pulse }] }}>
-          <LinearGradient
-            colors={config.gradient}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={styles.nodeGradient}
+          <View
+            style={[
+              styles.nodeCircle,
+              {
+                width: config.size,
+                height: config.size,
+                borderRadius: config.size / 2,
+                backgroundColor: config.bg,
+              },
+            ]}
           >
-            <View style={styles.nodeInner}>
-              <Text style={config.iconStyle}>{config.icon}</Text>
-            </View>
-          </LinearGradient>
+            <MaterialIcons
+              name={config.icon}
+              size={config.size * 0.5}
+              color={config.iconColor}
+            />
+          </View>
         </Animated.View>
       </Animated.View>
 
-      {state === 'current' && (
-        <View style={[styles.todayBadge, { backgroundColor: '#FDE047' }]}>
+      {config.showBadge && (
+        <View style={styles.todayBadge}>
           <Text style={styles.todayBadgeText}>BUGÜN</Text>
         </View>
       )}
 
-      <Text style={[styles.nodeLabel, { opacity: config.labelOpacity }]} numberOfLines={2}>
+      <Text
+        style={[styles.nodeLabel, { opacity: config.labelOpacity }]}
+        numberOfLines={2}
+      >
         {lessonTitle}
       </Text>
     </TouchableOpacity>
   );
 }
 
-// Color utilities for shading
 function lighten(hex, amount) {
   const c = parseInt(hex.replace('#', ''), 16);
   const r = Math.min(255, ((c >> 16) & 0xff) + Math.round(255 * amount));
@@ -396,223 +474,254 @@ function lighten(hex, amount) {
   const b = Math.min(255, (c & 0xff) + Math.round(255 * amount));
   return `#${((r << 16) | (g << 8) | b).toString(16).padStart(6, '0')}`;
 }
-function darken(hex, amount) {
-  const c = parseInt(hex.replace('#', ''), 16);
-  const r = Math.max(0, ((c >> 16) & 0xff) - Math.round(255 * amount));
-  const g = Math.max(0, ((c >> 8) & 0xff) - Math.round(255 * amount));
-  const b = Math.max(0, (c & 0xff) - Math.round(255 * amount));
-  return `#${((r << 16) | (g << 8) | b).toString(16).padStart(6, '0')}`;
-}
-
-const NODE = 76;
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: '#0B0B14' },
-  container: { flex: 1 },
+  container: { flex: 1, backgroundColor: '#0B0B14' },
 
-  streakHero: {
+  topAppBar: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    borderBottomWidth: 1,
-    borderBottomColor: '#2A2A42',
     paddingHorizontal: 20,
-    paddingVertical: 14,
+    paddingVertical: 12,
+    backgroundColor: 'rgba(11, 11, 20, 0.85)',
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(42, 42, 66, 0.4)',
   },
-  streakLeft: { flexDirection: 'row', alignItems: 'center', gap: 14 },
-  streakIconBox: {
-    width: 44,
-    height: 44,
-    borderRadius: 12,
-    backgroundColor: 'rgba(245, 158, 11, 0.15)',
+  topLeft: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  logoBadge: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: 'rgba(245, 158, 11, 0.3)',
+    shadowColor: '#6366F1',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.5,
+    shadowRadius: 8,
   },
-  streakIcon: { fontSize: 26 },
-  streakValue: {
-    color: '#F59E0B',
-    fontSize: 26,
+  brandTitle: {
+    color: '#E0E7FF',
+    fontSize: 16,
     fontWeight: '900',
-    lineHeight: 28,
     letterSpacing: -0.5,
   },
-  streakLabel: { color: '#9898B0', fontSize: 11, fontWeight: '600' },
-  streakRight: { alignItems: 'flex-end', flexDirection: 'row', gap: 8 },
-  heartsBox: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'rgba(239, 68, 68, 0.15)',
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: 'rgba(239, 68, 68, 0.3)',
-    gap: 4,
-  },
-  heartsIcon: { fontSize: 14 },
-  heartsValue: { color: '#EF4444', fontSize: 14, fontWeight: '900' },
-  heartsTimer: { color: '#9898B0', fontSize: 10, fontWeight: '700', marginLeft: 2 },
-  xpBox: {
-    backgroundColor: 'rgba(253, 224, 71, 0.15)',
+  xpPill: {
     paddingHorizontal: 10,
     paddingVertical: 4,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: 'rgba(253, 224, 71, 0.3)',
   },
-  xpValue: { color: '#FDE047', fontSize: 14, fontWeight: '800' },
-  xpLabel: { color: '#9898B0', fontSize: 10, fontWeight: '600', marginTop: 2 },
+  xpPillText: {
+    color: '#6366F1',
+    fontSize: 11,
+    fontWeight: '800',
+    letterSpacing: 1.5,
+    textTransform: 'uppercase',
+  },
 
-  header: {
-    paddingHorizontal: 24,
-    paddingTop: 20,
-    paddingBottom: 20,
-    alignItems: 'center',
-  },
-  headerRow: {
+  scrollContent: { paddingBottom: 24 },
+
+  // Hero stats card
+  heroCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 12,
+    justifyContent: 'space-between',
+    backgroundColor: '#1F1F27',
+    borderRadius: 16,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    marginHorizontal: 20,
+    marginTop: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(70, 69, 84, 0.3)',
   },
-  iconBubble: {
-    width: 64,
-    height: 64,
-    borderRadius: 18,
+  heroLeft: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  streakValue: {
+    color: '#F59E0B',
+    fontSize: 22,
+    fontWeight: '900',
+    letterSpacing: -0.5,
+  },
+  streakLabel: {
+    color: '#9898B0',
+    fontSize: 10,
+    fontWeight: '800',
+    letterSpacing: 1,
+  },
+  heroRight: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  heroChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 999,
+  },
+  xpChip: {
+    backgroundColor: 'rgba(99, 102, 241, 0.15)',
+  },
+  heroChipText: {
+    color: '#F5F5FA',
+    fontSize: 14,
+    fontWeight: '800',
+  },
+  heroChipTimer: {
+    color: '#9898B0',
+    fontSize: 9,
+    fontWeight: '700',
+    marginLeft: 2,
+  },
+
+  // Profile section
+  profileSection: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+    paddingHorizontal: 20,
+    marginTop: 24,
+  },
+  avatarWrap: { position: 'relative' },
+  avatarBg: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    overflow: 'hidden',
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 2,
+    borderColor: 'rgba(99, 102, 241, 0.4)',
   },
-  icon: { fontSize: 32 },
-  title: {
-    color: '#F5F5FA',
-    fontSize: 26,
-    fontWeight: '900',
-    textAlign: 'center',
-    letterSpacing: -0.5,
+  avatarImg: { width: 40, height: 40 },
+  avatarBadge: {
+    position: 'absolute',
+    bottom: -2,
+    right: -2,
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 2,
+    borderColor: '#0B0B14',
   },
-  subtitle: {
-    color: '#9898B0',
-    fontSize: 13,
-    marginTop: 6,
-    textAlign: 'center',
-    fontWeight: '500',
+  profileText: { flex: 1 },
+  profileName: {
+    color: '#FFFFFF',
+    fontSize: 20,
+    fontWeight: '800',
+    letterSpacing: -0.3,
+    marginBottom: 8,
   },
   progressBar: {
-    width: 240,
+    width: '100%',
     height: 8,
-    backgroundColor: 'rgba(255,255,255,0.08)',
+    backgroundColor: '#292932',
     borderRadius: 4,
     overflow: 'hidden',
-    marginTop: 16,
+    marginBottom: 6,
   },
-  progressFill: { height: '100%', borderRadius: 4 },
-  progressText: { color: '#9898B0', fontSize: 12, fontWeight: '600', marginTop: 8 },
+  progressFill: {
+    height: '100%',
+    borderRadius: 4,
+    shadowColor: '#C0C1FF',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.5,
+    shadowRadius: 8,
+  },
+  progressLabel: {
+    color: '#9898B0',
+    fontSize: 11,
+    fontWeight: '700',
+  },
 
-  pathSwitcher: {
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    alignItems: 'center',
+  // Chips
+  chipsRow: {
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    gap: 8,
   },
-  pathChip: {
+  chip: {
     flexDirection: 'row',
     alignItems: 'center',
+    gap: 8,
     paddingHorizontal: 14,
-    paddingVertical: 10,
-    borderRadius: 22,
-    borderWidth: 1.5,
-    borderColor: '#2A2A42',
-    backgroundColor: '#161626',
+    paddingVertical: 8,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: 'rgba(70, 69, 84, 0.4)',
+    backgroundColor: '#1F1F27',
     marginRight: 8,
-    minHeight: 40,
   },
-  pathChipIcon: { fontSize: 18, marginRight: 6 },
-  pathChipLabel: { color: '#F5F5FA', fontSize: 13, fontWeight: '700', flexShrink: 0 },
-  pathChipBadge: { fontSize: 12, marginLeft: 2 },
-  pathChipProgress: { color: '#9898B0', fontSize: 10, fontWeight: '600', marginLeft: 4 },
+  chipLabel: {
+    color: '#C7C4D7',
+    fontSize: 11,
+    fontWeight: '800',
+    letterSpacing: 0.8,
+    textTransform: 'uppercase',
+  },
+  chipBadge: {
+    backgroundColor: '#393841',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 6,
+  },
+  chipBadgeText: {
+    color: '#908FA0',
+    fontSize: 10,
+    fontWeight: '800',
+  },
 
+  // Tree
   tree: {
-    paddingTop: 32,
+    paddingTop: 24,
     paddingBottom: 32,
     alignItems: 'center',
   },
-  lessonNodeWrap: { alignItems: 'center', marginBottom: 8 },
-  connector: {
-    width: 3,
-    height: 28,
-    backgroundColor: '#2A2A42',
-    borderRadius: 1.5,
-    marginBottom: 4,
-    opacity: 0.6,
-  },
+  lessonNodeWrap: { alignItems: 'center', marginBottom: 32 },
   nodeContainer: { alignItems: 'center', maxWidth: 130 },
   nodeRing: {
-    width: NODE + 8,
-    height: NODE + 8,
-    borderRadius: (NODE + 8) / 2,
-    borderWidth: 2,
+    borderWidth: 3,
     alignItems: 'center',
     justifyContent: 'center',
-    elevation: 6,
   },
-  nodeGradient: {
-    width: NODE,
-    height: NODE,
-    borderRadius: NODE / 2,
+  nodeCircle: {
     alignItems: 'center',
     justifyContent: 'center',
-    overflow: 'hidden',
+    borderWidth: 4,
+    borderColor: '#0B0B14',
   },
-  nodeInner: {
-    width: NODE - 6,
-    height: NODE - 6,
-    borderRadius: (NODE - 6) / 2,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(255,255,255,0.05)',
-  },
-  nodeIcon: {
-    fontSize: 36,
-    textShadowColor: 'rgba(0,0,0,0.4)',
-    textShadowOffset: { width: 0, height: 2 },
-    textShadowRadius: 4,
-  },
-  nodeCheckmark: {
-    fontSize: 36,
-    color: '#FFFFFF',
-    fontWeight: '900',
-    textShadowColor: 'rgba(0,0,0,0.3)',
-    textShadowOffset: { width: 0, height: 2 },
-    textShadowRadius: 3,
-  },
-  nodeIconPremium: { fontSize: 30, opacity: 0.8 },
-  nodeIconLocked: { fontSize: 26, opacity: 0.4 },
   todayBadge: {
-    backgroundColor: '#FDE047',
-    paddingHorizontal: 10,
+    position: 'absolute',
+    top: -8,
+    right: -16,
+    backgroundColor: '#EF4444',
+    paddingHorizontal: 8,
     paddingVertical: 3,
-    borderRadius: 10,
-    marginTop: -10,
-    zIndex: 2,
-    shadowColor: '#FDE047',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.6,
-    shadowRadius: 8,
-    elevation: 4,
+    borderRadius: 6,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.4,
+    shadowRadius: 4,
+    zIndex: 5,
   },
-  todayBadgeText: { fontSize: 10, color: '#0B0B14', fontWeight: '900', letterSpacing: 0.5 },
+  todayBadgeText: {
+    color: '#FFFFFF',
+    fontSize: 9,
+    fontWeight: '900',
+    letterSpacing: 1,
+  },
   nodeLabel: {
     color: '#F5F5FA',
-    fontSize: 11,
-    fontWeight: '600',
-    marginTop: 8,
+    fontSize: 12,
+    fontWeight: '700',
+    marginTop: 10,
     textAlign: 'center',
+    letterSpacing: 0.3,
+    textTransform: 'uppercase',
   },
 
   emptyHint: {
-    backgroundColor: '#161626',
+    backgroundColor: 'rgba(22, 22, 38, 0.6)',
     borderRadius: 16,
     padding: 20,
     marginHorizontal: 24,
@@ -620,13 +729,12 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderStyle: 'dashed',
     alignItems: 'center',
+    gap: 8,
   },
-  emptyHintIcon: { fontSize: 28, marginBottom: 8 },
   emptyHintText: {
-    color: '#F5F5FA',
+    color: '#FFFFFF',
     fontSize: 15,
     fontWeight: '800',
-    marginBottom: 4,
     textAlign: 'center',
   },
   emptyHintSubtext: {
@@ -640,8 +748,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 24,
     padding: 16,
+    gap: 6,
   },
-  completionEmoji: { fontSize: 48 },
-  completionText: { color: '#F5F5FA', fontSize: 18, fontWeight: '700', marginTop: 8 },
-  completionSubtext: { color: '#9898B0', fontSize: 13, marginTop: 4, textAlign: 'center' },
+  completionText: {
+    color: '#FDE047',
+    fontSize: 18,
+    fontWeight: '900',
+    marginTop: 8,
+    letterSpacing: -0.3,
+  },
+  completionSubtext: {
+    color: '#9898B0',
+    fontSize: 13,
+    textAlign: 'center',
+  },
 });

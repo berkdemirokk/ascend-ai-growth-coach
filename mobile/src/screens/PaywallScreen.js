@@ -40,17 +40,39 @@ export default function PaywallScreen({ navigation }) {
     : '~62 ₺';
 
   const handleSubscribe = async () => {
+    // Block early if no packages loaded — shows real reason
+    if (!packages.monthly && !packages.yearly) {
+      Alert.alert(
+        t('paywall.notReadyTitle', 'Abonelikler hazır değil'),
+        t(
+          'paywall.notReadyBody',
+          'App Store bağlantısı kurulamadı. İnternetini kontrol et veya birkaç dakika sonra tekrar dene.',
+        ),
+      );
+      return;
+    }
     setIsSubscribing(true);
     try {
       const success = await purchasePremium(selected);
       if (success) {
         setPremium(true);
         navigation.goBack();
-      } else {
-        Alert.alert(t('common.error'), t('common.tryAgain'));
       }
+      // success === false means user cancelled — silent, no alert
     } catch (e) {
-      Alert.alert(t('common.error'), e?.message || t('common.tryAgain'));
+      const msg = e?.message || '';
+      let body = t('common.tryAgain');
+      if (/no packages|offerings|not configured/i.test(msg)) {
+        body = t(
+          'paywall.notConfigured',
+          'Abonelik henüz mağazada görünür değil. Lütfen birkaç dakika sonra tekrar dene.',
+        );
+      } else if (/network|connection|timeout/i.test(msg)) {
+        body = t('paywall.networkError', 'Bağlantı hatası. İnterneti kontrol et.');
+      } else if (msg) {
+        body = msg;
+      }
+      Alert.alert(t('common.error'), body);
     } finally {
       setIsSubscribing(false);
     }
@@ -135,6 +157,36 @@ export default function PaywallScreen({ navigation }) {
             <Text style={styles.loadingText}>
               {t('paywall.loadingPrices', 'Fiyatlar yükleniyor...')}
             </Text>
+          </View>
+        ) : !packages.monthly && !packages.yearly ? (
+          <View style={styles.errorBox}>
+            <Text style={styles.errorIcon}>⚠️</Text>
+            <Text style={styles.errorTitle}>
+              {t('paywall.notReadyTitle', 'Abonelikler yüklenemedi')}
+            </Text>
+            <Text style={styles.errorBody}>
+              {t(
+                'paywall.notReadyBodyShort',
+                'Mağaza bağlantısı kurulamadı. İnternetini kontrol et ve birkaç dakika sonra tekrar dene.',
+              )}
+            </Text>
+            <TouchableOpacity
+              style={styles.retryBtn}
+              onPress={async () => {
+                setLoadingPackages(true);
+                try {
+                  const pkgs = await getAvailablePackages();
+                  if (pkgs) setPackages(pkgs);
+                } finally {
+                  setLoadingPackages(false);
+                }
+              }}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.retryText}>
+                {t('common.tryAgain', 'Tekrar dene')}
+              </Text>
+            </TouchableOpacity>
           </View>
         ) : (
           <>
@@ -240,6 +292,37 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   loadingText: { color: '#9898B0', fontSize: 13 },
+  errorBox: {
+    backgroundColor: '#161626',
+    borderWidth: 1,
+    borderColor: '#EF444466',
+    borderRadius: 14,
+    padding: 20,
+    alignItems: 'center',
+    marginVertical: 16,
+  },
+  errorIcon: { fontSize: 32, marginBottom: 8 },
+  errorTitle: {
+    color: '#F5F5FA',
+    fontSize: 16,
+    fontWeight: '800',
+    marginBottom: 6,
+    textAlign: 'center',
+  },
+  errorBody: {
+    color: '#9898B0',
+    fontSize: 13,
+    lineHeight: 18,
+    textAlign: 'center',
+    marginBottom: 14,
+  },
+  retryBtn: {
+    backgroundColor: '#6366F1',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 10,
+  },
+  retryText: { color: '#FFFFFF', fontSize: 14, fontWeight: '700' },
   featuresContainer: { gap: 10, marginBottom: 24 },
   featureRow: {
     flexDirection: 'row',
