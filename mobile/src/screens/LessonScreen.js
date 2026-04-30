@@ -192,19 +192,45 @@ export default function LessonScreen({ navigation, route }) {
       }),
     ]).start();
 
-    setTimeout(async () => {
+    // Show milestone modal if this completion crossed a streak milestone
+    setTimeout(() => {
       const newStreak = currentStreak + 1;
       if (isMilestone(newStreak)) {
         setMilestoneStreak(newStreak);
         setMilestoneVisible(true);
         playSound('milestone').catch(() => {});
-        return;
       }
-      if (!isPremium && shouldShowAd(false)) {
-        try { await showInterstitial(); } catch {}
-      }
-      navigation.goBack();
-    }, 2200);
+    }, 1800);
+    // No auto-dismiss — user picks "Yola Dön" or "Sonraki Ders" from celebration
+  };
+
+  const handleCelebrationContinue = async () => {
+    // Show interstitial ad before exiting (frequency-capped)
+    if (!isPremium && shouldShowAd(false)) {
+      try { await showInterstitial(); } catch {}
+    }
+    navigation.goBack();
+  };
+
+  const handleNextLesson = async () => {
+    // Find the next lesson in the same path that isn't completed
+    const completedSet = new Set(pathProgress?.[pathId]?.completed || []);
+    completedSet.add(lessonId); // include the just-completed one
+    const sortedLessons = path && path.id
+      ? Array.from({ length: path.duration }, (_, i) => `${path.id}-${i + 1}`)
+      : [];
+    const nextLessonId = sortedLessons.find((id) => !completedSet.has(id));
+
+    if (!nextLessonId) {
+      // Path complete — go back to PathScreen which will show celebration
+      handleCelebrationContinue();
+      return;
+    }
+    if (!isPremium && shouldShowAd(false)) {
+      try { await showInterstitial(); } catch {}
+    }
+    // replace so the back button goes to PathScreen, not the previous lesson
+    navigation.replace('Lesson', { pathId, lessonId: nextLessonId });
   };
 
   const handleMilestoneClose = async () => {
@@ -585,7 +611,7 @@ export default function LessonScreen({ navigation, route }) {
 
         {showCelebration && (
           <View style={styles.celebration}>
-            {/* Top bar with title + share */}
+            {/* Top bar with title */}
             <View style={styles.celebrationTopBar}>
               <View style={{ width: 40 }} />
               <Text style={styles.celebrationTopTitle}>
@@ -595,8 +621,8 @@ export default function LessonScreen({ navigation, route }) {
             </View>
 
             {/* Centered content */}
-            <View style={styles.celebrationCenter} pointerEvents="none">
-              <View style={styles.celebrationEmojiWrap}>
+            <View style={styles.celebrationCenter}>
+              <View style={styles.celebrationEmojiWrap} pointerEvents="none">
                 <Animated.Text
                   style={[
                     styles.celebrationEmoji,
@@ -624,6 +650,46 @@ export default function LessonScreen({ navigation, route }) {
                   'Disiplin yolunda bir adım daha attın.',
                 )}
               </Text>
+              {/* Quiz score chip */}
+              {quiz.length > 0 && (
+                <View style={styles.celebrationStatPill}>
+                  <MaterialIcons name="quiz" size={14} color="#10B981" />
+                  <Text style={styles.celebrationStatText}>
+                    {correctCount}/{quiz.length} {t('lesson.correct', 'doğru')}
+                  </Text>
+                </View>
+              )}
+            </View>
+
+            {/* CTA buttons */}
+            <View style={styles.celebrationCTAs}>
+              <TouchableOpacity
+                onPress={handleNextLesson}
+                activeOpacity={0.9}
+                style={styles.celebrationPrimaryShadow}
+              >
+                <LinearGradient
+                  colors={['#6366F1', '#8B5CF6']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                  style={styles.celebrationPrimaryBtn}
+                >
+                  <Text style={styles.celebrationPrimaryText}>
+                    {t('lesson.nextLesson', 'Sonraki Dersi Başla')}
+                  </Text>
+                  <MaterialIcons name="arrow-forward" size={20} color="#FFFFFF" />
+                </LinearGradient>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={handleCelebrationContinue}
+                activeOpacity={0.7}
+                style={styles.celebrationSecondaryBtn}
+              >
+                <Text style={styles.celebrationSecondaryText}>
+                  {t('lesson.backToPath', 'Yola Dön')}
+                </Text>
+              </TouchableOpacity>
             </View>
           </View>
         )}
@@ -962,5 +1028,60 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     textAlign: 'center',
     maxWidth: 280,
+    marginBottom: 20,
+  },
+  celebrationStatPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: 'rgba(16, 185, 129, 0.12)',
+    borderColor: 'rgba(16, 185, 129, 0.35)',
+    borderWidth: 1,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 999,
+    marginTop: 4,
+  },
+  celebrationStatText: {
+    color: '#10B981',
+    fontSize: 12,
+    fontWeight: '800',
+    letterSpacing: 0.4,
+  },
+  celebrationCTAs: {
+    paddingHorizontal: 20,
+    paddingBottom: 32,
+    gap: 10,
+  },
+  celebrationPrimaryShadow: {
+    borderRadius: 18,
+    shadowColor: '#6366F1',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.4,
+    shadowRadius: 16,
+    elevation: 8,
+  },
+  celebrationPrimaryBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    paddingVertical: 18,
+    borderRadius: 18,
+  },
+  celebrationPrimaryText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '800',
+    letterSpacing: 0.3,
+  },
+  celebrationSecondaryBtn: {
+    paddingVertical: 14,
+    alignItems: 'center',
+  },
+  celebrationSecondaryText: {
+    color: '#C7C4D7',
+    fontSize: 14,
+    fontWeight: '700',
   },
 });

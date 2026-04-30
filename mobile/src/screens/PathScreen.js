@@ -25,6 +25,7 @@ import {
 } from '../data/paths';
 import BannerAdBox from '../components/BannerAdBox';
 import OutOfHeartsModal from '../components/OutOfHeartsModal';
+import StreakInfoModal from '../components/StreakInfoModal';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -40,8 +41,10 @@ export default function PathScreen({ navigation }) {
     hearts,
     heartsRefillAt,
     refillHearts,
+    streakFreezes,
   } = useApp();
   const [outOfHeartsVisible, setOutOfHeartsVisible] = useState(false);
+  const [streakInfoVisible, setStreakInfoVisible] = useState(false);
 
   const activePath = useMemo(
     () => getPathById(activePathId) || PATHS[0],
@@ -118,13 +121,23 @@ export default function PathScreen({ navigation }) {
         >
           {/* Streak / Hearts / XP hero */}
           <View style={styles.heroCard}>
-            <View style={styles.heroLeft}>
+            <TouchableOpacity
+              onPress={() => setStreakInfoVisible(true)}
+              activeOpacity={0.7}
+              style={styles.heroLeft}
+            >
               <MaterialIcons name="local-fire-department" size={26} color="#F59E0B" />
               <Text style={styles.streakValue}>{currentStreak}</Text>
               <Text style={styles.streakLabel}>
                 {t('home.dayStreak', 'GÜN SERİ')}
               </Text>
-            </View>
+              {streakFreezes > 0 && (
+                <View style={styles.streakFreezeBadge}>
+                  <MaterialIcons name="ac-unit" size={11} color="#A5B4FC" />
+                  <Text style={styles.streakFreezeText}>{streakFreezes}</Text>
+                </View>
+              )}
+            </TouchableOpacity>
             <View style={styles.heroRight}>
               {!isPremium && (
                 <TouchableOpacity
@@ -335,6 +348,15 @@ export default function PathScreen({ navigation }) {
             navigation.navigate('Paywall');
           }}
           refillMins={refillMins}
+        />
+
+        <StreakInfoModal
+          visible={streakInfoVisible}
+          onClose={() => setStreakInfoVisible(false)}
+          streak={currentStreak}
+          freezes={streakFreezes || 0}
+          isPremium={isPremium}
+          onPaywall={() => navigation.navigate('Paywall')}
         />
       </View>
     </SafeAreaView>
@@ -559,7 +581,24 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(70, 69, 84, 0.3)',
   },
-  heroLeft: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  heroLeft: { flexDirection: 'row', alignItems: 'center', gap: 8, flexShrink: 1 },
+  streakFreezeBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 3,
+    backgroundColor: 'rgba(165, 180, 252, 0.15)',
+    borderColor: 'rgba(165, 180, 252, 0.3)',
+    borderWidth: 1,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 999,
+    marginLeft: 4,
+  },
+  streakFreezeText: {
+    color: '#A5B4FC',
+    fontSize: 11,
+    fontWeight: '900',
+  },
   streakValue: {
     color: '#F59E0B',
     fontSize: 22,

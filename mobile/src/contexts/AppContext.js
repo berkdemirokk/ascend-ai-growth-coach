@@ -109,6 +109,10 @@ function appReducer(state, action) {
         isPremium: !!action.payload,
         // Premium = unlimited hearts effectively
         hearts: action.payload ? 5 : state.hearts,
+        // Premium activation grants 3 streak freezes one-time (don't reduce)
+        streakFreezes: action.payload
+          ? Math.max(state.streakFreezes || 0, 3)
+          : state.streakFreezes,
       };
 
     case ACTION_TYPES.USE_STREAK_FREEZE:

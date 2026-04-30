@@ -304,6 +304,26 @@ export default function ProfileScreen({ navigation }) {
             </ScrollView>
           </View>
 
+          {/* Reflections link */}
+          <TouchableOpacity
+            onPress={() => navigation.navigate('Reflections')}
+            activeOpacity={0.7}
+            style={styles.linkCard}
+          >
+            <View style={styles.linkIconBox}>
+              <MaterialIcons name="auto-stories" size={22} color="#C0C1FF" />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.linkTitle}>
+                {t('profile.reflectionsLink', 'Yansımalarım')}
+              </Text>
+              <Text style={styles.linkSubtitle}>
+                {t('profile.reflectionsLinkSub', 'Geçmiş ders yansımaların')}
+              </Text>
+            </View>
+            <MaterialIcons name="chevron-right" size={22} color="#908FA0" />
+          </TouchableOpacity>
+
           <View style={{ height: 32 }} />
         </ScrollView>
       </View>
@@ -583,5 +603,42 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     textTransform: 'uppercase',
     lineHeight: 12,
+  },
+
+  // Link card (used for Reflections + future shortcuts)
+  linkCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+    backgroundColor: 'rgba(31, 31, 39, 0.6)',
+    borderWidth: 1,
+    borderColor: 'rgba(70, 69, 84, 0.5)',
+    borderRadius: 14,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    marginHorizontal: 20,
+    marginTop: 16,
+  },
+  linkIconBox: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    backgroundColor: 'rgba(192, 193, 255, 0.12)',
+    borderWidth: 1,
+    borderColor: 'rgba(192, 193, 255, 0.25)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  linkTitle: {
+    color: '#E4E1ED',
+    fontSize: 15,
+    fontWeight: '800',
+    letterSpacing: -0.3,
+  },
+  linkSubtitle: {
+    color: '#908FA0',
+    fontSize: 12,
+    fontWeight: '500',
+    marginTop: 2,
   },
 });
