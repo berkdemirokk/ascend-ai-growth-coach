@@ -56,7 +56,8 @@
             "correct": 2,
             "explain": "Science shows 7-30 day window."
           }
-        ]
+        ],
+        "proTip": "Addiction always waits for an excuse — \"just 5 minutes\" is that excuse."
       },
       "2": {
         "title": "Kill Notifications",
@@ -86,7 +87,8 @@
             "correct": 1,
             "explain": "They serve apps' growth metrics, not you."
           }
-        ]
+        ],
+        "proTip": "Turning off notifications isn't cutting communication — taking control."
       },
       "3": {
         "title": "Social Media Fast",
@@ -116,7 +118,8 @@
             "correct": 2,
             "explain": "24 hours breaks the habit on first try."
           }
-        ]
+        ],
+        "proTip": "24-hour fast is the first true digital silence for most."
       },
       "4": {
         "title": "Cut Junk Content",
@@ -146,7 +149,8 @@
             "correct": 0,
             "explain": "Producing is more nourishing than consuming."
           }
-        ]
+        ],
+        "proTip": "Junk content = empty calories. Producing = nourishment."
       },
       "5": {
         "title": "Allow Boredom",
@@ -176,157 +180,783 @@
             "correct": 1,
             "explain": "Idle mode = where creative seeds germinate."
           }
-        ]
+        ],
+        "proTip": "Don't fear boredom — creativity lives there."
       },
       "6": {
         "title": "Phone Out of Bedroom",
         "teaching": "Sleeping with the phone next to your pillow shreds sleep quality. Blue light suppresses melatonin, night notifications fragment sleep stages, the morning's first act becomes scrolling.\n\nWhat's your last screen before sleep? First screen on waking? These determine your mental health. If both are the phone, your life happens in the gap between screens.\n\nToday we create physical distance. Charging the phone in another room is simple but radical.",
         "action": "Tonight, charge your phone outside your bedroom — in another room. When you wake up, spend 30 minutes phone-free first.",
-        "reflectionPrompt": "Did your time-to-sleep change without the phone in the room?"
+        "reflectionPrompt": "Did your time-to-sleep change without the phone in the room?",
+        "quiz": [
+          {
+            "q": "Phone out of bedroom effect?",
+            "options": [
+              "None",
+              "Removes morning trigger",
+              "More awake",
+              "Negative"
+            ],
+            "correct": 1,
+            "explain": "Phone in bedroom = first stimulus."
+          },
+          {
+            "q": "Alternative alarm?",
+            "options": [
+              "Phone",
+              "Clock",
+              "None",
+              "Neighbor"
+            ],
+            "correct": 1,
+            "explain": "Classic clock works."
+          }
+        ],
+        "proTip": "Place a real alarm clock outside the bedroom. Old-school, effective."
       },
       "7": {
         "title": "Don't Touch the First Hour",
         "teaching": "When you wake, your brain is in 'cortisol awakening response' mode. The first 30–60 minutes are when perception, motivation, and day-planning capacity are highest.\n\nIf you reach for your phone in that hour, you're plugging your brain into others' agenda: notifications, emails, social feeds — you've lost control of your day.\n\nThe first hour is yours. Use it, or someone else gets your whole day.",
         "action": "Tomorrow, don't touch your phone for the first 60 minutes after waking. Drink water, wash your face, go outside, eat breakfast — phone-free.",
-        "reflectionPrompt": "How did the phoneless first hour feel? Empty, or calm?"
+        "reflectionPrompt": "How did the phoneless first hour feel? Empty, or calm?",
+        "quiz": [
+          {
+            "q": "First-hour rule?",
+            "options": [
+              "Use phone",
+              "Phoneless",
+              "Social media",
+              "Music"
+            ],
+            "correct": 1,
+            "explain": "First 60 min = intent window."
+          },
+          {
+            "q": "Early phone effect?",
+            "options": [
+              "Good",
+              "Reactive day",
+              "Productive",
+              "None"
+            ],
+            "correct": 1,
+            "explain": "Reactivity-led day."
+          }
+        ],
+        "proTip": "First-hour lion rule: no phone, no internet, just you + intent."
       },
       "8": {
         "title": "Grayscale Mode",
         "teaching": "Colors are extra dopamine fuel for the brain. Red notification dots, green checkmarks, glowing visual content — they create subconscious pull.\n\niOS and Android both have a 'grayscale' mode. When you turn it on, the phone suddenly looks 'boring.' That's a powerful psychological circuit-breaker.\n\nThis isn't a hack. It's science. The brain has been hijacked, we're returning it to its natural state.",
         "action": "Switch your phone to grayscale. iOS: Settings > Accessibility > Display & Text Size > Color Filters > Grayscale. Use it for 24 hours.",
-        "reflectionPrompt": "Without color, which app did you lose interest in fastest?"
+        "reflectionPrompt": "Without color, which app did you lose interest in fastest?",
+        "quiz": [
+          {
+            "q": "Grayscale mode is?",
+            "options": [
+              "Color",
+              "Colorless",
+              "Dark",
+              "Light"
+            ],
+            "correct": 1,
+            "explain": "Colorless = brain finds boring."
+          },
+          {
+            "q": "Effect?",
+            "options": [
+              "No effect",
+              "Auto drop usage",
+              "More usage",
+              "None"
+            ],
+            "correct": 1,
+            "explain": "Brain rejects colorless apps."
+          }
+        ],
+        "proTip": "Grayscale = no color. Brain finds colorless apps boring, drops them automatically."
       },
       "9": {
         "title": "Cut Porn",
         "teaching": "Porn is the most extreme form of modern dopamine exploitation. Unlimited variety, instant gratification, unreal stimulation — it desensitizes the brain to real relationships.\n\nNoFap research is clear: after 30 days off, energy, motivation, natural interaction with the opposite sex, and overall self-esteem rise.\n\nThis isn't shame. It's basic discipline for an optimal brain.",
         "action": "Starting today: 30 days, no porn. Install a site-blocker (Cold Turkey, BlockSite). Decide today.",
-        "reflectionPrompt": "What objection came to mind when you made this decision?"
+        "reflectionPrompt": "What objection came to mind when you made this decision?",
+        "quiz": [
+          {
+            "q": "Porn effect?",
+            "options": [
+              "Natural",
+              "Dopamine inflation",
+              "No effect",
+              "Positive"
+            ],
+            "correct": 1,
+            "explain": "Devalues natural dopamine."
+          },
+          {
+            "q": "Effect on real bond?",
+            "options": [
+              "Positive",
+              "Hostile",
+              "No effect",
+              "Speeds up"
+            ],
+            "correct": 1,
+            "explain": "Real bonding harder."
+          }
+        ],
+        "proTip": "Porn = dopamine inflation. Hostile to real bonding."
       },
       "10": {
         "title": "Day 10 — Mid-point Reflection",
         "teaching": "You've finished a third of the 30-day detox. What have you noticed?\n\nThe first week is hard. The second week the brain pushes back and tricks you ('what's one slip?'). The third week the new baseline settles.\n\nChange your body language. Look in the mirror. Are you standing taller? Eyes clearer? These small signs are the first markers of change.",
         "action": "Make today a reflection day. Sit for 15 minutes and write: (1) What changed in the first 10 days? (2) Which moment was hardest? (3) Which habit didn't slip?",
-        "reflectionPrompt": "What's the BIGGEST change you noticed in the first 10 days?"
+        "reflectionPrompt": "What's the BIGGEST change you noticed in the first 10 days?",
+        "quiz": [
+          {
+            "q": "Mid-point purpose?",
+            "options": [
+              "Finish",
+              "Look back + measure",
+              "Skip",
+              "Fatigue"
+            ],
+            "correct": 1,
+            "explain": "Observe progress."
+          },
+          {
+            "q": "Halfway step?",
+            "options": [
+              "Quit",
+              "Reflect",
+              "Speed up",
+              "Same"
+            ],
+            "correct": 1,
+            "explain": "Reflection = continuation fuel."
+          }
+        ],
+        "proTip": "Mid-point look back = progress meter. Doer remembers, skipper forgets."
       },
       "11": {
         "title": "Change the Environment",
         "teaching": "Willpower is a finite battery. In behavior change, environment matters more than willpower. If chocolate is in the fridge, you'll eat it. If your phone is on the bed, you'll check it.\n\nPhysical distance = willpower savings. You don't think about what you don't see. You don't want what you don't think about.\n\nToday we clean the environment of enemy triggers.",
         "action": "Look around your home. Pick 5 dopamine triggers and physically remove them: home-screen apps, junk food, alcohol, gaming console — whatever they are.",
-        "reflectionPrompt": "Which trigger did you think would be hardest to keep 'out of sight'? Why?"
+        "reflectionPrompt": "Which trigger did you think would be hardest to keep 'out of sight'? Why?",
+        "quiz": [
+          {
+            "q": "Strongest trigger?",
+            "options": [
+              "Thought",
+              "Environment",
+              "Person",
+              "Hunger"
+            ],
+            "correct": 1,
+            "explain": "Same setting = same behavior."
+          },
+          {
+            "q": "Solution?",
+            "options": [
+              "Will",
+              "Change environment",
+              "Try harder",
+              "None"
+            ],
+            "correct": 1,
+            "explain": "Environment shift = behavior shift."
+          }
+        ],
+        "proTip": "Environment = strongest trigger. Same setting = same behavior."
       },
       "12": {
         "title": "Embrace Boredom Again",
         "teaching": "In the first week you met boredom. Now it's time to love it. Boredom is the empty space your brain needs to form new connections.\n\nDopamine deficiency is the emergence of mental space. In that space, you ask real questions: 'What do I want in life?' 'Am I happy in this job?'\n\nBefore, those questions were drowned out by phone scrolling. Now you face them.",
         "action": "Spend 60 minutes bored on purpose today. Walk alone, sit in a room, stare at the ceiling. No phone, no music, no book.",
-        "reflectionPrompt": "What big question surfaced while you were bored?"
+        "reflectionPrompt": "What big question surfaced while you were bored?",
+        "quiz": [
+          {
+            "q": "Boredom = ?",
+            "options": [
+              "Sickness",
+              "Empty space signal",
+              "Hunger",
+              "Fatigue"
+            ],
+            "correct": 1,
+            "explain": "Brain wants empty space."
+          },
+          {
+            "q": "Second boredom wave?",
+            "options": [
+              "Day 1-3",
+              "Day 14-17",
+              "Day 25-30",
+              "None"
+            ],
+            "correct": 1,
+            "explain": "Around halfway."
+          }
+        ],
+        "proTip": "Second boredom wave hits day 14-17. It passes."
       },
       "13": {
         "title": "Single-Task Discipline",
         "teaching": "Multitasking is a myth. The brain can't truly do two tasks in parallel — it switches fast. Each switch drops performance by 40% and increases errors.\n\nReal deep work happens with a single task. Phone off, single tab open, music off (if it distracts).\n\nThis is training. Day 1, 25 minutes of single-focus is hard. A week later, 90 minutes feels natural.",
         "action": "Do one 90-minute single-task block today. Pick one task. Phone in another room. Only one tab open. 90 minutes only that.",
-        "reflectionPrompt": "How much more did you finish in 90 minutes? In 'multitask' mode, how long would the same task have taken?"
+        "reflectionPrompt": "How much more did you finish in 90 minutes? In 'multitask' mode, how long would the same task have taken?",
+        "quiz": [
+          {
+            "q": "Single-task = ?",
+            "options": [
+              "Slow",
+              "Discipline test",
+              "Useless",
+              "Modern"
+            ],
+            "correct": 1,
+            "explain": "Hardest brain discipline."
+          },
+          {
+            "q": "Multitask productivity?",
+            "options": [
+              "2x",
+              "Same",
+              "40% lower",
+              "200%"
+            ],
+            "correct": 2,
+            "explain": "Multi = 40% loss."
+          }
+        ],
+        "proTip": "Single-task = discipline test. Brain unfamiliar, but power lives here."
       },
       "14": {
         "title": "Cut Artificial Stimulation",
         "teaching": "Caffeine, sugar, fast music, aggressive video games — all are artificial dopamine spikes. They create stimulation above the natural baseline.\n\nIn the short term, feeling 'energetic' is normal. Long-term, the brain pulls baseline up — meaning normal life feels increasingly 'flat.'\n\nIf you reduce artificial tools during detox, natural motivation comes back. You may seem less energetic, but more sustainable.",
         "action": "Cut caffeine in half today (one coffee). Skip sugar entirely. Work in silence. Spend the day on natural energy only.",
-        "reflectionPrompt": "Without artificial stimulation, what was my energy level? How did it feel?"
+        "reflectionPrompt": "Without artificial stimulation, what was my energy level? How did it feel?",
+        "quiz": [
+          {
+            "q": "Music = ?",
+            "options": [
+              "Calm",
+              "Stimulus",
+              "Passive",
+              "Silence"
+            ],
+            "correct": 1,
+            "explain": "Even music is stim."
+          },
+          {
+            "q": "Silence benefit?",
+            "options": [
+              "None",
+              "Brain medicine",
+              "Boring",
+              "No effect"
+            ],
+            "correct": 1,
+            "explain": "Silent minutes = deep processing."
+          }
+        ],
+        "proTip": "Even music is stimulation. Silent minutes = brain medicine."
       },
       "15": {
         "title": "Return to Real Connection",
         "teaching": "The detox isn't about isolation. It's about replacing fake connections (social media, message threads) with real ones.\n\nA 10-minute deep conversation is more nourishing than 10 hours of DMs. Digital communication is like food with zero calories — you eat but don't get full.\n\nReturn to real connection today.",
         "action": "Call (not message) someone you care about today. Talk for at least 15 minutes. The topic doesn't matter — the connection does.",
-        "reflectionPrompt": "What did real voice-to-voice feel like compared to texting?"
+        "reflectionPrompt": "What did real voice-to-voice feel like compared to texting?",
+        "quiz": [
+          {
+            "q": "Human contact vs screen?",
+            "options": [
+              "Same",
+              "100x more nourishing",
+              "Less",
+              "No effect"
+            ],
+            "correct": 1,
+            "explain": "Human bond 100x more valuable."
+          },
+          {
+            "q": "Loneliness solution?",
+            "options": [
+              "Phone",
+              "Real contact",
+              "More screen",
+              "Music"
+            ],
+            "correct": 1,
+            "explain": "Real bond solves loneliness."
+          }
+        ],
+        "proTip": "Human contact = 100x more nourishing than screen consumption."
       },
       "16": {
         "title": "Past Halfway — Acknowledgment",
         "teaching": "Today is day 16. You crossed the half. Two inner voices are now clearer:\n\n(1) Old you: Wants fast dopamine back. Looks for excuses. 'What's one break?'\n\n(2) New you: Calm, decided, less reactive. Loves the empty space.\n\n14 days left. The hardest part is behind you.",
         "action": "Buy yourself a gift today — but not ordinary. A book, quality meal, nature walk. Low dopamine, high meaning.",
-        "reflectionPrompt": "Between the two yous (old and new), which was stronger today?"
+        "reflectionPrompt": "Between the two yous (old and new), which was stronger today?",
+        "quiz": [
+          {
+            "q": "Past halfway?",
+            "options": [
+              "Harder",
+              "Hardest done",
+              "Same",
+              "Tired"
+            ],
+            "correct": 1,
+            "explain": "Hardest part done."
+          },
+          {
+            "q": "Affirmation importance?",
+            "options": [
+              "No effect",
+              "Continuation fuel",
+              "Luxury",
+              "Reminder"
+            ],
+            "correct": 1,
+            "explain": "Affirmation = motivation."
+          }
+        ],
+        "proTip": "Past halfway = no stab in the back. The hardest part is done."
       },
       "17": {
         "title": "Breath Discipline",
         "teaching": "When stressed, the search for dopamine increases. Stress = urge to escape. The brain reaches for the phone.\n\nBreathing breaks this loop. The 4-7-8 technique: inhale 4 sec, hold 7, exhale 8. 4 rounds = 1 minute. The brain shifts to parasympathetic mode.\n\nThis is the alternative that replaces the phone. In moments of stress: breath, not phone.",
         "action": "Do 4-7-8 breathing 3 times today. After waking, at lunch break, before sleep.",
-        "reflectionPrompt": "What did you notice after the breath? Did the urge to grab the phone change?"
+        "reflectionPrompt": "What did you notice after the breath? Did the urge to grab the phone change?",
+        "quiz": [
+          {
+            "q": "4-7-8 breath?",
+            "options": [
+              "Random",
+              "4 in, 7 hold, 8 out",
+              "Fast",
+              "Slow"
+            ],
+            "correct": 1,
+            "explain": "Classic instant-calm technique."
+          },
+          {
+            "q": "Effect?",
+            "options": [
+              "None",
+              "Instant calm",
+              "Fatigue",
+              "Stress"
+            ],
+            "correct": 1,
+            "explain": "Parasympathetic activation."
+          }
+        ],
+        "proTip": "4-7-8 breath: 4 in, 7 hold, 8 out. Instant calm."
       },
       "18": {
         "title": "Digital Minimalism",
         "teaching": "Cal Newport's concept: delete every digital tool you don't need. If it doesn't add real value to your life = it's exploiting you.\n\n10 apps are enough for most people. Messaging, navigation, banking, camera, calendar, music, podcasts, email, weather, shopping.\n\nThe rest are enemies. Social media, games, unnecessary shopping apps — they pull a minute at a time.",
         "action": "Review EVERY app on your phone. Delete every one you haven't opened in the last 30 days. Delete every one you hesitate on. You can re-install if needed — you won't need to.",
-        "reflectionPrompt": "How many apps did you delete? Which was the hardest to delete?"
+        "reflectionPrompt": "How many apps did you delete? Which was the hardest to delete?",
+        "quiz": [
+          {
+            "q": "Digital minimalism?",
+            "options": [
+              "Unlimited",
+              "Essentials only",
+              "Modern",
+              "Expensive"
+            ],
+            "correct": 1,
+            "explain": "Necessities + productive only."
+          },
+          {
+            "q": "Cal Newport thesis?",
+            "options": [
+              "Speed",
+              "Less but deep",
+              "More shallow",
+              "Random"
+            ],
+            "correct": 1,
+            "explain": "Less but deep consumption."
+          }
+        ],
+        "proTip": "Digital minimalism = essentials + productivity. Everything else, gone."
       },
       "19": {
         "title": "Slow Down",
         "teaching": "The fast-dopamine habit creates the expectation that 'everything must happen now.' Waiting in line is unbearable. Cooking takes too long. Reading is slow.\n\nThe detox is rewriting these expectations. Slow things bring pleasure again.\n\nToday: slow down. Refuse the rush. Take an hour for what would have been 30 minutes.",
         "action": "Eat one meal slowly today — no phone, no screen. Chew each bite for 20 seconds. Enjoy the food.",
-        "reflectionPrompt": "Which flavors came back when you ate slowly? Did you feel fuller?"
+        "reflectionPrompt": "Which flavors came back when you ate slowly? Did you feel fuller?",
+        "quiz": [
+          {
+            "q": "Slowing = ?",
+            "options": [
+              "Lazy",
+              "Visual discipline",
+              "Backward",
+              "No effect"
+            ],
+            "correct": 1,
+            "explain": "Slow = controlled."
+          },
+          {
+            "q": "Fast life?",
+            "options": [
+              "Ideal",
+              "Uncontrolled",
+              "Productive",
+              "Discipline"
+            ],
+            "correct": 1,
+            "explain": "Fast = control loss."
+          }
+        ],
+        "proTip": "Slowing = visual form of discipline. Fast = uncontrolled."
       },
       "20": {
         "title": "Day 20 — New Baseline",
         "teaching": "Your brain may have recalibrated dopamine receptors. The 'flat' feeling is actually the new normal. Did you notice life doesn't suffer without stimulation?\n\nMost people are surprised at this point: 'Less is actually better.' That's a big teacher.\n\n10 days left. Now you'll learn how to harden this new baseline.",
         "action": "Celebrate day 20 — but not with a dopamine bomb. Do a quiet activity with a loved one. Walk, eat together, nature.",
-        "reflectionPrompt": "What's the biggest difference between the 'you' 20 days ago and now?"
+        "reflectionPrompt": "What's the biggest difference between the 'you' 20 days ago and now?",
+        "quiz": [
+          {
+            "q": "New baseline?",
+            "options": [
+              "Old",
+              "30-days-ago boredom = now normal",
+              "Worse",
+              "Same"
+            ],
+            "correct": 1,
+            "explain": "Brain set new standard."
+          },
+          {
+            "q": "Science backing?",
+            "options": [
+              "None",
+              "7-30 day adaptation",
+              "1 year",
+              "Never"
+            ],
+            "correct": 1,
+            "explain": "7-30 day adaptation window."
+          }
+        ],
+        "proTip": "New baseline = 30 days ago boredom is now normal."
       },
       "21": {
         "title": "Recognize Your Triggers",
         "teaching": "Every dopamine craving has a trigger. Boredom, sadness, loneliness, fatigue, sense of failure — these create the 'escape' urge. The escape usually goes to the phone.\n\nKnowing your trigger is power. Once you know it, you break the automatic response. 'I'm bored' becomes 'I'm reaching for the phone because I'm bored, but my real need is to sit with the boredom.'",
         "action": "Today, every time a dopamine urge hits, write one sentence: 'Right now I feel X, I want the phone.' Look at the list at night.",
-        "reflectionPrompt": "Which trigger repeated most? What does that emotion really want?"
+        "reflectionPrompt": "Which trigger repeated most? What does that emotion really want?",
+        "quiz": [
+          {
+            "q": "Recognize trigger how?",
+            "options": [
+              "Ignore",
+              "Written log",
+              "Remember",
+              "No effect"
+            ],
+            "correct": 1,
+            "explain": "Written = conscious."
+          },
+          {
+            "q": "Most common trigger?",
+            "options": [
+              "Hunger",
+              "Boredom",
+              "Fatigue",
+              "Joy"
+            ],
+            "correct": 1,
+            "explain": "Boredom = main trigger."
+          }
+        ],
+        "proTip": "Track triggers in writing: \"what situation made me reach for the phone?\""
       },
       "22": {
         "title": "Replacement Strategy",
         "teaching": "Just deleting a bad habit isn't enough. What will you replace it with?\n\nBreath replaces the phone. Walking replaces scrolling. Cold shower replaces breakfast scrolling. Books replace bingeing.\n\nWhat prevents post-detox relapse: new behaviors taking root. What will you put in place today?",
         "action": "Write a replacement list for the next 5 hours: when the phone urge comes, what will you do? (E.g., 4-7-8 breath, 10 squats, drink water, go outside.)",
-        "reflectionPrompt": "Which replacement worked? Which felt fake?"
+        "reflectionPrompt": "Which replacement worked? Which felt fake?",
+        "quiz": [
+          {
+            "q": "Replacement strategy?",
+            "options": [
+              "None",
+              "Alternative for reflex",
+              "Hold",
+              "Wait"
+            ],
+            "correct": 1,
+            "explain": "Offer alternative behavior."
+          },
+          {
+            "q": "Example alternatives?",
+            "options": [
+              "Phone",
+              "Breath/push-up/water",
+              "More phone",
+              "Unknown"
+            ],
+            "correct": 1,
+            "explain": "Healthy reflex options."
+          }
+        ],
+        "proTip": "Replacement = instead of phone reflex: deep breath / 5 push-ups / water."
       },
       "23": {
         "title": "Negative Visualization",
         "teaching": "The Stoics practiced 'premeditatio malorum' — imagine the bad in advance. 'What would it feel like to lose this detox?'\n\nImagine 1 hour back in your old life: scrolling, junk food, random video. Then compare it to where you are now in this detox.\n\nLoss aversion is twice as powerful as gain. Use it as a weapon.",
         "action": "Close your eyes for 5 minutes. Imagine a 24-hour day where you weren't on this detox — old phone habits, old fatigue. Then return to now.",
-        "reflectionPrompt": "What did imagining the old day feel like?"
+        "reflectionPrompt": "What did imagining the old day feel like?",
+        "quiz": [
+          {
+            "q": "Negative visualization?",
+            "options": [
+              "Think positive",
+              "\"What do I lose?\"",
+              "Ignore",
+              "Speed up"
+            ],
+            "correct": 1,
+            "explain": "Visualize the loss."
+          },
+          {
+            "q": "Stoic philosophy?",
+            "options": [
+              "None",
+              "Premeditatio malorum",
+              "Hedonism",
+              "Modern"
+            ],
+            "correct": 1,
+            "explain": "Classic Stoic technique."
+          }
+        ],
+        "proTip": "Negative visualization: \"If I check this phone, what do I lose?\""
       },
       "24": {
         "title": "Make the Phone a Tool",
         "teaching": "The phone is a tool. You use it; it doesn't use you. After the detox, this should be your relationship.\n\nWhen it's a tool: you open it intentionally (I'll do X), do it, close it. You don't open it for entertainment. You don't open it from boredom.\n\nAfter the detox you can re-install some things. But with the new rule: intentional use.",
         "action": "Today, before opening the phone, say out loud 'I'm going to do X.' When done, close it. No entertainment.",
-        "reflectionPrompt": "How did intentional use compare to 'just looking' use?"
+        "reflectionPrompt": "How did intentional use compare to 'just looking' use?",
+        "quiz": [
+          {
+            "q": "Phone as tool?",
+            "options": [
+              "Always on",
+              "Ask intent",
+              "Auto",
+              "None"
+            ],
+            "correct": 1,
+            "explain": "Intent check before opening."
+          },
+          {
+            "q": "Aimless opening effect?",
+            "options": [
+              "No effect",
+              "Hours lost",
+              "Productive",
+              "Positive"
+            ],
+            "correct": 1,
+            "explain": "Aimless = scroll loss."
+          }
+        ],
+        "proTip": "Phone as tool: ask \"what is my intent on opening it?\""
       },
       "25": {
         "title": "Final Sprint Begins",
         "teaching": "Last 5 days. The most critical phase of the sprint. The brain needs to finish this last week to settle into the new baseline. Otherwise you have a 'half-detox' and easy relapse.\n\nYou may feel difficulty rise this week. The thought 'It's done, I made it' often leads to early surrender.\n\nThe finish line is day 30. 25, 26, 27, 28, 29, 30. Finish.",
         "action": "Write your last-5-days commitment today: Which habits will you keep permanently? Which apps will you NEVER reinstall?",
-        "reflectionPrompt": "Which app, even though the detox is over, will you not reinstall? Why?"
+        "reflectionPrompt": "Which app, even though the detox is over, will you not reinstall? Why?",
+        "quiz": [
+          {
+            "q": "Final sprint?",
+            "options": [
+              "Easy",
+              "Hardest 5 days",
+              "No effect",
+              "Random"
+            ],
+            "correct": 1,
+            "explain": "Brain wants \"complete\" signal."
+          },
+          {
+            "q": "Sprint solution?",
+            "options": [
+              "Quit",
+              "Sustain + focus",
+              "Speed up",
+              "Slow"
+            ],
+            "correct": 1,
+            "explain": "Last sprint = sustain."
+          }
+        ],
+        "proTip": "Final sprint = hardest 5 days. Brain wants the \"complete\" signal."
       },
       "26": {
         "title": "Social Immunity",
         "teaching": "When the detox ends, the environment will pull you back to old habits. Friends are on the phone. Family is in WhatsApp groups. Social media topics are everywhere.\n\nFor immunity, two things: (1) Don't forget why you started. (2) Inform your circle — 'I've cut down on phone use, if I reply late it's normal.'\n\nPeople will respect it. Those who don't belong to your old life — not your new one.",
         "action": "Today, message 3 important people: 'I'm in the last week of a detox, my phone is mostly away. Don't worry if I reply late.'",
-        "reflectionPrompt": "How did people respond? As you expected?"
+        "reflectionPrompt": "How did people respond? As you expected?",
+        "quiz": [
+          {
+            "q": "Social immunity?",
+            "options": [
+              "Loneliness",
+              "\"Everyone does it\" resistance",
+              "Social media",
+              "None"
+            ],
+            "correct": 1,
+            "explain": "Resist herd pressure."
+          },
+          {
+            "q": "Majority always?",
+            "options": [
+              "Right",
+              "Maybe wrong",
+              "No effect",
+              "Unknown"
+            ],
+            "correct": 1,
+            "explain": "Majority = herd, not always right."
+          }
+        ],
+        "proTip": "Social immunity = resistance to \"everyone does it\" judgment."
       },
       "27": {
         "title": "Permanent Boundaries",
         "teaching": "The detox is temporary, the boundaries are permanent. This weekend the detox ends — but what rules will stay?\n\nSome should be permanent: notifications off. No phone in the bedroom. Don't touch in the first hour. Social media once a day for 15 minutes.\n\nThese aren't 'rules for your life' — they're 'limits for your brain.' Science says: maintain at least a year and the new baseline becomes permanent.",
         "action": "Write 5 permanent boundaries. Very specific: 'After 9pm phone is in another room charging,' 'I will never use TikTok,' etc.",
-        "reflectionPrompt": "Which of the 5 will be hardest to maintain?"
+        "reflectionPrompt": "Which of the 5 will be hardest to maintain?",
+        "quiz": [
+          {
+            "q": "Permanent boundary?",
+            "options": [
+              "Temp",
+              "Lasts past day 30",
+              "Flexible",
+              "None"
+            ],
+            "correct": 1,
+            "explain": "Long-term discipline."
+          },
+          {
+            "q": "Flexible boundary = ?",
+            "options": [
+              "Discipline",
+              "No boundary",
+              "No effect",
+              "Modern"
+            ],
+            "correct": 1,
+            "explain": "Flex = boundless = loss."
+          }
+        ],
+        "proTip": "Permanent boundary = discipline lasting past day 30."
       },
       "28": {
         "title": "Practice Meaning",
         "teaching": "Dopamine = momentary pleasure. Meaning = lasting fulfillment. Exploitative dopamine is forgotten in an hour, meaning is carried for years.\n\nDopamine is reduced after detox; now fill it with meaning. Meaning: purposeful work, real bonds, skill acquisition, service.\n\nMeaningful things don't give 'fast pleasure' but at the end of the day make you say 'it was worth it.'",
         "action": "Do something meaningful today: Help someone (a neighbor's groceries, call an elderly relative). No gift, expectation, photo. Just the act.",
-        "reflectionPrompt": "How did the meaningful act feel? Not dopamine — what was it?"
+        "reflectionPrompt": "How did the meaningful act feel? Not dopamine — what was it?",
+        "quiz": [
+          {
+            "q": "Meaning practice?",
+            "options": [
+              "None",
+              "\"Why?\" question",
+              "Joy",
+              "Luck"
+            ],
+            "correct": 1,
+            "explain": "Why = motivation source."
+          },
+          {
+            "q": "Meaningless discipline?",
+            "options": [
+              "Sustainable",
+              "Fades",
+              "Strong",
+              "Modern"
+            ],
+            "correct": 1,
+            "explain": "Meaningless = unsustainable."
+          }
+        ],
+        "proTip": "Meaning practice = daily answer to \"why am I doing this?\""
       },
       "29": {
         "title": "Tomorrow Is the Last Day",
         "teaching": "Day 29. Tomorrow is 30. Could you have sustained 30 days of discipline before this journey?\n\nMost people can't. You did. This isn't just dopamine detox — it's proof of discipline.\n\nTomorrow is the end day, not the start. You enter your new life with this hardened mind.",
         "action": "Write today the last 29 days — short: 'For 29 days I did dopamine detox. These changed: ...' Save it. One day you'll come back to read it.",
-        "reflectionPrompt": "Could the you of 29 days ago have written this sentence?"
+        "reflectionPrompt": "Could the you of 29 days ago have written this sentence?",
+        "quiz": [
+          {
+            "q": "Tomorrow last day = ?",
+            "options": [
+              "Wait",
+              "Today last sprint",
+              "Skip",
+              "Postpone"
+            ],
+            "correct": 1,
+            "explain": "Don't leave for tomorrow."
+          },
+          {
+            "q": "Postponement risk?",
+            "options": [
+              "No effect",
+              "Discipline loss",
+              "Productive",
+              "Positive"
+            ],
+            "correct": 1,
+            "explain": "Postpone = enemy of discipline."
+          }
+        ],
+        "proTip": "Tomorrow last day = today last sprint. Don't leave for tomorrow."
       },
       "30": {
         "title": "Complete — New You",
         "teaching": "30 days. It's done. But really, just begun.\n\nYour brain has recalibrated. Your dopamine baseline has dropped — meaning small things give pleasure again. You tolerate boredom. The phone no longer controls you — you control it.\n\nThis hardness is yours now. No one can take it.",
         "action": "Today, celebrate the whole sprint. Meaningfully — not with a big meal but with a real meeting with loved ones. Phone in bag, off.",
-        "reflectionPrompt": "After 30 days, what's the MOST IMPORTANT change for you? How will you protect it?"
+        "reflectionPrompt": "After 30 days, what's the MOST IMPORTANT change for you? How will you protect it?",
+        "quiz": [
+          {
+            "q": "Complete = ?",
+            "options": [
+              "Done",
+              "New you",
+              "Same",
+              "Negative"
+            ],
+            "correct": 1,
+            "explain": "Switched to sustaining identity."
+          },
+          {
+            "q": "After transition?",
+            "options": [
+              "Immediately",
+              "3-day rest",
+              "1-month wait",
+              "Never"
+            ],
+            "correct": 1,
+            "explain": "3 days rest, then continue."
+          }
+        ],
+        "proTip": "Complete ≠ finished. Complete = this is who you are now."
       }
     },
     "silent-morning": {
@@ -358,7 +988,8 @@
             "correct": 1,
             "explain": "Deep sleep happens between 22:00-06:00."
           }
-        ]
+        ],
+        "proTip": "Put your bedtime in the calendar as \"the most important appointment of the day.\""
       },
       "2": {
         "title": "Phoneless Alarm",
@@ -388,7 +1019,8 @@
             "correct": 1,
             "explain": "Distance from phone creates mental boundary."
           }
-        ]
+        ],
+        "proTip": "Place the phone in the farthest corner of the room — physical distance builds psychological boundary."
       },
       "3": {
         "title": "Water, Face, Window",
@@ -418,7 +1050,8 @@
             "correct": 1,
             "explain": "Cold shock = wake mode activation."
           }
-        ]
+        ],
+        "proTip": "After cold face-wash, skip the towel; air-drying delivers extra wake-up shock."
       },
       "4": {
         "title": "Morning Silence",
@@ -448,7 +1081,8 @@
             "correct": 1,
             "explain": "Silent start = calm reactivity all day."
           }
-        ]
+        ],
+        "proTip": "Even talking can break silence — true silence is internal + external."
       },
       "5": {
         "title": "5-Minute Morning Intent",
@@ -477,6 +1111,782 @@
             ],
             "correct": 2,
             "explain": "Priority, habits, pride — three shape the day."
+          }
+        ],
+        "proTip": "Write your intent answers. The brain remembers written intent 4x more than mental intent."
+      },
+      "6": {
+        "title": "Morning Light: 10 Minutes",
+        "teaching": "Brain resets circadian rhythm via blue-green light hitting the retina. 10 min outside in morning = deeper sleep at night. Glass blocks it — direct sky needed. Even cloudy days deliver 100x more lux than indoors.",
+        "action": "Today, within 30 min of waking, get 10 min of direct outdoor light. No phone.",
+        "reflectionPrompt": "What shifted internally when you saw direct sky?",
+        "proTip": "If you work in an office, take a second 10 min dose at lunch. The afternoon dose is even stronger.",
+        "quiz": [
+          {
+            "q": "How does circadian rhythm reset?",
+            "options": [
+              "Blue-green light",
+              "Music",
+              "Food",
+              "Phone"
+            ],
+            "correct": 0,
+            "explain": "Morning light hitting retina = primary circadian signal."
+          },
+          {
+            "q": "Lux difference even cloudy?",
+            "options": [
+              "Same",
+              "10x",
+              "50x",
+              "100x outdoor"
+            ],
+            "correct": 3,
+            "explain": "Cloudy outdoors ~100x brighter than indoors."
+          }
+        ]
+      },
+      "7": {
+        "title": "First Water: 300ml",
+        "teaching": "Body is dehydrated 6-8 hours from sleep. Coffee first = stacking on already-peaking cortisol. Water first, coffee 90+ min later. Water = energy, focus, hunger control.",
+        "action": "Today drink 300ml water on waking. Wait at least 60 min before coffee.",
+        "reflectionPrompt": "What was the first physical change you noticed after drinking?",
+        "proTip": "Leave a glass at your bedside the night before — no morning decision needed.",
+        "quiz": [
+          {
+            "q": "First morning drink should be?",
+            "options": [
+              "Coffee",
+              "Water",
+              "Tea",
+              "Milk"
+            ],
+            "correct": 1,
+            "explain": "Cortisol already peaks — water, not coffee."
+          },
+          {
+            "q": "Min wait before coffee?",
+            "options": [
+              "0 min",
+              "15 min",
+              "60 min",
+              "180 min"
+            ],
+            "correct": 2,
+            "explain": "At least 60 min for hydration."
+          }
+        ]
+      },
+      "8": {
+        "title": "Cold Splash",
+        "teaching": "Full cold shower is intense — but 30 sec of cold water on your face delivers 80% of the benefit. Sympathetic nervous system fires, dopamine jumps 250%, focus lasts 2 hours. Free, fast, no marketing.",
+        "action": "Today splash cold water on your face for 30 seconds. Add wrists if you can.",
+        "reflectionPrompt": "How was your mental clarity right after the shock?",
+        "proTip": "If 30 sec is too much, start with 10. Add 5 sec each day.",
+        "quiz": [
+          {
+            "q": "Cold face wash duration?",
+            "options": [
+              "10s",
+              "30s",
+              "60s",
+              "180s"
+            ],
+            "correct": 1,
+            "explain": "30 seconds = 80% of the benefit."
+          },
+          {
+            "q": "Cold shock effect on dopamine?",
+            "options": [
+              "-10%",
+              "+50%",
+              "+150%",
+              "+250%"
+            ],
+            "correct": 3,
+            "explain": "250% rise lasts 2 hours."
+          }
+        ]
+      },
+      "9": {
+        "title": "Posture Discipline",
+        "teaching": "Slumped posture = low testosterone, high cortisol. 2 minutes of upright stance shifts hormone profile (Amy Cuddy research). Mirror check: shoulders back, chest open, chin parallel. This stance carries the day.",
+        "action": "Today stand tall for 5 min (standing or sitting). Hourly 30-sec posture check.",
+        "reflectionPrompt": "How did you feel internally once you fixed your posture?",
+        "proTip": "Hold your phone at eye level, not down. This alone reduces neck strain by 70%.",
+        "quiz": [
+          {
+            "q": "Slumped posture distorts which hormones?",
+            "options": [
+              "Insulin",
+              "Test/cortisol",
+              "Thyroid",
+              "Adrenaline"
+            ],
+            "correct": 1,
+            "explain": "Low T, high cortisol = slump signature."
+          },
+          {
+            "q": "Time for posture to shift hormones?",
+            "options": [
+              "10s",
+              "2 min",
+              "20 min",
+              "2h"
+            ],
+            "correct": 1,
+            "explain": "Cuddy research — 2 min suffices."
+          }
+        ]
+      },
+      "10": {
+        "title": "Stretch Routine: 5 Minutes",
+        "teaching": "Sleep contracts muscles, fascia stiffens. Morning stretch = launching the day in a flexible body. 3 moves are enough: arms up (shoulders), forward bend (back-leg), side rotation (spine). 30 sec × 3 sets each.",
+        "action": "Today stretch 5 min. Stop at the stretch point, not the pain point.",
+        "reflectionPrompt": "Which body part loosened up the most?",
+        "proTip": "Sync stretch with breath. Deepen on the exhale of each move.",
+        "quiz": [
+          {
+            "q": "Min stretch moves needed?",
+            "options": [
+              "1",
+              "3",
+              "7",
+              "15"
+            ],
+            "correct": 1,
+            "explain": "3 main moves: shoulder, back-leg, side rotation."
+          },
+          {
+            "q": "Stop point of stretch?",
+            "options": [
+              "Pain",
+              "Stretch sensation",
+              "Burn",
+              "Crack"
+            ],
+            "correct": 1,
+            "explain": "Stretch point, not pain point."
+          }
+        ]
+      },
+      "11": {
+        "title": "Box Breath: 4-4-4-4",
+        "teaching": "Box breathing (Navy SEAL technique): 4 sec in, 4 hold, 4 out, 4 hold. 5 minutes = parasympathetic activation, cortisol drop, focus boost. Science-proven, warriors used it, you can too.",
+        "action": "Today after waking do 5 min of box breathing. Sitting, upright posture.",
+        "reflectionPrompt": "What is the speed of your mind after the practice?",
+        "proTip": "If counting feels hard, use fingers. 4 closed, 4 hold, etc.",
+        "quiz": [
+          {
+            "q": "Box breath rhythm?",
+            "options": [
+              "4-4-4-4",
+              "5-2-7-2",
+              "4-7-8",
+              "Random"
+            ],
+            "correct": 0,
+            "explain": "4 in, 4 hold, 4 out, 4 hold."
+          },
+          {
+            "q": "Box breath activates?",
+            "options": [
+              "Sympathetic",
+              "Parasympathetic",
+              "Endocrine",
+              "Digestive"
+            ],
+            "correct": 1,
+            "explain": "Parasympathetic = calm."
+          }
+        ]
+      },
+      "12": {
+        "title": "Three Gratitudes",
+        "teaching": "Gratitude trains brain to produce dopamine/serotonin. Write 3 specific things: different from yesterday, for today. \"I'm healthy\" doesn't hit — \"I had my mom's warm bread at breakfast\" does. Detail = effect.",
+        "action": "Today write 3 specific gratitudes. Concrete, not abstract.",
+        "reflectionPrompt": "Which entry was the hardest to write? Why?",
+        "proTip": "Do gratitude bedside, journal at hand. Each evening read yesterday's.",
+        "quiz": [
+          {
+            "q": "Gratitude entry should be?",
+            "options": [
+              "Generic",
+              "Specific + new",
+              "Same daily",
+              "Short"
+            ],
+            "correct": 1,
+            "explain": "Specific + different from yesterday = effect."
+          },
+          {
+            "q": "Gratitude triggers which chemicals?",
+            "options": [
+              "Cortisol",
+              "Dopamine/serotonin",
+              "Adrenaline",
+              "Melatonin"
+            ],
+            "correct": 1,
+            "explain": "Positive emotion chemistry fires."
+          }
+        ]
+      },
+      "13": {
+        "title": "Three of the Day",
+        "teaching": "Trying to do everything = doing nothing. Pick 3 priorities at sunrise: only 3. If all done by night, day is a win. Rest is bonus.",
+        "action": "Today write 3 priorities at the start. Tick them by night.",
+        "reflectionPrompt": "Which 7 items did you cut to land on 3?",
+        "proTip": "Finish one before 11am. Early win = energy all day.",
+        "quiz": [
+          {
+            "q": "How many priorities a day?",
+            "options": [
+              "1",
+              "3",
+              "7",
+              "15"
+            ],
+            "correct": 1,
+            "explain": "3 = doable + focused."
+          },
+          {
+            "q": "When should first priority finish?",
+            "options": [
+              "7am",
+              "11am",
+              "PM",
+              "Evening"
+            ],
+            "correct": 1,
+            "explain": "Early win = energy."
+          }
+        ]
+      },
+      "14": {
+        "title": "Body Scan",
+        "teaching": "Body carries accumulated stress. Morning body scan = \"what am I carrying\" awareness. Head to toe: clenched jaw, raised shoulders, tight stomach? Notice = release.",
+        "action": "Today on waking, do a 3-min body scan. Send breath into each tense area.",
+        "reflectionPrompt": "Which body part was tightest? What might it be telling you?",
+        "proTip": "Jaw is the most ignored. Place tongue on roof of mouth — jaw releases.",
+        "quiz": [
+          {
+            "q": "Body scan duration?",
+            "options": [
+              "30s",
+              "3 min",
+              "15 min",
+              "1h"
+            ],
+            "correct": 1,
+            "explain": "3 min head-to-toe is enough."
+          },
+          {
+            "q": "Most ignored tense area?",
+            "options": [
+              "Jaw",
+              "Foot",
+              "Knee",
+              "Wrist"
+            ],
+            "correct": 0,
+            "explain": "Jaw clenches unnoticed all day."
+          }
+        ]
+      },
+      "15": {
+        "title": "Inner Greeting",
+        "teaching": "Most mornings start outward: phone, news, message. Inner greeting = \"hello to self.\" Look in the mirror, into your own eyes, say \"good morning [name].\" Not forced — a soft introduction.",
+        "action": "Today say \"good morning\" to yourself in the mirror. 10 sec eye contact.",
+        "reflectionPrompt": "What did you feel from the mirror version of you?",
+        "proTip": "If awkward, end with a smile day one. Brain doesn't separate real from forced.",
+        "quiz": [
+          {
+            "q": "Inner greeting how?",
+            "options": [
+              "Phone",
+              "10 sec mirror eye contact",
+              "Written",
+              "Fast"
+            ],
+            "correct": 1,
+            "explain": "Eye-contact in mirror = inner introduction."
+          },
+          {
+            "q": "If first day awkward?",
+            "options": [
+              "Skip",
+              "End with smile",
+              "Quit",
+              "Speed up"
+            ],
+            "correct": 1,
+            "explain": "Brain doesn't separate forced from real."
+          }
+        ]
+      },
+      "16": {
+        "title": "Cold Shower Initiation",
+        "teaching": "Cold shower = physical proof of discipline. Acting when mind says \"don't\" rewires the brain. Start at 30 sec. Norepinephrine spikes, depression risk drops 29% (Wim Hof research).",
+        "action": "Today turn the last 30 seconds of your shower as cold as possible.",
+        "reflectionPrompt": "When the cold hit, what was the first thought?",
+        "proTip": "Don't hold breath. Opposite: deep breath in, controlled out. Shock fades when breath leads.",
+        "quiz": [
+          {
+            "q": "Cold shower starting duration?",
+            "options": [
+              "5s",
+              "30s",
+              "2 min",
+              "10 min"
+            ],
+            "correct": 1,
+            "explain": "30s = sustainable start."
+          },
+          {
+            "q": "Cold shower depression risk drop?",
+            "options": [
+              "5%",
+              "15%",
+              "29%",
+              "50%"
+            ],
+            "correct": 2,
+            "explain": "Wim Hof — 29% drop."
+          }
+        ]
+      },
+      "17": {
+        "title": "Floor Workout: 5 Minutes",
+        "teaching": "Gym is optional, body workout is mandatory. 5 min = 25 squats + 15 push-ups + 30 sec plank. Indoor, no equipment. Consistency > intensity. Daily 5 min > weekly 1 hour.",
+        "action": "Today do 5 min floor workout. Numbers small, the streak is what matters.",
+        "reflectionPrompt": "Which move was hardest? Why?",
+        "proTip": "Right after brushing teeth. \"Brush + train\" chain becomes automatic.",
+        "quiz": [
+          {
+            "q": "Home workout duration?",
+            "options": [
+              "1 min",
+              "5 min",
+              "30 min",
+              "60 min"
+            ],
+            "correct": 1,
+            "explain": "5 min suffices — consistency matters."
+          },
+          {
+            "q": "Consistency vs intensity?",
+            "options": [
+              "Intensity",
+              "Consistency",
+              "Equal",
+              "Neither"
+            ],
+            "correct": 1,
+            "explain": "Daily 5 min > weekly 1 hour."
+          }
+        ]
+      },
+      "18": {
+        "title": "Fast Until 12 (Intermittent Fasting)",
+        "teaching": "Breakfast as \"most important meal\" is myth. Most disciplined people fast 12-16 hours. Late breakfast = lower insulin, stable energy, sharper mind. Coffee and water free.",
+        "action": "Today push breakfast to noon. Only water, tea, black coffee.",
+        "reflectionPrompt": "How was your mental performance fasted? Different from expected?",
+        "proTip": "First 3 days are tough. Day 4+ body adapts, hunger softens.",
+        "quiz": [
+          {
+            "q": "Intermittent fasting hours?",
+            "options": [
+              "8h",
+              "12-16h",
+              "24h",
+              "48h"
+            ],
+            "correct": 1,
+            "explain": "12-16h = sustainable IF."
+          },
+          {
+            "q": "Allowed during IF?",
+            "options": [
+              "Only water",
+              "Water + coffee + tea",
+              "Milk",
+              "Diet coke"
+            ],
+            "correct": 1,
+            "explain": "Calorie-free drinks don't spike insulin."
+          }
+        ]
+      },
+      "19": {
+        "title": "Read 10 Pages",
+        "teaching": "Day starting with social media = head full of someone else's thoughts. Day starting with a book = head full of deep thought. 10 pages × 365 days = 12 books a year. Average person reads 0.",
+        "action": "Today read 10 pages in the morning (paper or e-ink, no social-media device).",
+        "reflectionPrompt": "How would the day start if you opened social media instead?",
+        "proTip": "Book by bedside, phone in another room. Whichever your eyes find first wins.",
+        "quiz": [
+          {
+            "q": "10 pages × 365 days = ?",
+            "options": [
+              "2 books",
+              "6 books",
+              "12 books",
+              "50 books"
+            ],
+            "correct": 2,
+            "explain": "~12 books a year."
+          },
+          {
+            "q": "Average yearly books read?",
+            "options": [
+              "12",
+              "6",
+              "3",
+              "0"
+            ],
+            "correct": 3,
+            "explain": "Most read 0 a year."
+          }
+        ]
+      },
+      "20": {
+        "title": "Journal: 5 Minutes",
+        "teaching": "Thoughts circle in the head and become real. Written down, they exit and lose force. 5 min brain dump in morning = cleaner rest of day. No judging. Write.",
+        "action": "Today write 5 minutes of whatever comes. No editing, no censoring.",
+        "reflectionPrompt": "What was the most surprising thing you wrote?",
+        "proTip": "\"Three pages free-write\" (Julia Cameron) — morning pages have 30 years of test.",
+        "quiz": [
+          {
+            "q": "Morning journal rule?",
+            "options": [
+              "Be perfect",
+              "Write without judging",
+              "Censor",
+              "Digital"
+            ],
+            "correct": 1,
+            "explain": "Write without judging — empty the brain."
+          },
+          {
+            "q": "Who developed morning pages?",
+            "options": [
+              "James Clear",
+              "Cal Newport",
+              "Julia Cameron",
+              "Tim Ferriss"
+            ],
+            "correct": 2,
+            "explain": "Cameron — 30 years of testing."
+          }
+        ]
+      },
+      "21": {
+        "title": "10-Min Walk",
+        "teaching": "Walk = brain's most natural therapy. Hippocampus grows, BDNF rises, depression risk drops 47%. Morning walk plus sunlight = double effect. No music, no phone — just steps.",
+        "action": "Today take a 10 min walk. One loop around your block.",
+        "reflectionPrompt": "What was the cleanest thought that arrived while walking?",
+        "proTip": "When stuck, stop thinking and walk. Most creative breakthroughs happen walking (Jobs, Darwin, Nietzsche).",
+        "quiz": [
+          {
+            "q": "Walk depression risk drop?",
+            "options": [
+              "5%",
+              "15%",
+              "47%",
+              "80%"
+            ],
+            "correct": 2,
+            "explain": "47% drop science-proven."
+          },
+          {
+            "q": "Walking raises which protein?",
+            "options": [
+              "BDNF",
+              "Insulin",
+              "Cortisol",
+              "Adrenaline"
+            ],
+            "correct": 0,
+            "explain": "BDNF = neuron growth."
+          }
+        ]
+      },
+      "22": {
+        "title": "Music or Silence?",
+        "teaching": "Music gives motivation but takes mental space. Silence makes room for thought. Morning music listeners often live someone else's emotion. Morning silence = facing your own.",
+        "action": "Today spend the first hour in silence. No music, podcast, video.",
+        "reflectionPrompt": "Did silence feel uncomfortable? When?",
+        "proTip": "Even in traffic. Roll down a window — let the street sound replace music.",
+        "quiz": [
+          {
+            "q": "Morning music effect?",
+            "options": [
+              "Takes mental space",
+              "Always good",
+              "Neutral",
+              "Unknown"
+            ],
+            "correct": 0,
+            "explain": "Music takes mental space — silence makes thinking room."
+          },
+          {
+            "q": "First-hour silence challenging?",
+            "options": [
+              "Never",
+              "Maybe",
+              "Yes",
+              "No"
+            ],
+            "correct": 2,
+            "explain": "Discomfort with silence is normal, passes."
+          }
+        ]
+      },
+      "23": {
+        "title": "No Phone Until 9",
+        "teaching": "Morning's golden 90 minutes = peak willpower. Spending it on the phone = selling the day's quality. Phoneless until 9 → 3x productivity 9-12.",
+        "action": "Today no phone until 9am (alarm aside). Real emergencies still reach you.",
+        "reflectionPrompt": "How did the time before 9 feel — as expected?",
+        "proTip": "Airplane mode all night, off at 9. Batched notifications = less effort than one-by-one.",
+        "quiz": [
+          {
+            "q": "Peak willpower in morning?",
+            "options": [
+              "Evening",
+              "Noon",
+              "First 90 min",
+              "Never"
+            ],
+            "correct": 2,
+            "explain": "First 90 min = golden window."
+          },
+          {
+            "q": "Phoneless to 9am productivity?",
+            "options": [
+              "None",
+              "50%",
+              "3x",
+              "10x"
+            ],
+            "correct": 2,
+            "explain": "3x productivity 9-12."
+          }
+        ]
+      },
+      "24": {
+        "title": "Breakfast Strategy",
+        "teaching": "If you eat breakfast: high protein, low sugar. 30g protein = 4 hours of fullness + focus. Bread-honey-tea = 1-hour crash. Eggs-avocado-greens = clear head until lunch.",
+        "action": "Today eat protein-based breakfast (eggs, cheese, legumes). Sugar-free.",
+        "reflectionPrompt": "How was your energy until lunch on this breakfast?",
+        "proTip": "Prep breakfast the night before. Morning decisions = willpower drain.",
+        "quiz": [
+          {
+            "q": "Best morning breakfast?",
+            "options": [
+              "Sweet",
+              "High protein",
+              "Coffee only",
+              "Bread-honey"
+            ],
+            "correct": 1,
+            "explain": "Protein = 4-hour fullness."
+          },
+          {
+            "q": "30g protein delivers?",
+            "options": [
+              "Weight",
+              "4h fullness",
+              "Sugar",
+              "Thirst"
+            ],
+            "correct": 1,
+            "explain": "4h fullness + focus."
+          }
+        ]
+      },
+      "25": {
+        "title": "Sunday Reset",
+        "teaching": "Weekdays = routine, Sunday = reset. Sunday morning = weekly review + intent. What worked last week, what didn't? Which one discipline next week? 30 min is enough.",
+        "action": "This Sunday do a 30-min weekly review. Written, concrete.",
+        "reflectionPrompt": "Strongest and weakest day last week? Difference?",
+        "proTip": "Sunday morning, not Sunday night. Tired review goes shallow.",
+        "quiz": [
+          {
+            "q": "Sunday reset duration?",
+            "options": [
+              "5 min",
+              "30 min",
+              "2h",
+              "1 day"
+            ],
+            "correct": 1,
+            "explain": "30 min suffices."
+          },
+          {
+            "q": "Sunday reset when?",
+            "options": [
+              "Morning",
+              "Night",
+              "Evening",
+              "Anytime"
+            ],
+            "correct": 0,
+            "explain": "Morning = clear review."
+          }
+        ]
+      },
+      "26": {
+        "title": "Habit Stacking",
+        "teaching": "A new habit alone is weak — tied to an existing habit, it's strong. James Clear: \"After I brush my teeth, I will ___\" (1 pushup, 1 min breath, 3 gratitudes). Old + new = stronger chain.",
+        "action": "Today stack a new micro-habit on an existing habit.",
+        "reflectionPrompt": "Which existing habit got which new addition?",
+        "proTip": "Write the stack down. \"After I brush my teeth, I do 5 pushups.\"",
+        "quiz": [
+          {
+            "q": "Habit stacking by whom?",
+            "options": [
+              "BJ Fogg",
+              "James Clear",
+              "Cal Newport",
+              "Tim Ferriss"
+            ],
+            "correct": 1,
+            "explain": "Atomic Habits — James Clear."
+          },
+          {
+            "q": "Stack formula?",
+            "options": [
+              "New alone",
+              "Old + new",
+              "Only new",
+              "3 new"
+            ],
+            "correct": 1,
+            "explain": "Old habit + new = strong chain."
+          }
+        ]
+      },
+      "27": {
+        "title": "The 100-Day Test",
+        "teaching": "First 30 days: hard. 30-60: get used to it. 60-100: become it. After day 100, no return. Morning routine after 100 days = \"I've always done this.\" Reach that point.",
+        "action": "Today write your 100-day commitment. Which one morning discipline for 100 days?",
+        "reflectionPrompt": "Who is \"future you\" after 100 days? What do they do?",
+        "proTip": "Mark a calendar tick after each day. Visual chain — breaking it after 21 days physically hurts.",
+        "quiz": [
+          {
+            "q": "After 100 days?",
+            "options": [
+              "Boredom",
+              "Hard to stop",
+              "Same",
+              "Unknown"
+            ],
+            "correct": 1,
+            "explain": "After 100 no return."
+          },
+          {
+            "q": "60-100 day phase?",
+            "options": [
+              "Strain",
+              "Adapt",
+              "Become it",
+              "Tire"
+            ],
+            "correct": 2,
+            "explain": "Become it — identity shift."
+          }
+        ]
+      },
+      "28": {
+        "title": "Identity Shift",
+        "teaching": "\"I am someone who exercises\" is 10x stronger than \"I am trying to exercise.\" Discipline = not behavior, identity. \"I am a morning person\" — saying it makes early rising automatic.",
+        "action": "Today claim a new identity label. \"I am someone who ___.\"",
+        "reflectionPrompt": "Which identity did you pick? What proof will support it?",
+        "proTip": "Repeat the identity 3x daily. Brain believes repetition, not truth.",
+        "quiz": [
+          {
+            "q": "\"I am\" vs \"I try\" power?",
+            "options": [
+              "Same",
+              "2x",
+              "5x",
+              "10x"
+            ],
+            "correct": 3,
+            "explain": "Identity 10x stronger."
+          },
+          {
+            "q": "Discipline = ?",
+            "options": [
+              "Behavior",
+              "Identity",
+              "Plan",
+              "Motivation"
+            ],
+            "correct": 1,
+            "explain": "Discipline = identity > behavior."
+          }
+        ]
+      },
+      "29": {
+        "title": "Final Sprint Day",
+        "teaching": "Day 29 = last sprint. Tomorrow you \"complete.\" But today matters: remember who did these 30 days. Don't look at the past — remember the result. Next thing to do: keep going.",
+        "action": "Today write your 3 strongest moments of the past 30 days. These are now your proof.",
+        "reflectionPrompt": "Hardest moment? How did you push through?",
+        "proTip": "Put those 3 lines on your phone's lock screen. You'll see them when you start drifting.",
+        "quiz": [
+          {
+            "q": "On final day do?",
+            "options": [
+              "Plan future",
+              "Look at past",
+              "Write proof",
+              "Rest"
+            ],
+            "correct": 2,
+            "explain": "3 strong moments = your proof."
+          },
+          {
+            "q": "Tomorrow brings?",
+            "options": [
+              "New start",
+              "Completion",
+              "End",
+              "Nothing"
+            ],
+            "correct": 1,
+            "explain": "Day 30 = completion."
+          }
+        ]
+      },
+      "30": {
+        "title": "Complete — New Morning",
+        "teaching": "30 days ago your mornings were chaos. Now they're systematic. 30 days ago you were reactive. Now proactive. You changed — your morning changed because of it. This morning isn't ordinary. This morning is proof: you can.",
+        "action": "Today write the 3 disciplines that worked over 30 days. These are the new baseline.",
+        "reflectionPrompt": "Which discipline will you carry forward? Why?",
+        "proTip": "Rest 3 days before starting another path. Consistency = permanence. Rushing = regression.",
+        "quiz": [
+          {
+            "q": "After 30 days, difference?",
+            "options": [
+              "None",
+              "Proactive vs reactive",
+              "Same",
+              "Worse"
+            ],
+            "correct": 1,
+            "explain": "Reactive to proactive shift."
+          },
+          {
+            "q": "Switching to next path?",
+            "options": [
+              "Immediately",
+              "Rest 3 days",
+              "Wait month",
+              "Never"
+            ],
+            "correct": 1,
+            "explain": "Rest 3 days, then move on."
           }
         ]
       }
@@ -510,7 +1920,8 @@
             "correct": 3,
             "explain": "40% drop + error rate increase."
           }
-        ]
+        ],
+        "proTip": "Keep your phone across the room. If reaching means standing, you'll often skip it."
       },
       "2": {
         "title": "Distraction Kill List",
@@ -540,7 +1951,8 @@
             "correct": 1,
             "explain": "Awareness breaks habit power."
           }
-        ]
+        ],
+        "proTip": "Pin your distraction kill list on the phone home screen. Seeing = noticing."
       },
       "3": {
         "title": "Deep Work Block",
@@ -570,7 +1982,8 @@
             "correct": 1,
             "explain": "Deep work produces deep value."
           }
-        ]
+        ],
+        "proTip": "Write your goal on paper before deep work starts. \"In these 90 min I will finish ___.\""
       },
       "4": {
         "title": "Morning Rule: Important First",
@@ -600,7 +2013,8 @@
             "correct": 1,
             "explain": "Shallow work in golden hour is a crime."
           }
-        ]
+        ],
+        "proTip": "Don't open email before 11am. Despite what feels urgent, email always waits."
       },
       "5": {
         "title": "Phone Interval Rule",
@@ -629,6 +2043,782 @@
             ],
             "correct": 2,
             "explain": "Every check = micro-interruption to focus."
+          }
+        ],
+        "proTip": "Schedule phone-check windows on your calendar: 12:00 and 17:00. Airplane mode otherwise."
+      },
+      "6": {
+        "title": "Single-Task Discipline",
+        "teaching": "Multitasking myth: high-IQ people multitask better. Wrong. Multitaskers lose 10 IQ points (Stanford). One thing at a time = deep processing. Same hour, 2x output, 5x quality.",
+        "action": "Today do important work in one go. Close tabs, phone, music.",
+        "reflectionPrompt": "Productivity difference shifting from multi to single?",
+        "proTip": "If multi-tab is a habit, close them with Cmd+W (Mac) or Ctrl+W (Windows) one by one.",
+        "quiz": [
+          {
+            "q": "Multitasker IQ drop?",
+            "options": [
+              "None",
+              "5",
+              "10 pts",
+              "20 pts"
+            ],
+            "correct": 2,
+            "explain": "Stanford — 10 IQ point loss."
+          },
+          {
+            "q": "Single-task productivity gain?",
+            "options": [
+              "Same",
+              "20%",
+              "2x",
+              "10x"
+            ],
+            "correct": 2,
+            "explain": "2x productivity, 5x quality."
+          }
+        ]
+      },
+      "7": {
+        "title": "Notification Detox",
+        "teaching": "Phone delivers ~80 notifications/day. Each = 23 min focus loss. Total = 2 hours of no focus. Solution: turn them all off. Real emergencies will call. Rest was useless anyway.",
+        "action": "Today turn off all notifications (Apple/Google maps included). Only direct call/SMS allowed.",
+        "reflectionPrompt": "How did the first notification-free day feel? Missing or full?",
+        "proTip": "Social media first, shopping next, app last. 3 minutes total.",
+        "quiz": [
+          {
+            "q": "Refocus time per notification?",
+            "options": [
+              "1 min",
+              "5 min",
+              "10 min",
+              "23 min"
+            ],
+            "correct": 3,
+            "explain": "23 min full refocus."
+          },
+          {
+            "q": "Average daily notifications?",
+            "options": [
+              "10",
+              "40",
+              "80",
+              "200"
+            ],
+            "correct": 2,
+            "explain": "~80 notifications/day."
+          }
+        ]
+      },
+      "8": {
+        "title": "Pomodoro Technique",
+        "teaching": "25 min focus + 5 min break = 1 pomodoro. After 4 pomodoros, 30-min long break. Brain can't sustain focus continuously; with rhythm, it can. Tested since 1992.",
+        "action": "Today work 1 pomodoro: 25 min focus, 5 min break. Visible timer.",
+        "reflectionPrompt": "Of what you wanted in 25 min, how much got done?",
+        "proTip": "No phone in break. Look out window, drink water, stretch. Break = brain reset.",
+        "quiz": [
+          {
+            "q": "1 pomodoro?",
+            "options": [
+              "10/2 min",
+              "15/3 min",
+              "25/5 min",
+              "60/15 min"
+            ],
+            "correct": 2,
+            "explain": "25 focus + 5 break."
+          },
+          {
+            "q": "After 4 pomodoros break?",
+            "options": [
+              "None",
+              "10 min",
+              "30 min",
+              "60 min"
+            ],
+            "correct": 2,
+            "explain": "30 min long break."
+          }
+        ]
+      },
+      "9": {
+        "title": "Time Blocking",
+        "teaching": "To-do lists are naive. Each item \"at least 15 min\" — 10 items = 2.5h. Time blocking is realistic: assign hours on calendar. 10:00-11:30 deep work. 11:30-12:00 email. Hours decide, not you.",
+        "action": "Today block 3 time slots on your calendar. One task per block.",
+        "reflectionPrompt": "Without time blocking, how would today have gone?",
+        "proTip": "First week, double the estimated time. Accurate estimating is a learned skill.",
+        "quiz": [
+          {
+            "q": "Time blocking is?",
+            "options": [
+              "Listing",
+              "Hour blocks",
+              "Deleting tasks",
+              "Reminder"
+            ],
+            "correct": 1,
+            "explain": "Hours on calendar, not tasks."
+          },
+          {
+            "q": "First-week estimate rule?",
+            "options": [
+              "Half",
+              "Exact",
+              "2x time",
+              "10x"
+            ],
+            "correct": 2,
+            "explain": "2x estimated time is realistic."
+          }
+        ]
+      },
+      "10": {
+        "title": "Energy Management",
+        "teaching": "Not time but energy management. Everyone gets 24h. But high-energy 4h > low-energy 12h. Morning 9-12: deep work. Noon: shallow. Evening: routine. Know your curve, work to it.",
+        "action": "Today track your energy curve. Score morning-noon-evening 1-10.",
+        "reflectionPrompt": "Which hour was peak? What were you doing?",
+        "proTip": "Track for 1 week. Pattern is clear, plan accordingly.",
+        "quiz": [
+          {
+            "q": "Time vs energy?",
+            "options": [
+              "Time",
+              "Energy",
+              "Equal",
+              "Neither"
+            ],
+            "correct": 1,
+            "explain": "High-energy 4h > low-energy 12h."
+          },
+          {
+            "q": "Morning energy suggestion?",
+            "options": [
+              "Shallow",
+              "Deep work",
+              "Meeting",
+              "Relax"
+            ],
+            "correct": 1,
+            "explain": "Morning = deep work peak."
+          }
+        ]
+      },
+      "11": {
+        "title": "Decision Fatigue",
+        "teaching": "Brain makes ~35,000 decisions/day. Each consumes willpower. Steve Jobs same outfit, Obama same suit color — to reduce decision fatigue. Automate trivial decisions.",
+        "action": "Today automate 3 decisions. Tomorrow's outfit? Breakfast? Evening?",
+        "reflectionPrompt": "How much mental space opened from automating?",
+        "proTip": "Decide for the week on Sunday. Mon-Fri you don't hesitate.",
+        "quiz": [
+          {
+            "q": "Decisions per day?",
+            "options": [
+              "100",
+              "1000",
+              "10K",
+              "35K"
+            ],
+            "correct": 3,
+            "explain": "~35,000 decisions/day."
+          },
+          {
+            "q": "Why same outfit Steve Jobs?",
+            "options": [
+              "Style",
+              "Cheap",
+              "Decision fatigue",
+              "Love"
+            ],
+            "correct": 2,
+            "explain": "Reduce decision fatigue."
+          }
+        ]
+      },
+      "12": {
+        "title": "Inbox Zero",
+        "teaching": "Email inbox = someone else's priority overriding yours. Inbox 0 discipline: process every email by day's end (reply, archive, delete, schedule). No backlog.",
+        "action": "Today zero your inbox. Don't force old 100 emails — last 24h is enough.",
+        "reflectionPrompt": "How did inbox 0 feel? Clearer?",
+        "proTip": "Check inbox 2x/day: 11:00 and 17:00. Never before 09:00.",
+        "quiz": [
+          {
+            "q": "Inbox 0 goal?",
+            "options": [
+              "Perfection",
+              "No backlog",
+              "Fast reply",
+              "Looks"
+            ],
+            "correct": 1,
+            "explain": "No backlog = no stress."
+          },
+          {
+            "q": "Email checks/day?",
+            "options": [
+              "Constant",
+              "Hourly",
+              "2x",
+              "Weekly"
+            ],
+            "correct": 2,
+            "explain": "11:00 + 17:00 = ideal."
+          }
+        ]
+      },
+      "13": {
+        "title": "Meeting Hygiene",
+        "teaching": "Most meetings could have been emails. Rule: 1) Clear agenda? 2) Needed without you? 3) Over 30 min? 3 nos: skip. Hours = expensive currency.",
+        "action": "Today question one meeting on your calendar. No agenda = cancel.",
+        "reflectionPrompt": "Most recent meeting that wasted time? Why did you join?",
+        "proTip": "Standing meetings run 50% shorter. Stand up.",
+        "quiz": [
+          {
+            "q": "Meeting rule?",
+            "options": [
+              "Always join",
+              "Clear agenda + 30min",
+              "Standing only",
+              "Breakfast"
+            ],
+            "correct": 1,
+            "explain": "Clear agenda + max 30 min."
+          },
+          {
+            "q": "Standing meeting length?",
+            "options": [
+              "Same",
+              "50% shorter",
+              "200% longer",
+              "None"
+            ],
+            "correct": 1,
+            "explain": "Standing = 50% shorter."
+          }
+        ]
+      },
+      "14": {
+        "title": "Deep Work 90 Min",
+        "teaching": "Cal Newport: deep work = the most valuable skill in the economy. 90 uninterrupted min = 8h multitasking. Hard the first week, brain unaccustomed. After 30 days = life's control mechanism.",
+        "action": "Today do 1 deep work block: 90 min, phone in another room, tabs closed.",
+        "reflectionPrompt": "How did your energy feel after 90 min?",
+        "proTip": "Before deep work: drink water, restroom, prep snack. Don't stand once.",
+        "quiz": [
+          {
+            "q": "Deep work block length?",
+            "options": [
+              "25 min",
+              "60 min",
+              "90 min",
+              "8h"
+            ],
+            "correct": 2,
+            "explain": "90 min = optimum."
+          },
+          {
+            "q": "Cal Newport thesis?",
+            "options": [
+              "Speed",
+              "Deep work = deep value",
+              "Speed",
+              "Multitask"
+            ],
+            "correct": 1,
+            "explain": "Deep work yields deep value."
+          }
+        ]
+      },
+      "15": {
+        "title": "Capture System",
+        "teaching": "Capture every idea in writing. David Allen \"GTD\": uncaptured idea loops in mind, steals attention. Notes app, journal, paper — doesn't matter. Capture = release.",
+        "action": "Today pick 1 capture spot. Use it for 24 hours.",
+        "reflectionPrompt": "How many ideas did you capture in 24h? More or less than expected?",
+        "proTip": "Review your captured list 5 min each evening. Schedule urgent ones tomorrow.",
+        "quiz": [
+          {
+            "q": "GTD by whom?",
+            "options": [
+              "James Clear",
+              "David Allen",
+              "Cal Newport",
+              "Tim Ferriss"
+            ],
+            "correct": 1,
+            "explain": "David Allen — Getting Things Done."
+          },
+          {
+            "q": "Uncaptured idea does?",
+            "options": [
+              "Nothing",
+              "Steals attention",
+              "Forgotten",
+              "No effect"
+            ],
+            "correct": 1,
+            "explain": "Loops in mind, takes focus."
+          }
+        ]
+      },
+      "16": {
+        "title": "Weekly Review",
+        "teaching": "Daily is tactic. Weekly is strategy. Friday evening or Sunday morning, 30 min: 1) What did I accomplish this week? 2) What did I learn? 3) Top 3 priorities next week? Biggest difference between doers and not.",
+        "action": "This weekend do a 30-min weekly review. Written, concrete.",
+        "reflectionPrompt": "Biggest learning of this week?",
+        "proTip": "Pick a fixed time. Friday 17:00 or Sunday 09:00. Don't flex.",
+        "quiz": [
+          {
+            "q": "Weekly review duration?",
+            "options": [
+              "5 min",
+              "30 min",
+              "2h",
+              "1 day"
+            ],
+            "correct": 1,
+            "explain": "30 min suffices."
+          },
+          {
+            "q": "Best review time?",
+            "options": [
+              "Mon 09",
+              "Fri 17 / Sun 09",
+              "Sat 12",
+              "Mon 18"
+            ],
+            "correct": 1,
+            "explain": "Friday 17 or Sunday 09."
+          }
+        ]
+      },
+      "17": {
+        "title": "The \"No\" Discipline",
+        "teaching": "Warren Buffett: successful people say \"no\" to everything. Because time = priority spend. Each \"yes\" = \"no\" to something else. Discipline = clarity on what gets yes/no.",
+        "action": "Today say \"no\" to 1 request. Guilt is normal — passes.",
+        "reflectionPrompt": "Why was \"no\" hard? What fear was there?",
+        "proTip": "Soft \"no\": \"Accepting this isn't right for me.\" No explanation needed.",
+        "quiz": [
+          {
+            "q": "\"No\" = ?",
+            "options": [
+              "Rude",
+              "Yes to your priority",
+              "Loss",
+              "Mistake"
+            ],
+            "correct": 1,
+            "explain": "Each no = yes to your own."
+          },
+          {
+            "q": "Soft \"no\"?",
+            "options": [
+              "No",
+              "\"Not right for me\"",
+              "Silence",
+              "Hang up"
+            ],
+            "correct": 1,
+            "explain": "No explanation needed."
+          }
+        ]
+      },
+      "18": {
+        "title": "Boredom as Resource",
+        "teaching": "Boredom = brain signaling \"I want empty space.\" Most people grab phones — silencing the signal. Allow boredom. 5 min in, creativity returns.",
+        "action": "Today allow 10 min of boredom. No phone, music, anything.",
+        "reflectionPrompt": "What thought arose after the boredom?",
+        "proTip": "If phone reflex hits, pocket your hands. Block the reflex.",
+        "quiz": [
+          {
+            "q": "Boredom is?",
+            "options": [
+              "Disease",
+              "Empty space signal",
+              "Hunger",
+              "Fatigue"
+            ],
+            "correct": 1,
+            "explain": "Brain wants empty space."
+          },
+          {
+            "q": "Boredom allowance time?",
+            "options": [
+              "1 min",
+              "10 min",
+              "1h",
+              "1 day"
+            ],
+            "correct": 1,
+            "explain": "10 min suffices."
+          }
+        ]
+      },
+      "19": {
+        "title": "Default App Discipline",
+        "teaching": "Home screen icons = daily triggers. Each social media you remove = hours of focus regained. Each productive app you add = daily nudge. Home screen = personal slot machine.",
+        "action": "Today move 3 social media icons to page 2 or remove. Add 3 productive apps.",
+        "reflectionPrompt": "What new behavior emerged from the new home screen?",
+        "proTip": "Keep 6 icons only. Rest in App Library / Drawer.",
+        "quiz": [
+          {
+            "q": "Home screen icons = ?",
+            "options": [
+              "Decoration",
+              "Trigger",
+              "Function",
+              "Reminder"
+            ],
+            "correct": 1,
+            "explain": "Trigger = daily check."
+          },
+          {
+            "q": "Optimal home screen icons?",
+            "options": [
+              "1",
+              "6",
+              "20",
+              "50"
+            ],
+            "correct": 1,
+            "explain": "6 icons enough, rest in App Library."
+          }
+        ]
+      },
+      "20": {
+        "title": "Information Diet",
+        "teaching": "Too much info = analysis paralysis. Consume: what solves your problems. Skip: trends, gossip, \"interesting\" but useless. 1 area deep > 10 areas shallow.",
+        "action": "Today ask: which 3 sources do I consume from? Do they serve me?",
+        "reflectionPrompt": "Which source to remove? Which to add?",
+        "proTip": "\"Does it serve me?\" filter. Anything no = noise.",
+        "quiz": [
+          {
+            "q": "Info diet filter?",
+            "options": [
+              "Trend",
+              "\"Does it serve me?\"",
+              "Popularity",
+              "Novelty"
+            ],
+            "correct": 1,
+            "explain": "No = noise."
+          },
+          {
+            "q": "Optimum depth vs breadth?",
+            "options": [
+              "10 areas shallow",
+              "1 area deep",
+              "Equal",
+              "Random"
+            ],
+            "correct": 1,
+            "explain": "1 area deep."
+          }
+        ]
+      },
+      "21": {
+        "title": "Reading Strategy",
+        "teaching": "Reading = low effort, high return. But how matters. Passive reading = forgotten. Active reading: take notes, question, apply. 1 page active > 20 passive.",
+        "action": "Today read 5 pages of a book. Margin notes. Summarize in one sentence.",
+        "reflectionPrompt": "How different did active feel from passive?",
+        "proTip": "Right after: out loud 30-sec summary. Where you don't understand = re-read.",
+        "quiz": [
+          {
+            "q": "Active vs passive reading?",
+            "options": [
+              "Same",
+              "5x diff",
+              "20x diff",
+              "Unknown"
+            ],
+            "correct": 2,
+            "explain": "1 active page > 20 passive."
+          },
+          {
+            "q": "Active reading tools?",
+            "options": [
+              "Silence",
+              "Notes + questioning",
+              "Music",
+              "Speed"
+            ],
+            "correct": 1,
+            "explain": "Take notes, question, apply."
+          }
+        ]
+      },
+      "22": {
+        "title": "Note System",
+        "teaching": "Brain = processor, not warehouse. It tires carrying every thought. A note system (Apple Notes, Notion, journal) = brain extension. Written = unforgettable.",
+        "action": "Today pick 1 note system, use it. Confusion = ineffective system.",
+        "reflectionPrompt": "What mental load lifted writing things down?",
+        "proTip": "Apple Notes = simple + sync. Add complex (Notion, Obsidian) later.",
+        "quiz": [
+          {
+            "q": "Brain = ?",
+            "options": [
+              "Storage",
+              "Processor",
+              "Vault",
+              "Engine"
+            ],
+            "correct": 1,
+            "explain": "Processor, not storage."
+          },
+          {
+            "q": "Note system starter?",
+            "options": [
+              "Notion",
+              "Apple Notes",
+              "Obsidian",
+              "Journal"
+            ],
+            "correct": 1,
+            "explain": "Simple + sync first."
+          }
+        ]
+      },
+      "23": {
+        "title": "Deep vs Shallow",
+        "teaching": "Shallow work: email, meeting, message, reporting. Deep work: creativity, analysis, strategy, learning. Shallow is easy and seductive — but produces no value. Defend deep work.",
+        "action": "Today reserve first 90 min for deep work. Shallow after.",
+        "reflectionPrompt": "Starting with deep work, how did the rest of the day shape?",
+        "proTip": "Morning = deepest work. Brain shallows after 11am.",
+        "quiz": [
+          {
+            "q": "Deep work example?",
+            "options": [
+              "Email",
+              "Creativity",
+              "Meeting",
+              "Message"
+            ],
+            "correct": 1,
+            "explain": "Creativity, analysis, strategy."
+          },
+          {
+            "q": "Morning first?",
+            "options": [
+              "Email",
+              "Deep work",
+              "Meeting",
+              "Social"
+            ],
+            "correct": 1,
+            "explain": "Brain is deep in morning."
+          }
+        ]
+      },
+      "24": {
+        "title": "Walk + Think",
+        "teaching": "Steve Jobs solved hard problems walking. Darwin walked the same path 3x daily. Stanford study: creativity rises 60% walking. When stuck: stop sitting, walk.",
+        "action": "Today think on a problem 15 min while walking. Take notes.",
+        "reflectionPrompt": "What problem did walking solve that sitting couldn't?",
+        "proTip": "Walk without phone. Even music narrows thinking space.",
+        "quiz": [
+          {
+            "q": "Walk creativity boost?",
+            "options": [
+              "None",
+              "+30%",
+              "+60%",
+              "+200%"
+            ],
+            "correct": 2,
+            "explain": "Stanford — +60%."
+          },
+          {
+            "q": "When stuck do?",
+            "options": [
+              "Sit",
+              "Walk",
+              "Sleep",
+              "Eat"
+            ],
+            "correct": 1,
+            "explain": "Walk = creativity reset."
+          }
+        ]
+      },
+      "25": {
+        "title": "Brain Dump",
+        "teaching": "47 thoughts in your head = unprocessed load. Brain dump: write what comes for 10 min. All. Then sort: doable / delete / later.",
+        "action": "Today brain dump for 10 min. No censoring, no editing.",
+        "reflectionPrompt": "What % of what you wrote was actually important?",
+        "proTip": "Morning brain dump = clean start. Evening brain dump = better sleep.",
+        "quiz": [
+          {
+            "q": "Brain dump?",
+            "options": [
+              "List",
+              "Write without judging",
+              "Censor",
+              "Plan"
+            ],
+            "correct": 1,
+            "explain": "Write what comes, no censor."
+          },
+          {
+            "q": "Brain dump length?",
+            "options": [
+              "1 min",
+              "10 min",
+              "1h",
+              "1 day"
+            ],
+            "correct": 1,
+            "explain": "10 min optimum."
+          }
+        ]
+      },
+      "26": {
+        "title": "Phone-Free Zones",
+        "teaching": "Bedroom = sleep + sex (Matthew Walker). Dining table = food + conversation. Restroom = restroom. Clear no-phone zones shrink phone time naturally.",
+        "action": "Today declare 1 phone-free zone. Bedroom is the strongest start.",
+        "reflectionPrompt": "How did phone-free time in that zone feel?",
+        "proTip": "Drop phone at the door. Pick it up only when leaving.",
+        "quiz": [
+          {
+            "q": "Bedroom rule?",
+            "options": [
+              "Work",
+              "Sleep only",
+              "Phone",
+              "Food"
+            ],
+            "correct": 1,
+            "explain": "Sleep + sex only (Walker)."
+          },
+          {
+            "q": "Phone where?",
+            "options": [
+              "Bed",
+              "Door",
+              "Kitchen",
+              "Bath"
+            ],
+            "correct": 1,
+            "explain": "Door = boundary."
+          }
+        ]
+      },
+      "27": {
+        "title": "Priority Funnel",
+        "teaching": "100 opportunities = paralysis. 3 priorities = progress. Eisenhower Matrix: 1) Urgent + Important (do), 2) Important not urgent (plan), 3) Urgent not important (delegate), 4) Neither (delete). 3-4 = lost hours.",
+        "action": "Today matrix your task list. Delete 3 items from category 4.",
+        "reflectionPrompt": "Which category-4 tasks did you delete? Why started?",
+        "proTip": "Do weekly. Constantly shifting priorities = strategic drift.",
+        "quiz": [
+          {
+            "q": "Eisenhower Matrix categories?",
+            "options": [
+              "1",
+              "2",
+              "4",
+              "10"
+            ],
+            "correct": 2,
+            "explain": "4 categories: urgent/important combos."
+          },
+          {
+            "q": "Category 4 means?",
+            "options": [
+              "Do",
+              "Plan",
+              "Delegate",
+              "Delete"
+            ],
+            "correct": 3,
+            "explain": "Not urgent + not important = delete."
+          }
+        ]
+      },
+      "28": {
+        "title": "One-Year Goal",
+        "teaching": "10 goals = 0 goals. 1 goal = focus. A year = average 1 big thing accomplished. What's your biggest 1-year goal? Not \"exercise\" — \"begin strength training, bench-press 50kg in 1 year.\"",
+        "action": "Today write your 1-year, 1-goal. Measurable, concrete, timed.",
+        "reflectionPrompt": "What's the real \"why\" beneath this goal?",
+        "proTip": "Keep it visible: phone lock screen, desk.",
+        "quiz": [
+          {
+            "q": "Optimal annual goals?",
+            "options": [
+              "1",
+              "5",
+              "10",
+              "20"
+            ],
+            "correct": 0,
+            "explain": "1 goal = focus."
+          },
+          {
+            "q": "\"Exercise more\" goal is?",
+            "options": [
+              "Perfect",
+              "Too vague",
+              "Fine",
+              "Good"
+            ],
+            "correct": 1,
+            "explain": "Vague = unmeasurable = fail."
+          }
+        ]
+      },
+      "29": {
+        "title": "Final Discipline",
+        "teaching": "You practiced mental discipline 29 days. Tomorrow you \"complete.\" But discipline doesn't end with tomorrow. Final test: post-30-day, which 1 discipline daily? The fabric of your life.",
+        "action": "Today pick the strongest 1 discipline of past 30 days. Do it 100 more days.",
+        "reflectionPrompt": "Which one did you pick? Why that?",
+        "proTip": "Stack it tonight on an existing habit. Stack = automation.",
+        "quiz": [
+          {
+            "q": "Final discipline test?",
+            "options": [
+              "Speed",
+              "Which 1 after 30?",
+              "Fatigue",
+              "Satisfaction"
+            ],
+            "correct": 1,
+            "explain": "Which 1 discipline continues?"
+          },
+          {
+            "q": "Discipline auto how?",
+            "options": [
+              "Alone",
+              "With stack",
+              "Tiredness",
+              "Never"
+            ],
+            "correct": 1,
+            "explain": "Stack onto existing habit."
+          }
+        ]
+      },
+      "30": {
+        "title": "Complete — New Mind",
+        "teaching": "You're not the same as 30 days ago. You learned focus, deep work, saying \"no.\" From multi-task to single-task, from reactive to proactive. These 30 days = your new baseline.",
+        "action": "Today summarize 30 days: 3 learned, 3 to keep, 3 not to forget.",
+        "reflectionPrompt": "With this new mind, what big thing will you accomplish?",
+        "proTip": "Rest 3 days before next path. Consistency = long term. Rush = regress.",
+        "quiz": [
+          {
+            "q": "Rest after transition?",
+            "options": [
+              "None",
+              "3 days",
+              "1 week",
+              "1 month"
+            ],
+            "correct": 1,
+            "explain": "3 days rest, then move on."
+          },
+          {
+            "q": "30-day summary?",
+            "options": [
+              "None",
+              "3+3+3",
+              "Random",
+              "List"
+            ],
+            "correct": 1,
+            "explain": "3 learned, 3 to keep, 3 not to forget."
           }
         ]
       }
@@ -662,7 +2852,8 @@
             "correct": 2,
             "explain": "30 min brisk movement is enough."
           }
-        ]
+        ],
+        "proTip": "Add extra steps fetching coffee/tea — small additions compound to your daily threshold."
       },
       "2": {
         "title": "Cold Shower Protocol",
@@ -692,7 +2883,8 @@
             "correct": 1,
             "explain": "30 seconds is enough; benefits begin."
           }
-        ]
+        ],
+        "proTip": "Start cold shower on the exhale. Holding breath tenses you; release it to relax."
       },
       "3": {
         "title": "Nutrition Foundation: Protein",
@@ -722,7 +2914,8 @@
             "correct": 2,
             "explain": "Snacks aren't meals."
           }
-        ]
+        ],
+        "proTip": "Protein every meal. 20-30g/meal × 3 meals = daily 60-90g optimum."
       },
       "4": {
         "title": "Cut Sugar",
@@ -752,7 +2945,8 @@
             "correct": 2,
             "explain": "7 days, sugar tastes flat."
           }
-        ]
+        ],
+        "proTip": "Replace sugar craving with water + 1 sweet fruit (apple). After 7 days the craving breaks."
       },
       "5": {
         "title": "Sleep Hardness",
@@ -781,6 +2975,782 @@
             ],
             "correct": 1,
             "explain": "18-20°C optimum for deep sleep."
+          }
+        ],
+        "proTip": "Bedroom 18-20°C, dark, silent. 3 conditions = deep sleep guarantee."
+      },
+      "6": {
+        "title": "Bedtime: 22:00",
+        "teaching": "Circadian rhythm strengthens with fixed sleep time. 22:00 = natural melatonin peak. Weekday/weekend doesn't matter. Flexible bedtime drops sleep quality 40% (Walker research).",
+        "action": "Tonight be in bed by 22:00. Phone in another room.",
+        "reflectionPrompt": "How is 22:00 bed time different from yesterday?",
+        "proTip": "Blue-light filter + warm night-lamp after 21:00. Body prepares for 22.",
+        "quiz": [
+          {
+            "q": "Optimum bedtime?",
+            "options": [
+              "20:00",
+              "22:00",
+              "00:00",
+              "02:00"
+            ],
+            "correct": 1,
+            "explain": "22:00 = melatonin natural peak."
+          },
+          {
+            "q": "Flexible bedtime sleep drop?",
+            "options": [
+              "None",
+              "10%",
+              "40%",
+              "80%"
+            ],
+            "correct": 2,
+            "explain": "40% sleep quality drop."
+          }
+        ]
+      },
+      "7": {
+        "title": "Hydration: 2 Liters",
+        "teaching": "Body is 60% water. 2% dehydration = 20% cognitive drop. Most people chronically dehydrated. Solution: 2L = ~8 glasses. Morning, before-noon, after-noon 0.5L blocks.",
+        "action": "Today drink 2L water. 1L morning, 1L afternoon. Visible bottle.",
+        "reflectionPrompt": "When did you feel full hydration in your body?",
+        "proTip": "First drink water. Hydration starts 90 min before coffee.",
+        "quiz": [
+          {
+            "q": "Optimum daily water?",
+            "options": [
+              "500ml",
+              "1L",
+              "2L",
+              "5L"
+            ],
+            "correct": 2,
+            "explain": "2 liters = ~8 glasses."
+          },
+          {
+            "q": "2% dehydration effect?",
+            "options": [
+              "None",
+              "5% drop",
+              "20% drop",
+              "50%"
+            ],
+            "correct": 2,
+            "explain": "Cognitive 20% drop."
+          }
+        ]
+      },
+      "8": {
+        "title": "10,000 Steps a Day",
+        "teaching": "Step counting looks trendy but science is firm: 7-10K daily = 30% lower mortality (Lancet 2023). Constant sitting equals cancer risk. Movement = medicine.",
+        "action": "Today reach 10,000 steps. Phone has a counter.",
+        "reflectionPrompt": "How did 10K steps shape your day?",
+        "proTip": "Walk meetings. Walk while on calls. Stairs over elevator.",
+        "quiz": [
+          {
+            "q": "Daily steps target?",
+            "options": [
+              "1K",
+              "5K",
+              "10K",
+              "50K"
+            ],
+            "correct": 2,
+            "explain": "7-10K = optimum."
+          },
+          {
+            "q": "Steps and mortality?",
+            "options": [
+              "Same",
+              "30% lower",
+              "80% higher",
+              "Unknown"
+            ],
+            "correct": 1,
+            "explain": "30% lower mortality."
+          }
+        ]
+      },
+      "9": {
+        "title": "Resistance Training Intro",
+        "teaching": "Cardio is good, but resistance training (weight, bodyweight) adds 30% more lifespan. Muscle = second heart. After 30, muscle loss is 1%/year — without training, you don't stand straight at 50.",
+        "action": "Today do 3 basics × 3 sets: squat, push-up, plank. 10 reps each.",
+        "reflectionPrompt": "How was your energy after resistance work?",
+        "proTip": "3 days/week is enough. Mon-Wed-Fri 20 min home workout.",
+        "quiz": [
+          {
+            "q": "Resistance training lifespan?",
+            "options": [
+              "None",
+              "+10%",
+              "+30%",
+              "+200%"
+            ],
+            "correct": 2,
+            "explain": "30% more years."
+          },
+          {
+            "q": "Muscle loss after 30?",
+            "options": [
+              "None",
+              "1%/year",
+              "5%/year",
+              "10%"
+            ],
+            "correct": 1,
+            "explain": "Yearly 1%, untrained."
+          }
+        ]
+      },
+      "10": {
+        "title": "Daily Push-Ups",
+        "teaching": "One move = added years. Chinese study: men 40+ who do >40 push-ups have 96% lower heart disease risk. Cost: 5 minutes.",
+        "action": "Today do 20 push-ups. Even split across the day, total 20.",
+        "reflectionPrompt": "How hard is daily push-up progress?",
+        "proTip": "5 push-ups after brushing teeth. Stack = 500 in 100 days.",
+        "quiz": [
+          {
+            "q": "Push-ups & heart risk?",
+            "options": [
+              "No effect",
+              "40+ = -96%",
+              "10+ = -50%",
+              "100+ = same"
+            ],
+            "correct": 1,
+            "explain": "40+ push-ups = 96% lower risk."
+          },
+          {
+            "q": "Stack technique?",
+            "options": [
+              "None",
+              "After brushing 5",
+              "100 set",
+              "Random"
+            ],
+            "correct": 1,
+            "explain": "Brush + push-up = automatic."
+          }
+        ]
+      },
+      "11": {
+        "title": "Daily Squat",
+        "teaching": "Squat = whole-body. Quads, glutes, core, balance. Want easy stand-up at 50? Squat at 30. Joint-friendly, no equipment, effective.",
+        "action": "Today do 30 squats. Splits ok: 3x10. Form > count.",
+        "reflectionPrompt": "How was paying attention to form?",
+        "proTip": "Push hips back, knees behind toes. Mirror or video yourself.",
+        "quiz": [
+          {
+            "q": "Squat form?",
+            "options": [
+              "Knees forward",
+              "Hips back",
+              "Stiff",
+              "Fast"
+            ],
+            "correct": 1,
+            "explain": "Push hips back."
+          },
+          {
+            "q": "Squat scope?",
+            "options": [
+              "Legs only",
+              "Full body",
+              "Core",
+              "Back"
+            ],
+            "correct": 1,
+            "explain": "Full body move."
+          }
+        ]
+      },
+      "12": {
+        "title": "Plank Discipline",
+        "teaching": "Weak core = leaks in every move. Plank = passive core training. 60-sec plank = more effective than 100 sit-ups. 80% of back pain is weak core.",
+        "action": "Today plank for 30 seconds. Tomorrow 35, then 40. Build to 60.",
+        "reflectionPrompt": "What ran through your mind holding the plank?",
+        "proTip": "Don't hold breath. Slow exhale keeps core engaged.",
+        "quiz": [
+          {
+            "q": "Plank starter?",
+            "options": [
+              "10s",
+              "30s",
+              "5 min",
+              "1h"
+            ],
+            "correct": 1,
+            "explain": "Start 30s."
+          },
+          {
+            "q": "Back pain cause?",
+            "options": [
+              "Age",
+              "Weak core",
+              "Genes",
+              "Luck"
+            ],
+            "correct": 1,
+            "explain": "80% of back pain = weak core."
+          }
+        ]
+      },
+      "13": {
+        "title": "Cardio Zones",
+        "teaching": "Not all cardio equal. Zone 2 (moderate, conversational) = mitochondria growth, fat burn, endurance. Zone 5 (sprint) = peak power. Most stuck in 3-4 — ineffective middle.",
+        "action": "Today do 30 min zone 2 cardio. Brisk walk / light jog. Speak-able pace.",
+        "reflectionPrompt": "How slow did zone 2 feel?",
+        "proTip": "Apple Watch / Garmin show zones. None: if you can talk, you're zone 2.",
+        "quiz": [
+          {
+            "q": "Zone 2 means?",
+            "options": [
+              "Sprint",
+              "Speakable pace",
+              "Maximum",
+              "Walk"
+            ],
+            "correct": 1,
+            "explain": "Conversational moderate."
+          },
+          {
+            "q": "Most people in zone?",
+            "options": [
+              "1",
+              "2",
+              "3-4 stuck",
+              "5"
+            ],
+            "correct": 2,
+            "explain": "Ineffective middle."
+          }
+        ]
+      },
+      "14": {
+        "title": "Mobility Work",
+        "teaching": "Flexibility ≠ mobility. Flexibility = passive stretch. Mobility = controlled range of motion. After 30, daily shoulder/hip/ankle mobility prevents range loss at 50.",
+        "action": "Today do 5 min mobility. Arm circles, hip openers, ankle rotations.",
+        "reflectionPrompt": "Which joint felt most restricted?",
+        "proTip": "Do post-shower morning. Muscles warm, mobility optimum.",
+        "quiz": [
+          {
+            "q": "Mobility vs flexibility?",
+            "options": [
+              "Same",
+              "Mobility = controlled motion",
+              "Flexibility active",
+              "Unknown"
+            ],
+            "correct": 1,
+            "explain": "Mobility = controlled motion."
+          },
+          {
+            "q": "30+ mobility?",
+            "options": [
+              "None",
+              "Daily required",
+              "Weekly",
+              "Monthly"
+            ],
+            "correct": 1,
+            "explain": "Daily 5 min suffices."
+          }
+        ]
+      },
+      "15": {
+        "title": "Meal Timing",
+        "teaching": "What you eat matters; when you eat matters too. Late dinner = sleep loss, slow digestion. Last meal 3h before bed. 19:00 dinner, 22:00 sleep = ideal.",
+        "action": "Today don't eat after 19:00.",
+        "reflectionPrompt": "How did early dinner affect sleep?",
+        "proTip": "Earlier dinner = less evening snacking. Find balance: not starving, not full.",
+        "quiz": [
+          {
+            "q": "Last meal to bed gap?",
+            "options": [
+              "1h",
+              "2h",
+              "3h",
+              "5h"
+            ],
+            "correct": 2,
+            "explain": "3 hours ideal."
+          },
+          {
+            "q": "Late meal effect?",
+            "options": [
+              "None",
+              "Sleep drop",
+              "Better",
+              "Positive"
+            ],
+            "correct": 1,
+            "explain": "Sleep quality drops."
+          }
+        ]
+      },
+      "16": {
+        "title": "Sugar-Free Day",
+        "teaching": "Sugar = addiction molecule. Hijacks brain reward. 1-day sugar-free challenge: only natural fruit sugar allowed. No chocolate, cake, soda, packaged.",
+        "action": "Today consume zero processed sugar.",
+        "reflectionPrompt": "When did you crave the most?",
+        "proTip": "First 3 days hard, 4th softens. By day 14, sweets bother you.",
+        "quiz": [
+          {
+            "q": "Sugar-free challenge?",
+            "options": [
+              "1h",
+              "1 day",
+              "1 week",
+              "1 month"
+            ],
+            "correct": 1,
+            "explain": "Start 1 day."
+          },
+          {
+            "q": "Craving breaks when?",
+            "options": [
+              "1 day",
+              "4-7 days",
+              "14 days",
+              "30 days"
+            ],
+            "correct": 1,
+            "explain": "Day 4 onwards softens."
+          }
+        ]
+      },
+      "17": {
+        "title": "Alcohol Awareness",
+        "teaching": "Alcohol = body stress + sleep loss + protein synthesis block. 1 glass = 3-day recovery. Even \"social\" alcohol is long-term poison. Disciplined person: 0-2 glasses/week.",
+        "action": "Today no alcohol. If habit, start \"Alcohol-Free Monday.\"",
+        "reflectionPrompt": "How did the alcohol-free evening go? Sleep difference?",
+        "proTip": "Order soda + lime in social settings. Looks like cocktail, zero impact.",
+        "quiz": [
+          {
+            "q": "1 drink recovery time?",
+            "options": [
+              "None",
+              "1h",
+              "1 day",
+              "3 days"
+            ],
+            "correct": 3,
+            "explain": "3 days recovery."
+          },
+          {
+            "q": "Disciplined weekly alcohol?",
+            "options": [
+              "Unlimited",
+              "0-2 drinks",
+              "5+",
+              "Only evening"
+            ],
+            "correct": 1,
+            "explain": "0-2 drinks max."
+          }
+        ]
+      },
+      "18": {
+        "title": "Gut Health",
+        "teaching": "Gut = \"second brain.\" Damaged microbiome = depression, fatigue, weak immunity. Solution: fermented food (yogurt, kefir, sauerkraut) + fiber (greens, legumes) + less processed.",
+        "action": "Today eat 1 fermented food + 1 greens meal.",
+        "reflectionPrompt": "How much did you think about gut health before?",
+        "proTip": "Tablespoon of kefir morning. Difference felt in 1 week.",
+        "quiz": [
+          {
+            "q": "Gut = ?",
+            "options": [
+              "Digestion",
+              "Second brain",
+              "Filter",
+              "Passive"
+            ],
+            "correct": 1,
+            "explain": "Second brain — flora critical."
+          },
+          {
+            "q": "Fermented food example?",
+            "options": [
+              "Chocolate",
+              "Kefir",
+              "White bread",
+              "Sugar"
+            ],
+            "correct": 1,
+            "explain": "Kefir = probiotic."
+          }
+        ]
+      },
+      "19": {
+        "title": "Sun Exposure",
+        "teaching": "Vitamin D deficiency = public health crisis. Most chronically low. Solution: 15-20 min direct sun (arms/face) without sunscreen daily. Morning/midday strongest.",
+        "action": "Today 15 min direct sun. Skin uncovered, no sunscreen.",
+        "reflectionPrompt": "How did sunlight affect your mood?",
+        "proTip": "Eat lunch outside. 30 min sun + social value combined.",
+        "quiz": [
+          {
+            "q": "Vitamin D sun duration?",
+            "options": [
+              "1 min",
+              "15-20 min",
+              "2h",
+              "5h"
+            ],
+            "correct": 1,
+            "explain": "15-20 min daily."
+          },
+          {
+            "q": "Sunscreen effect?",
+            "options": [
+              "None",
+              "Blocks D",
+              "Boosts",
+              "Same"
+            ],
+            "correct": 1,
+            "explain": "Sunscreen = D blocker."
+          }
+        ]
+      },
+      "20": {
+        "title": "Pre-Sleep Stretch",
+        "teaching": "Back-leg-spine tension = poor sleep. 5 min pre-sleep stretch = parasympathetic activation, muscle release, deeper sleep. No yoga needed, just simple moves.",
+        "action": "Tonight 5 min stretch before bed. 3 moves: forward bend, butterfly, shoulder opener.",
+        "reflectionPrompt": "Stretched vs unstretched evening — difference?",
+        "proTip": "Do it in bed. No mat needed. Lie back, legs up wall.",
+        "quiz": [
+          {
+            "q": "Pre-sleep stretch?",
+            "options": [
+              "None",
+              "5 min suffices",
+              "1h required",
+              "Never"
+            ],
+            "correct": 1,
+            "explain": "5 min suffices."
+          },
+          {
+            "q": "Stretch effect?",
+            "options": [
+              "Stress up",
+              "Parasympathetic",
+              "Sympathetic",
+              "No effect"
+            ],
+            "correct": 1,
+            "explain": "Parasympathetic = calm."
+          }
+        ]
+      },
+      "21": {
+        "title": "Sitting Posture",
+        "teaching": "8h/day sitting? Posture rules everything. Right: feet flat, knees 90°, hips highest, shoulders back. Wrong: hunched, crossed legs, edge-of-chair.",
+        "action": "Today posture-check 30s every hour. Stand 30s once an hour.",
+        "reflectionPrompt": "How did posture awareness shift through the day?",
+        "proTip": "Lumbar pillow. $5 pillow saves $5,000 chiropractor.",
+        "quiz": [
+          {
+            "q": "Right sitting?",
+            "options": [
+              "Crossed legs",
+              "Knees 90°",
+              "Edge of chair",
+              "Active"
+            ],
+            "correct": 1,
+            "explain": "Knees 90°, feet flat."
+          },
+          {
+            "q": "Hourly do?",
+            "options": [
+              "Always sit",
+              "30s standing",
+              "Lie",
+              "Run"
+            ],
+            "correct": 1,
+            "explain": "Stand 30s every hour."
+          }
+        ]
+      },
+      "22": {
+        "title": "Sleep Hygiene",
+        "teaching": "Sleep isn't medicine — it's daily design. 8 conditions: 1) fixed time, 2) dark, 3) silent, 4) cool (18°C), 5) phoneless, 6) last meal 3h prior, 7) caffeine before 14:00, 8) minimal alcohol.",
+        "action": "Today check the 8 conditions. Which is broken?",
+        "reflectionPrompt": "Easiest one to fix?",
+        "proTip": "Write 8 conditions on bedside note. Tick each night. 30 days = system.",
+        "quiz": [
+          {
+            "q": "Optimal room temp?",
+            "options": [
+              "15°C",
+              "18-20°C",
+              "24°C",
+              "28°C"
+            ],
+            "correct": 1,
+            "explain": "18-20°C deep sleep."
+          },
+          {
+            "q": "Caffeine cutoff?",
+            "options": [
+              "None",
+              "14:00",
+              "18:00",
+              "22:00"
+            ],
+            "correct": 1,
+            "explain": "No caffeine after 14:00."
+          }
+        ]
+      },
+      "23": {
+        "title": "Plateau Break",
+        "teaching": "In training, progress stops 4-6 weeks in — plateau. Body adapts. Break: 1) up weight, 2) up reps, 3) change rest time, 4) move variety. One variable suffices.",
+        "action": "Today change 1 variable in training (reps, weight, tempo, exercise).",
+        "reflectionPrompt": "Which variable changed? Body response?",
+        "proTip": "6 weeks → plateau → week 7 change again. As body adapts, you adapt.",
+        "quiz": [
+          {
+            "q": "Plateau weeks?",
+            "options": [
+              "1",
+              "4-6",
+              "12",
+              "52"
+            ],
+            "correct": 1,
+            "explain": "Body adapts."
+          },
+          {
+            "q": "Break plateau?",
+            "options": [
+              "Quit",
+              "Change variable",
+              "Push harder",
+              "Same"
+            ],
+            "correct": 1,
+            "explain": "One variable suffices."
+          }
+        ]
+      },
+      "24": {
+        "title": "Breath Control",
+        "teaching": "Breath = autonomic nervous system remote. Fast breath = stress. Slow breath = calm. Inhale through nose, exhale 1.5x longer. 5-min practice = instant calm.",
+        "action": "Today in stress moment, do 1 min of 4-in / 6-out.",
+        "reflectionPrompt": "How much did breath practice change stress?",
+        "proTip": "Nose breathing. Mouth breathing = sleep apnea risk + tooth decay.",
+        "quiz": [
+          {
+            "q": "Calming breath rhythm?",
+            "options": [
+              "1:1",
+              "4 in / 6 out",
+              "10 in",
+              "Fast"
+            ],
+            "correct": 1,
+            "explain": "Longer exhale = calm."
+          },
+          {
+            "q": "Nose vs mouth breath?",
+            "options": [
+              "Same",
+              "Nose > mouth",
+              "Mouth fine",
+              "Unknown"
+            ],
+            "correct": 1,
+            "explain": "Nose = filter + warm + humidify."
+          }
+        ]
+      },
+      "25": {
+        "title": "Recovery Protocols",
+        "teaching": "Training = micro damage; recovery = repair. Bad recovery = constant fatigue. Tools: 1) 7-9h sleep, 2) protein, 3) hydration, 4) walking, 5) hot/cold contrast.",
+        "action": "Today apply at least 4 of the 5 recovery tools.",
+        "reflectionPrompt": "Which recovery tool moved the needle most?",
+        "proTip": "Cold shower post-workout = inflammation drop. Hot bath = muscle release.",
+        "quiz": [
+          {
+            "q": "Recovery tools?",
+            "options": [
+              "1",
+              "5",
+              "10",
+              "20"
+            ],
+            "correct": 1,
+            "explain": "5 main (sleep, protein, water, walk, hot/cold)."
+          },
+          {
+            "q": "Post-workout cold?",
+            "options": [
+              "Dangerous",
+              "Reduces inflammation",
+              "No effect",
+              "Hot only"
+            ],
+            "correct": 1,
+            "explain": "Cold = less inflammation."
+          }
+        ]
+      },
+      "26": {
+        "title": "Weekly Workout",
+        "teaching": "Random training = random results. Weekly: 3 resistance + 2 cardio + 2 rest. 7-day structure → 12-week transformation.",
+        "action": "This week write a 7-day plan. Each day what + how much.",
+        "reflectionPrompt": "How would the week go without a plan?",
+        "proTip": "Plan Sunday night. Monday auto-starts.",
+        "quiz": [
+          {
+            "q": "Optimum weekly?",
+            "options": [
+              "7 days resistance",
+              "3 res + 2 cardio + 2 rest",
+              "All cardio",
+              "Zero plan"
+            ],
+            "correct": 1,
+            "explain": "Balanced structure."
+          },
+          {
+            "q": "Plan when?",
+            "options": [
+              "Saturday",
+              "Sunday night",
+              "Monday morning",
+              "Never"
+            ],
+            "correct": 1,
+            "explain": "Plan Sunday, start Monday."
+          }
+        ]
+      },
+      "27": {
+        "title": "Sleep Apnea Awareness",
+        "teaching": "25% of men carry sleep apnea — most unaware. Symptoms: excessive daytime sleep, snoring, morning headache, frequent waking. Untreated = heart disease + diabetes risk.",
+        "action": "Today ask your partner to listen for snoring. Sleepy daytime? Morning headache?",
+        "reflectionPrompt": "Which apnea symptom might you have?",
+        "proTip": "If suspected, see a sleep doctor. Polysomnography = one night, life-saving.",
+        "quiz": [
+          {
+            "q": "Men with sleep apnea %?",
+            "options": [
+              "5%",
+              "15%",
+              "25%",
+              "50%"
+            ],
+            "correct": 2,
+            "explain": "25% of men."
+          },
+          {
+            "q": "Apnea symptom?",
+            "options": [
+              "None",
+              "Snoring + day sleep",
+              "Joy",
+              "No effect"
+            ],
+            "correct": 1,
+            "explain": "Snoring + daytime sleep."
+          }
+        ]
+      },
+      "28": {
+        "title": "Discipline Identity",
+        "teaching": "Don't say \"I am healthy\" — say \"I am someone who lives healthy.\" Identity > behavior. \"I used to smoke, not now\" = relapse risk. \"I'm not a smoker\" = permanent.",
+        "action": "Today claim 1 new body identity label.",
+        "reflectionPrompt": "Which identity? Your evidence?",
+        "proTip": "Speak the identity aloud each morning. Brain believes repetition.",
+        "quiz": [
+          {
+            "q": "\"Don't smoke\" vs \"Not a smoker\"?",
+            "options": [
+              "Same",
+              "Identity 10x stronger",
+              "Behavior strong",
+              "Unknown"
+            ],
+            "correct": 1,
+            "explain": "Identity is permanent."
+          },
+          {
+            "q": "Discipline = ?",
+            "options": [
+              "Behavior",
+              "Identity",
+              "Plan",
+              "Motivation"
+            ],
+            "correct": 1,
+            "explain": "Identity > behavior."
+          }
+        ]
+      },
+      "29": {
+        "title": "Final Sprint",
+        "teaching": "29 days of body discipline. Tomorrow you \"complete.\" But body doesn't end with tomorrow. Final test: which 1 most powerful habit of 30 days? 100 more days.",
+        "action": "Today pick the strongest 1 body discipline of 30 days. Which?",
+        "reflectionPrompt": "Why this one? What result did it deliver?",
+        "proTip": "Mark it \"non-negotiable\" on calendar. Mon-Sun every day.",
+        "quiz": [
+          {
+            "q": "Final discipline test?",
+            "options": [
+              "End",
+              "Which 1 to keep?",
+              "Tiredness",
+              "Satisfaction"
+            ],
+            "correct": 1,
+            "explain": "Pick 1 habit to continue."
+          },
+          {
+            "q": "Non-negotiable means?",
+            "options": [
+              "Flexible",
+              "Every day Mon-Sun",
+              "Weekly",
+              "Monthly"
+            ],
+            "correct": 1,
+            "explain": "Daily required."
+          }
+        ]
+      },
+      "30": {
+        "title": "Complete — New Body",
+        "teaching": "30 days ago body weak, scattered, sleepless. Now: movement, sleep, nutrition structured. Body changed — because you did. Look in mirror: new body, new identity.",
+        "action": "Today summarize 30 days: 3 learned, 3 to keep, 3 not to forget.",
+        "reflectionPrompt": "With this new body, what big thing will you do?",
+        "proTip": "Rest 3 days before next path. Body shapes through consistency.",
+        "quiz": [
+          {
+            "q": "Rest after transition?",
+            "options": [
+              "None",
+              "3 days",
+              "1 week",
+              "1 month"
+            ],
+            "correct": 1,
+            "explain": "3 days rest."
+          },
+          {
+            "q": "30-day summary?",
+            "options": [
+              "None",
+              "3+3+3",
+              "Random",
+              "List"
+            ],
+            "correct": 1,
+            "explain": "3 learned, 3 to keep, 3 not to forget."
           }
         ]
       }
@@ -814,7 +3784,8 @@
             "correct": 1,
             "explain": "Make invisible visible first."
           }
-        ]
+        ],
+        "proTip": "Lay 3 months of bank statements side by side. Recurring charges become visible."
       },
       "2": {
         "title": "Budget = Freedom",
@@ -844,7 +3815,8 @@
             "correct": 1,
             "explain": "Awareness = control = freedom."
           }
-        ]
+        ],
+        "proTip": "Apply 50/30/20 strictly 1 month, then flex. Without baseline, flex is meaningless."
       },
       "3": {
         "title": "24-Hour Wait Rule",
@@ -874,7 +3846,8 @@
             "correct": 2,
             "explain": "80% was impulse, not need."
           }
-        ]
+        ],
+        "proTip": "After 24 hours, if you still want it, you really want it. Most often the answer is \"no.\""
       },
       "4": {
         "title": "Food Cost Visibility",
@@ -904,7 +3877,8 @@
             "correct": 1,
             "explain": "Vacation experience, not routine."
           }
-        ]
+        ],
+        "proTip": "Cooking at home need not be complex. 4 moves: chop, sauté, season, eat."
       },
       "5": {
         "title": "Emergency Fund",
@@ -933,6 +3907,782 @@
             ],
             "correct": 1,
             "explain": "Without fund, discipline is artificial."
+          }
+        ],
+        "proTip": "Park emergency fund out of reach: separate bank, separate card. \"Visible\" money gets spent."
+      },
+      "6": {
+        "title": "Net Worth Audit",
+        "teaching": "Most people don't know their own wealth. Net worth = assets (cash, investments, real estate) - liabilities (loans, cards). This number is your real financial life. Year-over-year: growing or shrinking?",
+        "action": "Today calculate your net worth. Excel it, screenshot it.",
+        "reflectionPrompt": "How different was the result from your guess?",
+        "proTip": "Track monthly. Yearly change = real progress meter.",
+        "quiz": [
+          {
+            "q": "Net worth = ?",
+            "options": [
+              "Cash only",
+              "Assets - Debts",
+              "Salary only",
+              "Profit"
+            ],
+            "correct": 1,
+            "explain": "Assets - Debts = net worth."
+          },
+          {
+            "q": "Track frequency?",
+            "options": [
+              "Yearly",
+              "Monthly",
+              "Never",
+              "Daily"
+            ],
+            "correct": 1,
+            "explain": "Monthly = monthly view."
+          }
+        ]
+      },
+      "7": {
+        "title": "Subscription Audit",
+        "teaching": "Average person pays 7-12 forgotten subscriptions: streaming, app, gym, magazine, premium service. 1 year = $200-500. 50% you don't use. Cancel.",
+        "action": "Today review last 3 months of card statements. List all subscriptions.",
+        "reflectionPrompt": "How many \"sleeping\" subscriptions surprised you?",
+        "proTip": "Apps like Truebill / Bobby auto-find and cancel them.",
+        "quiz": [
+          {
+            "q": "Average subscriptions?",
+            "options": [
+              "1-2",
+              "7-12",
+              "30+",
+              "50+"
+            ],
+            "correct": 1,
+            "explain": "7-12 paid unaware."
+          },
+          {
+            "q": "Yearly cost?",
+            "options": [
+              "$50",
+              "$200-500",
+              "$2000",
+              "$5000"
+            ],
+            "correct": 1,
+            "explain": "$200-500 yearly."
+          }
+        ]
+      },
+      "8": {
+        "title": "Latte Factor",
+        "teaching": "$5 daily coffee = $150/month = $1,800/year = $54,000 in 30 years (no interest). Invested = ~$160K. Tiny daily \"luxuries\" eat your retirement.",
+        "action": "Today list automatic small expenses. Total monthly?",
+        "reflectionPrompt": "Which \"small\" expense was actually big?",
+        "proTip": "Don't cut all — change 1. Big effect.",
+        "quiz": [
+          {
+            "q": "$5/day × 30 yrs?",
+            "options": [
+              "$10K",
+              "$54K + interest",
+              "$5K",
+              "$200K"
+            ],
+            "correct": 1,
+            "explain": "$54K + interest more."
+          },
+          {
+            "q": "Latte solution?",
+            "options": [
+              "Cut all",
+              "Change 1",
+              "More coffee",
+              "Irrelevant"
+            ],
+            "correct": 1,
+            "explain": "1 change effective."
+          }
+        ]
+      },
+      "9": {
+        "title": "Single Account Strategy",
+        "teaching": "Many accounts = mental noise. 1 main (income + daily), 1 savings (untouched), 1 investment (long-term). Cards: 1 daily, 1 backup. More = clutter.",
+        "action": "Today list all accounts. Close 1 unnecessary.",
+        "reflectionPrompt": "What mental space did account simplicity open?",
+        "proTip": "Multiple banks for unused accounts = login fatigue + annual fee layers.",
+        "quiz": [
+          {
+            "q": "Optimum accounts?",
+            "options": [
+              "1",
+              "3",
+              "10",
+              "20"
+            ],
+            "correct": 1,
+            "explain": "1 main + 1 savings + 1 invest = 3."
+          },
+          {
+            "q": "Why 2 cards?",
+            "options": [
+              "Style",
+              "1 daily + 1 backup",
+              "Bonus",
+              "No effect"
+            ],
+            "correct": 1,
+            "explain": "2 cards enough."
+          }
+        ]
+      },
+      "10": {
+        "title": "Automate Savings",
+        "teaching": "Don't trust willpower. Trust automation. When salary lands, 20% auto-transfers to savings. You live the rest. Money you don't see = money you don't spend.",
+        "action": "Today set 20% auto-transfer of salary to savings.",
+        "reflectionPrompt": "How would auto-deduction change your life?",
+        "proTip": "Open savings at a different bank. Same bank = \"easy access\" risk.",
+        "quiz": [
+          {
+            "q": "Auto-savings %?",
+            "options": [
+              "5%",
+              "10%",
+              "20%",
+              "50%"
+            ],
+            "correct": 2,
+            "explain": "20% = ideal target."
+          },
+          {
+            "q": "Savings account where?",
+            "options": [
+              "Same bank",
+              "Different bank",
+              "Mattress",
+              "Wallet"
+            ],
+            "correct": 1,
+            "explain": "Different bank = harder access."
+          }
+        ]
+      },
+      "11": {
+        "title": "Pay Yourself First",
+        "teaching": "Most people: spend first, save what's left. Wrong order. Correct: pay yourself first (savings/investing), then expenses. One change = millions difference in 10 years.",
+        "action": "Today on receiving income, route to savings first, expenses second.",
+        "reflectionPrompt": "How did the order shift change your inner sentence?",
+        "proTip": "On payday, \"pay your own salary\" — first invoice to yourself.",
+        "quiz": [
+          {
+            "q": "Pay first?",
+            "options": [
+              "Bills",
+              "Yourself",
+              "Food",
+              "Fun"
+            ],
+            "correct": 1,
+            "explain": "Pay yourself first = priority."
+          },
+          {
+            "q": "Order effect?",
+            "options": [
+              "None",
+              "Decade difference",
+              "Same",
+              "Negative"
+            ],
+            "correct": 1,
+            "explain": "10 years = millions diff."
+          }
+        ]
+      },
+      "12": {
+        "title": "Debt Avalanche",
+        "teaching": "Multiple debts? Focus on highest-interest first, minimum on others. When done → next highest. Called \"avalanche.\" Mathematically the fastest.",
+        "action": "Today list all debts by interest rate. Plan the avalanche.",
+        "reflectionPrompt": "How did seeing the highest-interest debt feel?",
+        "proTip": "Snowball (smallest first) is psychological. Avalanche (highest interest) is math. Both work — pick one.",
+        "quiz": [
+          {
+            "q": "Avalanche method?",
+            "options": [
+              "All debts equal",
+              "Highest interest first",
+              "Smallest first",
+              "Random"
+            ],
+            "correct": 1,
+            "explain": "Focus highest interest."
+          },
+          {
+            "q": "Snowball vs avalanche?",
+            "options": [
+              "Same",
+              "Snow=psych / aval=math",
+              "Aval slower",
+              "Snow more expensive"
+            ],
+            "correct": 1,
+            "explain": "Both work, different logic."
+          }
+        ]
+      },
+      "13": {
+        "title": "Credit Card Discipline",
+        "teaching": "Credit card = instrument. Misused = handcuff, used right = leverage. Rule: 1) Only on already-planned purchases, 2) Pay full, 3) No interest. Can't? Close it.",
+        "action": "Today match credit card balance with expenses. Any gap?",
+        "reflectionPrompt": "Are you disciplined or exposed to exploitation?",
+        "proTip": "Don't carry it — only for intentional purchases. Out-of-wallet cuts spending 15%.",
+        "quiz": [
+          {
+            "q": "Credit card rule?",
+            "options": [
+              "Spend unlimited",
+              "Pay full + no interest",
+              "Min pay",
+              "Carry"
+            ],
+            "correct": 1,
+            "explain": "Pay full, no interest."
+          },
+          {
+            "q": "Out-of-wallet card?",
+            "options": [
+              "No effect",
+              "15% less spending",
+              "More",
+              "Same"
+            ],
+            "correct": 1,
+            "explain": "No card = intentional buying."
+          }
+        ]
+      },
+      "14": {
+        "title": "Frugal Joy",
+        "teaching": "Frugality ≠ poverty. Unsustainable frugality = short-lived. Frugal joy: discover cheap pleasures. Park walk, home cooking, library book, home concert. Expensive ≠ joyful.",
+        "action": "Today do 1 big enjoyment that costs $0.",
+        "reflectionPrompt": "What gave you joy without cost?",
+        "proTip": "List 30 alternatives: $0, <$5, <$10. Seeing options breaks spending reflex.",
+        "quiz": [
+          {
+            "q": "Frugality ≠ ?",
+            "options": [
+              "Saving",
+              "Poverty",
+              "Plan",
+              "Discipline"
+            ],
+            "correct": 1,
+            "explain": "Frugal ≠ poor."
+          },
+          {
+            "q": "Frugal joy example?",
+            "options": [
+              "Fancy restaurant",
+              "Park walk",
+              "New phone",
+              "Bar night"
+            ],
+            "correct": 1,
+            "explain": "$0 joy examples."
+          }
+        ]
+      },
+      "15": {
+        "title": "Buy Quality Once",
+        "teaching": "Cheap × 5 = expensive. Expensive × 1 = looks pricey but cheaper. $40 shoes lasting 5 years vs $200 shoes lasting 20. Calculate, choose quality.",
+        "action": "Today upgrade 1 about-to-break item to a higher-quality alternative.",
+        "reflectionPrompt": "How much does quality save long-term?",
+        "proTip": "Check Buy-It-For-Life (BIFL) communities. Reddit has endless suggestions.",
+        "quiz": [
+          {
+            "q": "Cheap × 5 = ?",
+            "options": [
+              "Expensive",
+              "Cheaper",
+              "Same",
+              "Unknown"
+            ],
+            "correct": 0,
+            "explain": "Total ends up expensive."
+          },
+          {
+            "q": "Buy-it-for-life is?",
+            "options": [
+              "Expensive",
+              "One-time buy",
+              "Eternal",
+              "Young"
+            ],
+            "correct": 1,
+            "explain": "Buy once, last lifetime."
+          }
+        ]
+      },
+      "16": {
+        "title": "Weekly Money Review",
+        "teaching": "Money = unmeasured = unmanaged. 1 hour weekly: income-expense, budget vs actual, goal status. 52 hours yearly defines yearly income.",
+        "action": "This week spend 30 min on money review. Excel or journal.",
+        "reflectionPrompt": "How would your money roll without review?",
+        "proTip": "Fixed time-day. Sunday 09:00 or Saturday 10:00. No flex.",
+        "quiz": [
+          {
+            "q": "Weekly review duration?",
+            "options": [
+              "5 min",
+              "30 min",
+              "5h",
+              "Never"
+            ],
+            "correct": 1,
+            "explain": "30 min suffices."
+          },
+          {
+            "q": "Fixed time-day?",
+            "options": [
+              "Flex",
+              "Fixed",
+              "Never",
+              "Random"
+            ],
+            "correct": 1,
+            "explain": "Flex = skip."
+          }
+        ]
+      },
+      "17": {
+        "title": "Income Multiplication",
+        "teaching": "Saving = limited. Income = unlimited. Single income is risk. 2-3 income channels is disciplined-person profile: main job + freelance/online + investments.",
+        "action": "Today research 1 side income (freelance, online sales, rent, dividend).",
+        "reflectionPrompt": "Easiest extra income to start?",
+        "proTip": "First target: extra $500/mo. That's a rent payment = $6K/yr = extra retirement.",
+        "quiz": [
+          {
+            "q": "Single income = ?",
+            "options": [
+              "Safe",
+              "Risk",
+              "Enough",
+              "Ideal"
+            ],
+            "correct": 1,
+            "explain": "Single income = risk."
+          },
+          {
+            "q": "Disciplined profile?",
+            "options": [
+              "1 income",
+              "2-3 incomes",
+              "10 incomes",
+              "None"
+            ],
+            "correct": 1,
+            "explain": "2-3 channels optimum."
+          }
+        ]
+      },
+      "18": {
+        "title": "Investing 101: Index Funds",
+        "teaching": "Stock-picking is hard — index funds are easy. Slice of the whole market, average 7-10% annual return (US), tiny fees. Warren Buffett: index funds for retirement.",
+        "action": "Today research index funds (S&P 500, VOO, VT, world index).",
+        "reflectionPrompt": "How did index funds shift investing fear?",
+        "proTip": "Monthly small (Dollar-cost averaging) > one-time big. Spreads risk.",
+        "quiz": [
+          {
+            "q": "Index fund return?",
+            "options": [
+              "2%",
+              "7-10%/yr",
+              "50%",
+              "100%"
+            ],
+            "correct": 1,
+            "explain": "Avg 7-10% yearly."
+          },
+          {
+            "q": "DCA?",
+            "options": [
+              "One-time",
+              "Monthly small",
+              "Never",
+              "Expensive"
+            ],
+            "correct": 1,
+            "explain": "Monthly steady."
+          }
+        ]
+      },
+      "19": {
+        "title": "Side Income Discipline",
+        "teaching": "Side income — starting easy, sustaining hard. First 6 months: $0. Most quit. Month 12 starts earning. Month 24 transforms life. If you sustain.",
+        "action": "Today spend 30 min on a side hustle. Even with $0 income.",
+        "reflectionPrompt": "Fear in starting side income? No money or judgment?",
+        "proTip": "Camera shy? Start with writing. Medium, blog, newsletter.",
+        "quiz": [
+          {
+            "q": "Side income year 1?",
+            "options": [
+              "Always pays",
+              "First 6 mo $0",
+              "Guaranteed",
+              "Never start"
+            ],
+            "correct": 1,
+            "explain": "First 6 mo $0 normal."
+          },
+          {
+            "q": "Most quit when?",
+            "options": [
+              "Never",
+              "After 6 mo",
+              "1 yr",
+              "2 yr"
+            ],
+            "correct": 1,
+            "explain": "Most quit at 6 mo."
+          }
+        ]
+      },
+      "20": {
+        "title": "Lifestyle Inflation",
+        "teaching": "Salary up = expenses up. Called lifestyle inflation. 10% raise → 10% more car/rent/food. Net effect zero. Discipline: 50% of raise to savings.",
+        "action": "Today inspect last raise. Where did it go?",
+        "reflectionPrompt": "How much did lifestyle inflation hit you?",
+        "proTip": "Live 3 months on old salary. Body accepts old as normal, extra goes to savings.",
+        "quiz": [
+          {
+            "q": "Lifestyle inflation?",
+            "options": [
+              "Savings up",
+              "Salary up = expense up",
+              "Tax",
+              "Budget"
+            ],
+            "correct": 1,
+            "explain": "Net effect zero."
+          },
+          {
+            "q": "Solution?",
+            "options": [
+              "Refuse raise",
+              "50% of raise to savings",
+              "More spending",
+              "None"
+            ],
+            "correct": 1,
+            "explain": "50% to savings."
+          }
+        ]
+      },
+      "21": {
+        "title": "Negotiation Skill",
+        "teaching": "Negotiation = embarrassing in West, normal in East. Salary negotiation = 1 hour talk = $5K-20K/yr difference. Negotiation isn't cheap — it's essential. Ask \"what's the real number?\"",
+        "action": "Today negotiate one price. Even online: ask for a discount code.",
+        "reflectionPrompt": "How did the negotiation attempt go? As scary as feared?",
+        "proTip": "\"Is this your best price?\" — the magic phrase. Often unlocks 5-15% off.",
+        "quiz": [
+          {
+            "q": "Negotiation effect?",
+            "options": [
+              "No effect",
+              "5-15% off",
+              "50%",
+              "Negative"
+            ],
+            "correct": 1,
+            "explain": "Often 5-15%."
+          },
+          {
+            "q": "Magic phrase?",
+            "options": [
+              "Expensive",
+              "\"Is this best price?\"",
+              "Discount",
+              "Cheap"
+            ],
+            "correct": 1,
+            "explain": "Best-price question opens."
+          }
+        ]
+      },
+      "22": {
+        "title": "Tax Awareness",
+        "teaching": "Tax = your biggest annual expense. Most don't know tax laws, miss deductions, overpay. 1-2 hours of learning = thousands saved annually.",
+        "action": "Today research deductions (education, health, donations, rent).",
+        "reflectionPrompt": "Which deduction were you unaware of?",
+        "proTip": "1-hour with accountant = $200. Saves $2,000.",
+        "quiz": [
+          {
+            "q": "Biggest yearly expense?",
+            "options": [
+              "Rent",
+              "Tax",
+              "Food",
+              "Fun"
+            ],
+            "correct": 1,
+            "explain": "Tax usually biggest."
+          },
+          {
+            "q": "Accountant cost?",
+            "options": [
+              "Expensive",
+              "1h = $200, saves $2K",
+              "Useless",
+              "Luxury"
+            ],
+            "correct": 1,
+            "explain": "Investment-like."
+          }
+        ]
+      },
+      "23": {
+        "title": "Insurance Discipline",
+        "teaching": "Insurance = boring but life-saving. Must-haves: 1) Health (private), 2) Life (if family), 3) Professional liability. Skip: extended warranties, rental car insurance.",
+        "action": "Today review your insurance. Underinsured or overinsured?",
+        "reflectionPrompt": "In what area do you carry uninsured risk?",
+        "proTip": "Compare insurance yearly. Same coverage 30% cheaper elsewhere.",
+        "quiz": [
+          {
+            "q": "Must-have insurance?",
+            "options": [
+              "Auto",
+              "Health + life",
+              "Furniture",
+              "None"
+            ],
+            "correct": 1,
+            "explain": "Health, life, professional."
+          },
+          {
+            "q": "Insurance compare?",
+            "options": [
+              "No effect",
+              "Yearly 30% cheaper",
+              "Same",
+              "Expensive"
+            ],
+            "correct": 1,
+            "explain": "Same coverage 30% cheaper."
+          }
+        ]
+      },
+      "24": {
+        "title": "Financial Goals",
+        "teaching": "Without goals, money = aimless spend. Clear goals: \"$5K emergency fund in 1 year,\" \"house down payment in 5 years,\" \"retirement-ready in 20.\" Date + amount + purpose.",
+        "action": "Today write 3 financial goals. Short (1y), mid (5y), long (20+y).",
+        "reflectionPrompt": "Which goal motivates you most?",
+        "proTip": "Keep goals visible: closet door, desk edge. Visibility = reminder.",
+        "quiz": [
+          {
+            "q": "Goal format?",
+            "options": [
+              "Vague",
+              "Date + amount + purpose",
+              "Just intent",
+              "None"
+            ],
+            "correct": 1,
+            "explain": "Date, amount, purpose required."
+          },
+          {
+            "q": "Goal count?",
+            "options": [
+              "1",
+              "3 (short+mid+long)",
+              "10",
+              "20"
+            ],
+            "correct": 1,
+            "explain": "3 goals = focus."
+          }
+        ]
+      },
+      "25": {
+        "title": "Rewrite Your Money Story",
+        "teaching": "Childhood \"money story\" shapes financial behavior. \"Money is bad,\" \"rich people are thieves,\" \"we're not wealthy.\" Recognize, then rewrite: \"Money is a tool, I am the creator.\"",
+        "action": "Today write your money story for 5 min. Then write a new version.",
+        "reflectionPrompt": "How does your old story hold you back?",
+        "proTip": "Read new story every morning for 30 days. Brain trusts repetition.",
+        "quiz": [
+          {
+            "q": "Money story from?",
+            "options": [
+              "Birth",
+              "Childhood",
+              "Genes",
+              "Luck"
+            ],
+            "correct": 1,
+            "explain": "Learned in childhood."
+          },
+          {
+            "q": "New story effective?",
+            "options": [
+              "Never",
+              "30 days every morning",
+              "1 time",
+              "Unknown"
+            ],
+            "correct": 1,
+            "explain": "Repetition = belief."
+          }
+        ]
+      },
+      "26": {
+        "title": "Spending Awareness",
+        "teaching": "Most spending is subconscious: stress, boredom, social pressure, ad triggers. Awareness is the only weapon. Before each purchase: \"Is this emotional or real need?\"",
+        "action": "Today pause 10 sec before each purchase. Question intent.",
+        "reflectionPrompt": "Which purchase was emotional? Why?",
+        "proTip": "Emotional spending = \"I'll just buy this\" reflex. Stop the hand.",
+        "quiz": [
+          {
+            "q": "Most spending is?",
+            "options": [
+              "Conscious",
+              "Subconscious",
+              "Plan",
+              "Smart"
+            ],
+            "correct": 1,
+            "explain": "Subconscious triggers."
+          },
+          {
+            "q": "Awareness weapon?",
+            "options": [
+              "None",
+              "10 sec pause + question",
+              "Quick buy",
+              "Phone"
+            ],
+            "correct": 1,
+            "explain": "Question intent."
+          }
+        ]
+      },
+      "27": {
+        "title": "Mindful Money",
+        "teaching": "Money = energy + time exchange. $100 = hours of effort. Forgetting that starts waste. Remember: $1,000 phone = 50 work hours. Worth it?",
+        "action": "Today, looking at a purchase, convert to work hours. Big or small?",
+        "reflectionPrompt": "Which purchase got reframed when in hours?",
+        "proTip": "Know your hourly. $20/hr = $1,000 item = 50 hours of life.",
+        "quiz": [
+          {
+            "q": "Money = ?",
+            "options": [
+              "Paper",
+              "Energy + time",
+              "Luck",
+              "Sugar"
+            ],
+            "correct": 1,
+            "explain": "Hours of effort."
+          },
+          {
+            "q": "$100 = ?",
+            "options": [
+              "Little",
+              "Hours of effort",
+              "Nothing",
+              "A lot"
+            ],
+            "correct": 1,
+            "explain": "Convert to hourly rate."
+          }
+        ]
+      },
+      "28": {
+        "title": "Generational Discipline",
+        "teaching": "Money discipline isn't just you — it shapes your kids. Wealth dies in 3 generations without transferred discipline. Hiding \"money talk\" = burden, not legacy.",
+        "action": "Today discuss 1 financial topic with family. Budget, goal, investment.",
+        "reflectionPrompt": "What money topics are taboo in your family?",
+        "proTip": "Show kids salary + budget. Money literacy = most valuable inheritance.",
+        "quiz": [
+          {
+            "q": "Wealth in 3 generations?",
+            "options": [
+              "Always grows",
+              "Dies without discipline",
+              "Same",
+              "Negative"
+            ],
+            "correct": 1,
+            "explain": "Discipline must transfer."
+          },
+          {
+            "q": "Most valuable inheritance?",
+            "options": [
+              "Money",
+              "Money literacy",
+              "House",
+              "Job"
+            ],
+            "correct": 1,
+            "explain": "Knowledge generates money."
+          }
+        ]
+      },
+      "29": {
+        "title": "Final Sprint",
+        "teaching": "29 days of money discipline. Tomorrow you \"complete.\" But money doesn't end with tomorrow. Final test: which 1 powerful habit of 30 days? 100 more days.",
+        "action": "Today pick the strongest 1 money discipline of 30 days. Which?",
+        "reflectionPrompt": "Why this? What result did it deliver?",
+        "proTip": "Auto-savings is easiest sustained. No willpower, just system.",
+        "quiz": [
+          {
+            "q": "Sustainable 1 discipline?",
+            "options": [
+              "Willpower",
+              "Auto-savings",
+              "Negotiation",
+              "Tax"
+            ],
+            "correct": 1,
+            "explain": "System > willpower."
+          },
+          {
+            "q": "Final test?",
+            "options": [
+              "Done",
+              "Which 1 to keep?",
+              "Tired",
+              "Satisfied"
+            ],
+            "correct": 1,
+            "explain": "Pick 1 discipline."
+          }
+        ]
+      },
+      "30": {
+        "title": "Complete — New Money",
+        "teaching": "30 days ago money relationship was murky. Now: net worth, budget, goals are clear. You didn't own money — now you do. Look in mirror: new financial identity.",
+        "action": "Today summarize 30 days: 3 learned, 3 to keep, 3 not to forget.",
+        "reflectionPrompt": "With this new money mind, which financial goal next?",
+        "proTip": "Rest 3 days before next path. Consistency = permanence.",
+        "quiz": [
+          {
+            "q": "Rest after transition?",
+            "options": [
+              "None",
+              "3 days",
+              "1 week",
+              "1 month"
+            ],
+            "correct": 1,
+            "explain": "3 days rest."
+          },
+          {
+            "q": "30-day summary?",
+            "options": [
+              "None",
+              "3+3+3",
+              "Random",
+              "List"
+            ],
+            "correct": 1,
+            "explain": "3 learned, 3 to keep, 3 not to forget."
           }
         ]
       }
