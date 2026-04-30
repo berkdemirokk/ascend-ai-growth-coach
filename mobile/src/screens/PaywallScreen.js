@@ -14,6 +14,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useApp } from '../contexts/AppContext';
 import { purchasePremium, restorePurchases, getAvailablePackages } from '../services/purchases';
+import { getPaywallVariant, logPaywallEvent } from '../config/paywallVariants';
 
 export default function PaywallScreen({ navigation }) {
   const { t } = useTranslation();
@@ -23,6 +24,7 @@ export default function PaywallScreen({ navigation }) {
   const [selected, setSelected] = useState('yearly');
   const [packages, setPackages] = useState({ monthly: null, yearly: null });
   const [loadingPackages, setLoadingPackages] = useState(true);
+  const [variant, setVariant] = useState(null);
 
   useEffect(() => {
     (async () => {
@@ -31,6 +33,13 @@ export default function PaywallScreen({ navigation }) {
         if (pkgs) setPackages(pkgs);
       } finally {
         setLoadingPackages(false);
+      }
+      try {
+        const v = await getPaywallVariant();
+        setVariant(v);
+        logPaywallEvent(v.id, 'view');
+      } catch {
+        setVariant({ id: 'A' });
       }
     })();
   }, []);
@@ -52,10 +61,12 @@ export default function PaywallScreen({ navigation }) {
       );
       return;
     }
+    logPaywallEvent(variant?.id || 'A', selected === 'yearly' ? 'select_yearly' : 'select_monthly');
     setIsSubscribing(true);
     try {
       const success = await purchasePremium(selected);
       if (success) {
+        logPaywallEvent(variant?.id || 'A', 'purchase', { period: selected });
         setPremium(true);
         navigation.goBack();
       }
@@ -112,15 +123,23 @@ export default function PaywallScreen({ navigation }) {
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
       >
-        {/* Hero */}
+        {/* Hero — variant-aware */}
         <View style={styles.hero}>
-          <Text style={styles.heroEmoji}>🔥</Text>
+          <Text style={styles.heroEmoji}>{variant?.heroEmoji || '🔥'}</Text>
           <Text style={styles.heroTitle}>
-            {t('paywall.title', 'TAM MONK MODE').toUpperCase()}
+            {t(variant?.headline || 'paywall.title', 'TAM MONK MODE').toUpperCase()}
           </Text>
           <Text style={styles.heroSubtitle}>
-            {t('paywall.subtitle', 'İlk 7 gün ücretsiz')}
+            {t(variant?.subheadline || 'paywall.subtitle', 'İlk 7 gün ücretsiz')}
           </Text>
+          {variant?.showSocialProof ? (
+            <View style={styles.socialProofPill}>
+              <MaterialIcons name="people" size={14} color="#10B981" />
+              <Text style={styles.socialProofText}>
+                {t('paywall.socialProof', '10.000+ disiplinli kullanıcı')}
+              </Text>
+            </View>
+          ) : null}
         </View>
 
         {/* Trust signals row */}
@@ -224,7 +243,7 @@ export default function PaywallScreen({ navigation }) {
             >
               <View style={styles.bestValueBadge}>
                 <Text style={styles.bestValueText}>
-                  {t('paywall.bestValue', 'EN İYİ FİYAT')}
+                  {t(variant?.bestValueBadge || 'paywall.bestValue', 'EN İYİ FİYAT')}
                 </Text>
               </View>
               <Text style={styles.pricePeriod}>
@@ -275,7 +294,7 @@ export default function PaywallScreen({ navigation }) {
               <ActivityIndicator color="#FFFFFF" />
             ) : (
               <Text style={styles.ctaText}>
-                {t('paywall.ctaTrial', '7 gün ücretsiz başla')}
+                {t(variant?.ctaText || 'paywall.ctaTrial', '7 gün ücretsiz başla')}
               </Text>
             )}
           </LinearGradient>
@@ -377,6 +396,24 @@ const styles = StyleSheet.create({
     color: '#F59E0B',
     fontSize: 16,
     fontWeight: '700',
+  },
+  socialProofPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: 'rgba(16, 185, 129, 0.12)',
+    borderColor: 'rgba(16, 185, 129, 0.3)',
+    borderWidth: 1,
+    paddingHorizontal: 12,
+    paddingVertical: 5,
+    borderRadius: 999,
+    marginTop: 12,
+  },
+  socialProofText: {
+    color: '#10B981',
+    fontSize: 11,
+    fontWeight: '800',
+    letterSpacing: 0.4,
   },
 
   // Trust signals
