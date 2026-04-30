@@ -43,7 +43,8 @@
     "date-fns": "^2.30.0",
     "@supabase/supabase-js": "^2.45.0",
     "react-native-url-polyfill": "^2.0.0",
-    "react-native-view-shot": "~4.0.3"
+    "react-native-view-shot": "~4.0.3",
+    "react-native-svg": "15.8.0"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2"

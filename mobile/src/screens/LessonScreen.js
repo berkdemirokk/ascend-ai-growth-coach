@@ -541,18 +541,47 @@ export default function LessonScreen({ navigation, route }) {
         />
 
         {showCelebration && (
-          <View style={styles.celebration} pointerEvents="none">
-            <Animated.View style={{ transform: [{ scale: celebrationScale }] }}>
-              <MaterialIcons name="local-fire-department" size={120} color="#FDE047" />
-            </Animated.View>
-            <Animated.Text
-              style={[styles.celebrationText, { transform: [{ translateY: xpY }] }]}
-            >
-              +{15 + correctCount * 5} XP
-            </Animated.Text>
-            <Text style={styles.celebrationHint}>
-              {t('lesson.greatWork', 'Harika iş!')}
-            </Text>
+          <View style={styles.celebration}>
+            {/* Top bar with title + share */}
+            <View style={styles.celebrationTopBar}>
+              <View style={{ width: 40 }} />
+              <Text style={styles.celebrationTopTitle}>
+                {t('lesson.completeTitle', 'Lesson Complete')}
+              </Text>
+              <View style={{ width: 40 }} />
+            </View>
+
+            {/* Centered content */}
+            <View style={styles.celebrationCenter} pointerEvents="none">
+              <View style={styles.celebrationEmojiWrap}>
+                <Animated.Text
+                  style={[
+                    styles.celebrationEmoji,
+                    { transform: [{ scale: celebrationScale }] },
+                  ]}
+                >
+                  🔥
+                </Animated.Text>
+                <View style={styles.celebrationRing} />
+              </View>
+              <Animated.Text
+                style={[
+                  styles.celebrationXP,
+                  { transform: [{ translateY: xpY }] },
+                ]}
+              >
+                +{15 + correctCount * 5} XP
+              </Animated.Text>
+              <Text style={styles.celebrationHeading}>
+                {t('lesson.greatWork', 'Harika iş!')}
+              </Text>
+              <Text style={styles.celebrationSubtitle}>
+                {t(
+                  'lesson.completeFooter',
+                  'Disiplin yolunda bir adım daha attın.',
+                )}
+              </Text>
+            </View>
           </View>
         )}
       </View>
@@ -823,17 +852,72 @@ const styles = StyleSheet.create({
   },
 
   celebration: {
-    position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
-    alignItems: 'center', justifyContent: 'center',
-    backgroundColor: 'rgba(11, 11, 20, 0.94)',
+    position: 'absolute',
+    top: 0, left: 0, right: 0, bottom: 0,
+    backgroundColor: 'rgba(11, 11, 20, 0.96)',
     zIndex: 999,
   },
-  celebrationText: {
-    color: '#FDE047', fontSize: 36,
-    fontWeight: '900', marginTop: 16,
+  celebrationTopBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    paddingTop: 16,
+    paddingBottom: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#2A2A42',
+    backgroundColor: '#0B0B14',
   },
-  celebrationHint: {
-    color: '#F5F5FA', fontSize: 14,
-    fontWeight: '600', marginTop: 24, opacity: 0.8,
+  celebrationTopTitle: {
+    color: '#F5F5FA', fontSize: 17, fontWeight: '700',
+  },
+  celebrationCenter: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 20,
+  },
+  celebrationEmojiWrap: {
+    position: 'relative',
+    marginBottom: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  celebrationEmoji: {
+    fontSize: 120,
+    textShadowColor: 'rgba(245, 158, 11, 0.5)',
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 25,
+  },
+  celebrationRing: {
+    position: 'absolute',
+    width: 180, height: 180,
+    borderRadius: 90,
+    borderWidth: 1,
+    borderColor: 'rgba(99, 102, 241, 0.2)',
+  },
+  celebrationXP: {
+    color: '#FDE047',
+    fontSize: 36,
+    fontWeight: '900',
+    letterSpacing: -0.5,
+    textShadowColor: 'rgba(253, 224, 71, 0.5)',
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 20,
+    marginBottom: 8,
+  },
+  celebrationHeading: {
+    color: '#FFFFFF',
+    fontSize: 24,
+    fontWeight: '900',
+    marginBottom: 8,
+    letterSpacing: -0.4,
+  },
+  celebrationSubtitle: {
+    color: '#9898B0',
+    fontSize: 15,
+    fontWeight: '500',
+    textAlign: 'center',
+    maxWidth: 280,
   },
 });

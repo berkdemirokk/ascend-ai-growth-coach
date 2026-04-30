@@ -10,6 +10,8 @@ import {
   SafeAreaView,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { LinearGradient } from 'expo-linear-gradient';
+import { MaterialIcons } from '@expo/vector-icons';
 import { useApp } from '../contexts/AppContext';
 import { purchasePremium, restorePurchases, getAvailablePackages } from '../services/purchases';
 
@@ -33,14 +35,13 @@ export default function PaywallScreen({ navigation }) {
     })();
   }, []);
 
-  const monthlyPrice = packages.monthly?.product?.priceString || '149 ₺';
-  const yearlyPrice = packages.yearly?.product?.priceString || '749 ₺';
-  const yearlyMonthlyEquiv = packages.yearly?.product?.price
-    ? `${(packages.yearly.product.price / 12).toFixed(0)} ${packages.yearly.product.currencyCode || ''}`
-    : '~62 ₺';
+  const monthlyPrice = packages.monthly?.product?.priceString || '₺149,99';
+  const yearlyPrice = packages.yearly?.product?.priceString || '₺999,99';
+  const yearlyPerMonth = packages.yearly?.product?.price
+    ? `₺${(packages.yearly.product.price / 12).toFixed(2)}`
+    : '₺83,33';
 
   const handleSubscribe = async () => {
-    // Block early if no packages loaded — shows real reason
     if (!packages.monthly && !packages.yearly) {
       Alert.alert(
         t('paywall.notReadyTitle', 'Abonelikler hazır değil'),
@@ -58,7 +59,6 @@ export default function PaywallScreen({ navigation }) {
         setPremium(true);
         navigation.goBack();
       }
-      // success === false means user cancelled — silent, no alert
     } catch (e) {
       const msg = e?.message || '';
       let body = t('common.tryAgain');
@@ -85,8 +85,6 @@ export default function PaywallScreen({ navigation }) {
       if (success) {
         setPremium(true);
         navigation.goBack();
-      } else {
-        Alert.alert(t('common.error'), t('common.tryAgain'));
       }
     } catch (e) {
       Alert.alert(t('common.error'), e?.message || t('common.tryAgain'));
@@ -95,83 +93,108 @@ export default function PaywallScreen({ navigation }) {
     }
   };
 
-  const features = [
-    { icon: '🔓', text: t('paywall.feature1') },
-    { icon: '❄️', text: t('paywall.feature2') },
-    { icon: '📊', text: t('paywall.feature3') },
-    { icon: '📈', text: t('paywall.feature4') },
-    { icon: '☁️', text: t('paywall.feature5') },
-  ];
-
   return (
     <SafeAreaView style={styles.safeArea}>
+      {/* Background glow */}
+      <View style={styles.bgGlow} pointerEvents="none" />
+
+      {/* Top bar */}
+      <View style={styles.topBar}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.closeBtn}
+        >
+          <MaterialIcons name="close" size={22} color="#FFFFFF" />
+        </TouchableOpacity>
+      </View>
+
       <ScrollView
-        style={styles.container}
-        contentContainerStyle={styles.contentContainer}
+        contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
       >
-        <TouchableOpacity style={styles.closeButton} onPress={() => navigation.goBack()}>
-          <Text style={styles.closeButtonText}>✕</Text>
-        </TouchableOpacity>
+        {/* Hero */}
+        <View style={styles.hero}>
+          <Text style={styles.heroEmoji}>🔥</Text>
+          <Text style={styles.heroTitle}>
+            {t('paywall.title', 'TAM MONK MODE').toUpperCase()}
+          </Text>
+          <Text style={styles.heroSubtitle}>
+            {t('paywall.subtitle', 'İlk 7 gün ücretsiz')}
+          </Text>
+        </View>
 
-        <View style={styles.header}>
-          <Text style={styles.crownEmoji}>🔥</Text>
-          <Text style={styles.title}>{t('paywall.title')}</Text>
-          <Text style={styles.subtitle}>{t('paywall.subtitle')}</Text>
-
-          {/* Trust signals */}
-          <View style={styles.trustRow}>
-            <View style={styles.trustItem}>
-              <Text style={styles.trustEmoji}>🔒</Text>
-              <Text style={styles.trustText}>
-                {t('paywall.trustPrivate', 'Gizli')}
-              </Text>
-            </View>
-            <View style={styles.trustItem}>
-              <Text style={styles.trustEmoji}>↩️</Text>
-              <Text style={styles.trustText}>
-                {t('paywall.trustCancel', 'Her an iptal')}
-              </Text>
-            </View>
-            <View style={styles.trustItem}>
-              <Text style={styles.trustEmoji}>📜</Text>
-              <Text style={styles.trustText}>
-                {t('paywall.trustNoTrack', 'İzleme yok')}
-              </Text>
-            </View>
+        {/* Trust signals row */}
+        <View style={styles.trustRow}>
+          <View style={styles.trustItem}>
+            <MaterialIcons name="lock" size={20} color="#908FA0" />
+            <Text style={styles.trustLabel}>
+              {t('paywall.trustPrivate', 'GİZLİ')}
+            </Text>
+          </View>
+          <View style={styles.trustItem}>
+            <MaterialIcons name="history" size={20} color="#908FA0" />
+            <Text style={styles.trustLabel}>
+              {t('paywall.trustCancel', 'İPTAL ET')}
+            </Text>
+          </View>
+          <View style={styles.trustItem}>
+            <MaterialIcons name="article" size={20} color="#908FA0" />
+            <Text style={styles.trustLabel}>
+              {t('paywall.trustNoTrack', 'İZLEME YOK')}
+            </Text>
           </View>
         </View>
 
-        <View style={styles.featuresContainer}>
-          {features.map((f, i) => (
-            <View key={i} style={styles.featureRow}>
-              <Text style={styles.featureIcon}>{f.icon}</Text>
-              <Text style={styles.featureText}>{f.text}</Text>
-            </View>
-          ))}
+        {/* Features */}
+        <View style={styles.features}>
+          <FeatureRow
+            icon="block"
+            iconColor="#FFB4AB"
+            label={t('paywall.feature1', 'Sınırsız kalpler')}
+          />
+          <FeatureRow
+            icon="workspace-premium"
+            iconColor="#FFB783"
+            label={t('paywall.feature2', 'Tüm yolların kilidi açık')}
+          />
+          <FeatureRow
+            icon="block"
+            iconColor="#C0C1FF"
+            label={t('paywall.feature3', 'Reklamsız deneyim')}
+          />
+          <FeatureRow
+            icon="sync"
+            iconColor="#D0BCFF"
+            label={t('paywall.feature4', 'Cihazlar arası senkron')}
+          />
+          <FeatureRow
+            icon="auto-awesome"
+            iconColor="#FFDCC5"
+            label={t('paywall.feature5', 'Premium başarılar')}
+          />
         </View>
 
+        {/* Price cards */}
         {loadingPackages ? (
-          <View style={styles.loadingPackages}>
-            <ActivityIndicator color="#6366F1" />
+          <View style={styles.loadingBox}>
+            <ActivityIndicator color="#C0C1FF" />
             <Text style={styles.loadingText}>
               {t('paywall.loadingPrices', 'Fiyatlar yükleniyor...')}
             </Text>
           </View>
         ) : !packages.monthly && !packages.yearly ? (
           <View style={styles.errorBox}>
-            <Text style={styles.errorIcon}>⚠️</Text>
+            <MaterialIcons name="warning" size={32} color="#FDE047" />
             <Text style={styles.errorTitle}>
               {t('paywall.notReadyTitle', 'Abonelikler yüklenemedi')}
             </Text>
             <Text style={styles.errorBody}>
               {t(
                 'paywall.notReadyBodyShort',
-                'Mağaza bağlantısı kurulamadı. İnternetini kontrol et ve birkaç dakika sonra tekrar dene.',
+                'Mağaza bağlantısı kurulamadı. Birkaç dakika sonra tekrar dene.',
               )}
             </Text>
             <TouchableOpacity
-              style={styles.retryBtn}
               onPress={async () => {
                 setLoadingPackages(true);
                 try {
@@ -181,7 +204,7 @@ export default function PaywallScreen({ navigation }) {
                   setLoadingPackages(false);
                 }
               }}
-              activeOpacity={0.7}
+              style={styles.retryBtn}
             >
               <Text style={styles.retryText}>
                 {t('common.tryAgain', 'Tekrar dene')}
@@ -189,65 +212,94 @@ export default function PaywallScreen({ navigation }) {
             </TouchableOpacity>
           </View>
         ) : (
-          <>
+          <View style={styles.priceCards}>
+            {/* Yearly */}
             <TouchableOpacity
-              style={[styles.priceOption, selected === 'yearly' && styles.priceOptionSelected]}
               onPress={() => setSelected('yearly')}
               activeOpacity={0.85}
+              style={[
+                styles.priceCard,
+                selected === 'yearly' && styles.priceCardActive,
+              ]}
             >
-              <View style={styles.priceLeft}>
-                <View style={styles.priceLabelRow}>
-                  <Text style={styles.priceLabel}>{t('paywall.yearly')}</Text>
-                  <View style={styles.bestValueBadge}>
-                    <Text style={styles.bestValueText}>BEST</Text>
-                  </View>
-                </View>
-                <Text style={styles.priceSubLabel}>
-                  {yearlyMonthlyEquiv} / {t('paywall.monthly').toLowerCase()}
+              <View style={styles.bestValueBadge}>
+                <Text style={styles.bestValueText}>
+                  {t('paywall.bestValue', 'EN İYİ FİYAT')}
                 </Text>
               </View>
+              <Text style={styles.pricePeriod}>
+                {t('paywall.yearly', 'YILLIK').toUpperCase()}
+              </Text>
               <Text style={styles.priceAmount}>{yearlyPrice}</Text>
+              <Text style={styles.pricePerMonth}>{yearlyPerMonth} / ay</Text>
             </TouchableOpacity>
 
+            {/* Monthly */}
             <TouchableOpacity
-              style={[styles.priceOption, selected === 'monthly' && styles.priceOptionSelected]}
               onPress={() => setSelected('monthly')}
               activeOpacity={0.85}
+              style={[
+                styles.priceCard,
+                styles.priceCardSecondary,
+                selected === 'monthly' && styles.priceCardActive,
+              ]}
             >
-              <View style={styles.priceLeft}>
-                <Text style={styles.priceLabel}>{t('paywall.monthly')}</Text>
-                <Text style={styles.priceSubLabel}>{t('common.cancel')}</Text>
-              </View>
+              <Text style={styles.pricePeriod}>
+                {t('paywall.monthly', 'AYLIK').toUpperCase()}
+              </Text>
               <Text style={styles.priceAmount}>{monthlyPrice}</Text>
+              <Text style={styles.pricePerMonth}>
+                {t('paywall.billedMonthly', 'Her ay faturalandırılır')}
+              </Text>
             </TouchableOpacity>
-          </>
+          </View>
         )}
 
+        {/* CTA */}
         <TouchableOpacity
-          style={[styles.subscribeButton, isSubscribing && styles.subscribeButtonDisabled]}
           onPress={handleSubscribe}
           disabled={isSubscribing || isRestoring}
-          activeOpacity={0.85}
+          activeOpacity={0.9}
+          style={styles.ctaShadow}
         >
-          {isSubscribing ? (
-            <ActivityIndicator color="#FFFFFF" size="small" />
-          ) : (
-            <Text style={styles.subscribeButtonText}>{t('paywall.ctaTrial')}</Text>
-          )}
+          <LinearGradient
+            colors={['#6366F1', '#8B5CF6']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={[
+              styles.ctaButton,
+              (isSubscribing || isRestoring) && { opacity: 0.6 },
+            ]}
+          >
+            {isSubscribing ? (
+              <ActivityIndicator color="#FFFFFF" />
+            ) : (
+              <Text style={styles.ctaText}>
+                {t('paywall.ctaTrial', '7 gün ücretsiz başla')}
+              </Text>
+            )}
+          </LinearGradient>
         </TouchableOpacity>
 
-        <Text style={styles.autoRenewText}>{t('paywall.autoRenew')}</Text>
+        {/* Footer */}
+        <Text style={styles.footerNote}>
+          {t(
+            'paywall.autoRenew',
+            'Abonelik otomatik olarak yenilenir. İstediğin zaman ayarlardan veya App Store hesabından iptal edebilirsin.',
+          )}
+        </Text>
 
         <TouchableOpacity
-          style={styles.restoreButton}
           onPress={handleRestore}
           disabled={isSubscribing || isRestoring}
-          activeOpacity={0.7}
+          style={styles.restoreBtn}
         >
           {isRestoring ? (
-            <ActivityIndicator color="#9898B0" size="small" />
+            <ActivityIndicator color="#C0C1FF" size="small" />
           ) : (
-            <Text style={styles.restoreButtonText}>{t('settings.restorePurchases')}</Text>
+            <Text style={styles.restoreText}>
+              {t('settings.restorePurchases', 'Satın Alımları Geri Yükle')}
+            </Text>
           )}
         </TouchableOpacity>
       </ScrollView>
@@ -255,133 +307,277 @@ export default function PaywallScreen({ navigation }) {
   );
 }
 
+function FeatureRow({ icon, iconColor, label }) {
+  return (
+    <View style={styles.featureRow}>
+      <MaterialIcons name={icon} size={22} color={iconColor} />
+      <Text style={styles.featureLabel}>{label}</Text>
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: '#0B0B14' },
-  container: { flex: 1, backgroundColor: '#0B0B14' },
-  contentContainer: { paddingHorizontal: 20, paddingBottom: 48 },
-  closeButton: {
-    alignSelf: 'flex-end',
-    marginTop: 16,
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: '#161626',
-    borderWidth: 1,
-    borderColor: '#2A2A42',
+
+  bgGlow: {
+    position: 'absolute',
+    bottom: -120,
+    left: '50%',
+    marginLeft: -200,
+    width: 400,
+    height: 240,
+    borderRadius: 200,
+    backgroundColor: 'rgba(99, 102, 241, 0.06)',
+    opacity: 0.5,
+  },
+
+  topBar: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    paddingHorizontal: 20,
+    paddingTop: 12,
+  },
+  closeBtn: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#1F1F27',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  closeButtonText: { color: '#9898B0', fontSize: 14, fontWeight: '600' },
-  header: { alignItems: 'center', marginTop: 16, marginBottom: 28 },
-  crownEmoji: { fontSize: 56, marginBottom: 12 },
-  title: { fontSize: 32, fontWeight: '800', color: '#F5F5FA', letterSpacing: -0.5 },
-  subtitle: { fontSize: 15, color: '#F59E0B', marginTop: 8, fontWeight: '700' },
+
+  content: {
+    paddingHorizontal: 20,
+    paddingBottom: 32,
+    alignItems: 'center',
+  },
+
+  // Hero
+  hero: {
+    alignItems: 'center',
+    marginTop: 12,
+    marginBottom: 24,
+  },
+  heroEmoji: {
+    fontSize: 60,
+    marginBottom: 12,
+    textShadowColor: 'rgba(245, 158, 11, 0.4)',
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 15,
+  },
+  heroTitle: {
+    color: '#F5F5FA',
+    fontSize: 32,
+    fontWeight: '900',
+    letterSpacing: -1,
+    marginBottom: 6,
+    textAlign: 'center',
+  },
+  heroSubtitle: {
+    color: '#F59E0B',
+    fontSize: 16,
+    fontWeight: '700',
+  },
+
+  // Trust signals
   trustRow: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    marginTop: 16,
-    paddingHorizontal: 8,
     width: '100%',
+    maxWidth: 384,
+    paddingVertical: 14,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: '#464554',
+    marginBottom: 24,
   },
-  trustItem: { alignItems: 'center', flex: 1 },
-  trustEmoji: { fontSize: 18, marginBottom: 4 },
-  trustText: { color: '#9898B0', fontSize: 11, fontWeight: '600', textAlign: 'center' },
-  loadingPackages: {
+  trustItem: {
+    alignItems: 'center',
+    gap: 4,
+  },
+  trustLabel: {
+    color: '#9898B0',
+    fontSize: 10,
+    fontWeight: '800',
+    letterSpacing: 1.5,
+  },
+
+  // Features
+  features: {
+    width: '100%',
+    maxWidth: 420,
+    gap: 12,
+    marginBottom: 24,
+  },
+  featureRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+    backgroundColor: '#1B1B23',
+    borderWidth: 1,
+    borderColor: 'rgba(70, 69, 84, 0.4)',
+    borderRadius: 14,
+    paddingVertical: 14,
+    paddingHorizontal: 14,
+  },
+  featureLabel: {
+    color: '#E4E1ED',
+    fontSize: 15,
+    fontWeight: '600',
+    flex: 1,
+  },
+
+  // Loading / error
+  loadingBox: {
     paddingVertical: 32,
     alignItems: 'center',
     gap: 12,
+    width: '100%',
+    maxWidth: 420,
   },
   loadingText: { color: '#9898B0', fontSize: 13 },
+
   errorBox: {
-    backgroundColor: '#161626',
+    width: '100%',
+    maxWidth: 420,
+    backgroundColor: '#1B1B23',
     borderWidth: 1,
-    borderColor: '#EF444466',
+    borderColor: 'rgba(253, 224, 71, 0.3)',
     borderRadius: 14,
     padding: 20,
     alignItems: 'center',
-    marginVertical: 16,
+    gap: 8,
+    marginBottom: 16,
   },
-  errorIcon: { fontSize: 32, marginBottom: 8 },
   errorTitle: {
     color: '#F5F5FA',
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '800',
-    marginBottom: 6,
     textAlign: 'center',
   },
   errorBody: {
     color: '#9898B0',
     fontSize: 13,
-    lineHeight: 18,
     textAlign: 'center',
-    marginBottom: 14,
+    marginBottom: 8,
   },
   retryBtn: {
-    backgroundColor: '#6366F1',
-    paddingHorizontal: 20,
+    backgroundColor: '#C0C1FF',
+    paddingHorizontal: 18,
     paddingVertical: 10,
     borderRadius: 10,
   },
-  retryText: { color: '#FFFFFF', fontSize: 14, fontWeight: '700' },
-  featuresContainer: { gap: 10, marginBottom: 24 },
-  featureRow: {
+  retryText: { color: '#0D0096', fontSize: 13, fontWeight: '800' },
+
+  // Price cards
+  priceCards: {
     flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#161626',
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#2A2A42',
-    paddingVertical: 12,
-    paddingHorizontal: 14,
     gap: 12,
+    width: '100%',
+    maxWidth: 420,
+    marginBottom: 24,
   },
-  featureIcon: { fontSize: 20 },
-  featureText: { flex: 1, fontSize: 14, color: '#F5F5FA', fontWeight: '500' },
-  priceOption: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: '#161626',
-    borderRadius: 14,
+  priceCard: {
+    flex: 1,
+    backgroundColor: '#292932',
     borderWidth: 2,
-    borderColor: '#2A2A42',
-    paddingVertical: 16,
-    paddingHorizontal: 18,
-    marginBottom: 10,
+    borderColor: '#C0C1FF',
+    borderRadius: 18,
+    padding: 18,
+    paddingTop: 22,
+    alignItems: 'center',
+    minHeight: 130,
+    shadowColor: '#C0C1FF',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.1,
+    shadowRadius: 20,
   },
-  priceOptionSelected: { borderColor: '#6366F1', backgroundColor: '#6366F115' },
-  priceLeft: { flex: 1 },
-  priceLabelRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  priceLabel: { fontSize: 16, fontWeight: '700', color: '#F5F5FA' },
-  priceSubLabel: { fontSize: 12, color: '#9898B0', marginTop: 2 },
-  priceAmount: { fontSize: 18, fontWeight: '800', color: '#F5F5FA' },
+  priceCardSecondary: {
+    backgroundColor: '#1F1F27',
+    borderColor: '#464554',
+    borderWidth: 1,
+    shadowOpacity: 0,
+  },
+  priceCardActive: {
+    borderColor: '#C0C1FF',
+    borderWidth: 2,
+    shadowOpacity: 0.2,
+  },
   bestValueBadge: {
-    backgroundColor: '#10B981',
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 6,
+    position: 'absolute',
+    top: -10,
+    backgroundColor: '#FFB783',
+    paddingHorizontal: 10,
+    paddingVertical: 3,
+    borderRadius: 999,
   },
-  bestValueText: { fontSize: 10, color: '#FFFFFF', fontWeight: '800', letterSpacing: 0.5 },
-  subscribeButton: {
-    borderRadius: 16,
-    paddingVertical: 18,
+  bestValueText: {
+    color: '#4F2500',
+    fontSize: 10,
+    fontWeight: '900',
+    letterSpacing: 1.2,
+  },
+  pricePeriod: {
+    color: '#C7C4D7',
+    fontSize: 11,
+    fontWeight: '800',
+    letterSpacing: 1.5,
+    marginBottom: 4,
+  },
+  priceAmount: {
+    color: '#FFFFFF',
+    fontSize: 22,
+    fontWeight: '800',
+    letterSpacing: -0.4,
+  },
+  pricePerMonth: {
+    color: '#908FA0',
+    fontSize: 11,
+    fontWeight: '500',
+    marginTop: 2,
+    textAlign: 'center',
+  },
+
+  // CTA
+  ctaShadow: {
+    width: '100%',
+    maxWidth: 420,
+    borderRadius: 18,
+    shadowColor: '#6366F1',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.4,
+    shadowRadius: 20,
+    marginBottom: 16,
+  },
+  ctaButton: {
+    height: 64,
+    borderRadius: 18,
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 16,
-    marginBottom: 8,
-    backgroundColor: '#6366F1',
-    minHeight: 58,
   },
-  subscribeButtonDisabled: { opacity: 0.6 },
-  subscribeButtonText: { fontSize: 17, fontWeight: '700', color: '#FFFFFF' },
-  autoRenewText: {
-    textAlign: 'center',
+  ctaText: {
+    color: '#FFFFFF',
+    fontSize: 18,
+    fontWeight: '800',
+    letterSpacing: 0.3,
+  },
+
+  footerNote: {
+    color: '#908FA0',
     fontSize: 11,
-    color: '#6B6B85',
     lineHeight: 16,
-    paddingHorizontal: 16,
+    textAlign: 'center',
+    maxWidth: 320,
     marginBottom: 8,
   },
-  restoreButton: { paddingVertical: 14, alignItems: 'center', minHeight: 48 },
-  restoreButtonText: { fontSize: 14, color: '#9898B0', fontWeight: '500' },
+  restoreBtn: {
+    paddingVertical: 12,
+  },
+  restoreText: {
+    color: '#C0C1FF',
+    fontSize: 12,
+    fontWeight: '700',
+    textDecorationLine: 'underline',
+    textDecorationColor: 'rgba(192, 193, 255, 0.3)',
+  },
 });

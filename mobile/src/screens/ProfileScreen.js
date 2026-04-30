@@ -7,44 +7,137 @@ import {
   TouchableOpacity,
   StyleSheet,
   Dimensions,
+  SafeAreaView,
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
+import Svg, { Circle } from 'react-native-svg';
+import { MaterialIcons } from '@expo/vector-icons';
 import { useApp } from '../contexts/AppContext';
-import { LEVEL_THRESHOLDS, getNextLevel, COLORS } from '../config/constants';
-import { ACHIEVEMENTS, RARITY_COLORS } from '../config/achievements';
+import { LEVEL_THRESHOLDS, getNextLevel } from '../config/constants';
+import { ACHIEVEMENTS } from '../config/achievements';
 import { getRank, getNextRank } from '../config/ranks';
+import { useAuth } from '../contexts/AuthContext';
 
 const { width } = Dimensions.get('window');
-const CARD_WIDTH = (width - 48) / 2;
-
-const THEME = {
-  background: '#0B0B14',
-  surface: '#161626',
-  surfaceLight: '#1F1F33',
-  text: '#F5F5FA',
-  textSecondary: '#9898B0',
-  primary: '#6366F1',
-  accent: '#8B5CF6',
-  border: '#2A2A42',
-};
 
 const getLevelTitle = (lvl) => {
   const tier = LEVEL_THRESHOLDS.find((t) => t.level === lvl);
   return tier?.title ?? 'Ascender';
 };
 
-function StatCard({ emoji, value, label }) {
+// Achievement icon mapping (Material symbols)
+const ACHIEVEMENT_ICONS = {
+  streak3: 'local-fire-department',
+  streak7: 'local-fire-department',
+  streak14: 'local-fire-department',
+  streak30: 'workspace-premium',
+  streak100: 'military-tech',
+  streak365: 'emoji-events',
+  lessons10: 'menu-book',
+  lessons30: 'auto-stories',
+  lessons100: 'school',
+  lessons250: 'psychology',
+  level2: 'trending-up',
+  level5: 'star',
+  level8: 'rocket-launch',
+};
+
+const ACHIEVEMENT_COLORS = {
+  streak3: '#FFB783',
+  streak7: '#FFB783',
+  streak14: '#FFB783',
+  streak30: '#FDE047',
+  streak100: '#FDE047',
+  streak365: '#FDE047',
+  lessons10: '#C0C1FF',
+  lessons30: '#C0C1FF',
+  lessons100: '#D0BCFF',
+  lessons250: '#D0BCFF',
+  level2: '#10B981',
+  level5: '#10B981',
+  level8: '#FDE047',
+};
+
+function CircularProgress({ size = 128, strokeWidth = 4, percent = 0, color = '#C0C1FF' }) {
+  const radius = (size - strokeWidth) / 2;
+  const circumference = 2 * Math.PI * radius;
+  const offset = circumference - (percent / 100) * circumference;
+  return (
+    <Svg width={size} height={size} style={StyleSheet.absoluteFill}>
+      <Circle
+        cx={size / 2}
+        cy={size / 2}
+        r={radius}
+        stroke="#34343D"
+        strokeWidth={strokeWidth}
+        fill="transparent"
+      />
+      <Circle
+        cx={size / 2}
+        cy={size / 2}
+        r={radius}
+        stroke={color}
+        strokeWidth={strokeWidth}
+        fill="transparent"
+        strokeDasharray={circumference}
+        strokeDashoffset={offset}
+        strokeLinecap="round"
+        rotation="-90"
+        origin={`${size / 2}, ${size / 2}`}
+      />
+    </Svg>
+  );
+}
+
+function StatCard({ icon, iconColor, label, value, unit }) {
   return (
     <View style={styles.statCard}>
-      <Text style={styles.statEmoji}>{emoji}</Text>
-      <Text style={styles.statValue}>{value}</Text>
-      <Text style={styles.statLabel}>{label}</Text>
+      <View style={styles.statHeader}>
+        <MaterialIcons name={icon} size={16} color={iconColor} />
+        <Text style={[styles.statLabel, { color: iconColor + 'CC' }]}>{label}</Text>
+      </View>
+      <View style={styles.statValueRow}>
+        <Text style={styles.statValue}>{value}</Text>
+        {unit ? <Text style={styles.statUnit}>{unit}</Text> : null}
+      </View>
+    </View>
+  );
+}
+
+function AchievementCard({ id, locked }) {
+  const icon = ACHIEVEMENT_ICONS[id] || 'emoji-events';
+  const color = ACHIEVEMENT_COLORS[id] || '#C0C1FF';
+  const ach = ACHIEVEMENTS.find((a) => a.id === id);
+  const title = ach?.title || id;
+
+  return (
+    <View
+      style={[
+        styles.achievementCard,
+        locked && { opacity: 0.3 },
+      ]}
+    >
+      <View
+        style={[
+          styles.achievementIconBox,
+          { borderColor: locked ? '#908FA0' : color, backgroundColor: locked ? '#292932' : `${color}1A` },
+        ]}
+      >
+        <MaterialIcons
+          name={locked ? 'lock' : icon}
+          size={26}
+          color={locked ? '#908FA0' : color}
+        />
+      </View>
+      <Text style={styles.achievementTitle} numberOfLines={2}>
+        {title}
+      </Text>
     </View>
   );
 }
 
 export default function ProfileScreen({ navigation }) {
   const { t } = useTranslation();
+  const { user } = useAuth();
   const {
     totalXP,
     level,
@@ -54,7 +147,6 @@ export default function ProfileScreen({ navigation }) {
     unlockedAchievements,
   } = useApp();
 
-  // Path-based stats
   const completedLessonsTotal = useMemo(() => {
     return Object.values(pathProgress || {}).reduce(
       (sum, p) => sum + (p?.completed?.length || 0),
@@ -63,10 +155,8 @@ export default function ProfileScreen({ navigation }) {
   }, [pathProgress]);
 
   const completedPaths = useMemo(() => {
-    // A path is "completed" if its completed array has lessons covering full duration.
-    // Estimate: count paths where completed.length >= 21 (smallest path)
     return Object.values(pathProgress || {}).filter(
-      (p) => (p?.completed?.length || 0) >= 21,
+      (p) => (p?.completed?.length || 0) >= 30,
     ).length;
   }, [pathProgress]);
 
@@ -76,492 +166,422 @@ export default function ProfileScreen({ navigation }) {
   const nextLevel = useMemo(() => getNextLevel(level), [level]);
   const currentLevelThreshold =
     LEVEL_THRESHOLDS.find((t) => t.level === level)?.xpRequired ?? 0;
-  const nextLevelThreshold =
-    nextLevel?.xpRequired ?? currentLevelThreshold;
-  const xpInCurrentLevel = totalXP - currentLevelThreshold;
-  const xpNeededForNext = Math.max(
-    nextLevelThreshold - currentLevelThreshold,
-    1,
-  );
-  const progressPercent = nextLevel
-    ? Math.min(Math.max((xpInCurrentLevel / xpNeededForNext) * 100, 0), 100)
-    : 100;
+  const nextLevelThreshold = nextLevel?.xpRequired ?? currentLevelThreshold;
+  const xpInLevel = totalXP - currentLevelThreshold;
+  const xpForNext = Math.max(1, nextLevelThreshold - currentLevelThreshold);
+  const levelPercent = Math.min(100, Math.round((xpInLevel / xpForNext) * 100));
 
+  // Show 4 achievements: 3 unlocked + 1 locked, or padding
   const recentAchievements = useMemo(() => {
-    return ACHIEVEMENTS.filter((a) => unlockedAchievements.includes(a.id))
-      .slice(-5)
-      .reverse();
+    const unlocked = (unlockedAchievements || []).slice(0, 3);
+    const lockedCandidates = ACHIEVEMENTS.filter(
+      (a) => !unlocked.includes(a.id),
+    ).slice(0, 4 - unlocked.length);
+    return [
+      ...unlocked.map((id) => ({ id, locked: false })),
+      ...lockedCandidates.map((a) => ({ id: a.id, locked: true })),
+    ];
   }, [unlockedAchievements]);
 
+  const username = user?.email?.split('@')[0] || 'StoicMonk';
+
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={styles.content}
-      showsVerticalScrollIndicator={false}
-    >
-      {/* ── Header ── */}
-      <LinearGradient
-        colors={['#3730A3', '#6366F1', '#8B5CF6']}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={styles.header}
-      >
-        <View style={styles.levelBadge}>
-          <Text style={styles.levelNumber}>{level}</Text>
-        </View>
-        <Text style={styles.levelTitle}>{getLevelTitle(level)}</Text>
-        <Text style={styles.username}>Ascender</Text>
-        <View style={styles.xpPill}>
-          <Text style={styles.xpPillText}>⚡ {totalXP.toLocaleString()} XP</Text>
-        </View>
-      </LinearGradient>
-
-      {/* ── Rank ── */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Rank</Text>
-        <View style={[styles.rankCard, { borderColor: rank.color }]}>
-          <Text style={styles.rankEmoji}>{rank.emoji}</Text>
-          <View style={{ flex: 1 }}>
-            <Text style={[styles.rankTitle, { color: rank.color }]}>
-              {rank.title}
-            </Text>
-            <Text style={styles.rankSubtitle}>{rank.subtitle}</Text>
-            {nextRank ? (
-              <Text style={styles.rankProgress}>
-                {Math.max(0, nextRank.minSprints - completedPaths)} {t('profile.pathsToNextRank', 'yol kaldı →')} {nextRank.title}
-              </Text>
-            ) : (
-              <Text style={[styles.rankProgress, { color: THEME.accent }]}>
-                Max rank!
-              </Text>
-            )}
-          </View>
-        </View>
-      </View>
-
-      {/* ── Quick Nav ── */}
-      <View style={styles.section}>
-        <View style={styles.quickNavRow}>
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.container}>
+        {/* Top bar */}
+        <View style={styles.topBar}>
           <TouchableOpacity
-            style={styles.quickNavBtn}
-            onPress={() => navigation?.navigate('Settings')}
-            activeOpacity={0.7}
+            onPress={() => navigation.navigate('Settings')}
+            style={styles.menuBtn}
           >
-            <Text style={styles.quickNavEmoji}>⚙️</Text>
-            <Text style={styles.quickNavLabel}>{t('profile.navSettings')}</Text>
+            <MaterialIcons name="menu" size={22} color="#C0C1FF" />
           </TouchableOpacity>
-        </View>
-      </View>
-
-      {/* ── Stats Grid ── */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>{t('profile.stats')}</Text>
-        <View style={styles.statsGrid}>
-          <StatCard emoji="⭐" value={totalXP.toLocaleString()} label={t('profile.totalXp')} />
-          <StatCard emoji="📚" value={completedLessonsTotal} label={t('profile.lessonsCompleted', 'Tamamlanan Ders')} />
-          <StatCard emoji="🔥" value={`${currentStreak}`} label={t('profile.currentStreak', 'Aktif Seri')} />
-          <StatCard emoji="🏆" value={completedPaths} label={t('profile.pathsCompleted', 'Tamamlanan Yol')} />
-        </View>
-      </View>
-
-      {/* ── XP Progress ── */}
-      <View style={styles.section}>
-        <View style={styles.rowBetween}>
-          <Text style={styles.sectionTitle}>{t('profile.levelProgress')}</Text>
-          <Text style={styles.progressXpLabel}>
-            {xpInCurrentLevel.toLocaleString()} / {xpNeededForNext.toLocaleString()} XP
-          </Text>
-        </View>
-        <View style={styles.progressTrack}>
-          <LinearGradient
-            colors={[THEME.primary, THEME.accent]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 0 }}
-            style={[styles.progressFill, { width: `${progressPercent}%` }]}
-          />
-        </View>
-        <View style={styles.progressLevelRow}>
-          <Text style={styles.progressLevelLabel}>Level {level}</Text>
-          {nextLevel ? (
-            <Text style={styles.progressLevelLabel}>Level {level + 1}</Text>
-          ) : (
-            <Text style={[styles.progressLevelLabel, { color: THEME.accent }]}>
-              🎉 Max Level!
-            </Text>
-          )}
-        </View>
-      </View>
-
-      {/* ── Recent Achievements ── */}
-      <View style={styles.section}>
-        <View style={styles.rowBetween}>
-          <Text style={styles.sectionTitle}>{t('profile.recentAchievements')}</Text>
+          <Text style={styles.brandTitle}>MONK MODE</Text>
+          <View style={{ width: 40 }} />
         </View>
 
-        {recentAchievements.length === 0 ? (
-          <View style={styles.emptyCard}>
-            <Text style={styles.emptyCardEmoji}>🏅</Text>
-            <Text style={styles.emptyCardText}>
-              Complete actions to unlock achievements!
+        <ScrollView
+          contentContainerStyle={styles.scroll}
+          showsVerticalScrollIndicator={false}
+        >
+          {/* Hero profile */}
+          <View style={styles.hero}>
+            <View style={styles.avatarOuter}>
+              <CircularProgress size={128} percent={levelPercent} color="#C0C1FF" />
+              <View style={styles.avatarInner}>
+                <MaterialIcons name="self-improvement" size={48} color="#C0C1FF" />
+              </View>
+            </View>
+            <View style={styles.rankBadge}>
+              <Text style={styles.rankBadgeText}>{rank.title.toUpperCase()}</Text>
+            </View>
+            <Text style={styles.username}>{username}</Text>
+            <Text style={styles.usernameSub}>
+              {t('profile.subtitle', 'YOLUN BAŞINDA')}
             </Text>
           </View>
-        ) : (
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.achievementsRow}
-          >
-            {recentAchievements.map((achievement) => {
-              const rarityColor =
-                (RARITY_COLORS && RARITY_COLORS[achievement.rarity]) || THEME.primary;
-              return (
-                <View key={achievement.id} style={styles.achievementItem}>
-                  <View
-                    style={[styles.achievementCircle, { borderColor: rarityColor }]}
-                  >
-                    <Text style={styles.achievementEmoji}>{achievement.icon}</Text>
-                  </View>
-                  <Text style={styles.achievementTitle} numberOfLines={2}>
-                    {achievement.title}
-                  </Text>
-                </View>
-              );
-            })}
-          </ScrollView>
-        )}
-      </View>
 
-      {/* ── Path Progress ── */}
-      <View style={[styles.section, styles.lastSection]}>
-        <Text style={styles.sectionTitle}>{t('profile.pathProgress', 'Yol İlerlemesi')}</Text>
-        <PathProgressList pathProgress={pathProgress} t={t} />
-      </View>
-    </ScrollView>
-  );
-}
-
-function PathProgressList({ pathProgress, t }) {
-  const PATHS_META = [
-    { id: 'dopamine-detox', icon: '🚫', total: 30 },
-    { id: 'silent-morning', icon: '🌅', total: 21 },
-    { id: 'mind-discipline', icon: '🧠', total: 28 },
-    { id: 'body-discipline', icon: '💪', total: 30 },
-    { id: 'money-discipline', icon: '💰', total: 21 },
-  ];
-
-  return PATHS_META.map((p) => {
-    const completed = pathProgress?.[p.id]?.completed?.length || 0;
-    const percent = Math.min(100, Math.round((completed / p.total) * 100));
-    return (
-      <View key={p.id} style={styles.categoryRow}>
-        <Text style={styles.categoryEmoji}>{p.icon}</Text>
-        <View style={styles.categoryInfo}>
-          <View style={styles.rowBetween}>
-            <Text style={styles.categoryName}>{t(`paths.${p.id}.title`, p.id)}</Text>
-            <Text style={styles.categoryCount}>
-              {completed} / {p.total}
-            </Text>
-          </View>
-          <View style={styles.categoryBarTrack}>
-            <View
-              style={[
-                styles.categoryBarFill,
-                {
-                  width: `${percent}%`,
-                  backgroundColor: completed === p.total ? '#10B981' : '#6366F1',
-                },
-              ]}
+          {/* Stats grid 2x2 */}
+          <View style={styles.statsGrid}>
+            <StatCard
+              icon="bolt"
+              iconColor="#C0C1FF"
+              label={t('profile.totalXp', 'TOPLAM XP')}
+              value={totalXP.toLocaleString()}
+            />
+            <StatCard
+              icon="local-fire-department"
+              iconColor="#FFB783"
+              label={t('profile.currentStreak', 'MEVCUT SERİ')}
+              value={currentStreak}
+              unit={t('common.days', 'Gün')}
+            />
+            <StatCard
+              icon="menu-book"
+              iconColor="#D0BCFF"
+              label={t('profile.lessonsDone', 'TAMAMLANAN')}
+              value={completedLessonsTotal}
+              unit={t('common.lessons', 'Ders')}
+            />
+            <StatCard
+              icon="military-tech"
+              iconColor="#908FA0"
+              label={t('profile.longestStreak', 'EN UZUN SERİ')}
+              value={longestStreak || 0}
+              unit={t('common.days', 'Gün')}
             />
           </View>
-        </View>
+
+          {/* Level progress card */}
+          <View style={styles.levelCard}>
+            <View style={styles.levelHeader}>
+              <View>
+                <Text style={styles.levelLabel}>
+                  {t('profile.level', 'SEVİYE')} {level}
+                </Text>
+                <Text style={styles.levelTitle}>"{getLevelTitle(level)}"</Text>
+              </View>
+              <Text style={styles.levelXP}>
+                <Text style={styles.levelXPNum}>{xpInLevel}</Text>
+                <Text style={styles.levelXPMax}> / {xpForNext} XP</Text>
+              </Text>
+            </View>
+            <View style={styles.progressTrack}>
+              <View style={[styles.progressFill, { width: `${levelPercent}%` }]} />
+            </View>
+            {nextRank ? (
+              <View style={styles.nextRankPill}>
+                <MaterialIcons name="trending-up" size={12} color="#C0C1FF" />
+                <Text style={styles.nextRankText}>
+                  {t('profile.nextRank', 'SONRAKİ RÜTBE')}:{' '}
+                  <Text style={{ color: '#C0C1FF' }}>{nextRank.title}</Text>
+                </Text>
+              </View>
+            ) : null}
+          </View>
+
+          {/* Achievements */}
+          <View style={styles.achievementsSection}>
+            <View style={styles.sectionHeader}>
+              <Text style={styles.sectionTitle}>
+                {t('profile.achievements', 'Başarımlar')}
+              </Text>
+              <TouchableOpacity activeOpacity={0.7} style={styles.seeAll}>
+                <Text style={styles.seeAllText}>
+                  {t('profile.seeAll', 'TÜMÜNÜ GÖR')}
+                </Text>
+                <MaterialIcons name="chevron-right" size={16} color="#C0C1FF" />
+              </TouchableOpacity>
+            </View>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.achievementsRow}
+            >
+              {recentAchievements.map((a, i) => (
+                <AchievementCard key={i} id={a.id} locked={a.locked} />
+              ))}
+            </ScrollView>
+          </View>
+
+          <View style={{ height: 32 }} />
+        </ScrollView>
       </View>
-    );
-  });
+    </SafeAreaView>
+  );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: THEME.background,
-  },
-  content: {
-    paddingBottom: 48,
-  },
+  safeArea: { flex: 1, backgroundColor: '#0B0B14' },
+  container: { flex: 1, backgroundColor: '#0B0B14' },
 
-  // ── Quick Nav ──
-  quickNavRow: {
+  topBar: {
     flexDirection: 'row',
-    gap: 10,
-  },
-  quickNavBtn: {
-    flex: 1,
-    backgroundColor: '#161626',
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: '#2A2A42',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
     paddingVertical: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: '#34343D',
+  },
+  menuBtn: {
+    width: 40,
+    height: 40,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  quickNavEmoji: {
-    fontSize: 22,
-    marginBottom: 4,
-  },
-  quickNavLabel: {
-    fontSize: 11,
-    color: '#B4B4D0',
-    fontWeight: '600',
+  brandTitle: {
+    color: '#C0C1FF',
+    fontSize: 16,
+    fontWeight: '900',
+    letterSpacing: 2,
   },
 
-  // ── Header ──
-  header: {
+  scroll: { paddingBottom: 32 },
+
+  // Hero
+  hero: {
     alignItems: 'center',
-    paddingTop: 64,
-    paddingBottom: 36,
-    paddingHorizontal: 24,
+    paddingVertical: 32,
+    paddingHorizontal: 20,
   },
-  levelBadge: {
-    width: 96,
-    height: 96,
-    borderRadius: 48,
-    backgroundColor: 'rgba(255,255,255,0.18)',
-    borderWidth: 3,
-    borderColor: 'rgba(255,255,255,0.5)',
+  avatarOuter: {
+    width: 128,
+    height: 128,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 14,
+    marginBottom: 20,
+    shadowColor: '#C0C1FF',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.15,
+    shadowRadius: 30,
   },
-  levelNumber: {
-    fontSize: 42,
+  avatarInner: {
+    width: 116,
+    height: 116,
+    borderRadius: 58,
+    backgroundColor: '#292932',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  rankBadge: {
+    position: 'absolute',
+    top: 144,
+    backgroundColor: '#D97721',
+    paddingHorizontal: 14,
+    paddingVertical: 5,
+    borderRadius: 999,
+    borderWidth: 2,
+    borderColor: '#0B0B14',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.4,
+    shadowRadius: 6,
+  },
+  rankBadgeText: {
+    color: '#452000',
+    fontSize: 10,
     fontWeight: '900',
-    color: '#FFFFFF',
-  },
-  levelTitle: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: 'rgba(255,255,255,0.75)',
-    marginBottom: 4,
-    textTransform: 'uppercase',
-    letterSpacing: 1.2,
+    letterSpacing: 2,
   },
   username: {
-    fontSize: 26,
-    fontWeight: '800',
-    color: '#FFFFFF',
-    marginBottom: 14,
+    color: '#E4E1ED',
+    fontSize: 32,
+    fontWeight: '900',
+    letterSpacing: -0.5,
+    marginTop: 16,
   },
-  xpPill: {
-    backgroundColor: 'rgba(255,255,255,0.15)',
-    borderRadius: 20,
-    paddingVertical: 7,
-    paddingHorizontal: 18,
-  },
-  xpPillText: {
-    color: '#FFFFFF',
-    fontSize: 14,
+  usernameSub: {
+    color: '#C7C4D7',
+    fontSize: 11,
     fontWeight: '700',
+    letterSpacing: 3,
+    textTransform: 'uppercase',
+    marginTop: 4,
   },
 
-  // ── Shared ──
-  section: {
-    marginTop: 24,
-    paddingHorizontal: 16,
-  },
-  lastSection: {
-    marginBottom: 8,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: THEME.text,
-    marginBottom: 12,
-  },
-  rowBetween: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-
-  // ── Stats Grid ──
+  // Stats grid
   statsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
+    paddingHorizontal: 20,
     gap: 12,
+    marginTop: 8,
   },
   statCard: {
-    width: CARD_WIDTH,
-    backgroundColor: THEME.surface,
-    borderRadius: 16,
+    width: '48%',
+    minHeight: 90,
+    backgroundColor: 'rgba(31, 31, 39, 0.6)',
     borderWidth: 1,
-    borderColor: THEME.border,
-    paddingVertical: 22,
-    paddingHorizontal: 12,
+    borderColor: 'rgba(144, 143, 160, 0.15)',
+    borderRadius: 14,
+    padding: 14,
+    justifyContent: 'space-between',
+  },
+  statHeader: {
+    flexDirection: 'row',
     alignItems: 'center',
-  },
-  statEmoji: {
-    fontSize: 30,
-    marginBottom: 8,
-  },
-  statValue: {
-    fontSize: 28,
-    fontWeight: '800',
-    color: THEME.text,
-    marginBottom: 4,
+    gap: 6,
   },
   statLabel: {
-    fontSize: 11,
-    fontWeight: '600',
-    color: THEME.textSecondary,
+    fontSize: 10,
+    fontWeight: '800',
+    letterSpacing: 1,
     textTransform: 'uppercase',
-    letterSpacing: 0.6,
-    textAlign: 'center',
+    opacity: 0.85,
+  },
+  statValueRow: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    gap: 6,
+    marginTop: 8,
+  },
+  statValue: {
+    color: '#E4E1ED',
+    fontSize: 22,
+    fontWeight: '800',
+    letterSpacing: -0.4,
+  },
+  statUnit: {
+    color: '#9898B0',
+    fontSize: 12,
+    fontWeight: '600',
   },
 
-  // ── XP Progress ──
-  progressXpLabel: {
-    fontSize: 13,
-    color: THEME.textSecondary,
-    fontWeight: '500',
+  // Level
+  levelCard: {
+    marginHorizontal: 20,
+    marginTop: 24,
+    backgroundColor: 'rgba(31, 31, 39, 0.6)',
+    borderWidth: 1,
+    borderColor: 'rgba(144, 143, 160, 0.15)',
+    borderRadius: 14,
+    padding: 16,
+  },
+  levelHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 14,
+  },
+  levelLabel: {
+    color: '#C0C1FF',
+    fontSize: 10,
+    fontWeight: '900',
+    letterSpacing: 2,
+    marginBottom: 4,
+  },
+  levelTitle: {
+    color: '#E4E1ED',
+    fontSize: 15,
+    fontWeight: '700',
+    fontStyle: 'italic',
+  },
+  levelXP: {
+    color: '#C7C4D7',
+  },
+  levelXPNum: {
+    color: '#E4E1ED',
+    fontSize: 15,
+    fontWeight: '800',
+  },
+  levelXPMax: {
+    fontSize: 11,
+    fontWeight: '600',
   },
   progressTrack: {
-    height: 12,
-    backgroundColor: THEME.surfaceLight,
-    borderRadius: 6,
+    height: 8,
+    backgroundColor: '#34343D',
+    borderRadius: 4,
     overflow: 'hidden',
+    marginBottom: 14,
   },
   progressFill: {
     height: '100%',
-    borderRadius: 6,
-    minWidth: 8,
+    backgroundColor: '#C0C1FF',
+    borderRadius: 4,
+    shadowColor: '#C0C1FF',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.5,
+    shadowRadius: 8,
   },
-  progressLevelRow: {
+  nextRankPill: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 6,
-  },
-  progressLevelLabel: {
-    fontSize: 12,
-    color: THEME.textSecondary,
-    fontWeight: '500',
-  },
-
-  // ── Achievements ──
-  seeAllText: {
-    color: THEME.primary,
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  achievementsRow: {
-    gap: 14,
-    paddingBottom: 4,
-  },
-  achievementItem: {
     alignItems: 'center',
-    width: 72,
-  },
-  achievementCircle: {
-    width: 62,
-    height: 62,
-    borderRadius: 31,
-    backgroundColor: THEME.surfaceLight,
-    borderWidth: 2,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 6,
-  },
-  achievementEmoji: {
-    fontSize: 28,
-  },
-  achievementTitle: {
-    fontSize: 10,
-    color: THEME.textSecondary,
-    textAlign: 'center',
-    fontWeight: '500',
-    lineHeight: 13,
-  },
-  emptyCard: {
-    backgroundColor: THEME.surface,
-    borderRadius: 16,
+    gap: 6,
+    alignSelf: 'center',
+    backgroundColor: '#1B1B23',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 999,
     borderWidth: 1,
-    borderColor: THEME.border,
-    paddingVertical: 28,
-    alignItems: 'center',
-    gap: 8,
+    borderColor: 'rgba(70, 69, 84, 0.6)',
   },
-  emptyCardEmoji: {
-    fontSize: 36,
-  },
-  emptyCardText: {
-    fontSize: 14,
-    color: THEME.textSecondary,
-    textAlign: 'center',
-    fontWeight: '500',
+  nextRankText: {
+    color: '#C7C4D7',
+    fontSize: 10,
+    fontWeight: '700',
+    letterSpacing: 1,
   },
 
-  // ── Category Breakdown ──
-  categoryRow: {
+  // Achievements
+  achievementsSection: {
+    marginTop: 24,
+  },
+  sectionHeader: {
     flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 16,
+    alignItems: 'flex-end',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    marginBottom: 14,
   },
-  categoryEmoji: {
-    fontSize: 22,
-    width: 36,
-  },
-  categoryInfo: {
-    flex: 1,
-  },
-  categoryName: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: THEME.text,
-  },
-  categoryCount: {
-    fontSize: 12,
-    color: THEME.textSecondary,
-    fontWeight: '500',
-  },
-  categoryBarTrack: {
-    height: 6,
-    backgroundColor: THEME.surfaceLight,
-    borderRadius: 3,
-    marginTop: 6,
-    overflow: 'hidden',
-  },
-  categoryBarFill: {
-    height: '100%',
-    borderRadius: 3,
-    minWidth: 4,
-  },
-
-  // ── Rank ──
-  rankCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: THEME.surface,
-    borderWidth: 2,
-    borderRadius: 16,
-    padding: 16,
-    gap: 14,
-  },
-  rankEmoji: {
-    fontSize: 40,
-  },
-  rankTitle: {
+  sectionTitle: {
+    color: '#E4E1ED',
     fontSize: 20,
     fontWeight: '800',
-    letterSpacing: 0.3,
+    letterSpacing: -0.3,
   },
-  rankSubtitle: {
-    fontSize: 13,
-    color: THEME.textSecondary,
-    marginTop: 2,
+  seeAll: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 2,
   },
-  rankProgress: {
-    fontSize: 12,
-    color: THEME.textSecondary,
-    marginTop: 6,
-    fontWeight: '600',
+  seeAllText: {
+    color: '#C0C1FF',
+    fontSize: 11,
+    fontWeight: '800',
+    letterSpacing: 1.2,
+  },
+  achievementsRow: {
+    paddingHorizontal: 20,
+    gap: 12,
+    paddingBottom: 8,
+  },
+  achievementCard: {
+    width: 112,
+    backgroundColor: 'rgba(31, 31, 39, 0.6)',
+    borderWidth: 1,
+    borderColor: 'rgba(144, 143, 160, 0.15)',
+    borderRadius: 16,
+    padding: 16,
+    alignItems: 'center',
+    gap: 12,
+  },
+  achievementIconBox: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+  },
+  achievementTitle: {
+    color: '#E4E1ED',
+    fontSize: 9,
+    fontWeight: '800',
+    letterSpacing: 0.6,
+    textAlign: 'center',
+    textTransform: 'uppercase',
+    lineHeight: 12,
   },
 });
