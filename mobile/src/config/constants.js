@@ -1,20 +1,63 @@
+// Material 3 design tokens — aligned with Stitch DESIGN.md.
+// Dark theme: primary is the LIGHT version of the color, used on dark surfaces.
+export const M3 = {
+  // Surfaces (tonal layers)
+  background: '#13131b',
+  surface: '#13131b',
+  surfaceContainerLowest: '#0d0d15',
+  surfaceContainerLow: '#1b1b23',
+  surfaceContainer: '#1f1f27',
+  surfaceContainerHigh: '#292932',
+  surfaceContainerHighest: '#34343d',
+  surfaceVariant: '#34343d',
+  surfaceBright: '#393841',
+  // Text on surfaces
+  onSurface: '#e4e1ed',
+  onSurfaceVariant: '#c7c4d7',
+  outline: '#908fa0',
+  outlineVariant: '#464554',
+  // Primary (indigo)
+  primary: '#c0c1ff',
+  onPrimary: '#1000a9',
+  primaryContainer: '#8083ff',
+  onPrimaryContainer: '#0d0096',
+  inversePrimary: '#494bd6',
+  // Secondary (purple)
+  secondary: '#d0bcff',
+  onSecondary: '#3c0091',
+  secondaryContainer: '#571bc1',
+  onSecondaryContainer: '#c4abff',
+  // Tertiary (gold/amber)
+  tertiary: '#ffb783',
+  onTertiary: '#4f2500',
+  tertiaryContainer: '#d97721',
+  onTertiaryContainer: '#452000',
+  // Error
+  error: '#ffb4ab',
+  onError: '#690005',
+  errorContainer: '#93000a',
+  onErrorContainer: '#ffdad6',
+};
+
+// Legacy COLORS export — kept for compatibility but now mapped to M3 tokens.
+// New code should use M3 directly.
 export const COLORS = {
-  primary: '#6366F1',
+  primary: '#6366F1',          // Brand gradient start (legacy, kept for CTA gradients)
   primaryDark: '#4F46E5',
-  accent: '#8B5CF6',
+  accent: '#8B5CF6',           // Brand gradient end
   accentDark: '#7C3AED',
-  background: '#0B0B14',
-  surface: '#161626',
-  surfaceLight: '#1F1F33',
-  border: '#2A2A42',
-  text: '#F5F5FA',
-  textSecondary: '#9898B0',
-  textMuted: '#6B6B85',
+  background: M3.background,
+  surface: M3.surfaceContainer,
+  surfaceLight: M3.surfaceContainerHigh,
+  border: M3.outlineVariant,
+  text: M3.onSurface,
+  textSecondary: M3.onSurfaceVariant,
+  textMuted: M3.outline,
   success: '#10B981',
   warning: '#F59E0B',
-  error: '#EF4444',
-  gold: '#FBBF24',
-  // Category colors
+  error: M3.error,
+  gold: '#FDE047',
+  // Path colors (kept for backward compat)
   health: '#10B981',
   career: '#3B82F6',
   mindfulness: '#8B5CF6',
