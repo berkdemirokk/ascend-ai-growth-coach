@@ -2,7 +2,7 @@
   "expo": {
     "name": "Ascend: Monk Mode",
     "slug": "ascend-level-up",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
@@ -15,7 +15,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.ascend.growth",
-      "buildNumber": "15",
+      "buildNumber": "16",
       "usesAppleSignIn": true,
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
