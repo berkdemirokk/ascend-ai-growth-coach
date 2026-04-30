@@ -139,10 +139,14 @@ export const ADMOB_IDS = {
   APP_ID_IOS: 'ca-app-pub-9898903071826160~9553442066',
   INTERSTITIAL_IOS: 'ca-app-pub-9898903071826160/9449500287',
   REWARDED_IOS: 'ca-app-pub-9898903071826160/6183162364',
+  // Banner unit needs to be created in AdMob console; until then we always use
+  // the Google test banner ID. Replace once the unit is provisioned.
+  BANNER_IOS: 'ca-app-pub-3940256099942544/2934735716', // TODO: real banner ID
   // Google-provided test IDs — use these only when __DEV__ to avoid invalid
   // traffic flags on live ad units during development.
   TEST_INTERSTITIAL_IOS: 'ca-app-pub-3940256099942544/4411468910',
   TEST_REWARDED_IOS: 'ca-app-pub-3940256099942544/1712485313',
+  TEST_BANNER_IOS: 'ca-app-pub-3940256099942544/2934735716',
   TEST_INTERSTITIAL_ANDROID: 'ca-app-pub-3940256099942544/1033173712',
 };
 

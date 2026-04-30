@@ -23,6 +23,8 @@ import {
   getPathProgress,
   getPathById,
 } from '../data/paths';
+import BannerAdBox from '../components/BannerAdBox';
+import OutOfHeartsModal from '../components/OutOfHeartsModal';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -37,7 +39,9 @@ export default function PathScreen({ navigation }) {
     totalXP,
     hearts,
     heartsRefillAt,
+    refillHearts,
   } = useApp();
+  const [outOfHeartsVisible, setOutOfHeartsVisible] = useState(false);
 
   const activePath = useMemo(
     () => getPathById(activePathId) || PATHS[0],
@@ -73,6 +77,11 @@ export default function PathScreen({ navigation }) {
         navigation.navigate('Paywall');
         return;
       }
+      return;
+    }
+    // Block if out of hearts (free users only)
+    if (!isPremium && hearts <= 0) {
+      setOutOfHeartsVisible(true);
       return;
     }
     navigation.navigate('Lesson', { pathId: lesson.pathId, lessonId: lesson.id });
@@ -312,6 +321,20 @@ export default function PathScreen({ navigation }) {
             <View style={{ height: 80 }} />
           </View>
         </ScrollView>
+
+        {/* Banner ad (free users only) */}
+        <BannerAdBox />
+
+        <OutOfHeartsModal
+          visible={outOfHeartsVisible}
+          onClose={() => setOutOfHeartsVisible(false)}
+          onRefill={refillHearts}
+          onPaywall={() => {
+            setOutOfHeartsVisible(false);
+            navigation.navigate('Paywall');
+          }}
+          refillMins={refillMins}
+        />
       </View>
     </SafeAreaView>
   );

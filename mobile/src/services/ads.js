@@ -1,6 +1,7 @@
-// Monk Mode: ads fully removed. Premium subscription is the only monetization.
-// All exports are no-ops kept for compatibility with existing imports.
+// Hybrid monetization: AdMob (interstitial + rewarded + banner) for free
+// users + RevenueCat subscription for premium.
 import { Platform } from 'react-native';
+import { ADMOB_IDS } from '../config/constants';
 
 // ─── Module state ────────────────────────────────────────────────────────────
 // We lazy-require `react-native-google-mobile-ads` so the rest of the app keeps
@@ -234,3 +235,14 @@ export const shouldShowAd = (isPremium) => {
 export const resetAdCounter = () => {
   actionsSinceLastAd = 0;
 };
+
+// ─── Banner ──────────────────────────────────────────────────────────────────
+// The banner is rendered as a React component, not via imperative show() like
+// the others. We just expose the unit ID so the consumer component can pick it.
+export const getBannerId = () => {
+  if (Platform.OS !== 'ios') return null;
+  return __DEV__ ? ADMOB_IDS.TEST_BANNER_IOS : ADMOB_IDS.BANNER_IOS;
+};
+
+export const isAdsReady = () => adsReady;
+

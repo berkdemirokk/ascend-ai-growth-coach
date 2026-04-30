@@ -8,7 +8,7 @@ import { AuthProvider } from './src/contexts/AuthContext';
 import AppNavigator from './src/navigation/AppNavigator';
 import ErrorBoundary from './src/components/ErrorBoundary';
 import { initPurchases } from './src/services/purchases';
-import { initAds, loadInterstitial } from './src/services/ads';
+import { initAds, loadInterstitial, loadRewarded } from './src/services/ads';
 import { requestNotificationPermissions, scheduleDailyReminder } from './src/services/notifications';
 import { initI18n } from './src/i18n';
 
@@ -30,7 +30,9 @@ export default function App() {
       }
       try {
         await initAds();
+        // Preload both ad types so they're instant when shown.
         loadInterstitial().catch(() => {});
+        loadRewarded().catch(() => {});
       } catch (e) {
         console.warn('Ads init failed:', e?.message);
       }
