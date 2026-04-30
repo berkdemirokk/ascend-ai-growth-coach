@@ -19,6 +19,11 @@ import { useApp } from '../contexts/AppContext';
 import { useAuth } from '../contexts/AuthContext';
 import { LEGAL } from '../config/constants';
 import { setLanguage, getCurrentLanguage, SUPPORTED_LANGUAGES } from '../i18n';
+import {
+  requestNotificationPermissions,
+  scheduleDailyReminder,
+  cancelAllNotifications,
+} from '../services/notifications';
 
 const NOTIF_KEY = '@ascend/notifications_enabled_v1';
 
@@ -36,9 +41,38 @@ export default function SettingsScreen({ navigation }) {
     });
   }, []);
 
-  const toggleNotifications = (value) => {
-    setNotificationsEnabled(value);
-    AsyncStorage.setItem(NOTIF_KEY, value ? 'true' : 'false').catch(() => {});
+  const toggleNotifications = async (value) => {
+    if (value) {
+      // Request permission, then schedule
+      const granted = await requestNotificationPermissions();
+      if (!granted) {
+        Alert.alert(
+          t('settings.notifPermDeniedTitle', 'İzin verilmedi'),
+          t(
+            'settings.notifPermDeniedBody',
+            'Bildirim göndermek için izin gerekli. Cihaz ayarlarından açabilirsin.',
+          ),
+        );
+        setNotificationsEnabled(false);
+        AsyncStorage.setItem(NOTIF_KEY, 'false').catch(() => {});
+        return;
+      }
+      try {
+        await scheduleDailyReminder();
+      } catch (e) {
+        console.warn('schedule daily reminder failed:', e?.message);
+      }
+      setNotificationsEnabled(true);
+      AsyncStorage.setItem(NOTIF_KEY, 'true').catch(() => {});
+    } else {
+      try {
+        await cancelAllNotifications();
+      } catch (e) {
+        console.warn('cancel notifications failed:', e?.message);
+      }
+      setNotificationsEnabled(false);
+      AsyncStorage.setItem(NOTIF_KEY, 'false').catch(() => {});
+    }
   };
 
   const handleChangeLanguage = async (code) => {

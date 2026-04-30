@@ -957,6 +957,626 @@
           }
         ],
         "proTip": "Tamamlandı ≠ bitti. Tamamlandı = artık sen busun."
+      },
+      "31": {
+        "title": "Yer Değiştirme",
+        "teaching": "Bağımlılığı kırmak için yasaklamak yetmez — yerine bir şey koymak lazım. Telefon almak istediğinde: yürü, su iç, defter yaz. Beyin \"yokluk\" kabul etmez ama \"değişim\" kabul eder.",
+        "action": "Bugün telefon refleksini hissettiğinde 3 dakika başka bir şey yap.",
+        "reflectionPrompt": "Hangi alternatifler işe yaradı?",
+        "proTip": "Liste tut: 5 hızlı alternatif (5 squat, 1 sayfa kitap, ailenle 1 cümle).",
+        "quiz": [
+          {
+            "q": "Yer değiştirme nedir?",
+            "options": [
+              "Yasak",
+              "Alternatif koyma",
+              "İhmal",
+              "Saklamak"
+            ],
+            "correct": 1,
+            "explain": "Beyin yokluk kabul etmez, değişim kabul eder."
+          },
+          {
+            "q": "En güçlü alternatif?",
+            "options": [
+              "Telefon",
+              "Hareket/yaratıcılık",
+              "Yemek",
+              "Uyku"
+            ],
+            "correct": 1,
+            "explain": "Hareket + yaratıcılık dopamini sağlıklı yükseltir."
+          }
+        ]
+      },
+      "32": {
+        "title": "Sıkıntıya Hakimiyet",
+        "teaching": "Sıkıntı bir kas. Çalıştıkça güçlenir. İlk 30 gün önce zorluydu — şimdi sıkıntı dostun. Ona ilaç değil, alan ver. Yaratıcılık orada doğar.",
+        "action": "Bugün 20 dakika hiçbir şey yapmadan otur.",
+        "reflectionPrompt": "20 dakika sonu zihninde ne belirdi?",
+        "proTip": "Pencereye bak. Bedeni gözle. Düşünceleri yargılamadan izle.",
+        "quiz": [
+          {
+            "q": "Sıkıntı nedir?",
+            "options": [
+              "Hastalık",
+              "Bir kas",
+              "Ödül",
+              "Kaza"
+            ],
+            "correct": 1,
+            "explain": "Çalıştıkça güçlenir."
+          },
+          {
+            "q": "Sıkıntı ne kadarda dostlaşır?",
+            "options": [
+              "1 hafta",
+              "30 gün",
+              "6 ay",
+              "Asla"
+            ],
+            "correct": 1,
+            "explain": "~30 gün sonra dostluk başlar."
+          }
+        ]
+      },
+      "33": {
+        "title": "Tek Akıl Odağı",
+        "teaching": "Düşünmek değer üretir. Ama dağınık düşünce gürültü üretir. Tek mesele üzerinde 1 saat odaklan, 10 mesele üzerinde 1 saatten daha fazla iş çıkarırsın.",
+        "action": "Bugün 1 saat tek konu hakkında düşün. Hiçbir şey arama.",
+        "reflectionPrompt": "Tek odak deneyimi nasıldı?",
+        "proTip": "Yürürken yap. Stevenote: en iyi fikirler yürüyüşte gelir.",
+        "quiz": [
+          {
+            "q": "Tek odak süresi öneri?",
+            "options": [
+              "10 dk",
+              "1 saat",
+              "8 saat",
+              "Sürekli"
+            ],
+            "correct": 1,
+            "explain": "1 saat tek konu = derin işlem."
+          },
+          {
+            "q": "Yürüyerek düşünme tekniği?",
+            "options": [
+              "Ok",
+              "En iyi fikirler",
+              "Yorgunluk",
+              "Etkisiz"
+            ],
+            "correct": 1,
+            "explain": "En iyi fikirler yürüyüşte gelir."
+          }
+        ]
+      },
+      "34": {
+        "title": "Bilgi Diyeti",
+        "teaching": "Bilgi de kalori gibi. Az ama nitelikli, çok ama boş olmaktan iyidir. Bugün tükettiğin 80% bilgi: bir hafta sonra hatırlamayacağın. Filtre koy.",
+        "action": "Bugün 3 ana bilgi kaynağını sırala. Her biri sana ne öğretiyor?",
+        "reflectionPrompt": "En büyük \"boş\" kaynak hangisi?",
+        "proTip": "\"Bana hizmet ediyor mu?\" filtre cümlesi. Hayır olan her kanal kapat.",
+        "quiz": [
+          {
+            "q": "Bilgi diyeti filtre cümlesi?",
+            "options": [
+              "Trend?",
+              "Bana hizmet ediyor mu?",
+              "Popüler mi?",
+              "Yeni mi?"
+            ],
+            "correct": 1,
+            "explain": "Hayır olan kanal = noise."
+          },
+          {
+            "q": "Az ama nitelikli?",
+            "options": [
+              "Yanlış",
+              "İyi diyet",
+              "Risk",
+              "Eski"
+            ],
+            "correct": 1,
+            "explain": "Az + nitelikli > çok + boş."
+          }
+        ]
+      },
+      "35": {
+        "title": "Zevk Reseti",
+        "teaching": "Sürekli stimulasyon = zevk eşiği yüksek. Sade hayata dönmek = küçük şeyler tekrar zevk verir. Sabah kahvesi, kuş sesi, dostluk — yeniden tat alır hale gelirsin.",
+        "action": "Bugün küçük bir şeyden zevk al. Telefonsuz, dikkat dağılmadan.",
+        "reflectionPrompt": "Hangi küçük şey unutulmazdı?",
+        "proTip": "Akşam yatmadan: günün 3 küçük zevki yaz.",
+        "quiz": [
+          {
+            "q": "Zevk eşiği nasıl yükselir?",
+            "options": [
+              "Çalışma",
+              "Sürekli stimulasyon",
+              "Açlık",
+              "Spor"
+            ],
+            "correct": 1,
+            "explain": "Sürekli yapay yüksek zevkler eşiği büyütür."
+          },
+          {
+            "q": "Reset nasıl olur?",
+            "options": [
+              "Daha fazla zevk",
+              "Sade hayata dön",
+              "Uyu",
+              "Kork"
+            ],
+            "correct": 1,
+            "explain": "Sadelik = küçük zevkler tekrar tatlı."
+          }
+        ]
+      },
+      "36": {
+        "title": "Ödül Tahmin Edilemezliği",
+        "teaching": "Slot makinesi neden bağımlılık yapar? Ödül her seferinde gelmez — beklenti dopamini patlatır. Sosyal medya bildirimi de aynı sistem. Tahmin edilemezlik = bağımlılık. Bil ve sınırla.",
+        "action": "Bugün bildirimleri kapatılı tut, kontrol etmek için saat kur.",
+        "reflectionPrompt": "Beklenti hissi en çok hangi an geldi?",
+        "proTip": "Sabit kontrol saatleri = tahmin edilebilirlik = dopamin sakin.",
+        "quiz": [
+          {
+            "q": "Slot makinesi neden bağımlılık?",
+            "options": [
+              "Şans",
+              "Tahmin edilemez ödül",
+              "Para",
+              "Renk"
+            ],
+            "correct": 1,
+            "explain": "Beklenti dopamini patlatır."
+          },
+          {
+            "q": "Çözüm?",
+            "options": [
+              "Sürekli kontrol",
+              "Sabit kontrol saatleri",
+              "Hiç bakma",
+              "Telefonu kır"
+            ],
+            "correct": 1,
+            "explain": "Sabit zaman = tahmin edilebilir = sakin."
+          }
+        ]
+      },
+      "37": {
+        "title": "Dopamin Programlaması",
+        "teaching": "Dopamin doğal akışı: sabah yüksek, öğleden sonra düşük, akşam orta. Yapay yükseltmeler bu akışı bozar. Doğal akışına saygı = uzun vade enerji.",
+        "action": "Bugün 18:00 sonrası ekran kullanma. Vücudunu doğal ritme bırak.",
+        "reflectionPrompt": "Akşam ekrnasız nasıl hissettin?",
+        "proTip": "Akşam mavi ışık filtre + sıcak ışık. Beyin \"uyku\" sinyali alır.",
+        "quiz": [
+          {
+            "q": "Dopamin doğal akışı?",
+            "options": [
+              "Akşam zirve",
+              "Sabah yüksek-akşam orta",
+              "Sürekli aynı",
+              "Rastgele"
+            ],
+            "correct": 1,
+            "explain": "Sabah yüksek, öğle düşük, akşam orta."
+          },
+          {
+            "q": "Saat 18 sonra ne yap?",
+            "options": [
+              "Daha çok ekran",
+              "Ekran kıs",
+              "Kahve iç",
+              "Çalış"
+            ],
+            "correct": 1,
+            "explain": "Akşam doğal akış için ekran kıs."
+          }
+        ]
+      },
+      "38": {
+        "title": "Zihin Görselleştirme",
+        "teaching": "Beyin gerçek ile hayal arasında pek fark yapmaz. 5 dakika başardığını görselleştir = pratik etmiş kadar fayda. Sporcular kullanır — sen de kullan.",
+        "action": "Bugün 5 dakika hedefini görselleştir. Detaylı, duyusal.",
+        "reflectionPrompt": "Hangi detaylar görselleştirmeyi güçlendirdi?",
+        "proTip": "Sabah yatakta yap. Beyin uyandığında zaten \"başarmış.\"",
+        "quiz": [
+          {
+            "q": "Görselleştirme süresi?",
+            "options": [
+              "1 dk",
+              "5 dk",
+              "1 saat",
+              "24 saat"
+            ],
+            "correct": 1,
+            "explain": "5 dk yeter, sporcular kullanır."
+          },
+          {
+            "q": "Beyin gerçek-hayal farkı?",
+            "options": [
+              "Net",
+              "Az",
+              "Çok büyük",
+              "Yok"
+            ],
+            "correct": 1,
+            "explain": "Beyin pek fark etmez, pratik etkisi var."
+          }
+        ]
+      },
+      "39": {
+        "title": "Dürtü Sörfü",
+        "teaching": "Dürtüye karşı çıkmak yerine üzerine sörf yap. Dalgayı engellemezsin — yükselir, doruğa ulaşır, geçer. Tipik dürtü 10-20 dakika sürer. Geçer.",
+        "action": "Bugün bir telefon dürtüsünü 10 dakika izle. Yapma — geçmesini bekle.",
+        "reflectionPrompt": "Dalga ne zaman zirve yaptı?",
+        "proTip": "Nefesle birlikte say: 4-7-8. Dürtü nefesle erir.",
+        "quiz": [
+          {
+            "q": "Urge sörfü nedir?",
+            "options": [
+              "Direnç",
+              "Üzerine sörf yap",
+              "Engelle",
+              "Yok say"
+            ],
+            "correct": 1,
+            "explain": "Dalga gibi: yükselir-zirve-geçer."
+          },
+          {
+            "q": "Tipik dürtü süresi?",
+            "options": [
+              "1 dk",
+              "10-20 dk",
+              "1 saat",
+              "1 gün"
+            ],
+            "correct": 1,
+            "explain": "10-20 dk sonra dürtü erir."
+          }
+        ]
+      },
+      "40": {
+        "title": "Bildirim Auditi v2",
+        "teaching": "30 günde bildirimler tekrar birikti. Yeni indirilenler, eski reaktivasyonlar. Aylık audit yap. Mart'ta kapadığın WhatsApp grubu nisan'da geri gelir.",
+        "action": "Bugün tüm bildirimleri tekrar gözden geçir. Yeni gelenler kapat.",
+        "reflectionPrompt": "Hangi yeni \"sızıntı\" buldun?",
+        "proTip": "Kalender hatırlatıcısı: ayda 1, 5 dakika audit.",
+        "quiz": [
+          {
+            "q": "Audit ne sıklıkla?",
+            "options": [
+              "1 kez",
+              "Aylık",
+              "Yıllık",
+              "Asla"
+            ],
+            "correct": 1,
+            "explain": "Bildirimler 30 günde tekrar birikir."
+          },
+          {
+            "q": "Audit süresi?",
+            "options": [
+              "1 saat",
+              "5 dakika",
+              "1 gün",
+              "0"
+            ],
+            "correct": 1,
+            "explain": "5 dk yeter."
+          }
+        ]
+      },
+      "41": {
+        "title": "Zevk-Acı Dengesi",
+        "teaching": "Anna Lembke: \"her zevk eşit miktarda acı borçu yaratır.\" Sürekli zevk = sürekli huzursuzluk. Bilinçli \"soğuk duş, açlık, çaba\" = denge.",
+        "action": "Bugün küçük bir rahatsızlığı aç bırak: soğuk yüz suyu, 12 saat aç, 5 dk meditasyon.",
+        "reflectionPrompt": "Acı sonrası zevk farklı miydi?",
+        "proTip": "Akşam küçük bir zorluk = sabah büyük bir keyif.",
+        "quiz": [
+          {
+            "q": "Lembke prensibi?",
+            "options": [
+              "Zevk hep iyi",
+              "Zevk = acı borçu",
+              "Acı kötü",
+              "Denge yok"
+            ],
+            "correct": 1,
+            "explain": "Her zevk acı borçu yaratır."
+          },
+          {
+            "q": "Denge örneği?",
+            "options": [
+              "Sürekli zevk",
+              "Bilinçli zorluk",
+              "Ne yapacağım",
+              "Boş"
+            ],
+            "correct": 1,
+            "explain": "Soğuk duş, açlık, çaba = denge."
+          }
+        ]
+      },
+      "42": {
+        "title": "Ortayol Kontrolü",
+        "teaching": "Detoks 42. günde — yarısını geçtin. Bedeli ne, kazanı ne? 30 günlük insan vs şu anki sen: hangi farklar net?",
+        "action": "Bugün 5 değişikliği yaz. Bedensel, zihinsel, sosyal.",
+        "reflectionPrompt": "En şaşırtan değişim hangisi?",
+        "proTip": "Listeyi telefon kilit ekranına koy. Geri dönüş anı: bak.",
+        "quiz": [
+          {
+            "q": "Yarıyolda ne yap?",
+            "options": [
+              "Vazgeç",
+              "Geriye bak + ölç",
+              "Hızlandır",
+              "Aynı"
+            ],
+            "correct": 1,
+            "explain": "5 değişikliği yaz, listele."
+          },
+          {
+            "q": "Liste nereye?",
+            "options": [
+              "Çek defteri",
+              "Telefon kilit ekranı",
+              "Kafan",
+              "Çöp"
+            ],
+            "correct": 1,
+            "explain": "Görünür yer = hatırlatma."
+          }
+        ]
+      },
+      "43": {
+        "title": "Yer Değiştirme Takibi",
+        "teaching": "Hangi alternatif işe yaradı? Hangisi yetmedi? 2 hafta sonra alternatif listesi güncellenmeli. Beyin yeni alternatif arar.",
+        "action": "Bugün alternatif listesinde 1 yeni şey ekle, 1 eski çıkart.",
+        "reflectionPrompt": "En güçlü alternatif hangisi?",
+        "proTip": "Spor ve yaratıcı iş = en güçlü alternatifler.",
+        "quiz": [
+          {
+            "q": "Alternatif takibi?",
+            "options": [
+              "Sabit",
+              "2 haftada güncelle",
+              "Asla",
+              "1 yıl"
+            ],
+            "correct": 1,
+            "explain": "Beyin yeni alternatif arar."
+          },
+          {
+            "q": "En güçlü alternatifler?",
+            "options": [
+              "Pasif tüketim",
+              "Spor + yaratıcılık",
+              "Uyku",
+              "Yemek"
+            ],
+            "correct": 1,
+            "explain": "Aktif + yaratıcı = en güçlü."
+          }
+        ]
+      },
+      "44": {
+        "title": "Anti-Dağılma Mimarisi",
+        "teaching": "Çevre = davranış. Telefon görünmezse alma. Sosyal medya app silinmişse açma. Çevre kurarsan disiplin kolay. James Clear: \"Make it invisible, make it impossible.\"",
+        "action": "Bugün 1 dağıtıcıyı fiziksel olarak görünmez yap.",
+        "reflectionPrompt": "Görünmez yapınca refleks devam etti mi?",
+        "proTip": "Telefonu sırt çantasına koy, çıkarmak için kalkmak gerekiyor.",
+        "quiz": [
+          {
+            "q": "Çevre ne yapar?",
+            "options": [
+              "Etkisiz",
+              "Davranışı şekillendirir",
+              "Sadece güzel",
+              "Pahalı"
+            ],
+            "correct": 1,
+            "explain": "Çevre = davranış."
+          },
+          {
+            "q": "Clear formülü?",
+            "options": [
+              "Make it impossible",
+              "Make it visible",
+              "Make it good",
+              "Buy it"
+            ],
+            "correct": 0,
+            "explain": "Görünmez/imkânsız yap."
+          }
+        ]
+      },
+      "45": {
+        "title": "Telefonsuz Yürüyüşler",
+        "teaching": "Yürüyüş + telefonsuz = düşünce + görme. Yürüyüş + telefon = body olmadan zihin. Steve Jobs en zor problemleri telefonsuz yürürken çözerdi.",
+        "action": "Bugün 30 dakika telefonsuz yürü. Kulaklık yok.",
+        "reflectionPrompt": "Yürüyüşte hangi düşünce belirdi?",
+        "proTip": "Sokak seslerini dinle. Gerçek dünya zaten zengin.",
+        "quiz": [
+          {
+            "q": "Telefonsuz yürüyüş etkisi?",
+            "options": [
+              "Yok",
+              "Düşünce + görme",
+              "Yorgunluk",
+              "Sıkıntı"
+            ],
+            "correct": 1,
+            "explain": "Beden + zihin birlikte."
+          },
+          {
+            "q": "Süre?",
+            "options": [
+              "5 dk",
+              "30 dk",
+              "5 saat",
+              "0"
+            ],
+            "correct": 1,
+            "explain": "30 dk optimum."
+          }
+        ]
+      },
+      "46": {
+        "title": "Detoks Kimliği",
+        "teaching": "\"Telefon kullanmıyorum\" demek geçici. \"Ben dijital minimalistim\" demek kalıcı. Kimliğe dönüştür. Davranış unutulur, kimlik dönmez.",
+        "action": "Bugün kendine 1 yeni dijital kimlik etiketi koy.",
+        "reflectionPrompt": "Hangi kimliği seçtin?",
+        "proTip": "Aynaya bakıp her sabah söyle: \"Ben ___.\"",
+        "quiz": [
+          {
+            "q": "Davranış vs kimlik?",
+            "options": [
+              "Aynı",
+              "Kimlik kalıcı, davranış geçici",
+              "Kimlik daha zayıf",
+              "Yok"
+            ],
+            "correct": 1,
+            "explain": "Kimlik = uzun vade."
+          },
+          {
+            "q": "Kimlik nasıl pekişir?",
+            "options": [
+              "Düşünme",
+              "Tekrar söyle",
+              "Yaz",
+              "Unut"
+            ],
+            "correct": 1,
+            "explain": "Aynaya günlük tekrar."
+          }
+        ]
+      },
+      "47": {
+        "title": "Uzun Vade Stratejisi",
+        "teaching": "50 gün biter. Sonra ne? \"Eski Ben\" geri dönmek için sabırsız. Net plan olmazsa 90 günde geri yer. Bugün uzun vade kuralları yaz.",
+        "action": "Bugün 90 günlük plan yaz: 5 kalıcı kural.",
+        "reflectionPrompt": "En sürdürülebilir kural hangisi?",
+        "proTip": "\"Pazartesi-cuma\" + \"hafta sonu\" iki kural setini ayrı tut.",
+        "quiz": [
+          {
+            "q": "50 gün sonu strateji?",
+            "options": [
+              "Bitti",
+              "90 günlük plan",
+              "Hiç",
+              "Tatil"
+            ],
+            "correct": 1,
+            "explain": "Sonrası kayma riski."
+          },
+          {
+            "q": "Optimum kural sayısı?",
+            "options": [
+              "1",
+              "5",
+              "20",
+              "100"
+            ],
+            "correct": 1,
+            "explain": "5 net kural sürdürülebilir."
+          }
+        ]
+      },
+      "48": {
+        "title": "Final Faz Başlıyor",
+        "teaching": "Son 3 gün. Bedenin \"bitti\" sinyali ister. Direnç. Ama bu son sprint = identity locked-in. Yarın kendi kendinin Patronu.",
+        "action": "Bugün son sprintin niyetini yaz. Niye sürdürmek istiyorsun?",
+        "reflectionPrompt": "Niyetin ne kadar derin?",
+        "proTip": "\"Niye\"yi cüzdana koy. Geri dönüş anı bak.",
+        "quiz": [
+          {
+            "q": "Final fazda hisset?",
+            "options": [
+              "Kolay",
+              "Direnç",
+              "Yorgunluk",
+              "Sıkıntı"
+            ],
+            "correct": 1,
+            "explain": "Beden \"bitti\" sinyali ister."
+          },
+          {
+            "q": "Niyet nereye?",
+            "options": [
+              "Kafa",
+              "Cüzdan / görünür yer",
+              "Hatırla",
+              "Çöp"
+            ],
+            "correct": 1,
+            "explain": "Görünür = hatırlatma."
+          }
+        ]
+      },
+      "49": {
+        "title": "49 Gün İçinde",
+        "teaching": "49 günde dopamin sistemi yeniden kalibre oldu. Sıkıntıya tahammül 10x arttı. Anlık zevkler artık tatmin etmiyor. Bu yeni baseline. Koru.",
+        "action": "Bugün 49 günde değişen 10 şeyi yaz.",
+        "reflectionPrompt": "En unutulmaz değişim hangisi?",
+        "proTip": "Listeyi screenshot al, telefon arka planı yap.",
+        "quiz": [
+          {
+            "q": "49 günde dopamin?",
+            "options": [
+              "Bozulur",
+              "Kalibre olur",
+              "Aynı",
+              "Bitirilir"
+            ],
+            "correct": 1,
+            "explain": "Sistem yeniden ayarlanır."
+          },
+          {
+            "q": "Sıkıntı toleransı?",
+            "options": [
+              "Düşer",
+              "10x artar",
+              "Aynı",
+              "Yok olur"
+            ],
+            "correct": 1,
+            "explain": "Sıkıntıya tahammül büyük artar."
+          }
+        ]
+      },
+      "50": {
+        "title": "Tamamlandı — Master",
+        "teaching": "50 gün. Çoğu insan 5 günde vazgeçer. Sen masteri tamamladın. Yeni Sen = sıkıntıya hakim, dürtüye sörf, dijital minimalist. Diploma yok — sadece ayna.",
+        "action": "Bugün aynaya bak. Yeni Sen'i selamla.",
+        "reflectionPrompt": "50 gün önceki sen şimdi olmak ister miydi?",
+        "proTip": "Bir başka path başlat. 7 gün dinlen, sonra mind veya body discipline.",
+        "quiz": [
+          {
+            "q": "Master ne demek?",
+            "options": [
+              "Sertifika",
+              "Yeni Sen",
+              "Para",
+              "Ünvan"
+            ],
+            "correct": 1,
+            "explain": "Aynadaki yeni sen."
+          },
+          {
+            "q": "Sonraki path?",
+            "options": [
+              "Hemen",
+              "7 gün dinlen",
+              "1 ay bekle",
+              "Asla"
+            ],
+            "correct": 1,
+            "explain": "7 gün dinlen, sonra devam."
+          }
+        ]
       }
     },
     "silent-morning": {
@@ -1887,6 +2507,626 @@
             ],
             "correct": 1,
             "explain": "3 gün dinlen, sonra devam."
+          }
+        ]
+      },
+      "31": {
+        "title": "Sabah Yürüyüş Meditasyonu",
+        "teaching": "Otururken meditasyon zor. Yürürken meditasyon doğal. Her adım = nefes. Her adım = farkındalık. 10 dakika sabah yürüyüş + meditasyon = 1 saat oturma denkliği.",
+        "action": "Bugün 10 dk yürüyüş meditasyonu yap. Her adımı say.",
+        "reflectionPrompt": "Yürüme meditasyonu oturma'dan farklı mı?",
+        "proTip": "Burnundan al, ağzından ver. Her 4 adımda bir nefes.",
+        "quiz": [
+          {
+            "q": "Yürüyüş meditasyonu vs oturma?",
+            "options": [
+              "Aynı",
+              "Yürüyüş daha doğal",
+              "Yürüyüş zayıf",
+              "Bilinmez"
+            ],
+            "correct": 1,
+            "explain": "Hareket + farkındalık birleştirir."
+          },
+          {
+            "q": "Süre?",
+            "options": [
+              "1 dk",
+              "10 dk = 1 saat",
+              "1 saat",
+              "5 dk"
+            ],
+            "correct": 1,
+            "explain": "10 dk yürüme = 1 saat oturma denkliği."
+          }
+        ]
+      },
+      "32": {
+        "title": "Stillness 10 Dakika",
+        "teaching": "Hareket disiplinin yarısı. Diğer yarısı durabilmek. 10 dakika tam stillness — kıpırdamadan, düşünmeden, yapmadan. Bedeniniz ve zihniniz reset.",
+        "action": "Bugün 10 dk tam hareketsiz otur.",
+        "reflectionPrompt": "Stillness ne kadar zor geldi?",
+        "proTip": "Tam dik otur, gözleri %30 açık. Sırt yastığı al.",
+        "quiz": [
+          {
+            "q": "Stillness ne demek?",
+            "options": [
+              "Hareket",
+              "Tam hareketsiz",
+              "Yorgun",
+              "Pasif"
+            ],
+            "correct": 1,
+            "explain": "Düşünme, yapma yok."
+          },
+          {
+            "q": "Süre?",
+            "options": [
+              "1 dk",
+              "10 dk",
+              "1 saat",
+              "Tüm gün"
+            ],
+            "correct": 1,
+            "explain": "10 dk reset."
+          }
+        ]
+      },
+      "33": {
+        "title": "Soğuk Daldırma",
+        "teaching": "Soğuk duş başlangıç. Soğuk daldırma master. 1-2 dk 10°C su = norepinefrin %500 artar, depresyon riski %29 düşer (Wim Hof). Vücudun 10x güçlenir.",
+        "action": "Bugün soğuk duşu 1 dakikaya çıkar.",
+        "reflectionPrompt": "1 dakikada bedenim ne öğrendi?",
+        "proTip": "Nefes kontrolü ile gir. Şok = nefesi tut yapar; tam tersi: derin yavaş nefes.",
+        "quiz": [
+          {
+            "q": "Soğuk daldırma süre?",
+            "options": [
+              "10 sn",
+              "1-2 dk",
+              "10 dk",
+              "1 saat"
+            ],
+            "correct": 1,
+            "explain": "1-2 dakika master seviyesi."
+          },
+          {
+            "q": "Norepinefrin artışı?",
+            "options": [
+              "%10",
+              "%500",
+              "Yok",
+              "Negatif"
+            ],
+            "correct": 1,
+            "explain": "%500 artış (Wim Hof)."
+          }
+        ]
+      },
+      "34": {
+        "title": "Güneş Selamı Varyasyonları",
+        "teaching": "Sun salutation = 12 hareket, tüm vücut esnetme + güç. Sabah 5 dakika = ısınma + esneme + omuz açılışı. Yoga değil disiplindir.",
+        "action": "Bugün 5 sun salutation yap.",
+        "reflectionPrompt": "Hangi pozisyon zorluydu?",
+        "proTip": "YouTube'da \"5 min sun salutation\" video. İlk 1 hafta video ile, sonra ezberle.",
+        "quiz": [
+          {
+            "q": "Sun salutation kaç hareket?",
+            "options": [
+              "3",
+              "12",
+              "50",
+              "100"
+            ],
+            "correct": 1,
+            "explain": "12 hareket dizisi."
+          },
+          {
+            "q": "Süre öneri?",
+            "options": [
+              "30 sn",
+              "5 dk",
+              "1 saat",
+              "Yok"
+            ],
+            "correct": 1,
+            "explain": "5 dk yeterli."
+          }
+        ]
+      },
+      "35": {
+        "title": "Tek Sayfa Günlük",
+        "teaching": "Morning pages 3 sayfa zor. Tek sayfa yapılabilir. Her sabah aynı tek sayfa: bugün niyetim, dünden ne öğrendim, bugünün 3 önceliği.",
+        "action": "Bugün tek sayfa günlük yaz. Yargılamadan.",
+        "reflectionPrompt": "Tek sayfa yazınca zihninde ne değişti?",
+        "proTip": "Sabit format kullan: niyet / öğrenme / öncelik. Karar yorgunluğu azaltır.",
+        "quiz": [
+          {
+            "q": "Tek sayfa günlük format?",
+            "options": [
+              "Belirsiz",
+              "Niyet/öğrenme/öncelik",
+              "Random",
+              "Boş"
+            ],
+            "correct": 1,
+            "explain": "Sabit format = az karar yorgunluğu."
+          },
+          {
+            "q": "Avantajı?",
+            "options": [
+              "Pahalı",
+              "Tutarlı",
+              "Yorucu",
+              "Etkisiz"
+            ],
+            "correct": 1,
+            "explain": "Tutarlılık = uzun vade."
+          }
+        ]
+      },
+      "36": {
+        "title": "Affirmasyon Pratiği",
+        "teaching": "Affirmasyonlar = kendi kendine sözler. \"Disiplinliyim. Odaklıyım. Sürdürürüm.\" 5 dakika tekrar. Beyin tekrara inanır, gerçeğe değil.",
+        "action": "Bugün 5 dakika 3 affirmasyon tekrar et.",
+        "reflectionPrompt": "En çok hangi affirmasyon vurdu?",
+        "proTip": "Aynaya bakarak yüksek sesle söyle. Etkisi 3x güçlenir.",
+        "quiz": [
+          {
+            "q": "Affirmasyon süre?",
+            "options": [
+              "1 sn",
+              "5 dk",
+              "1 saat",
+              "Yok"
+            ],
+            "correct": 1,
+            "explain": "5 dk pratik."
+          },
+          {
+            "q": "Aynaya söylemek?",
+            "options": [
+              "Etkisiz",
+              "3x güç",
+              "Risk",
+              "Pahalı"
+            ],
+            "correct": 1,
+            "explain": "Aynalı = 3x etki."
+          }
+        ]
+      },
+      "37": {
+        "title": "Görselleştirme 3 Dakika",
+        "teaching": "Görselleştirme dersini 3 dakikalık günlük rutine al. Hedef gerçekleşmiş gibi gör — duygular, sesler, kokular. Beyin \"başardım\" zaten der.",
+        "action": "Bugün 3 dk hedefini görselleştir, sabah ilk şey.",
+        "reflectionPrompt": "Görselleştirmede en canlı detay neydi?",
+        "proTip": "Yatakta yap. Gözler kapalı, dik otur, derin nefes.",
+        "quiz": [
+          {
+            "q": "Görselleştirme süre?",
+            "options": [
+              "1 dk",
+              "3 dk",
+              "1 saat",
+              "0"
+            ],
+            "correct": 1,
+            "explain": "3 dk yeterli."
+          },
+          {
+            "q": "En iyi yer?",
+            "options": [
+              "Sokak",
+              "Yatak",
+              "Ofis",
+              "Otobüs"
+            ],
+            "correct": 1,
+            "explain": "Yatakta gözler kapalı."
+          }
+        ]
+      },
+      "38": {
+        "title": "Hedef Günlük Review",
+        "teaching": "Yıllık hedef yazıp unutmak = 0 etki. Günlük 30 saniye okumak = sürekli farkındalık. Hedef cebinde gibi olur — her küçük karar onu destekler.",
+        "action": "Bugün ana hedefini sabah 30 saniye oku.",
+        "reflectionPrompt": "Hedefi okuyunca öncelikler değişti mi?",
+        "proTip": "Hedefi telefon kilit ekranı yap. Günde 50x bakacaksın.",
+        "quiz": [
+          {
+            "q": "Hedef günlük review süre?",
+            "options": [
+              "30 sn",
+              "1 saat",
+              "1 hafta",
+              "Hiç"
+            ],
+            "correct": 0,
+            "explain": "30 saniye yeterli."
+          },
+          {
+            "q": "Optimum yer?",
+            "options": [
+              "Defter",
+              "Telefon kilit ekranı",
+              "Cüzdan",
+              "Bellek"
+            ],
+            "correct": 1,
+            "explain": "Günde 50x bakacaksın."
+          }
+        ]
+      },
+      "39": {
+        "title": "Enerji Auditi",
+        "teaching": "Sabah enerji 10/10 olmazsa sebep var. Geç yatma, alkol, ağır akşam yemeği, stres. Her sabah 1-10 puan ver. Düşük günleri analiz et.",
+        "action": "Bugün sabah enerji puanı + sebebini yaz.",
+        "reflectionPrompt": "Düşük enerjili günlerin ortak sebebi?",
+        "proTip": "7 gün boyunca yap, pattern ortaya çıkar. Optimum öğrenme yaşam tarzı.",
+        "quiz": [
+          {
+            "q": "Enerji audit ölçek?",
+            "options": [
+              "Yok",
+              "1-10 puan",
+              "0-1",
+              "Renkli"
+            ],
+            "correct": 1,
+            "explain": "10 üzerinden puanla."
+          },
+          {
+            "q": "Pattern ne kadarda çıkar?",
+            "options": [
+              "1 gün",
+              "7 gün",
+              "1 ay",
+              "1 yıl"
+            ],
+            "correct": 1,
+            "explain": "7 gün = pattern."
+          }
+        ]
+      },
+      "40": {
+        "title": "Uyku Döngüsü Takibi",
+        "teaching": "8 saat = mit. Önemli olan döngü sayısı. 1 döngü = 90 dakika. 4-5 döngü ideal. Yatma saati / 1.5 = uyanma saati. 22:00 → 5:30 = 5 döngü.",
+        "action": "Bugün döngü hesabıyla uyu. 22:00 → 05:30.",
+        "reflectionPrompt": "Döngü hesabıyla uyku farklı mıydı?",
+        "proTip": "Apple Watch / Whoop = otomatik takip. Yoksa manuel.",
+        "quiz": [
+          {
+            "q": "1 uyku döngüsü?",
+            "options": [
+              "30 dk",
+              "90 dk",
+              "4 saat",
+              "8 saat"
+            ],
+            "correct": 1,
+            "explain": "90 dk = 1 cycle."
+          },
+          {
+            "q": "Optimum cycle?",
+            "options": [
+              "1",
+              "4-5",
+              "10",
+              "20"
+            ],
+            "correct": 1,
+            "explain": "4-5 cycle ideal."
+          }
+        ]
+      },
+      "41": {
+        "title": "Alarmsız Uyanma",
+        "teaching": "Alarmla uyanmak = beyni şok etme. 30 gün düzenli uyku sonrası beden alarmsız uyanır. Alarmı 6:00'a kur, 5:55'te alarm öncesi uyan = master.",
+        "action": "Bugün alarmdan 5 dk önce uyanmayı dene.",
+        "reflectionPrompt": "Alarmsız uyandığında nasıl hissettin?",
+        "proTip": "Aynı saatte yat — body clock keskinleşir.",
+        "quiz": [
+          {
+            "q": "Alarmsız uyanma?",
+            "options": [
+              "Imkansız",
+              "30 gün regular sonra",
+              "Hep",
+              "Asla"
+            ],
+            "correct": 1,
+            "explain": "Beden saat ayarlanır."
+          },
+          {
+            "q": "Anahtar?",
+            "options": [
+              "Erken yat",
+              "Aynı saatte yat",
+              "Geç yat",
+              "Random"
+            ],
+            "correct": 1,
+            "explain": "Sabit yatma = sabit kalkma."
+          }
+        ]
+      },
+      "42": {
+        "title": "Sabah Mantra",
+        "teaching": "Tek cümle. Her sabah ilk düşünce. \"Bugün disiplinli. Bugün odaklı. Bugün şükran.\" Her tekrar = beyin programlama.",
+        "action": "Bugün kendi mantra cümleni yaz, 10 kez tekrar et.",
+        "reflectionPrompt": "Hangi mantra seçtin?",
+        "proTip": "Mantrayı duş aynasına yapıştır. Sabah otomatik gelir.",
+        "quiz": [
+          {
+            "q": "Mantra format?",
+            "options": [
+              "Liste",
+              "Tek cümle",
+              "Roman",
+              "Şarkı"
+            ],
+            "correct": 1,
+            "explain": "Tek cümle, tekrar."
+          },
+          {
+            "q": "Tekrar sayısı?",
+            "options": [
+              "1",
+              "10",
+              "100",
+              "1000"
+            ],
+            "correct": 1,
+            "explain": "10 tekrar yeter."
+          }
+        ]
+      },
+      "43": {
+        "title": "5-AM Protokolü",
+        "teaching": "Robin Sharma \"5 AM Club\": 5'te kalk, ilk saat: 20 dk hareket / 20 dk pratik / 20 dk yansıma. 30 günde \"the 1 percent\" girersin.",
+        "action": "Bugün 5'te kalk, 60-20-20-20 dene.",
+        "reflectionPrompt": "İlk 60 dakika hangi blok en güçlüydü?",
+        "proTip": "Aşamalı geç: önce 7, sonra 6:30, sonra 6, sonra 5:30, sonra 5.",
+        "quiz": [
+          {
+            "q": "5-AM Club kim?",
+            "options": [
+              "Naval",
+              "Robin Sharma",
+              "James Clear",
+              "Tim Ferriss"
+            ],
+            "correct": 1,
+            "explain": "Robin Sharma kitabı."
+          },
+          {
+            "q": "60-20-20-20?",
+            "options": [
+              "Spor + pratik + yansıma",
+              "Sadece spor",
+              "Sadece okuma",
+              "Yok"
+            ],
+            "correct": 0,
+            "explain": "20 hareket + 20 pratik + 20 yansıma."
+          }
+        ]
+      },
+      "44": {
+        "title": "İleri Seviye Nefes",
+        "teaching": "Wim Hof method: 30 derin nefes + nefes tutma + 15 sn tutma + tekrar. 3 round = bağışıklık güçlenir, depresyon azalır, dayanıklılık artar.",
+        "action": "Bugün 1 round Wim Hof yap.",
+        "reflectionPrompt": "Nefes kontrolü zihnini değiştirdi mi?",
+        "proTip": "YouTube \"Wim Hof basic\" + uygulamadan 1 hafta sonra denemeye geç.",
+        "quiz": [
+          {
+            "q": "Wim Hof temel?",
+            "options": [
+              "Yavaş nefes",
+              "30 deep + hold",
+              "Egzersiz",
+              "Soğuk"
+            ],
+            "correct": 1,
+            "explain": "30 nefes + hold + repeat."
+          },
+          {
+            "q": "Round sayısı?",
+            "options": [
+              "1",
+              "3",
+              "10",
+              "100"
+            ],
+            "correct": 1,
+            "explain": "3 round optimum."
+          }
+        ]
+      },
+      "45": {
+        "title": "Soğuk Maruz Mastery",
+        "teaching": "Soğuk vücut için seroni-norepi-dopamin patlaması. Her gün soğuk = bağışıklık 10x. Hedef: 2 dk altında 10°C, 30 gün sürdür.",
+        "action": "Bugün 2 dk soğuk duş yap.",
+        "reflectionPrompt": "2 dk sonu zihinsel net mi?",
+        "proTip": "İlk 30 sn nefesi kontrol et — sonrası kolaylaşır.",
+        "quiz": [
+          {
+            "q": "Soğuk hedef süresi?",
+            "options": [
+              "10 sn",
+              "2 dk",
+              "10 dk",
+              "1 saat"
+            ],
+            "correct": 1,
+            "explain": "2 dakika master."
+          },
+          {
+            "q": "İlk 30 sn?",
+            "options": [
+              "Pasif",
+              "Nefes kontrolü",
+              "Bağır",
+              "Çık"
+            ],
+            "correct": 1,
+            "explain": "Nefesle yumuşat."
+          }
+        ]
+      },
+      "46": {
+        "title": "Hareket Atıştırmaları",
+        "teaching": "Saat başı 30 sn hareket = oturmanın etkisi nötrlenir. 10 squat, omuz daireleri, boyun esnetme. Çalışma sırasında saat başı yap.",
+        "action": "Bugün her saat başı 30 sn hareket et.",
+        "reflectionPrompt": "Akşam enerjin farklı mıydı?",
+        "proTip": "Saat başı hatırlatıcı kur. 7 gün sonra otomatik olur.",
+        "quiz": [
+          {
+            "q": "Hareket atıştırması süre?",
+            "options": [
+              "1 sn",
+              "30 sn",
+              "5 dk",
+              "1 saat"
+            ],
+            "correct": 1,
+            "explain": "Saat başı 30 sn."
+          },
+          {
+            "q": "Etki?",
+            "options": [
+              "Yok",
+              "Oturmayı nötrler",
+              "Yorgunluk",
+              "Acı"
+            ],
+            "correct": 1,
+            "explain": "Oturmanın hasarını siler."
+          }
+        ]
+      },
+      "47": {
+        "title": "Kimlik Mantra",
+        "teaching": "\"Erken kalkıyorum\" geçici. \"Ben sabah insanıyım\" kalıcı. Kimlik mantra = davranışın değil kimliğin tekrarı. Beyin \"ben buyum\" der ve davranış uyar.",
+        "action": "Bugün kimlik mantranı yaz, 30 gün her sabah söyle.",
+        "reflectionPrompt": "Kimlik vs davranış farkını nasıl hissediyorsun?",
+        "proTip": "Mantrayı \"Ben ___\" ile başlat. Şimdiki zaman.",
+        "quiz": [
+          {
+            "q": "Kimlik mantra başlangıcı?",
+            "options": [
+              "Olucam",
+              "Ben ___",
+              "Belki",
+              "Olmaz"
+            ],
+            "correct": 1,
+            "explain": "\"Ben\" = şimdiki zaman."
+          },
+          {
+            "q": "Davranış mı kimlik mi?",
+            "options": [
+              "Davranış",
+              "Kimlik kalıcı",
+              "Aynı",
+              "Bilinmez"
+            ],
+            "correct": 1,
+            "explain": "Kimlik = uzun vade."
+          }
+        ]
+      },
+      "48": {
+        "title": "Final Sprint",
+        "teaching": "Son 3 gün. 50 günde sabahların kaotikten sistematik dönüştü. Bu son sprint = locked-in. Yarın master'sın.",
+        "action": "Bugün son sprintin niyetini yaz.",
+        "reflectionPrompt": "Niyetin sürdürebilir mi?",
+        "proTip": "Niyet fotoğraf çek, telefona kaydet.",
+        "quiz": [
+          {
+            "q": "Final sprint süre?",
+            "options": [
+              "1 gün",
+              "3 gün",
+              "1 ay",
+              "Hiç"
+            ],
+            "correct": 1,
+            "explain": "Son 3 gün master locking."
+          },
+          {
+            "q": "Niyet nereye?",
+            "options": [
+              "Kafa",
+              "Telefon foto",
+              "Çöp",
+              "Unut"
+            ],
+            "correct": 1,
+            "explain": "Foto = görünür."
+          }
+        ]
+      },
+      "49": {
+        "title": "49 Gün İçinde",
+        "teaching": "49 günde sabahların gözardı edilmez güç. Erken kalkmak artık zorlama değil. Sessizlik artık huzur. 10 değişiklik listesi yap.",
+        "action": "Bugün 49 günde değişen 10 sabah ritüelini yaz.",
+        "reflectionPrompt": "En unutulmaz değişim?",
+        "proTip": "Listeyi profile picture'a yaz, hatırlatma.",
+        "quiz": [
+          {
+            "q": "49 günde değişen?",
+            "options": [
+              "Hiç",
+              "10+ ritüel",
+              "1 şey",
+              "Görünmez"
+            ],
+            "correct": 1,
+            "explain": "Çok değişiklik."
+          },
+          {
+            "q": "Liste yer?",
+            "options": [
+              "Çek defteri",
+              "Profile picture",
+              "Kafa",
+              "Çöp"
+            ],
+            "correct": 1,
+            "explain": "Görünür hatırlatma."
+          }
+        ]
+      },
+      "50": {
+        "title": "Master Tamamlandı",
+        "teaching": "50 sabah. Her biri kanıt. Sen değiştin — sabahların değişti çünkü. Yeni baseline: sistematik, sessiz, niyetli. Disiplin = kimlik şimdi.",
+        "action": "Bugün aynaya bak. Yeni Sen'i selamla.",
+        "reflectionPrompt": "50 sabah önce sen şimdi olmak ister miydi?",
+        "proTip": "7 gün dinlen, sonra mind veya body discipline path.",
+        "quiz": [
+          {
+            "q": "Yeni baseline ne?",
+            "options": [
+              "Eski",
+              "Sistematik+sessiz+niyetli",
+              "Yorgun",
+              "Bilinmez"
+            ],
+            "correct": 1,
+            "explain": "Master sabah profili."
+          },
+          {
+            "q": "Disiplin = ?",
+            "options": [
+              "Davranış",
+              "Kimlik",
+              "Plan",
+              "Motivasyon"
+            ],
+            "correct": 1,
+            "explain": "Artık kimlik = disiplin."
           }
         ]
       }
@@ -2821,6 +4061,626 @@
             "explain": "3 öğrendiğim, 3 sürdüreceğim, 3 unutmayacağım."
           }
         ]
+      },
+      "31": {
+        "title": "Ultradian Ritm",
+        "teaching": "Beyin 90-120 dakika döngülerle çalışır. Bu ritmin sonunda dikkat düşer. Çözüm: 90 dakika derin iş + 20 dakika gerçek mola. Pomodoro'nun büyük abi versiyonu.",
+        "action": "Bugün 90-20 ritmiyle çalış.",
+        "reflectionPrompt": "90 dakika sonu ne hissettin?",
+        "proTip": "Mola tam mola: telefon yok, ekran yok. Pencere bak, su iç.",
+        "quiz": [
+          {
+            "q": "Ultradian döngü süresi?",
+            "options": [
+              "25 dk",
+              "90-120 dk",
+              "8 saat",
+              "Sürekli"
+            ],
+            "correct": 1,
+            "explain": "Beyin 90-120 dk dönerli."
+          },
+          {
+            "q": "Mola önerisi?",
+            "options": [
+              "5 dk",
+              "20 dk gerçek mola",
+              "0",
+              "1 saat"
+            ],
+            "correct": 1,
+            "explain": "20 dk telefon-ekransız mola."
+          }
+        ]
+      },
+      "32": {
+        "title": "Default Mode Network",
+        "teaching": "Beyin \"boş\" zaman = DMN aktif. Bu mod yaratıcılık + öz farkındalık üretir. Sürekli stimulasyon = DMN kapalı = boş yaratıcılık. Ekransız 30 dk şart.",
+        "action": "Bugün 30 dakika hiç ekran kullanma.",
+        "reflectionPrompt": "Ekransız zihninde ne belirdi?",
+        "proTip": "Yürüyüş + ekransız = DMN max. Gözlem yap.",
+        "quiz": [
+          {
+            "q": "DMN aktif olur?",
+            "options": [
+              "Stimülasyon",
+              "Boş zaman",
+              "Telefon",
+              "Çalışma"
+            ],
+            "correct": 1,
+            "explain": "Beyin \"boş\" = DMN açık."
+          },
+          {
+            "q": "Yaratıcılık burada doğar?",
+            "options": [
+              "Hayır",
+              "Evet",
+              "Etkisiz",
+              "Bilinmez"
+            ],
+            "correct": 1,
+            "explain": "DMN = yaratıcılık + öz farkındalık."
+          }
+        ]
+      },
+      "33": {
+        "title": "Zihinsel Modeller",
+        "teaching": "Charlie Munger: \"100 mental modelini öğren, dünyayı çözersin.\" Birinci ilkeler, fırsat maliyeti, ikinci derece etkileri. Her hafta 1 yeni model öğren.",
+        "action": "Bugün 1 zihinsel model araştır.",
+        "reflectionPrompt": "Hangi modeli seçtin?",
+        "proTip": "Farnam Street blog = 100'lerce mental model.",
+        "quiz": [
+          {
+            "q": "Mental model kaynak?",
+            "options": [
+              "Bilinmez",
+              "Farnam Street",
+              "Tabloid",
+              "Sosyal medya"
+            ],
+            "correct": 1,
+            "explain": "Farnam Street = en iyi kaynak."
+          },
+          {
+            "q": "Munger formülü?",
+            "options": [
+              "10 model",
+              "100 model",
+              "1000",
+              "Yok"
+            ],
+            "correct": 1,
+            "explain": "100 mental model = dünyayı çöz."
+          }
+        ]
+      },
+      "34": {
+        "title": "Birinci İlkeler Düşüncesi",
+        "teaching": "Elon Musk: \"varsayımlardan değil, fizikten başla.\" Her problem için: temel gerçekler ne? Genel kabul edilenleri sorgula. Roket fiyatları %90 düştü çünkü Musk böyle düşündü.",
+        "action": "Bugün bir varsayımı sorgula. \"Niye böyle?\"",
+        "reflectionPrompt": "Hangi varsayım çürüdü?",
+        "proTip": "\"Niye?\" 5 kez üst üste sor. Köke iner.",
+        "quiz": [
+          {
+            "q": "Birinci ilkeler kim?",
+            "options": [
+              "Naval",
+              "Musk",
+              "Buffett",
+              "Munger"
+            ],
+            "correct": 1,
+            "explain": "Elon Musk yaklaşımı."
+          },
+          {
+            "q": "Niye? sayısı?",
+            "options": [
+              "1",
+              "5 üst üste",
+              "100",
+              "0"
+            ],
+            "correct": 1,
+            "explain": "5 niye = köke."
+          }
+        ]
+      },
+      "35": {
+        "title": "Katedral Etkisi",
+        "teaching": "Yüksek tavanlı odalar yaratıcı düşünce, alçak tavanlı odalar detay düşünce yaratır. Mekan = zihin durumu. Yaratıcı iş için yüksek tavanlı kafede çalış.",
+        "action": "Bugün yüksek tavanlı bir mekanda 1 saat çalış.",
+        "reflectionPrompt": "Mekan zihnini nasıl değiştirdi?",
+        "proTip": "Park, kütüphane, müze cafe = yaratıcı yer.",
+        "quiz": [
+          {
+            "q": "Yüksek tavan etkisi?",
+            "options": [
+              "Detay",
+              "Yaratıcı düşünce",
+              "Yorgunluk",
+              "Ses"
+            ],
+            "correct": 1,
+            "explain": "Yüksek tavan = yaratıcı."
+          },
+          {
+            "q": "Yaratıcı yer?",
+            "options": [
+              "Ofis",
+              "Park/kütüphane",
+              "Yatak",
+              "Bilinmez"
+            ],
+            "correct": 1,
+            "explain": "Yüksek tavan/açık yer."
+          }
+        ]
+      },
+      "36": {
+        "title": "Tek Görev Mastery",
+        "teaching": "Multitasking myth — tek görev tek başarı. Notification yok, sekme tek, müzik instrümental. 90 dakika tam single-task = haftalık iş.",
+        "action": "Bugün 90 dakika tam single-task.",
+        "reflectionPrompt": "Verim ne kadar arttı?",
+        "proTip": "\"Do not disturb\" mode = telefon + Mac. Önemsiz çağrı geçmez.",
+        "quiz": [
+          {
+            "q": "Single-task süresi?",
+            "options": [
+              "10 dk",
+              "90 dk",
+              "8 saat",
+              "Yok"
+            ],
+            "correct": 1,
+            "explain": "90 dk tam odak."
+          },
+          {
+            "q": "DND mode?",
+            "options": [
+              "Etkisiz",
+              "Telefon+Mac kapat",
+              "Sadece sus",
+              "Yok"
+            ],
+            "correct": 1,
+            "explain": "Tüm cihazlarda."
+          }
+        ]
+      },
+      "37": {
+        "title": "Dikkat Kalıntısı",
+        "teaching": "Sophie Leroy: bir görevden diğerine geçince beyin %33 ilk görevde kalır. Bu \"attention residue.\" Çözüm: tam bitir, sonra geç. Yarım bırakma.",
+        "action": "Bugün her görevi tam bitir, sonra geç.",
+        "reflectionPrompt": "Tam bitirme zihninde ne yaptı?",
+        "proTip": "Geçişler arası 30 saniye derin nefes = residue temizler.",
+        "quiz": [
+          {
+            "q": "Attention residue?",
+            "options": [
+              "%5",
+              "%33",
+              "%80",
+              "Yok"
+            ],
+            "correct": 1,
+            "explain": "Leroy %33 ölçtü."
+          },
+          {
+            "q": "Çözüm?",
+            "options": [
+              "Hızlı geç",
+              "Tam bitir",
+              "Multitask",
+              "Yarım bırak"
+            ],
+            "correct": 1,
+            "explain": "Tam bitir, sonra geç."
+          }
+        ]
+      },
+      "38": {
+        "title": "4 Saatlik İş Günü",
+        "teaching": "Tim Ferriss: \"8 saat iş = 4 saat boşaltma.\" Çoğu beyin 4 saat derin iş üretir. 5. saat = düşük getiri. 4 saat odakla, geri kalan: spor, sosyal, dinlenme.",
+        "action": "Bugün 4 saat tam odakla çalış. Sonra dur.",
+        "reflectionPrompt": "4 saat sonu ne hissettin?",
+        "proTip": "Saatleri 09-13 ya da 10-14 yap. Beyin sabah daha keskin.",
+        "quiz": [
+          {
+            "q": "4-hour workday kim?",
+            "options": [
+              "Sharma",
+              "Ferriss",
+              "Newport",
+              "Clear"
+            ],
+            "correct": 1,
+            "explain": "Tim Ferriss kavramı."
+          },
+          {
+            "q": "Optimum saat?",
+            "options": [
+              "18-22",
+              "09-13",
+              "00-04",
+              "12-16"
+            ],
+            "correct": 1,
+            "explain": "Sabah beyin keskin."
+          }
+        ]
+      },
+      "39": {
+        "title": "Sıkıntı Toleransı",
+        "teaching": "Dijital nesil sıkıntıyı kaldıramaz — anında telefona uzanır. Sıkıntıya tolerans = zihin gücü. Günde 30 dakika sıkıntıya izin ver.",
+        "action": "Bugün 30 dakika sıkıntı pratik et.",
+        "reflectionPrompt": "Sıkıntı sonrası zihinsel netlik?",
+        "proTip": "Tuvalette telefon kullanma. 5 dakika başlangıç.",
+        "quiz": [
+          {
+            "q": "Sıkıntı toleransı?",
+            "options": [
+              "Eski",
+              "Zihin gücü",
+              "Yorgunluk",
+              "Pasif"
+            ],
+            "correct": 1,
+            "explain": "Tolerans = güç."
+          },
+          {
+            "q": "Pratik süresi?",
+            "options": [
+              "1 dk",
+              "30 dk",
+              "1 saat",
+              "0"
+            ],
+            "correct": 1,
+            "explain": "Günde 30 dk."
+          }
+        ]
+      },
+      "40": {
+        "title": "Bilişsel Çıkış",
+        "teaching": "Beyin yorulduğunda \"ısrar etme.\" Doğru çıkış noktasını tanı: yürüyüş, duş, yemek. 15 dakika çıkış = saatlerin verimi.",
+        "action": "Bugün takıldığında çıkış al, 15 dk sonra geri dön.",
+        "reflectionPrompt": "Çıkış nasıl yardımcı oldu?",
+        "proTip": "Çıkışta düşünme — sadece beden hareketi. Beyin arka planda çözer.",
+        "quiz": [
+          {
+            "q": "Off-ramp süresi?",
+            "options": [
+              "1 saat",
+              "15 dk",
+              "1 dk",
+              "Yok"
+            ],
+            "correct": 1,
+            "explain": "15 dk yeter."
+          },
+          {
+            "q": "Off-ramp'de ne yap?",
+            "options": [
+              "Düşün",
+              "Beden hareketi",
+              "Çalış",
+              "Telefon"
+            ],
+            "correct": 1,
+            "explain": "Beyin arka planda çözer."
+          }
+        ]
+      },
+      "41": {
+        "title": "Karar Çerçeveleri",
+        "teaching": "Her gün ~35,000 karar = irade gücü tükenir. Çerçeve = pre-decision. \"Hafta içi alkol içmem.\" Karar yok — uygula.",
+        "action": "Bugün 3 karar çerçevesi yaz, 30 gün uygula.",
+        "reflectionPrompt": "Hangi alanlar çerçeve istedi?",
+        "proTip": "Çerçeveleri yazılı tut. Hafıza güvenilmez.",
+        "quiz": [
+          {
+            "q": "Çerçeve nedir?",
+            "options": [
+              "Karar an",
+              "Pre-decision",
+              "Sonuç",
+              "Stres"
+            ],
+            "correct": 1,
+            "explain": "Önceden karar."
+          },
+          {
+            "q": "Avantajı?",
+            "options": [
+              "Yorgunluk",
+              "İrade tasarrufu",
+              "Daha çok karar",
+              "Etkisiz"
+            ],
+            "correct": 1,
+            "explain": "Karar yorgunluğunu azaltır."
+          }
+        ]
+      },
+      "42": {
+        "title": "80/20 Zihin",
+        "teaching": "Pareto: %20 iş %80 sonuç. Bugün yaptığın 10 işten en kritik 2'sini bul, geri kalanı kes. 80/20 her hafta uygulanır.",
+        "action": "Bugün 10 görevden 2'sini seç, kalanı erteleı veya delege et.",
+        "reflectionPrompt": "Hangi 2 işti kritik?",
+        "proTip": "Cuma akşamı haftaya 80/20 yap. Pazartesi keskin başla.",
+        "quiz": [
+          {
+            "q": "Pareto 80/20?",
+            "options": [
+              "Eşit",
+              "%20 input %80 output",
+              "Tersi",
+              "Yok"
+            ],
+            "correct": 1,
+            "explain": "Az çok yapar."
+          },
+          {
+            "q": "80/20 ne sıklıkta?",
+            "options": [
+              "Yok",
+              "Haftalık",
+              "Yıllık",
+              "Asla"
+            ],
+            "correct": 1,
+            "explain": "Haftalık uygulanır."
+          }
+        ]
+      },
+      "43": {
+        "title": "Tersine Düşünme",
+        "teaching": "Munger: \"ne yapmamamı bilirsem, ne yapmamı zaten biliyorum.\" Hedefe ulaşmak yerine, başarısızlığı önlemek üzerine kur. Tersini düşün.",
+        "action": "Bugün hedef için 5 başarısızlık nedeni yaz.",
+        "reflectionPrompt": "En riskli neden hangisi?",
+        "proTip": "Premortem yöntemi: \"1 yıl sonra başarısız oldum, neden?\"",
+        "quiz": [
+          {
+            "q": "Inversion?",
+            "options": [
+              "Hedef",
+              "Başarısızlığı önle",
+              "Hız",
+              "Eski"
+            ],
+            "correct": 1,
+            "explain": "Tersini düşün."
+          },
+          {
+            "q": "Premortem?",
+            "options": [
+              "Otopsi",
+              "1 yıl sonra başarısız neden?",
+              "Tıp",
+              "Yok"
+            ],
+            "correct": 1,
+            "explain": "Geleceği şimdiden analiz."
+          }
+        ]
+      },
+      "44": {
+        "title": "Zihinsel Çıkartma",
+        "teaching": "Stoa tekniği: bir şey kaybetseydim ne olurdu? Mental subtraction = şükran kasını çalıştırır. Sahip olduklarını yeniden değerli görmek.",
+        "action": "Bugün sahip olduğun 1 şeyi kaybetmeyi mental olarak yaşa.",
+        "reflectionPrompt": "Hangi varlık daha değerli geldi?",
+        "proTip": "Akşam 1 dakika: bugün gerçekleşen 3 iyiliği görselleştir.",
+        "quiz": [
+          {
+            "q": "Mental subtraction?",
+            "options": [
+              "Şükran kasi",
+              "Korku",
+              "Negatif",
+              "Yorgunluk"
+            ],
+            "correct": 0,
+            "explain": "Şükranı çalıştırır."
+          },
+          {
+            "q": "Pratik?",
+            "options": [
+              "Sahip değilmiş gibi",
+              "Daha fazla iste",
+              "Karşılaştır",
+              "Yok"
+            ],
+            "correct": 0,
+            "explain": "Kayıp simulate et."
+          }
+        ]
+      },
+      "45": {
+        "title": "Günlük Mind Map",
+        "teaching": "Mind map = beynin doğal yapısı. Lineer not yerine merkez + dallar. Karmaşık fikri 30 saniyede tutarlı kıl.",
+        "action": "Bugün 1 problemi mind map ile çöz.",
+        "reflectionPrompt": "Mind map sezgini güçlendirdi mi?",
+        "proTip": "Boş kâğıt + renkli kalem. Telefonun mind map app yorucu.",
+        "quiz": [
+          {
+            "q": "Mind map yapısı?",
+            "options": [
+              "Lineer",
+              "Merkez+dallar",
+              "Tablo",
+              "Yazı"
+            ],
+            "correct": 1,
+            "explain": "Beynin doğal yapısı."
+          },
+          {
+            "q": "En iyi araç?",
+            "options": [
+              "App",
+              "Boş kâğıt+kalem",
+              "Tablet",
+              "Yok"
+            ],
+            "correct": 1,
+            "explain": "Kâğıt = pürüzsüz."
+          }
+        ]
+      },
+      "46": {
+        "title": "Hafıza Sarayı",
+        "teaching": "Antik teknik: hatırlamak istediğin şeyi tanıdık bir mekana yerleştir. Çocukluk evi = saraydı. 5 odaya 5 fikir = 1 hafta hatırlanır.",
+        "action": "Bugün 5 fikri hafıza sarayına yerleştir.",
+        "reflectionPrompt": "Yarın hatırlayacak mısın?",
+        "proTip": "Komik + abartılı görseller en kalıcı.",
+        "quiz": [
+          {
+            "q": "Hafıza sarayı?",
+            "options": [
+              "Modern",
+              "Antik teknik",
+              "Pahalı",
+              "App"
+            ],
+            "correct": 1,
+            "explain": "Antik klasik."
+          },
+          {
+            "q": "Ne tür görsel?",
+            "options": [
+              "Ciddi",
+              "Komik+abartılı",
+              "Renkli",
+              "Soyut"
+            ],
+            "correct": 1,
+            "explain": "Komik kalıcı."
+          }
+        ]
+      },
+      "47": {
+        "title": "Aralıklı Tekrarlama",
+        "teaching": "Spaced repetition = optimum öğrenme. 1 gün, 3 gün, 7 gün, 14 gün, 30 gün. Bu aralıklarla tekrar = uzun vade hafıza. Anki app altın standart.",
+        "action": "Bugün son 7 günde öğrendiğini kısa tekrar et.",
+        "reflectionPrompt": "Hangi öğrenme zaten unutulmuştu?",
+        "proTip": "Anki 5 dk = günlük tekrar yeterli.",
+        "quiz": [
+          {
+            "q": "Spaced repetition aralıkları?",
+            "options": [
+              "Hep",
+              "1-3-7-14-30 gün",
+              "1 ay",
+              "1 yıl"
+            ],
+            "correct": 1,
+            "explain": "Optimum aralık."
+          },
+          {
+            "q": "En iyi app?",
+            "options": [
+              "Notion",
+              "Anki",
+              "Notes",
+              "Word"
+            ],
+            "correct": 1,
+            "explain": "Anki altın standart."
+          }
+        ]
+      },
+      "48": {
+        "title": "Final Sprint",
+        "teaching": "Son 3 gün. 50 günde zihin disiplinin sıfırdan master'a. Bu sprint = lock-in. Yarın özünü değiştirdin.",
+        "action": "Bugün son sprintin niyetini yaz.",
+        "reflectionPrompt": "En değişen zihinsel alışkanlık hangisi?",
+        "proTip": "Niyeti pano yap, 30 gün ulaşılan yere as.",
+        "quiz": [
+          {
+            "q": "Final sprint?",
+            "options": [
+              "1 gün",
+              "3 gün",
+              "1 ay",
+              "Yok"
+            ],
+            "correct": 1,
+            "explain": "Son 3 gün lock-in."
+          },
+          {
+            "q": "Niyet nereye?",
+            "options": [
+              "Bellek",
+              "Pano",
+              "Çöp",
+              "Email"
+            ],
+            "correct": 1,
+            "explain": "Görünür."
+          }
+        ]
+      },
+      "49": {
+        "title": "49 Gün İçinde",
+        "teaching": "49 günde tek odak, derin iş, 80/20, mental modeller artık otomatik. Yeni baseline = master beyin. 10 değişiklik listele.",
+        "action": "Bugün 49 günde değişen 10 zihinsel alışkanlığı yaz.",
+        "reflectionPrompt": "En unutulmaz değişim?",
+        "proTip": "Listeyi tek bir A4'e yaz. Çalışma masasına as.",
+        "quiz": [
+          {
+            "q": "Yeni baseline?",
+            "options": [
+              "Eski",
+              "Master beyin",
+              "Yorgun",
+              "Pasif"
+            ],
+            "correct": 1,
+            "explain": "Otomatik tekniklere dönüştü."
+          },
+          {
+            "q": "Liste yer?",
+            "options": [
+              "Bellek",
+              "A4 + masada",
+              "Çöp",
+              "App"
+            ],
+            "correct": 1,
+            "explain": "Görünür."
+          }
+        ]
+      },
+      "50": {
+        "title": "Master Tamamlandı",
+        "teaching": "50 gün. Çoğu insanın zihni dağıtık. Senin ki master. Sıkıntı dostun, derin iş dilin, mental modeller silahların. Disiplin = yeni IQ.",
+        "action": "Bugün aynaya bak. Yeni Sen'i selamla.",
+        "reflectionPrompt": "50 gün önceki sen şimdi olmak ister miydi?",
+        "proTip": "7 gün dinlen, sonra body veya money discipline.",
+        "quiz": [
+          {
+            "q": "Disiplin = ?",
+            "options": [
+              "IQ farkı",
+              "Yeni IQ",
+              "Test",
+              "Hız"
+            ],
+            "correct": 1,
+            "explain": "Disiplin = yeni IQ."
+          },
+          {
+            "q": "Sonraki path?",
+            "options": [
+              "Hemen",
+              "7 gün dinlen",
+              "Asla",
+              "1 ay"
+            ],
+            "correct": 1,
+            "explain": "7 gün dinlen."
+          }
+        ]
       }
     },
     "body-discipline": {
@@ -3753,6 +5613,626 @@
             "explain": "3 öğrendiğim, 3 sürdüreceğim, 3 unutmayacağım."
           }
         ]
+      },
+      "31": {
+        "title": "Vagus Sinir",
+        "teaching": "Vagus = beyin-bağırsak otobanı. Tıkalıysa: stres, sindirim sorunu, depresyon. Açma: derin nefes, soğuk, mırıldama, gargara. Günde 5 dakika = sistem reset.",
+        "action": "Bugün 5 dakika gargara veya mırıldama yap.",
+        "reflectionPrompt": "Vagus pratiği nasıl hissettirdi?",
+        "proTip": "Soğuk yüz suyu = vagus stimülasyonu en hızlı.",
+        "quiz": [
+          {
+            "q": "Vagus ne bağlar?",
+            "options": [
+              "Beyin-böbrek",
+              "Beyin-bağırsak",
+              "Kalp-kas",
+              "Yok"
+            ],
+            "correct": 1,
+            "explain": "Beyin-bağırsak otobanı."
+          },
+          {
+            "q": "Açma yöntemi?",
+            "options": [
+              "Stres",
+              "Mırıldama/gargara/soğuk",
+              "Spor",
+              "Uyku"
+            ],
+            "correct": 1,
+            "explain": "Vagus stimülasyon teknikleri."
+          }
+        ]
+      },
+      "32": {
+        "title": "NEAT Farkındalığı",
+        "teaching": "NEAT = non-exercise activity thermogenesis. Yürüyüş, ayakta durma, kıpırdama. Yüksek NEAT = günde 500-800 kcal yakıt. Spor olmadan da forma girersin.",
+        "action": "Bugün 5 saat ayakta durmayı dene (oturma yerine).",
+        "reflectionPrompt": "NEAT günün enerjisini değiştirdi mi?",
+        "proTip": "Telefon çağrısında ayakta dur. Toplantıyı yürüyerek yap.",
+        "quiz": [
+          {
+            "q": "NEAT açılım?",
+            "options": [
+              "Egzersiz",
+              "Non-exercise activity",
+              "Diyet",
+              "Uyku"
+            ],
+            "correct": 1,
+            "explain": "Egzersiz dışı aktivite ısı üretimi."
+          },
+          {
+            "q": "Yüksek NEAT günde?",
+            "options": [
+              "100 kcal",
+              "500-800 kcal",
+              "5000",
+              "0"
+            ],
+            "correct": 1,
+            "explain": "500-800 kcal yakım."
+          }
+        ]
+      },
+      "33": {
+        "title": "Güneş Maruziyeti v2",
+        "teaching": "Sabah ilk güneş = melatonin baskılar, ucb sefalin yükseltir. Gün ortası güneş = D vitamini. Akşam güneş = sirkadiyen reset. 3 maruziyet = ideal.",
+        "action": "Bugün sabah + öğle + akşam 5'er dakika güneş al.",
+        "reflectionPrompt": "Hangi maruziyet en güçlü hissettirdi?",
+        "proTip": "Çıplak ayakla = grounding bonus.",
+        "quiz": [
+          {
+            "q": "Sabah güneşi etkisi?",
+            "options": [
+              "Melatonin yükselir",
+              "Melatonin düşer",
+              "Etkisiz",
+              "Stres"
+            ],
+            "correct": 1,
+            "explain": "Uyanıklık sefalin yükselir."
+          },
+          {
+            "q": "Optimum maruziyet sayısı?",
+            "options": [
+              "1",
+              "3 (sabah/öğle/akşam)",
+              "10",
+              "0"
+            ],
+            "correct": 1,
+            "explain": "3 maruziyet ideal."
+          }
+        ]
+      },
+      "34": {
+        "title": "Uyku Mimarisi",
+        "teaching": "Uyku = REM + N1 + N2 + N3. N3 (derin uyku) = beden onarımı, REM = zihin onarımı. Geç uyumak N3'ü çalar. Erken yatmak = derin uyku zenginliği.",
+        "action": "Bugün 22:00'da yat. N3 dolu olsun.",
+        "reflectionPrompt": "Sabah enerjisi farklı mı?",
+        "proTip": "İlk 3 saat N3 zengin. 22-01 = en kıymetli uyku.",
+        "quiz": [
+          {
+            "q": "Derin uyku evresi?",
+            "options": [
+              "REM",
+              "N3",
+              "N1",
+              "Uyanıklık"
+            ],
+            "correct": 1,
+            "explain": "N3 = derin onarım."
+          },
+          {
+            "q": "En kıymetli uyku saatleri?",
+            "options": [
+              "00-04",
+              "22-01",
+              "04-07",
+              "Eşit"
+            ],
+            "correct": 1,
+            "explain": "İlk 3 saat N3 zengin."
+          }
+        ]
+      },
+      "35": {
+        "title": "Mobilite 15 Dakika",
+        "teaching": "5 dk yetmedi — 15 dk mobilite günde fark yapar. Omuz, kalça, ayak bileği, sırt, boyun. Her gün küçük açıklık = uzun vade büyük fark.",
+        "action": "Bugün 15 dakika tüm vücut mobilite yap.",
+        "reflectionPrompt": "Hangi eklem hissedilir açıldı?",
+        "proTip": "YouTube \"15 min mobility\" + 7 gün tekrar.",
+        "quiz": [
+          {
+            "q": "Mobilite yeni süre?",
+            "options": [
+              "1 dk",
+              "15 dk",
+              "1 saat",
+              "0"
+            ],
+            "correct": 1,
+            "explain": "15 dk fark yapar."
+          },
+          {
+            "q": "Hangi eklemler?",
+            "options": [
+              "Sadece omuz",
+              "Tüm vücut",
+              "Bilek",
+              "Diz"
+            ],
+            "correct": 1,
+            "explain": "Omuz/kalça/ayak bileği/sırt/boyun."
+          }
+        ]
+      },
+      "36": {
+        "title": "Günlük Yürüme Mastery",
+        "teaching": "10K adım iyi. 12K adım çok daha iyi. 15K = elite. Hareket en doğal ilaç. Kıvrılarak değil, dik + tempolu yürü.",
+        "action": "Bugün 12K adımı vur.",
+        "reflectionPrompt": "12K'da uyku farklı mı?",
+        "proTip": "Toplantıyı yürüyerek yap. Adım sayını 2x.",
+        "quiz": [
+          {
+            "q": "Optimum adım?",
+            "options": [
+              "5K",
+              "12K iyi-15K elit",
+              "50K",
+              "1K"
+            ],
+            "correct": 1,
+            "explain": "12K iyi, 15K elite."
+          },
+          {
+            "q": "Yürüme şekli?",
+            "options": [
+              "Eğri",
+              "Dik+tempolu",
+              "Yavaş",
+              "Random"
+            ],
+            "correct": 1,
+            "explain": "Postür önemli."
+          }
+        ]
+      },
+      "37": {
+        "title": "Soğuk Mastery",
+        "teaching": "Soğuk duş 2 dk geçtin. Şimdi: ice bath. 1-3 dk, 5-10°C. Norepinefrin %500, depresyon %29 düşer, bağışıklık 10x. Eğitim sonrası = hızlı recovery.",
+        "action": "Bugün ice bath dene (kova soğuk su + buz).",
+        "reflectionPrompt": "Sıcaklık kontrolü hissettiğin baskın duygu?",
+        "proTip": "İlk 30 sn nefesle, sonra rahatla.",
+        "quiz": [
+          {
+            "q": "Ice bath süre?",
+            "options": [
+              "10 sn",
+              "1-3 dk",
+              "1 saat",
+              "Yok"
+            ],
+            "correct": 1,
+            "explain": "1-3 dakika."
+          },
+          {
+            "q": "Ice bath sıcaklık?",
+            "options": [
+              "20°C",
+              "5-10°C",
+              "0°C",
+              "15°C"
+            ],
+            "correct": 1,
+            "explain": "5-10°C."
+          }
+        ]
+      },
+      "38": {
+        "title": "Sıcak Terapi",
+        "teaching": "Sauna 20 dk × 4 hafta = kalp hastalığı %40 düşük (Finland study). Sıcak şok proteini = vücut onarımı. Yoksa: sıcak duş 10 dk + soğuk bitiriş.",
+        "action": "Bugün sıcak duş 10 dk + 30 sn soğuk.",
+        "reflectionPrompt": "Sıcak-soğuk kontrast nasıldı?",
+        "proTip": "Sauna bulamazsan: sıcak banyo 40°C, 15 dk.",
+        "quiz": [
+          {
+            "q": "Sauna kaç dakika?",
+            "options": [
+              "5 dk",
+              "20 dk",
+              "60 dk",
+              "1 dk"
+            ],
+            "correct": 1,
+            "explain": "20 dk × 4 hafta."
+          },
+          {
+            "q": "Yedek?",
+            "options": [
+              "Yok",
+              "Sıcak duş + soğuk bitiriş",
+              "Soğuk",
+              "Uyku"
+            ],
+            "correct": 1,
+            "explain": "Sıcak-soğuk kontrast."
+          }
+        ]
+      },
+      "39": {
+        "title": "Bilinçli Yeme",
+        "teaching": "20 dakika kuralı: beyin tokluk sinyalini 20 dk sonra alır. 20 dakikadan az yeme = aşırı yeme. Çatal yere koy, çiğne, yut, dur.",
+        "action": "Bugün her öğünü 20 dk'ya yay.",
+        "reflectionPrompt": "Yavaş yemek doygunluğu değiştirdi mi?",
+        "proTip": "Lokmayı 30 kez çiğne. Sindirim 2x kolaylaşır.",
+        "quiz": [
+          {
+            "q": "20-dakika kuralı?",
+            "options": [
+              "Hızlı ye",
+              "Tokluk sinyali 20 dk sonra",
+              "Etkisiz",
+              "Yok"
+            ],
+            "correct": 1,
+            "explain": "Beyin sinyali geç gelir."
+          },
+          {
+            "q": "Çiğneme önerisi?",
+            "options": [
+              "1",
+              "30 kez",
+              "5 kez",
+              "Sayma"
+            ],
+            "correct": 1,
+            "explain": "30 kez çiğne."
+          }
+        ]
+      },
+      "40": {
+        "title": "Hidrasyon 3L",
+        "teaching": "2L yeterli değil = optimum. 3L = elit hidrasyon. Beden %72 su. 3L = bilişsel performans %30 artar. İdrar açık sarı = doğru.",
+        "action": "Bugün 3L su iç. Kapsayan 1L sabah, 1L öğleden önce, 1L öğleden sonra.",
+        "reflectionPrompt": "3L'de zihinsel netlik?",
+        "proTip": "1L şişe + günde 3 kez doldur. Sayma yok.",
+        "quiz": [
+          {
+            "q": "Optimum hidrasyon?",
+            "options": [
+              "1L",
+              "3L",
+              "10L",
+              "500ml"
+            ],
+            "correct": 1,
+            "explain": "3L = optimum."
+          },
+          {
+            "q": "İdrar rengi kontrol?",
+            "options": [
+              "Koyu sarı",
+              "Açık sarı = doğru",
+              "Kırmızı",
+              "Renk yok"
+            ],
+            "correct": 1,
+            "explain": "Açık sarı doğru."
+          }
+        ]
+      },
+      "41": {
+        "title": "Güç Disiplini",
+        "teaching": "Push-up + squat + plank yetmez. Hafta 3 gün ağırlık antrenmanı = kas + kemik + hormon. Ev = direnç bandı + kettlebell. Spor salonu = optimum.",
+        "action": "Bugün 30 dk ağırlık antrenmanı yap.",
+        "reflectionPrompt": "Ağırlıkla bedenin nasıl tepki verdi?",
+        "proTip": "5x5 sistemi: 5 hareket × 5 set × 5 tekrar. Basit + güçlü.",
+        "quiz": [
+          {
+            "q": "5x5 sistem?",
+            "options": [
+              "5 hareket",
+              "5 hareket × 5 set × 5 tekrar",
+              "5 saat",
+              "5 gün"
+            ],
+            "correct": 1,
+            "explain": "Klasik temel."
+          },
+          {
+            "q": "Haftalık antrenman?",
+            "options": [
+              "7 gün",
+              "3 gün",
+              "0",
+              "14 gün"
+            ],
+            "correct": 1,
+            "explain": "3 gün optimum."
+          }
+        ]
+      },
+      "42": {
+        "title": "Postür Mastery",
+        "teaching": "2 dk postür hatırlatıcısı yetmez — sürekli farkındalık. Saat başı + her oturuş + her telefon. Postür = solunum + kortizol + kas dengesi.",
+        "action": "Bugün her saat başı 1 dk postür kontrolü.",
+        "reflectionPrompt": "Akşam sırt ağrısı azaldı mı?",
+        "proTip": "Telefonu göz hizasında. Boyun bükümü = günde 30 dk ekstra ağrı.",
+        "quiz": [
+          {
+            "q": "Postür kontrolü ne sıklıkta?",
+            "options": [
+              "Yıllık",
+              "Saat başı",
+              "Hiç",
+              "Aylık"
+            ],
+            "correct": 1,
+            "explain": "Sürekli farkındalık."
+          },
+          {
+            "q": "Telefon yüksekliği?",
+            "options": [
+              "Aşağı",
+              "Göz hizası",
+              "Eşit",
+              "Yan"
+            ],
+            "correct": 1,
+            "explain": "Boyun bükümü engellenir."
+          }
+        ]
+      },
+      "43": {
+        "title": "Uyku Sınırı",
+        "teaching": "Az uyu, sınırlı uyu = derin uyku zenginleşir. 7 saat hedefli yat. 9 saat erteleme. Uykusuzluk = beden alarm.",
+        "action": "Bugün 7 saat tam uyumayı dene.",
+        "reflectionPrompt": "7 saat 8 saatle aynı hissetti mi?",
+        "proTip": "7 saat tam = 8 saat parçalı'dan iyi.",
+        "quiz": [
+          {
+            "q": "Hedef uyku?",
+            "options": [
+              "9 saat",
+              "7 saat tam",
+              "4 saat",
+              "12 saat"
+            ],
+            "correct": 1,
+            "explain": "7 saat hedefi."
+          },
+          {
+            "q": "7 saat tam vs 8 parça?",
+            "options": [
+              "8 iyi",
+              "7 tam iyi",
+              "Aynı",
+              "Bilinmez"
+            ],
+            "correct": 1,
+            "explain": "Tam > parçalı."
+          }
+        ]
+      },
+      "44": {
+        "title": "Direnç Antrenman Planı",
+        "teaching": "Pazartesi: göğüs+omuz. Çarşamba: bacak. Cuma: sırt+kol. 3 gün × 30 dk = haftalık optimum. Cumartesi-pazar: aktif dinlenme.",
+        "action": "Bugün 3 günlük antrenman planı yaz.",
+        "reflectionPrompt": "Plan motivasyonu artırdı mı?",
+        "proTip": "Antrenman uygulaması: Strong (iOS) = ücretsiz tracking.",
+        "quiz": [
+          {
+            "q": "Plan yapısı?",
+            "options": [
+              "Random",
+              "Pzt-Çar-Cum 3 gün",
+              "Hep",
+              "Yok"
+            ],
+            "correct": 1,
+            "explain": "3 gün bölünmüş."
+          },
+          {
+            "q": "Tracking app?",
+            "options": [
+              "Yok",
+              "Strong (iOS)",
+              "Notion",
+              "Email"
+            ],
+            "correct": 1,
+            "explain": "Strong ücretsiz."
+          }
+        ]
+      },
+      "45": {
+        "title": "Recovery Mastery",
+        "teaching": "Antrenman = yıkım. Recovery = inşa. Az recovery = ilerleme yok. Foam roller + 8 saat uyku + protein + masaj. Cumartesi yoga, pazar dinlenme.",
+        "action": "Bugün 30 dk dedicated recovery.",
+        "reflectionPrompt": "Recovery sonrası enerji?",
+        "proTip": "Theragun veya foam roller = haftada 3 kez.",
+        "quiz": [
+          {
+            "q": "Recovery şart mı?",
+            "options": [
+              "Hayır",
+              "Evet, ilerleme şartı",
+              "Lüks",
+              "Pasif"
+            ],
+            "correct": 1,
+            "explain": "Az recovery = ilerleme yok."
+          },
+          {
+            "q": "Foam roller sıklık?",
+            "options": [
+              "Yok",
+              "3x hafta",
+              "Yıllık",
+              "Asla"
+            ],
+            "correct": 1,
+            "explain": "Haftada 3 kez."
+          }
+        ]
+      },
+      "46": {
+        "title": "Atletik Kimlik",
+        "teaching": "\"Spor yapıyorum\" = davranış. \"Atletim\" = kimlik. Sürdürülebilir disiplin kimlik gerektirir. 30 günde \"atlet kimliği\"ne dönüşür.",
+        "action": "Bugün kendine atlet kimliği koy.",
+        "reflectionPrompt": "Atlet kimliği davranışını nasıl değiştirdi?",
+        "proTip": "Aynaya bak: \"Ben atletim. Bedenime saygı duyuyorum.\"",
+        "quiz": [
+          {
+            "q": "Davranış mı kimlik mi?",
+            "options": [
+              "Davranış",
+              "Kimlik kalıcı",
+              "Aynı",
+              "Bilinmez"
+            ],
+            "correct": 1,
+            "explain": "Kimlik > davranış."
+          },
+          {
+            "q": "Pekiştirme?",
+            "options": [
+              "Düşün",
+              "Aynaya söyle",
+              "Yaz",
+              "Unut"
+            ],
+            "correct": 1,
+            "explain": "Aynaya günlük tekrar."
+          }
+        ]
+      },
+      "47": {
+        "title": "Antrenman Sıklığı",
+        "teaching": "Hafta 3 = başlangıç. Hafta 4 = optimum. Hafta 5+ = aşırı, recovery düşer. 3-4 hafta + 1 dinlenme haftası döngüsü = uzun vade.",
+        "action": "Bugün haftalık antrenman planını gözden geçir, 4 günü geç değil.",
+        "reflectionPrompt": "Recovery zamanın yeterli mi?",
+        "proTip": "Her 4 hafta 1 deload (kolay) hafta. Uzun vade ilerleme.",
+        "quiz": [
+          {
+            "q": "Optimum hafta?",
+            "options": [
+              "7",
+              "3-4",
+              "14",
+              "1"
+            ],
+            "correct": 1,
+            "explain": "3-4 hafta + deload."
+          },
+          {
+            "q": "Deload?",
+            "options": [
+              "Yok",
+              "Her 4 hafta kolay 1 hafta",
+              "Hep",
+              "Asla"
+            ],
+            "correct": 1,
+            "explain": "Recovery döngüsü."
+          }
+        ]
+      },
+      "48": {
+        "title": "Final Sprint",
+        "teaching": "Son 3 gün. 50 günde beden zayıftan dirençliye. Bu sprint = kimlik mührü. Yarın bedeninin patronu sensin.",
+        "action": "Bugün son sprintin niyetini yaz.",
+        "reflectionPrompt": "En değişen fiziksel alışkanlık?",
+        "proTip": "Ayna fotoğraf çek. 50 gün önceki ile karşılaştır.",
+        "quiz": [
+          {
+            "q": "Final sprint?",
+            "options": [
+              "1 gün",
+              "3 gün",
+              "1 ay",
+              "Yok"
+            ],
+            "correct": 1,
+            "explain": "Son 3 gün."
+          },
+          {
+            "q": "Görsel kanıt?",
+            "options": [
+              "Yok",
+              "Ayna fotoğraf",
+              "Email",
+              "Hafıza"
+            ],
+            "correct": 1,
+            "explain": "Önce-sonra karşılaştır."
+          }
+        ]
+      },
+      "49": {
+        "title": "49 Gün İçinde",
+        "teaching": "49 günde beden başkası. Hareket otomatik, soğuk dost, uyku zengin, postür dik. Yeni baseline. 10 değişiklik listele.",
+        "action": "Bugün 49 günde değişen 10 fiziksel alışkanlığı yaz.",
+        "reflectionPrompt": "En unutulmaz fiziksel değişim?",
+        "proTip": "Önce-sonra fotoğraf. Hatırlatma sıkıntı anında.",
+        "quiz": [
+          {
+            "q": "Yeni baseline?",
+            "options": [
+              "Eski",
+              "Otomatik beden disiplini",
+              "Yorgun",
+              "Pasif"
+            ],
+            "correct": 1,
+            "explain": "Otomatik master."
+          },
+          {
+            "q": "Önce-sonra foto?",
+            "options": [
+              "Etkisiz",
+              "Slump anı hatırlatma",
+              "Risk",
+              "Pahalı"
+            ],
+            "correct": 1,
+            "explain": "Geri dönüş anı kanıt."
+          }
+        ]
+      },
+      "50": {
+        "title": "Master Tamamlandı",
+        "teaching": "50 gün. Bedenin disiplinin = kimlikin. Hareket, uyku, beslenme, soğuk, mobilite — hepsi otomatik. Bedenin patronu sen.",
+        "action": "Bugün aynaya bak. Yeni Sen'i selamla.",
+        "reflectionPrompt": "50 gün önceki sen şimdi olmak ister miydi?",
+        "proTip": "7 gün dinlen, sonra money veya başka path.",
+        "quiz": [
+          {
+            "q": "Bedenin patronu?",
+            "options": [
+              "Genler",
+              "Sen",
+              "Doktor",
+              "Şans"
+            ],
+            "correct": 1,
+            "explain": "50 gün sonrası: sen."
+          },
+          {
+            "q": "Sonraki path?",
+            "options": [
+              "Hemen",
+              "7 gün dinlen",
+              "Asla",
+              "1 ay"
+            ],
+            "correct": 1,
+            "explain": "7 gün dinlen."
+          }
+        ]
       }
     },
     "money-discipline": {
@@ -4683,6 +7163,626 @@
             ],
             "correct": 1,
             "explain": "3 öğrendiğim, 3 sürdüreceğim, 3 unutmayacağım."
+          }
+        ]
+      },
+      "31": {
+        "title": "Bileşik Faiz",
+        "teaching": "Einstein: \"dünyanın 8. harikası.\" 100 TL × %10/yıl × 30 yıl = 1,750 TL. Kaynağı 30 yıl bekleten 17x katlar. Erken başla, küçük başla.",
+        "action": "Bugün bileşik faiz hesaplayıcısı kullan, 30 yıl sonrasını gör.",
+        "reflectionPrompt": "Bugün küçük tasarruf 30 yılda ne olur?",
+        "proTip": "compoundinterestcalculator.net = ücretsiz hesaplama.",
+        "quiz": [
+          {
+            "q": "Bileşik faiz kim \"8. harika\"?",
+            "options": [
+              "Newton",
+              "Einstein",
+              "Gates",
+              "Buffett"
+            ],
+            "correct": 1,
+            "explain": "Einstein adlandırma."
+          },
+          {
+            "q": "Erken başlamak?",
+            "options": [
+              "Etkisiz",
+              "Bileşik gücü",
+              "Risk",
+              "Pahalı"
+            ],
+            "correct": 1,
+            "explain": "Zaman = bileşik gücü."
+          }
+        ]
+      },
+      "32": {
+        "title": "Servet Kimliği",
+        "teaching": "\"Kazanıyorum\" davranış. \"Servet sahibiyim\" kimlik. Zenginler farklı düşünür: harcamadan önce yatırır, kira değil sahip olur, vakit yatırım. Kimliği değiştir.",
+        "action": "Bugün \"servet sahibi\" kimliği koy.",
+        "reflectionPrompt": "Yeni kimlikle hangi karar değişti?",
+        "proTip": "Aynaya: \"Ben servet inşa ediyorum.\" Günlük tekrar.",
+        "quiz": [
+          {
+            "q": "Davranış mı kimlik mi?",
+            "options": [
+              "Davranış",
+              "Kimlik kalıcı",
+              "Aynı",
+              "Bilinmez"
+            ],
+            "correct": 1,
+            "explain": "Kimlik > davranış."
+          },
+          {
+            "q": "Zenginler farklı düşünür?",
+            "options": [
+              "Etkisiz",
+              "Önce yatırım sonra harcama",
+              "Aynı",
+              "Yok"
+            ],
+            "correct": 1,
+            "explain": "Sıralama farklı."
+          }
+        ]
+      },
+      "33": {
+        "title": "Bir Kez Al, Pişman Ol",
+        "teaching": "Ucuz × 5 = pahalı. Ayakkabı 200 TL × 5 yıl = 1,000 TL. Ayakkabı 1,000 TL × 20 yıl = 1,000 TL. Aynı bütçe, 4x kalite. Toplam yaşam maliyeti.",
+        "action": "Bugün uzun vade kullanılacak 1 ürünü kaliteli al.",
+        "reflectionPrompt": "Kalite uzun vade nasıl tasarruf eder?",
+        "proTip": "Buy It For Life subreddit = hayat boyu ürün önerileri.",
+        "quiz": [
+          {
+            "q": "Ucuz × 5 = ?",
+            "options": [
+              "Ucuz",
+              "Pahalı",
+              "Aynı",
+              "Bilinmez"
+            ],
+            "correct": 1,
+            "explain": "Toplamda pahalı."
+          },
+          {
+            "q": "BIFL kaynak?",
+            "options": [
+              "Forum",
+              "Reddit subreddit",
+              "Email",
+              "Yok"
+            ],
+            "correct": 1,
+            "explain": "Hayat boyu öneriler."
+          }
+        ]
+      },
+      "34": {
+        "title": "Gelir Akımları",
+        "teaching": "1 gelir = 1 risk. 7 zengin tipinde ortalama 7 gelir akımı (Tom Corley araştırma): maaş + freelance + yatırım temettü + kira + dijital + mentörlük + telif. 3-4'ü hedef.",
+        "action": "Bugün 1 ek gelir akımı planı yaz.",
+        "reflectionPrompt": "Hangisi en kolay başlatılır?",
+        "proTip": "Dijital ürün (e-kitap, kurs) = en yüksek marjin.",
+        "quiz": [
+          {
+            "q": "Optimum gelir akımı?",
+            "options": [
+              "1",
+              "3-4",
+              "20",
+              "100"
+            ],
+            "correct": 1,
+            "explain": "7 zengin ortalama, 3-4 hedef."
+          },
+          {
+            "q": "En yüksek marjin?",
+            "options": [
+              "Maaş",
+              "Dijital ürün",
+              "Kira",
+              "Bilinmez"
+            ],
+            "correct": 1,
+            "explain": "Dijital ürün."
+          }
+        ]
+      },
+      "35": {
+        "title": "Vergi Optimizasyonu",
+        "teaching": "Vergi en büyük yıllık harcaman. %25-40 gelir gider. Optimize et: emeklilik fonu, eğitim indirim, sağlık katkısı, bağış. 2 saat öğrenme = yılda binlerce.",
+        "action": "Bugün hangi vergi indirimlerini kullanmıyorsun araştır.",
+        "reflectionPrompt": "En büyük kayıp hangisi?",
+        "proTip": "CPA (mali müşavir) 1 saatlik = 5K TL. Yıllık 50K kazanır.",
+        "quiz": [
+          {
+            "q": "Vergi büyüklüğü?",
+            "options": [
+              "Yok",
+              "%25-40 gelir",
+              "%5",
+              "%100"
+            ],
+            "correct": 1,
+            "explain": "En büyük yıllık gider."
+          },
+          {
+            "q": "CPA değeri?",
+            "options": [
+              "Pahalı",
+              "1 saat = 5K kazandırır",
+              "Yararsız",
+              "Bilinmez"
+            ],
+            "correct": 1,
+            "explain": "Yatırım gibi."
+          }
+        ]
+      },
+      "36": {
+        "title": "Sigorta Mastery",
+        "teaching": "Sigorta sıkıcı ama hayat kurtarır. Olmazsa olmaz: sağlık, hayat (aile varsa), iş kaybı, mesleki sorumluluk. Olmaması: araba kasko, sandalye, telefon ekran.",
+        "action": "Bugün sigortalarını gözden geçir. Eksik veya fazla?",
+        "reflectionPrompt": "Hangi sigorta öncelik?",
+        "proTip": "Yılda 1 karşılaştır. Aynı koruma %30 daha ucuz olabilir.",
+        "quiz": [
+          {
+            "q": "Olmazsa olmaz sigorta?",
+            "options": [
+              "Araba",
+              "Sağlık+hayat+iş kaybı",
+              "Sandalye",
+              "Yok"
+            ],
+            "correct": 1,
+            "explain": "Kritik 3 alan."
+          },
+          {
+            "q": "Yıllık karşılaştırma?",
+            "options": [
+              "Etkisiz",
+              "%30 ucuz olabilir",
+              "Sürekli aynı",
+              "Risk"
+            ],
+            "correct": 1,
+            "explain": "Aynı koruma daha ucuz."
+          }
+        ]
+      },
+      "37": {
+        "title": "Yatırım Çeşitlenmesi",
+        "teaching": "Tek yumurta 1 sepete = risk. Yatırım: %60 hisse, %20 tahvil, %10 emlak, %10 nakit. Çeşitlenme = az risk + uzun vade kazanç.",
+        "action": "Bugün yatırımlarını analiz et. Çeşitli mi?",
+        "reflectionPrompt": "Hangi sınıf eksik?",
+        "proTip": "Ray Dalio \"All Weather Portfolio\" = ücretsiz şablon.",
+        "quiz": [
+          {
+            "q": "Çeşitlenme avantajı?",
+            "options": [
+              "Yok",
+              "Risk az + uzun vade",
+              "Pahalı",
+              "Kompleks"
+            ],
+            "correct": 1,
+            "explain": "Risk yönetimi."
+          },
+          {
+            "q": "All Weather kim?",
+            "options": [
+              "Bezos",
+              "Ray Dalio",
+              "Buffett",
+              "Musk"
+            ],
+            "correct": 1,
+            "explain": "Bridgewater kurucusu."
+          }
+        ]
+      },
+      "38": {
+        "title": "Emlak Farkındalığı",
+        "teaching": "Emlak = kira yerine sahip olmak + kira gelir + değer artışı. Türkiye'de 25 yıl ortalama yıllık %12 değer artışı. 3 evi olan = pasif gelir.",
+        "action": "Bugün ev satın alma vs kira karşılaştırma yap.",
+        "reflectionPrompt": "5 yıl sonra hangi seçenek daha karlı?",
+        "proTip": "İlk evi 30 yaş öncesi al. Bileşik kazanç.",
+        "quiz": [
+          {
+            "q": "Türkiye 25 yıl emlak ortalaması?",
+            "options": [
+              "%2",
+              "%12",
+              "%50",
+              "%0"
+            ],
+            "correct": 1,
+            "explain": "Yıllık ortalama %12."
+          },
+          {
+            "q": "İlk ev önerisi?",
+            "options": [
+              "65 yaş",
+              "30 yaş öncesi",
+              "Asla",
+              "50"
+            ],
+            "correct": 1,
+            "explain": "Bileşik kazanç için erken."
+          }
+        ]
+      },
+      "39": {
+        "title": "Kripto Farkındalığı",
+        "teaching": "Kripto = volatil ama uzun vade saklamada potansiyel. Bitcoin 2010 = 0.05 USD, 2024 = 70K USD. Risk: %5-10 portföyün max. DCA = aylık küçük al.",
+        "action": "Bugün kripto araştır, %2 portföyle başla (eğer dene).",
+        "reflectionPrompt": "Risk hissi nasıl?",
+        "proTip": "Coldwallet kullan, exchange'da bırakma.",
+        "quiz": [
+          {
+            "q": "Kripto portföy max?",
+            "options": [
+              "%50",
+              "%5-10",
+              "%100",
+              "%0"
+            ],
+            "correct": 1,
+            "explain": "Risk yönetimi."
+          },
+          {
+            "q": "En güvenli saklama?",
+            "options": [
+              "Exchange",
+              "Cold wallet",
+              "Bank",
+              "Hafıza"
+            ],
+            "correct": 1,
+            "explain": "Cold wallet = offline."
+          }
+        ]
+      },
+      "40": {
+        "title": "Miras Planlaması",
+        "teaching": "Vasiyetname yok = devlet servet dağıtır. Aile = vasiyet zorunlu. Hayat sigortası + vasiyet + güvenli kasa. 30+ yaş için olmazsa olmaz.",
+        "action": "Bugün basit vasiyet yaz. Notere onaylat.",
+        "reflectionPrompt": "Aile bilgilendirildi mi?",
+        "proTip": "Notere noter ücretsiz, vasiyet 200-500 TL.",
+        "quiz": [
+          {
+            "q": "Vasiyetname yoksa?",
+            "options": [
+              "Aile alır",
+              "Devlet dağıtır",
+              "Yok olur",
+              "Eşit"
+            ],
+            "correct": 1,
+            "explain": "Devlet sistemi."
+          },
+          {
+            "q": "Notere maliyet?",
+            "options": [
+              "Pahalı",
+              "200-500 TL/$50-100",
+              "0",
+              "10K"
+            ],
+            "correct": 1,
+            "explain": "Ucuz."
+          }
+        ]
+      },
+      "41": {
+        "title": "Zihniyet Kayması",
+        "teaching": "\"Param yok\" zihniyeti = yok bırakır. \"Para çekme bilirim\" = çeker. Zenginler zihniyet sorunu çözmüş. Önce kafa, sonra cüzdan.",
+        "action": "Bugün 5 dakika \"para iyi bir araçtır\" yaz.",
+        "reflectionPrompt": "Eski para hikayen ne?",
+        "proTip": "Yeni hikaye 30 gün her sabah oku.",
+        "quiz": [
+          {
+            "q": "Önce ne değişir?",
+            "options": [
+              "Cüzdan",
+              "Kafa",
+              "Banka",
+              "Maaş"
+            ],
+            "correct": 1,
+            "explain": "Zihniyet ilk."
+          },
+          {
+            "q": "Yeni hikaye süresi?",
+            "options": [
+              "1 gün",
+              "30 gün",
+              "1 yıl",
+              "Yok"
+            ],
+            "correct": 1,
+            "explain": "30 gün her sabah."
+          }
+        ]
+      },
+      "42": {
+        "title": "Acil Fon Mastery",
+        "teaching": "3 ay yetmedi = 6 ay hedefi. 6 ay zorunlu giderlerin = işsizlik, hastalık, kriz buffer'ı. Hayat değişir, hazır ol.",
+        "action": "Bugün acil fon hedefini 6 aya çek.",
+        "reflectionPrompt": "6 ay daha güvenli mi hissettiriyor?",
+        "proTip": "Acil fon high-yield account = enflasyon kaybı az.",
+        "quiz": [
+          {
+            "q": "Optimum acil fon?",
+            "options": [
+              "1 ay",
+              "6 ay",
+              "1 hafta",
+              "Yok"
+            ],
+            "correct": 1,
+            "explain": "6 ay = mastery."
+          },
+          {
+            "q": "Acil fon nereye?",
+            "options": [
+              "Yastık",
+              "High-yield account",
+              "Hisse",
+              "Kripto"
+            ],
+            "correct": 1,
+            "explain": "Likit + faizli."
+          }
+        ]
+      },
+      "43": {
+        "title": "Müzakere Mastery",
+        "teaching": "Maaş müzakere yıllık 50K-200K fark. \"Asıl rakam ne?\" sor. \"Bu son fiyatınız mı?\" %5-15 indirim açar. Faturalar bile müzakere edilir.",
+        "action": "Bugün 1 fiyat müzakere et.",
+        "reflectionPrompt": "Müzakere zor muydu?",
+        "proTip": "Internet operatör/kablo bedava müzakere = aylık tasarruf.",
+        "quiz": [
+          {
+            "q": "Maaş müzakere yıllık?",
+            "options": [
+              "Etkisiz",
+              "$5-20K fark",
+              "$100",
+              "0"
+            ],
+            "correct": 1,
+            "explain": "Büyük etki."
+          },
+          {
+            "q": "Sihirli cümle?",
+            "options": [
+              "Pahalı",
+              "Bu son fiyat mı?",
+              "Hayır",
+              "İndirim"
+            ],
+            "correct": 1,
+            "explain": "%5-15 açar."
+          }
+        ]
+      },
+      "44": {
+        "title": "Yan İş Planı",
+        "teaching": "Yan iş ek gelir + kariyer hedge. 5K TL ay = ev kirası ödendi. 10K = lifestyle kalite. 30K = full-time geçiş hazırlığı. 1 yıl plan ile.",
+        "action": "Bugün yan iş için 1 saat ayır.",
+        "reflectionPrompt": "En kolay başlatılır olan?",
+        "proTip": "İlk hedef: aylık 5K TL. Konkret ölçülebilir.",
+        "quiz": [
+          {
+            "q": "İlk yan iş hedefi?",
+            "options": [
+              "Etkisiz",
+              "$500/ay",
+              "$10K",
+              "0"
+            ],
+            "correct": 1,
+            "explain": "Konkret başlangıç."
+          },
+          {
+            "q": "Avantaj?",
+            "options": [
+              "Stres",
+              "Kariyer hedge",
+              "Yorgunluk",
+              "Risk"
+            ],
+            "correct": 1,
+            "explain": "Risk yönetimi."
+          }
+        ]
+      },
+      "45": {
+        "title": "Finansal Bağımsızlık",
+        "teaching": "FIRE = Financial Independence Retire Early. 25x yıllık harcaman = bağımsızlık. Yıllık 100K harcıyorsan, 2.5M = özgürlük. %4 çekme kuralı.",
+        "action": "Bugün FIRE numaranı hesapla.",
+        "reflectionPrompt": "Sayı ulaşılabilir mi?",
+        "proTip": "Mr. Money Mustache blog = FIRE topluluk.",
+        "quiz": [
+          {
+            "q": "FIRE numarası?",
+            "options": [
+              "10x harcama",
+              "25x yıllık harcama",
+              "100x",
+              "Sabit"
+            ],
+            "correct": 1,
+            "explain": "4% kuralı = 25x."
+          },
+          {
+            "q": "FIRE kaynak?",
+            "options": [
+              "Yok",
+              "Mr. Money Mustache",
+              "Bank",
+              "Tabloid"
+            ],
+            "correct": 1,
+            "explain": "Topluluk + bilgi."
+          }
+        ]
+      },
+      "46": {
+        "title": "Emeklilik Planlaması",
+        "teaching": "Emeklilik 65'te değil. Hazırlık 30'da başlar. Bireysel emeklilik + devlet + yatırım = 3 ayak. Erken başlamayan 60'ta panik.",
+        "action": "Bugün BES açtırmadıysan, başvur.",
+        "reflectionPrompt": "Devlet emekliliği yeter mi?",
+        "proTip": "%25 devlet katkısı = otomatik %25 kazanç. Asla bırakma.",
+        "quiz": [
+          {
+            "q": "Emeklilik 3 ayak?",
+            "options": [
+              "1",
+              "Bireysel+devlet+yatırım",
+              "Sadece devlet",
+              "Sadece bireysel"
+            ],
+            "correct": 1,
+            "explain": "3 sistem güvenli."
+          },
+          {
+            "q": "BES devlet katkısı?",
+            "options": [
+              "Yok",
+              "%25",
+              "%10",
+              "%50"
+            ],
+            "correct": 1,
+            "explain": "Otomatik %25 kazanç."
+          }
+        ]
+      },
+      "47": {
+        "title": "Servet Kimliği Final",
+        "teaching": "Davranışlar tekrar olunca kimlik olur. 50 günde para alışkanlıkların değişti. Şimdi kimlik konuşması: \"Ben kontrolüm. Ben planlıyorum. Ben yatırıyorum.\"",
+        "action": "Bugün servet kimliğini 3 cümlede yaz.",
+        "reflectionPrompt": "En güçlü cümle?",
+        "proTip": "Cüzdana yaz, her açtığında oku.",
+        "quiz": [
+          {
+            "q": "Servet kimliği nasıl?",
+            "options": [
+              "Düşün",
+              "3 cümle yaz",
+              "Hatırla",
+              "Forget"
+            ],
+            "correct": 1,
+            "explain": "Yazılı net."
+          },
+          {
+            "q": "Nereye yaz?",
+            "options": [
+              "Bilgisayar",
+              "Cüzdan",
+              "Email",
+              "Yok"
+            ],
+            "correct": 1,
+            "explain": "Her açtığında oku."
+          }
+        ]
+      },
+      "48": {
+        "title": "Final Sprint",
+        "teaching": "Son 3 gün. 50 günde para ilişkisi karışıktan netleşti. Bu sprint = kalıcı kimlik. Yarın paranın patronu sensin.",
+        "action": "Bugün son sprintin niyetini yaz.",
+        "reflectionPrompt": "En değişen para alışkanlığı?",
+        "proTip": "Net servet sayını kaydet, 30 gün sonra karşılaştır.",
+        "quiz": [
+          {
+            "q": "Final sprint?",
+            "options": [
+              "1 gün",
+              "3 gün",
+              "1 ay",
+              "Yok"
+            ],
+            "correct": 1,
+            "explain": "Son 3 gün."
+          },
+          {
+            "q": "Net servet?",
+            "options": [
+              "Etkisiz",
+              "Kaydet, 30 gün sonra karşılaştır",
+              "Asla",
+              "Sürekli"
+            ],
+            "correct": 1,
+            "explain": "Ölçüm = motivasyon."
+          }
+        ]
+      },
+      "49": {
+        "title": "49 Gün İçinde",
+        "teaching": "49 günde otomatik tasarruf, çerçeveli karar, çeşitlenmiş yatırım, vergi farkındalığı. Yeni baseline = master para. 10 değişiklik listele.",
+        "action": "Bugün 49 günde değişen 10 para alışkanlığını yaz.",
+        "reflectionPrompt": "En unutulmaz değişim?",
+        "proTip": "Net servet grafiği = motivasyon.",
+        "quiz": [
+          {
+            "q": "Yeni baseline?",
+            "options": [
+              "Eski",
+              "Master para",
+              "Pasif",
+              "Bilinmez"
+            ],
+            "correct": 1,
+            "explain": "Otomatik sistem."
+          },
+          {
+            "q": "Net servet grafiği?",
+            "options": [
+              "Etkisiz",
+              "Motivasyon",
+              "Risk",
+              "Pahalı"
+            ],
+            "correct": 1,
+            "explain": "Görsel ilerleme."
+          }
+        ]
+      },
+      "50": {
+        "title": "Master Tamamlandı",
+        "teaching": "50 gün. Para artık endişe değil araç. Kontrol, plan, çeşitlenme, kimlik. Yeni baseline = finansal master. Diploma yok — net servet artıyor.",
+        "action": "Bugün aynaya bak. Yeni Sen'i selamla.",
+        "reflectionPrompt": "50 gün önceki sen şimdi olmak ister miydi?",
+        "proTip": "5 path tamamlandıysa: 6. ay her gün 1 path'tan ders. Ya da kendi path'ini tasarla.",
+        "quiz": [
+          {
+            "q": "Master = ?",
+            "options": [
+              "Endişe",
+              "Para araç",
+              "Pasif",
+              "Hep zengin"
+            ],
+            "correct": 1,
+            "explain": "Para artık araç."
+          },
+          {
+            "q": "Sonraki adım?",
+            "options": [
+              "Hemen",
+              "5 path tamamlandıysa: 6.ay",
+              "Asla",
+              "Tatil"
+            ],
+            "correct": 1,
+            "explain": "Tüm path'ler tamamlandıysa karışım."
           }
         ]
       }
