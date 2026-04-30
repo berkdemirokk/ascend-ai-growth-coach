@@ -170,7 +170,7 @@ export default function PathScreen({ navigation }) {
               </View>
             </View>
             <View style={styles.profileText}>
-              <Text style={styles.profileName}>
+              <Text style={styles.profileName} numberOfLines={1}>
                 {t(`paths.${activePath.id}.title`, activePath.id)}
               </Text>
               <View style={styles.progressBar}>
@@ -219,6 +219,7 @@ export default function PathScreen({ navigation }) {
                       styles.chipLabel,
                       isActive && { color: '#FFFFFF' },
                     ]}
+                    numberOfLines={1}
                   >
                     {t(`paths.${p.id}.title`, p.id)}
                   </Text>
@@ -681,6 +682,8 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     letterSpacing: 0.8,
     textTransform: 'uppercase',
+    flexShrink: 1,
+    maxWidth: 100,
   },
   chipBadge: {
     backgroundColor: '#393841',

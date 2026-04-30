@@ -20,6 +20,7 @@ import { useApp } from '../contexts/AppContext';
 import { getPathById, getLessonById, getQuizForLesson } from '../data/paths';
 import { showInterstitial, shouldShowAd } from '../services/ads';
 import MilestoneModal, { isMilestone } from '../components/MilestoneModal';
+import OutOfHeartsModal from '../components/OutOfHeartsModal';
 import { playSound } from '../services/sounds';
 
 const STEP = {
@@ -39,7 +40,9 @@ export default function LessonScreen({ navigation, route }) {
     isPremium,
     currentStreak,
     hearts,
+    heartsRefillAt,
     loseHeart,
+    refillHearts,
   } = useApp();
 
   const path = useMemo(() => getPathById(pathId), [pathId]);
@@ -61,6 +64,22 @@ export default function LessonScreen({ navigation, route }) {
   const [showCelebration, setShowCelebration] = useState(false);
   const [milestoneVisible, setMilestoneVisible] = useState(false);
   const [milestoneStreak, setMilestoneStreak] = useState(0);
+  const [outOfHeartsVisible, setOutOfHeartsVisible] = useState(false);
+  const [now, setNow] = useState(Date.now());
+
+  // Track countdown for hearts refill
+  useEffect(() => {
+    if (!heartsRefillAt || hearts >= 5 || isPremium) return;
+    const id = setInterval(() => setNow(Date.now()), 30 * 1000);
+    return () => clearInterval(id);
+  }, [heartsRefillAt, hearts, isPremium]);
+
+  const refillMins = (() => {
+    if (isPremium || hearts >= 5 || !heartsRefillAt) return null;
+    const ms = new Date(heartsRefillAt).getTime() - now;
+    if (ms <= 0) return 0;
+    return Math.ceil(ms / 60000);
+  })();
 
   const celebrationScale = useRef(new Animated.Value(0)).current;
   const xpY = useRef(new Animated.Value(0)).current;
@@ -122,7 +141,13 @@ export default function LessonScreen({ navigation, route }) {
     } else {
       playSound('wrong').catch(() => {});
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning).catch(() => {});
-      if (!isPremium && hearts > 0) loseHeart();
+      if (!isPremium && hearts > 0) {
+        loseHeart();
+        // If this was the last heart, show modal after a brief moment
+        if (hearts === 1) {
+          setTimeout(() => setOutOfHeartsVisible(true), 800);
+        }
+      }
     }
   };
 
@@ -538,6 +563,24 @@ export default function LessonScreen({ navigation, route }) {
           visible={milestoneVisible}
           streak={milestoneStreak}
           onClose={handleMilestoneClose}
+        />
+
+        <OutOfHeartsModal
+          visible={outOfHeartsVisible}
+          refillMins={refillMins}
+          onClose={() => {
+            setOutOfHeartsVisible(false);
+            // Bail back to PathScreen — can't continue with no hearts
+            navigation.goBack();
+          }}
+          onRefill={() => {
+            refillHearts();
+            setOutOfHeartsVisible(false);
+          }}
+          onPaywall={() => {
+            setOutOfHeartsVisible(false);
+            navigation.navigate('Paywall');
+          }}
         />
 
         {showCelebration && (
