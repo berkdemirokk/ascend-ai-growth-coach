@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   View,
@@ -17,6 +17,7 @@ import { ACHIEVEMENTS } from '../config/achievements';
 import { getRank, getNextRank } from '../config/ranks';
 import { useAuth } from '../contexts/AuthContext';
 import StreakCalendar from '../components/StreakCalendar';
+import AchievementDetailModal from '../components/AchievementDetailModal';
 
 const { width } = Dimensions.get('window');
 
@@ -104,14 +105,16 @@ function StatCard({ icon, iconColor, label, value, unit }) {
   );
 }
 
-function AchievementCard({ id, locked }) {
+function AchievementCard({ id, locked, onPress }) {
   const icon = ACHIEVEMENT_ICONS[id] || 'emoji-events';
   const color = ACHIEVEMENT_COLORS[id] || '#C0C1FF';
   const ach = ACHIEVEMENTS.find((a) => a.id === id);
   const title = ach?.title || id;
 
   return (
-    <View
+    <TouchableOpacity
+      onPress={onPress}
+      activeOpacity={0.85}
       style={[
         styles.achievementCard,
         locked && { opacity: 0.3 },
@@ -132,7 +135,7 @@ function AchievementCard({ id, locked }) {
       <Text style={styles.achievementTitle} numberOfLines={2}>
         {title}
       </Text>
-    </View>
+    </TouchableOpacity>
   );
 }
 
@@ -148,6 +151,7 @@ export default function ProfileScreen({ navigation }) {
     unlockedAchievements,
     lessonHistory,
   } = useApp();
+  const [selectedAchievement, setSelectedAchievement] = useState(null);
 
   const completedLessonsTotal = useMemo(() => {
     return Object.values(pathProgress || {}).reduce(
@@ -301,7 +305,14 @@ export default function ProfileScreen({ navigation }) {
               contentContainerStyle={styles.achievementsRow}
             >
               {recentAchievements.map((a, i) => (
-                <AchievementCard key={i} id={a.id} locked={a.locked} />
+                <AchievementCard
+                  key={i}
+                  id={a.id}
+                  locked={a.locked}
+                  onPress={() => {
+                    setSelectedAchievement(a);
+                  }}
+                />
               ))}
             </ScrollView>
           </View>
@@ -333,6 +344,13 @@ export default function ProfileScreen({ navigation }) {
 
           <View style={{ height: 32 }} />
         </ScrollView>
+
+        <AchievementDetailModal
+          visible={!!selectedAchievement}
+          onClose={() => setSelectedAchievement(null)}
+          achievementId={selectedAchievement?.id}
+          unlocked={selectedAchievement && !selectedAchievement.locked}
+        />
       </View>
     </SafeAreaView>
   );

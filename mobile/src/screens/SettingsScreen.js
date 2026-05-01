@@ -32,7 +32,7 @@ const SOUNDS_MUTED_KEY = '@ascend/sounds_muted_v1';
 
 export default function SettingsScreen({ navigation }) {
   const { t } = useTranslation();
-  const { isPremium, deleteAccount, setPremium } = useApp();
+  const { isPremium, deleteAccount, setPremium, resetProgress } = useApp();
   const { isAuthenticated, signOut } = useAuth();
 
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
@@ -136,6 +136,30 @@ export default function SettingsScreen({ navigation }) {
           text: t('settings.logout', 'Çıkış Yap'),
           style: 'destructive',
           onPress: () => signOut(),
+        },
+      ],
+    );
+  };
+
+  const handleResetProgress = () => {
+    Alert.alert(
+      t('settings.resetProgressTitle', 'İlerlemeyi Sıfırla'),
+      t(
+        'settings.resetProgressBody',
+        'Tüm ders ilerlemen, streak\'in, XP\'in ve başarımların silinecek. Premium aboneliğin etkilenmez. Geri alınamaz.',
+      ),
+      [
+        { text: t('common.cancel', 'İptal'), style: 'cancel' },
+        {
+          text: t('common.reset', 'Sıfırla'),
+          style: 'destructive',
+          onPress: () => {
+            resetProgress();
+            Alert.alert(
+              t('settings.resetDoneTitle', 'Sıfırlandı'),
+              t('settings.resetDoneBody', 'İlerlemen sıfırlandı.'),
+            );
+          },
         },
       ],
     );
@@ -342,6 +366,23 @@ export default function SettingsScreen({ navigation }) {
                 </View>
               </TouchableOpacity>
             )}
+
+            <TouchableOpacity
+              onPress={handleResetProgress}
+              activeOpacity={0.7}
+              style={[styles.row, styles.rowBorder]}
+            >
+              <View style={styles.rowLeft}>
+                <MaterialIcons
+                  name="refresh"
+                  size={22}
+                  color="#FFB783"
+                />
+                <Text style={styles.rowLabel}>
+                  {t('settings.resetProgress', 'İlerlemeyi Sıfırla')}
+                </Text>
+              </View>
+            </TouchableOpacity>
 
             <TouchableOpacity
               onPress={handleDeleteAccount}

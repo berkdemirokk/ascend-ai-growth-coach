@@ -93,6 +93,7 @@ const ACTION_TYPES = {
   LOSE_HEART: 'LOSE_HEART',
   REFILL_HEARTS: 'REFILL_HEARTS',
   RESET_AD_COUNTER: 'RESET_AD_COUNTER',
+  RESET_PROGRESS: 'RESET_PROGRESS',
 };
 
 function appReducer(state, action) {
@@ -124,6 +125,21 @@ function appReducer(state, action) {
 
     case ACTION_TYPES.DELETE_ACCOUNT:
       return { ...initialState, _loaded: true };
+
+    case ACTION_TYPES.RESET_PROGRESS:
+      // Wipe lesson progress + streak + XP + level + achievements,
+      // BUT keep onboarded, isPremium, hearts, profile.
+      return {
+        ...state,
+        totalXP: 0,
+        level: 1,
+        currentStreak: 0,
+        longestStreak: 0,
+        lastCompletedDate: null,
+        lessonHistory: {},
+        unlockedAchievements: [],
+        pathProgress: {},
+      };
 
     case ACTION_TYPES.REFRESH_TODAY: {
       const today = getTodayDateString();
@@ -387,6 +403,10 @@ export function AppProvider({ children }) {
     dispatch({ type: ACTION_TYPES.RESET_AD_COUNTER });
   }, []);
 
+  const resetProgress = useCallback(() => {
+    dispatch({ type: ACTION_TYPES.RESET_PROGRESS });
+  }, []);
+
   // ── Derived ────────────────────────────────────────────────────────────
   const completedPathsCount = Object.entries(state.pathProgress).filter(
     ([pathId, prog]) => prog?.completed?.length >= 21,
@@ -413,6 +433,7 @@ export function AppProvider({ children }) {
     loseHeart,
     refillHearts,
     resetAdCounter,
+    resetProgress,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
