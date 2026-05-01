@@ -170,6 +170,8 @@
     "selectTitle": "Bir yol seç",
     "selectSubtitle": "Hangi disipline odaklanacaksın?",
     "lessons": "{{count}} ders",
+    "lessonsLabel": "ders",
+    "lessonsCount": "{{count}} ders",
     "tier": "Tier {{tier}}",
     "premiumLocked": "Premium ile aç",
     "start": "Başla"

@@ -170,6 +170,8 @@
     "selectTitle": "Pick a path",
     "selectSubtitle": "Which discipline will you focus on?",
     "lessons": "{{count}} lessons",
+    "lessonsLabel": "lessons",
+    "lessonsCount": "{{count}} lessons",
     "tier": "Tier {{tier}}",
     "premiumLocked": "Unlock with Premium",
     "start": "Start"

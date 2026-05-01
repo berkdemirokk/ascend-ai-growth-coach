@@ -199,7 +199,7 @@ export default function PathScreen({ navigation }) {
               </View>
               <Text style={styles.progressLabel}>
                 {progress.completed} / {progress.total}{' '}
-                {t('path.lessons', 'ders')}
+                {t('path.lessonsLabel', 'ders')}
               </Text>
             </View>
           </View>
