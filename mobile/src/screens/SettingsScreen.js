@@ -25,8 +25,10 @@ import {
   cancelAllNotifications,
 } from '../services/notifications';
 import { restorePurchases } from '../services/purchases';
+import { setMuted, isMuted } from '../services/sounds';
 
 const NOTIF_KEY = '@ascend/notifications_enabled_v1';
+const SOUNDS_MUTED_KEY = '@ascend/sounds_muted_v1';
 
 export default function SettingsScreen({ navigation }) {
   const { t } = useTranslation();
@@ -36,6 +38,18 @@ export default function SettingsScreen({ navigation }) {
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
   const [currentLang, setCurrentLang] = useState(getCurrentLanguage());
   const [restoring, setRestoring] = useState(false);
+  const [soundsEnabled, setSoundsEnabled] = useState(true);
+
+  useEffect(() => {
+    AsyncStorage.getItem(SOUNDS_MUTED_KEY).then((v) => {
+      setSoundsEnabled(v !== 'true');
+    });
+  }, []);
+
+  const toggleSounds = (value) => {
+    setSoundsEnabled(value);
+    setMuted(!value); // sounds.js auto-persists
+  };
 
   const handleRestore = async () => {
     if (restoring) return;
@@ -232,6 +246,28 @@ export default function SettingsScreen({ navigation }) {
                 onValueChange={toggleNotifications}
                 trackColor={{ false: '#34343D', true: '#494BD6' }}
                 thumbColor={notificationsEnabled ? '#C0C1FF' : '#908FA0'}
+              />
+            </View>
+
+            <View style={styles.row}>
+              <View style={styles.rowLeft}>
+                <View>
+                  <Text style={styles.rowLabel}>
+                    {t('settings.sounds', 'Ses Efektleri')}
+                  </Text>
+                  <Text style={styles.rowSub}>
+                    {t(
+                      'settings.soundsSub',
+                      'Quiz, ders, başarı sesleri',
+                    )}
+                  </Text>
+                </View>
+              </View>
+              <Switch
+                value={soundsEnabled}
+                onValueChange={toggleSounds}
+                trackColor={{ false: '#34343D', true: '#494BD6' }}
+                thumbColor={soundsEnabled ? '#C0C1FF' : '#908FA0'}
               />
             </View>
           </Section>

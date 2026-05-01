@@ -1,0 +1,207 @@
+// StreakCalendar — GitHub-style heatmap showing last 8 weeks of activity.
+// Each cell = 1 day, color intensity = # lessons that day.
+
+import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import { useTranslation } from 'react-i18next';
+
+const WEEKS = 8;
+const DAYS_PER_WEEK = 7;
+const CELL_SIZE = 14;
+const CELL_GAP = 3;
+
+function getColorForCount(count) {
+  if (!count) return '#1B1B23';     // empty
+  if (count === 1) return '#3B3460'; // 1 lesson
+  if (count === 2) return '#6366F1'; // 2 lessons
+  if (count === 3) return '#8083FF'; // 3 lessons
+  return '#C0C1FF';                  // 4+ lessons
+}
+
+function formatDateKey(d) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
+export default function StreakCalendar({ lessonHistory = {} }) {
+  const { t } = useTranslation();
+
+  // Build grid: rows = days of week, cols = weeks (oldest left, newest right)
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  // Find Sunday of current week
+  const dayOfWeek = today.getDay(); // 0 = Sunday
+  const startOfThisWeek = new Date(today);
+  startOfThisWeek.setDate(today.getDate() - dayOfWeek);
+
+  const grid = []; // [day][week]
+  for (let day = 0; day < DAYS_PER_WEEK; day++) {
+    const row = [];
+    for (let week = 0; week < WEEKS; week++) {
+      const cellDate = new Date(startOfThisWeek);
+      cellDate.setDate(startOfThisWeek.getDate() - (WEEKS - 1 - week) * DAYS_PER_WEEK + day);
+      // Skip future days (after today)
+      const isFuture = cellDate.getTime() > today.getTime();
+      const key = formatDateKey(cellDate);
+      const count = lessonHistory[key] || 0;
+      row.push({ count, isFuture, key });
+    }
+    grid.push(row);
+  }
+
+  // Day labels (shortened)
+  const dayLabels = [
+    t('calendar.sun', 'P'),
+    t('calendar.mon', 'P'),
+    t('calendar.tue', 'S'),
+    t('calendar.wed', 'Ç'),
+    t('calendar.thu', 'P'),
+    t('calendar.fri', 'C'),
+    t('calendar.sat', 'C'),
+  ];
+
+  // Total lessons in period
+  const totalInPeriod = grid.flat().reduce((s, c) => s + (c.count || 0), 0);
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.title}>
+          {t('calendar.title', 'Aktivite Haritası')}
+        </Text>
+        <Text style={styles.subtitle}>
+          {t(
+            'calendar.subtitle',
+            '{{count}} ders son 8 hafta',
+            { count: totalInPeriod },
+          )}
+        </Text>
+      </View>
+
+      <View style={styles.gridContainer}>
+        <View style={styles.dayLabels}>
+          {dayLabels.map((label, idx) => (
+            <Text
+              key={idx}
+              style={[
+                styles.dayLabel,
+                // Show only Mon, Wed, Fri to save space
+                idx % 2 === 0 ? null : { opacity: 0 },
+              ]}
+            >
+              {label}
+            </Text>
+          ))}
+        </View>
+
+        <View style={styles.grid}>
+          {grid.map((row, dayIdx) => (
+            <View key={dayIdx} style={styles.gridRow}>
+              {row.map((cell, weekIdx) => (
+                <View
+                  key={`${dayIdx}-${weekIdx}`}
+                  style={[
+                    styles.cell,
+                    {
+                      backgroundColor: cell.isFuture
+                        ? 'transparent'
+                        : getColorForCount(cell.count),
+                      opacity: cell.isFuture ? 0 : 1,
+                    },
+                  ]}
+                />
+              ))}
+            </View>
+          ))}
+        </View>
+      </View>
+
+      {/* Legend */}
+      <View style={styles.legend}>
+        <Text style={styles.legendLabel}>
+          {t('calendar.less', 'Az')}
+        </Text>
+        {[0, 1, 2, 3, 4].map((c) => (
+          <View
+            key={c}
+            style={[styles.legendCell, { backgroundColor: getColorForCount(c) }]}
+          />
+        ))}
+        <Text style={styles.legendLabel}>
+          {t('calendar.more', 'Çok')}
+        </Text>
+      </View>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: 'rgba(31, 31, 39, 0.6)',
+    borderColor: 'rgba(70, 69, 84, 0.5)',
+    borderWidth: 1,
+    borderRadius: 14,
+    padding: 16,
+  },
+  header: { marginBottom: 14 },
+  title: {
+    color: '#E4E1ED',
+    fontSize: 14,
+    fontWeight: '900',
+    letterSpacing: -0.2,
+  },
+  subtitle: {
+    color: '#9898B0',
+    fontSize: 11,
+    fontWeight: '600',
+    marginTop: 2,
+  },
+  gridContainer: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  dayLabels: {
+    justifyContent: 'space-between',
+    paddingTop: 1,
+  },
+  dayLabel: {
+    color: '#6B6B85',
+    fontSize: 9,
+    fontWeight: '700',
+    height: CELL_SIZE,
+    lineHeight: CELL_SIZE,
+  },
+  grid: {
+    flex: 1,
+    gap: CELL_GAP,
+  },
+  gridRow: {
+    flexDirection: 'row',
+    gap: CELL_GAP,
+  },
+  cell: {
+    width: CELL_SIZE,
+    height: CELL_SIZE,
+    borderRadius: 3,
+    flexShrink: 0,
+  },
+  legend: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    marginTop: 12,
+    justifyContent: 'flex-end',
+  },
+  legendLabel: {
+    color: '#6B6B85',
+    fontSize: 10,
+    fontWeight: '600',
+  },
+  legendCell: {
+    width: 10,
+    height: 10,
+    borderRadius: 2,
+  },
+});

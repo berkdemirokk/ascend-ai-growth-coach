@@ -22,6 +22,9 @@ const initialState = {
   longestStreak: 0,
   lastCompletedDate: null,
 
+  // Streak calendar — { 'YYYY-MM-DD': count of lessons that day }
+  lessonHistory: {},
+
   // Premium
   isPremium: false,
   streakFreezes: 0,
@@ -200,6 +203,10 @@ function appReducer(state, action) {
         currentStreak: newStreak,
         longestStreak: Math.max(state.longestStreak || 0, newStreak),
         lastCompletedDate: newLastDate,
+        lessonHistory: {
+          ...(state.lessonHistory || {}),
+          [today]: ((state.lessonHistory || {})[today] || 0) + 1,
+        },
         actionsSinceLastAd: (state.actionsSinceLastAd || 0) + 1,
         unlockedAchievements: [
           ...state.unlockedAchievements,

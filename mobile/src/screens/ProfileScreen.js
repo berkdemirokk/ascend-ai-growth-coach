@@ -16,6 +16,7 @@ import { LEVEL_THRESHOLDS, getNextLevel } from '../config/constants';
 import { ACHIEVEMENTS } from '../config/achievements';
 import { getRank, getNextRank } from '../config/ranks';
 import { useAuth } from '../contexts/AuthContext';
+import StreakCalendar from '../components/StreakCalendar';
 
 const { width } = Dimensions.get('window');
 
@@ -145,6 +146,7 @@ export default function ProfileScreen({ navigation }) {
     longestStreak,
     pathProgress,
     unlockedAchievements,
+    lessonHistory,
   } = useApp();
 
   const completedLessonsTotal = useMemo(() => {
@@ -302,6 +304,11 @@ export default function ProfileScreen({ navigation }) {
                 <AchievementCard key={i} id={a.id} locked={a.locked} />
               ))}
             </ScrollView>
+          </View>
+
+          {/* Streak Calendar */}
+          <View style={{ paddingHorizontal: 20, marginTop: 16 }}>
+            <StreakCalendar lessonHistory={lessonHistory || {}} />
           </View>
 
           {/* Reflections link */}
