@@ -1,70 +1,104 @@
-# Ascend Growth Coach
+# Ascend: Monk Mode
 
-Ascend, her gun tek bir ogretici gorev veren ve seviyene gore ilerleme rotasi cizen bir kisisel gelisim sistemidir.
+A Duolingo-style discipline learning app for iOS — 5 paths × 50 lessons each (250 total) to build "monk mode" habits in 50 days.
 
-## Mevcut urun durumu
+**Status**: TestFlight beta, App Store submission in progress.
 
-- Gunluk mission, unit, checkpoint ve streak akisi aktif.
-- Premium planda adaptif rota, haftalik review, 7 gunluk plan ve planli gorev kuyrugu var.
-- Gorevler, profil, haftalik rota ve planli gorevler server-backed session ile eslenebilir.
-- Hesap e-posta ile baglanirsa ilerleme baska cihazda geri yuklenebilir.
-- AI sunucusu yoksa uygulama guvenli sekilde yerel rehberlik modunda devam eder.
+---
 
-## Gelistirme
+## Stack
 
-1. Bagimliliklari kur:
-   `npm install`
-2. Gelistirme sunucusunu baslat:
-   `npm run dev`
-3. Uretim build'i al:
-   `npm run build`
+- **App**: React Native + Expo SDK 52 (`mobile/`)
+- **Backend / Auth**: Supabase (auth + cloud sync)
+- **Subscriptions**: RevenueCat + StoreKit (in-app purchases)
+- **Ads**: AdMob (banner + interstitial + rewarded)
+- **Build**: EAS Build via GitHub Actions → TestFlight
+- **i18n**: TR / EN / AR
 
-## Yerel AI sunucusu baglama
+## Project Structure
 
-1. `.env.example` dosyasini `.env.local` olarak kopyala.
-2. `OLLAMA_BASE_URL` degerini Ollama calisan makineye gore ayarla.
-3. Frontend baska bir cihazdan acilacaksa `VITE_AI_BACKEND_URL` degerini bu proxy'nin ag adresine cevir.
-4. Proxy'yi baslat:
-   `npm run ai:server`
-5. Frontend'i baslat:
-   `npm run dev`
+```
+ascend-ai-growth-coach/
+├── mobile/              # Expo iOS app (active)
+│   ├── src/
+│   │   ├── screens/     # 11 screens (Path, Lesson 3-step, Profile, etc.)
+│   │   ├── components/  # 5 modals/components
+│   │   ├── services/    # ads, purchases, supabase, sounds, notifications
+│   │   ├── contexts/    # AppContext, AuthContext
+│   │   ├── i18n/        # locales/{tr,en,ar}.json + lessons.{tr,en}.json
+│   │   ├── data/        # paths.js (5 disciplines)
+│   │   └── config/      # constants, achievements, ranks, paywallVariants
+│   ├── scripts/         # ASC + RC config + content seeders
+│   ├── credentials/     # .p8 keys (gitignored)
+│   ├── DESIGN.md        # Stitch design system manifest
+│   ├── MARKETING_KIT.md # Ad campaign brief for AI tools
+│   └── APP_PREVIEW_GUIDE.md
+├── docs/                # GitHub Pages (privacy, terms, submission notes)
+└── .github/workflows/   # expo-testflight.yml (build + upload pipeline)
+```
 
-Saglik kontrolu:
+## Content
 
-`http://127.0.0.1:8787/api/health`
+- **5 paths**: Dopamine Detox, Silent Morning, Mind/Body/Money Discipline
+- **50 lessons each** = 250 total
+- **2 quiz questions per lesson** = 1000 quiz questions
+- **2 languages**: TR + EN parallel (AR fallback to TR for curriculum)
 
-## iOS sync
+## Build & Deploy
 
-Capacitor iOS projesini guncellemek icin:
+CI/CD via GitHub Actions:
+- Push tag `mobile-vX.Y.Z` → triggers `expo-testflight.yml`
+- Builds iOS .ipa via EAS Build local on macOS runner
+- Uploads to TestFlight via altool with App Store Connect API key
 
-`npm run ios:sync`
+Required GitHub secrets:
+- `EXPO_TOKEN`
+- `APP_STORE_CONNECT_KEY_ID`
+- `APP_STORE_CONNECT_ISSUER_ID`
+- `APP_STORE_CONNECT_PRIVATE_KEY` (.p8 contents)
+- `APPLE_TEAM_ID`
+- `KEYCHAIN_PASSWORD`, `P12_PASSWORD`, `BUILD_CERTIFICATE_BASE64`, `BUILD_PROVISION_PROFILE_BASE64`
+- `REVENUECAT_SECRET_API_KEY`
 
-## iOS IAP (RevenueCat + StoreKit)
+## Local Dev
 
-1. `.env.local` dosyasina su anahtarlari gir:
-   - `VITE_REVENUECAT_IOS_API_KEY`
-   - `VITE_REVENUECAT_ENTITLEMENT_ID`
-   - `VITE_REVENUECAT_OFFERING_ID` (opsiyonel)
-   - `REVENUECAT_SECRET_API_KEY`
-   - `REVENUECAT_ENTITLEMENT_ID`
-   - `ENABLE_BILLING_PREVIEW=false`
-2. RevenueCat dashboard:
-   - iOS App olustur.
-   - App Store Connect subscription product id'lerini bagla.
-   - `premium` (veya kullandiginiz entitlement id) entitlement'ini urunlere map et.
-3. App Store Connect:
-   - Auto-renewable subscription urunlerini olustur.
-   - In-App Purchase capability ve banking/tax sozlesmeleri tamam olsun.
-4. iOS cihaz veya simulator:
-   - Sandbox tester ile login ol.
-   - satin alma / iptal / pending / fail / restore senaryolarini dogrula.
-5. Tum adimlar icin ayrintili kontrol listesi:
-   - `RELEASE_SMOKE_CHECKLIST_IOS.md`
+```bash
+cd mobile
+npm install
+npx expo start
+```
 
-## Production notu
+Test on physical device via Expo Go (limited — most native modules require dev client).
 
-Bu repo release adayi seviyesine yaklasti. Public release oncesi zorunlu kontrol:
+## Configuration Scripts
 
-- iOS cihazda manuel onboarding -> paywall -> today -> progress -> profile smoke
-- RevenueCat + StoreKit sandbox odeme senaryolari
-- TestFlight UAT ve crash/log takibi
+```bash
+cd mobile
+
+# Verify App Store Connect state
+python scripts/verify_asc.py
+
+# Configure RevenueCat (entitlement + offering + packages)
+python scripts/configure_revenuecat.py
+
+# Seed lesson content (idempotent)
+node scripts/seed_silent_morning.js
+node scripts/seed_mind_31_50.js
+# ...
+```
+
+## Key Documents
+
+- `mobile/DESIGN.md` — official design system tokens (M3 dark theme)
+- `mobile/MARKETING_KIT.md` — full ad campaign brief
+- `mobile/APP_PREVIEW_GUIDE.md` — App Store preview video production guide
+- `docs/app-store-submission.md` — submission checklist
+- `docs/privacy.html` — privacy policy (GitHub Pages)
+- `docs/terms.html` — terms of service (GitHub Pages)
+
+## Bundle ID & App Identifiers
+
+- **iOS Bundle ID**: `com.ascend.growth`
+- **Apple Team ID**: `44B88YK392`
+- **App Store ID**: `6761607644`
+- **iOS subscriptions**: `com.ascend.premium.monthly`, `com.ascend.premium.yearly`
