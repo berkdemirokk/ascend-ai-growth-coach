@@ -22,6 +22,7 @@ import { showInterstitial, shouldShowAd } from '../services/ads';
 import MilestoneModal, { isMilestone } from '../components/MilestoneModal';
 import OutOfHeartsModal from '../components/OutOfHeartsModal';
 import { playSound } from '../services/sounds';
+import { requestReviewIfAppropriate } from '../services/review';
 
 const STEP = {
   TEACHING: 'teaching',
@@ -205,6 +206,17 @@ export default function LessonScreen({ navigation, route }) {
   };
 
   const handleCelebrationContinue = async () => {
+    // Possibly request store review (Apple SKStoreReviewController).
+    // Internally rate-limited to >= 3 lessons, >= 2 streak, 24h since last.
+    const totalCompleted = Object.values(pathProgress || {}).reduce(
+      (s, p) => s + (p?.completed?.length || 0),
+      0,
+    ) + 1; // +1 for the lesson just finished
+    requestReviewIfAppropriate({
+      lessonsCompleted: totalCompleted,
+      streak: currentStreak + 1,
+    }).catch(() => {});
+
     // Show interstitial ad before exiting (frequency-capped)
     if (!isPremium && shouldShowAd(false)) {
       try { await showInterstitial(); } catch {}
