@@ -23,11 +23,11 @@ import { COLORS } from '../config/constants';
 import { PATHS } from '../data/paths';
 import { setLanguage, getCurrentLanguage, SUPPORTED_LANGUAGES } from '../i18n';
 
-const STEPS = ['welcome', 'pickPath'];
+const STEPS = ['welcome', 'pickPath', 'upsell'];
 
-export default function OnboardingScreen() {
+export default function OnboardingScreen({ navigation }) {
   const { t } = useTranslation();
-  const { completeOnboarding, setUserProfile, setActivePath } = useApp();
+  const { completeOnboarding, setUserProfile, setActivePath, isPremium } = useApp();
   const [step, setStep] = useState('welcome');
   const [selectedPath, setSelectedPath] = useState('dopamine-detox');
 
@@ -36,6 +36,12 @@ export default function OnboardingScreen() {
     transform: [{ scale: buttonScale.value }],
   }));
 
+  const finishOnboarding = () => {
+    setUserProfile({ goals: ['discipline'], answers: {} });
+    setActivePath(selectedPath);
+    completeOnboarding();
+  };
+
   const handleNext = () => {
     buttonScale.value = withSpring(0.95, {}, () => {
       buttonScale.value = withSpring(1);
@@ -43,11 +49,27 @@ export default function OnboardingScreen() {
 
     if (step === 'welcome') {
       setStep('pickPath');
+    } else if (step === 'pickPath') {
+      // Skip upsell for premium users
+      if (isPremium) {
+        finishOnboarding();
+      } else {
+        setStep('upsell');
+      }
     } else {
-      setUserProfile({ goals: ['discipline'], answers: {} });
-      setActivePath(selectedPath);
-      completeOnboarding();
+      // upsell step — Skip without buying
+      finishOnboarding();
     }
+  };
+
+  const handleUpsellSubscribe = () => {
+    // Save profile + activate path BEFORE going to paywall, so even if user
+    // backs out we don't lose onboarding state
+    setUserProfile({ goals: ['discipline'], answers: {} });
+    setActivePath(selectedPath);
+    completeOnboarding();
+    // Navigate to paywall after onboarding completes
+    setTimeout(() => navigation?.navigate?.('Paywall'), 300);
   };
 
   return (
@@ -58,12 +80,14 @@ export default function OnboardingScreen() {
 
         {step === 'welcome' ? (
           <WelcomeStep t={t} />
-        ) : (
+        ) : step === 'pickPath' ? (
           <PickPathStep
             t={t}
             selectedPath={selectedPath}
             onSelect={setSelectedPath}
           />
+        ) : (
+          <UpsellStep t={t} onSubscribe={handleUpsellSubscribe} />
         )}
 
         <Animated2.View style={[styles.bottomArea, animatedButtonStyle]}>
@@ -94,7 +118,9 @@ export default function OnboardingScreen() {
               <Text style={styles.primaryButtonText}>
                 {step === 'welcome'
                   ? t('onboarding.cta', 'Başla')
-                  : t('onboarding.startPath', 'Bu yolu başlat')}
+                  : step === 'pickPath'
+                    ? t('onboarding.startPath', 'Bu yolu başlat')
+                    : t('onboarding.skipUpsell', 'Şimdilik Atla')}
               </Text>
               <MaterialIcons name="arrow-forward" size={20} color="#FFFFFF" style={{ marginLeft: 6 }} />
             </LinearGradient>
@@ -104,7 +130,9 @@ export default function OnboardingScreen() {
           <Text style={styles.caption}>
             {step === 'welcome'
               ? t('onboarding.captionWelcome', 'STRATEJİK ODAKLANMA BAŞLATILIYOR')
-              : t('onboarding.captionPickPath', 'YOLUNU SEÇ')}
+              : step === 'pickPath'
+                ? t('onboarding.captionPickPath', 'YOLUNU SEÇ')
+                : t('onboarding.captionUpsell', 'PREMIUM İLE TAMAM')}
           </Text>
         </Animated2.View>
       </LinearGradient>
@@ -220,6 +248,85 @@ function FeatureCard({ icon, iconColor, tint, border, title, subtitle }) {
         <Text style={styles.featureTitle}>{title}</Text>
         <Text style={styles.featureSubtitle}>{subtitle}</Text>
       </View>
+    </View>
+  );
+}
+
+function UpsellStep({ t, onSubscribe }) {
+  return (
+    <ScrollView
+      contentContainerStyle={styles.upsellContent}
+      showsVerticalScrollIndicator={false}
+    >
+      <Text style={styles.upsellEmoji}>🔥</Text>
+      <Text style={styles.upsellTitle}>
+        {t('onboarding.upsellTitle', 'Disiplini hızlandır')}
+      </Text>
+      <Text style={styles.upsellSubtitle}>
+        {t(
+          'onboarding.upsellSubtitle',
+          'Premium ile 7 gün ücretsiz başla. İptal et, ücretsiz kalsın.',
+        )}
+      </Text>
+
+      <View style={styles.upsellFeatures}>
+        <UpsellFeature
+          icon="favorite"
+          color="#EF4444"
+          title={t('onboarding.upsellF1', 'Sınırsız kalpler')}
+        />
+        <UpsellFeature
+          icon="workspace-premium"
+          color="#FFB783"
+          title={t('onboarding.upsellF2', 'Tüm 5 yolun kilidi açık')}
+        />
+        <UpsellFeature
+          icon="block"
+          color="#A5B4FC"
+          title={t('onboarding.upsellF3', 'Reklamsız deneyim')}
+        />
+        <UpsellFeature
+          icon="auto-awesome"
+          color="#D0BCFF"
+          title={t('onboarding.upsellF4', 'Premium başarılar')}
+        />
+      </View>
+
+      <TouchableOpacity
+        onPress={onSubscribe}
+        activeOpacity={0.9}
+        style={styles.upsellCtaWrap}
+      >
+        <LinearGradient
+          colors={['#6366F1', '#8B5CF6']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+          style={styles.upsellCta}
+        >
+          <MaterialIcons name="auto-awesome" size={18} color="#FFFFFF" />
+          <Text style={styles.upsellCtaText}>
+            {t('onboarding.upsellCta', '7 gün ücretsiz dene')}
+          </Text>
+        </LinearGradient>
+      </TouchableOpacity>
+
+      <Text style={styles.upsellDisclaimer}>
+        {t(
+          'onboarding.upsellDisclaimer',
+          'Otomatik yenilenir. App Store\'dan dilediğin an iptal edebilirsin.',
+        )}
+      </Text>
+    </ScrollView>
+  );
+}
+
+function UpsellFeature({ icon, color, title }) {
+  return (
+    <View style={styles.upsellFeature}>
+      <View style={[styles.upsellFeatureIcon, { backgroundColor: `${color}22`, borderColor: `${color}55` }]}>
+        <MaterialIcons name={icon} size={20} color={color} />
+      </View>
+      <Text style={styles.upsellFeatureText}>{title}</Text>
     </View>
   );
 }
@@ -424,6 +531,99 @@ const styles = StyleSheet.create({
 
   // Pick path step
   pickPathContent: { flex: 1, paddingTop: 40 },
+
+  // Upsell step
+  upsellContent: {
+    paddingHorizontal: 24,
+    paddingTop: 24,
+    paddingBottom: 16,
+    alignItems: 'center',
+  },
+  upsellEmoji: {
+    fontSize: 56,
+    marginBottom: 12,
+    textShadowColor: 'rgba(245, 158, 11, 0.4)',
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 14,
+  },
+  upsellTitle: {
+    color: '#FFFFFF',
+    fontSize: 28,
+    fontWeight: '900',
+    letterSpacing: -0.6,
+    textAlign: 'center',
+    marginBottom: 8,
+  },
+  upsellSubtitle: {
+    color: '#C7C4D7',
+    fontSize: 14,
+    fontWeight: '500',
+    textAlign: 'center',
+    lineHeight: 20,
+    paddingHorizontal: 12,
+    marginBottom: 24,
+  },
+  upsellFeatures: {
+    width: '100%',
+    gap: 10,
+    marginBottom: 24,
+  },
+  upsellFeature: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    backgroundColor: 'rgba(31, 31, 51, 0.5)',
+    borderColor: 'rgba(70, 69, 84, 0.6)',
+    borderWidth: 1,
+    borderRadius: 12,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+  },
+  upsellFeatureIcon: {
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+  },
+  upsellFeatureText: {
+    color: '#E4E1ED',
+    fontSize: 14,
+    fontWeight: '700',
+    flex: 1,
+  },
+  upsellCtaWrap: {
+    width: '100%',
+    borderRadius: 16,
+    overflow: 'hidden',
+    shadowColor: '#6366F1',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.4,
+    shadowRadius: 16,
+    elevation: 8,
+    marginBottom: 12,
+  },
+  upsellCta: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    paddingVertical: 16,
+  },
+  upsellCtaText: {
+    color: '#FFFFFF',
+    fontSize: 15,
+    fontWeight: '900',
+    letterSpacing: 0.3,
+  },
+  upsellDisclaimer: {
+    color: '#908FA0',
+    fontSize: 11,
+    textAlign: 'center',
+    lineHeight: 16,
+    paddingHorizontal: 12,
+  },
   pickTitle: {
     fontSize: 26,
     fontWeight: '900',
