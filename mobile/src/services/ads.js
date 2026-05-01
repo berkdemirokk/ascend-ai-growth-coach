@@ -38,23 +38,28 @@ const getRewardedId = () => {
 // ─── ATT + init ──────────────────────────────────────────────────────────────
 
 /**
- * Request App Tracking Transparency before initializing ads. On iOS 14.5+ this
- * is required by Apple policy for personalized ads. Denial just downgrades us
- * to non-personalized ads — it isn't a fatal error.
+ * Request App Tracking Transparency. Exported so callers can trigger it
+ * AFTER user has had a moment to understand the app (Apple guideline:
+ * "explain why you need tracking before asking"). Recommended trigger:
+ * after first lesson completion.
+ *
+ * Returns 'granted' | 'denied' | 'undetermined' | 'restricted' | 'unknown'.
  */
-const requestTrackingPermissionIfNeeded = async () => {
-  if (Platform.OS !== 'ios') return;
+export const requestTrackingPermissionIfNeeded = async () => {
+  if (Platform.OS !== 'ios') return 'unknown';
   try {
     const mod = await import('expo-tracking-transparency').catch(() => null);
-    if (!mod) return;
+    if (!mod) return 'unknown';
     const { getTrackingPermissionsAsync, requestTrackingPermissionsAsync } = mod;
     const existing = await getTrackingPermissionsAsync();
     if (existing?.status === 'undetermined') {
-      await requestTrackingPermissionsAsync();
+      const result = await requestTrackingPermissionsAsync();
+      return result?.status || 'unknown';
     }
+    return existing?.status || 'unknown';
   } catch (e) {
-    // ATT is best-effort; failures just mean we serve non-personalized ads.
     console.warn('ATT request skipped:', e?.message);
+    return 'unknown';
   }
 };
 
@@ -68,9 +73,10 @@ export const initAds = async () => {
     return;
   }
   try {
-    // On iOS we request ATT first so the SDK picks up the user's choice.
-    await requestTrackingPermissionIfNeeded();
-
+    // ATT is now requested AFTER the first lesson, not at boot. Apple
+    // guideline: don't request tracking before user understands what the
+    // app does. Initialize the SDK without ATT — it will get the prompt
+    // status the next time it checks.
     gma = await import('react-native-google-mobile-ads').catch(() => null);
     if (!gma) {
       adsReady = false;

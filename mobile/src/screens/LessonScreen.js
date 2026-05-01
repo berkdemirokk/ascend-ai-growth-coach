@@ -18,7 +18,7 @@ import * as Haptics from 'expo-haptics';
 
 import { useApp } from '../contexts/AppContext';
 import { getPathById, getLessonById, getQuizForLesson } from '../data/paths';
-import { showInterstitial, shouldShowAd } from '../services/ads';
+import { showInterstitial, shouldShowAd, requestTrackingPermissionIfNeeded } from '../services/ads';
 import MilestoneModal, { isMilestone } from '../components/MilestoneModal';
 import OutOfHeartsModal from '../components/OutOfHeartsModal';
 import { playSound } from '../services/sounds';
@@ -206,12 +206,18 @@ export default function LessonScreen({ navigation, route }) {
   };
 
   const handleCelebrationContinue = async () => {
-    // Possibly request store review (Apple SKStoreReviewController).
-    // Internally rate-limited to >= 3 lessons, >= 2 streak, 24h since last.
     const totalCompleted = Object.values(pathProgress || {}).reduce(
       (s, p) => s + (p?.completed?.length || 0),
       0,
     ) + 1; // +1 for the lesson just finished
+
+    // ATT prompt — only after user has experienced the app (1st lesson).
+    // Apple guideline: don't ask for tracking before user understands app.
+    if (totalCompleted === 1) {
+      requestTrackingPermissionIfNeeded().catch(() => {});
+    }
+
+    // Store review prompt — gated to >= 3 lessons, >= 2 streak, 24h since last.
     requestReviewIfAppropriate({
       lessonsCompleted: totalCompleted,
       streak: currentStreak + 1,
