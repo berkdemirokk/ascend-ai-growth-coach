@@ -45,6 +45,7 @@ export default function PathScreen({ navigation }) {
   } = useApp();
   const [outOfHeartsVisible, setOutOfHeartsVisible] = useState(false);
   const [streakInfoVisible, setStreakInfoVisible] = useState(false);
+  const autoStartedRef = useRef(false);
 
   const activePath = useMemo(
     () => getPathById(activePathId) || PATHS[0],
@@ -56,6 +57,32 @@ export default function PathScreen({ navigation }) {
     () => getPathProgress(activePath, pathProgress),
     [activePath, pathProgress],
   );
+
+  // Auto-start first lesson on initial mount if user has zero progress.
+  // This drives engagement post-onboarding — user lands directly in a lesson
+  // instead of an empty path screen.
+  useEffect(() => {
+    if (autoStartedRef.current) return;
+    autoStartedRef.current = true;
+    if (!activePath || lessons.length === 0) return;
+    const totalCompleted = Object.values(pathProgress || {}).reduce(
+      (s, p) => s + (p?.completed?.length || 0),
+      0,
+    );
+    if (totalCompleted === 0) {
+      // Defer 600ms so user briefly sees the path screen first
+      const timer = setTimeout(() => {
+        const firstLesson = lessons[0];
+        if (firstLesson) {
+          navigation.navigate('Lesson', {
+            pathId: firstLesson.pathId,
+            lessonId: firstLesson.id,
+          });
+        }
+      }, 600);
+      return () => clearTimeout(timer);
+    }
+  }, [activePath, lessons, pathProgress, navigation]);
 
   // Hearts refill countdown — re-renders every 30s
   const [now, setNow] = useState(Date.now());
@@ -319,16 +346,55 @@ export default function PathScreen({ navigation }) {
 
             {progress.completed === progress.total && progress.total > 0 && (
               <View style={styles.completion}>
-                <MaterialIcons name="emoji-events" size={48} color="#FDE047" />
+                <MaterialIcons name="emoji-events" size={56} color="#FDE047" />
                 <Text style={styles.completionText}>
-                  {t('path.completed', 'Tamamlandı')}
+                  {t('path.completed', 'Yol Tamamlandı')}
                 </Text>
                 <Text style={styles.completionSubtext}>
                   {t(
                     'path.completedHint',
-                    'Yeni bir yol seç ve devam et',
+                    '50 günlük yolculuğu bitirdin. Yeni bir yola geç, ustalığını derinleştir.',
                   )}
                 </Text>
+
+                {/* Suggest next path that user hasn't completed yet */}
+                {(() => {
+                  const nextSuggested = PATHS.find((p) => {
+                    if (p.id === activePath.id) return false;
+                    const completedCount = pathProgress?.[p.id]?.completed?.length || 0;
+                    return completedCount < p.duration;
+                  });
+                  if (!nextSuggested) {
+                    return (
+                      <Text style={styles.completionSubtext}>
+                        {t(
+                          'path.allComplete',
+                          'Tüm 5 yolu tamamladın. Sen artık bir master.',
+                        )}
+                      </Text>
+                    );
+                  }
+                  return (
+                    <TouchableOpacity
+                      onPress={() => setActivePath(nextSuggested.id)}
+                      activeOpacity={0.85}
+                      style={styles.completionCtaShadow}
+                    >
+                      <LinearGradient
+                        colors={[nextSuggested.color, lighten(nextSuggested.color, 0.2)]}
+                        start={{ x: 0, y: 0 }}
+                        end={{ x: 1, y: 0 }}
+                        style={styles.completionCta}
+                      >
+                        <MaterialIcons name={nextSuggested.materialIcon} size={18} color="#FFFFFF" />
+                        <Text style={styles.completionCtaText}>
+                          {t(`paths.${nextSuggested.id}.title`, nextSuggested.id)}
+                        </Text>
+                        <MaterialIcons name="arrow-forward" size={18} color="#FFFFFF" />
+                      </LinearGradient>
+                    </TouchableOpacity>
+                  );
+                })()}
               </View>
             )}
 
@@ -826,5 +892,31 @@ const styles = StyleSheet.create({
     color: '#9898B0',
     fontSize: 13,
     textAlign: 'center',
+    paddingHorizontal: 24,
+    lineHeight: 18,
+    marginBottom: 14,
+  },
+  completionCtaShadow: {
+    borderRadius: 14,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 12,
+    marginTop: 6,
+  },
+  completionCta: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    paddingHorizontal: 18,
+    paddingVertical: 12,
+    borderRadius: 14,
+  },
+  completionCtaText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '900',
+    letterSpacing: 0.3,
   },
 });
