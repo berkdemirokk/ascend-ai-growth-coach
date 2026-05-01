@@ -24,16 +24,45 @@ import {
   scheduleDailyReminder,
   cancelAllNotifications,
 } from '../services/notifications';
+import { restorePurchases } from '../services/purchases';
 
 const NOTIF_KEY = '@ascend/notifications_enabled_v1';
 
 export default function SettingsScreen({ navigation }) {
   const { t } = useTranslation();
-  const { isPremium, deleteAccount } = useApp();
+  const { isPremium, deleteAccount, setPremium } = useApp();
   const { isAuthenticated, signOut } = useAuth();
 
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
   const [currentLang, setCurrentLang] = useState(getCurrentLanguage());
+  const [restoring, setRestoring] = useState(false);
+
+  const handleRestore = async () => {
+    if (restoring) return;
+    setRestoring(true);
+    try {
+      const success = await restorePurchases();
+      if (success) {
+        setPremium(true);
+        Alert.alert(
+          t('settings.restoreSuccessTitle', 'Başarılı'),
+          t('settings.restoreSuccessBody', 'Premium abonelik geri yüklendi.'),
+        );
+      } else {
+        Alert.alert(
+          t('settings.restoreEmptyTitle', 'Aktif abonelik yok'),
+          t(
+            'settings.restoreEmptyBody',
+            'Bu Apple ID ile yapılmış aktif bir Premium abonelik bulunamadı.',
+          ),
+        );
+      }
+    } catch (e) {
+      Alert.alert(t('common.error', 'Hata'), e?.message || t('common.tryAgain'));
+    } finally {
+      setRestoring(false);
+    }
+  };
 
   useEffect(() => {
     AsyncStorage.getItem(NOTIF_KEY).then((v) => {
@@ -240,6 +269,26 @@ export default function SettingsScreen({ navigation }) {
                   size={18}
                   color="#908FA0"
                 />
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={handleRestore}
+              disabled={restoring}
+              activeOpacity={0.7}
+              style={[styles.row, styles.rowBorder]}
+            >
+              <View style={styles.rowLeft}>
+                <MaterialIcons
+                  name="restore"
+                  size={22}
+                  color="#9898B0"
+                />
+                <Text style={styles.rowLabel}>
+                  {restoring
+                    ? t('settings.restoring', 'Geri yükleniyor...')
+                    : t('settings.restorePurchases', 'Satın Alımları Geri Yükle')}
+                </Text>
               </View>
             </TouchableOpacity>
 
