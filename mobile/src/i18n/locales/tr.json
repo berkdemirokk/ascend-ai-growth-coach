@@ -92,7 +92,11 @@
     "completed": "✓ Tamamlandı",
     "navPath": "Yol",
     "navAchievements": "Rütbeler",
-    "navSettings": "Ayarlar"
+    "navSettings": "Ayarlar",
+    "shareSubtitle": "Disiplin. Odak. Tekrar.",
+    "shareStreakLabel": "GÜN",
+    "shareLongestLabel": "EN UZUN",
+    "shareLessonsLabel": "DERS"
   },
   "settings": {
     "title": "Ayarlar",
@@ -187,6 +191,9 @@
   "share": {
     "streakStart": "Monk mode başlatıyorum 🔥 Disiplin. Odak. Tekrar.",
     "streakActive": "{{streak}} gün — monk mode sürüyor 🔥 Sen de başla, alevi söndürme.",
-    "title": "Monk Mode 🔥"
+    "title": "Monk Mode 🔥",
+    "streakAria": "Streak paylaş",
+    "failedTitle": "Paylaşılamadı",
+    "failedBody": "Bir sorun oluştu, tekrar dene."
   }
 }

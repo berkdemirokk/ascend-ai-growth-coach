@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   View,
@@ -8,6 +8,7 @@ import {
   StyleSheet,
   Dimensions,
   SafeAreaView,
+  Alert,
 } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -18,6 +19,8 @@ import { getRank, getNextRank } from '../config/ranks';
 import { useAuth } from '../contexts/AuthContext';
 import StreakCalendar from '../components/StreakCalendar';
 import AchievementDetailModal from '../components/AchievementDetailModal';
+import StreakShareCard from '../components/StreakShareCard';
+import { captureAndShare } from '../services/streakShare';
 
 const { width } = Dimensions.get('window');
 
@@ -152,6 +155,8 @@ export default function ProfileScreen({ navigation }) {
     lessonHistory,
   } = useApp();
   const [selectedAchievement, setSelectedAchievement] = useState(null);
+  const [sharing, setSharing] = useState(false);
+  const shareCardRef = useRef(null);
 
   const completedLessonsTotal = useMemo(() => {
     return Object.values(pathProgress || {}).reduce(
@@ -191,6 +196,33 @@ export default function ProfileScreen({ navigation }) {
 
   const username = user?.email?.split('@')[0] || 'StoicMonk';
 
+  const handleShareStreak = async () => {
+    if (sharing) return;
+    setSharing(true);
+    try {
+      const message =
+        currentStreak > 0
+          ? t('share.streakActive', '{{streak}} gün — monk mode sürüyor 🔥', {
+              streak: currentStreak,
+            })
+          : t('share.streakStart', 'Monk mode başlatıyorum 🔥');
+      // Tiny delay so the off-screen card has a chance to layout
+      await new Promise((r) => setTimeout(r, 60));
+      const ok = await captureAndShare({
+        viewRef: shareCardRef,
+        message,
+      });
+      if (!ok) {
+        Alert.alert(
+          t('share.failedTitle', 'Paylaşılamadı'),
+          t('share.failedBody', 'Bir sorun oluştu, tekrar dene.'),
+        );
+      }
+    } finally {
+      setSharing(false);
+    }
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
@@ -203,7 +235,18 @@ export default function ProfileScreen({ navigation }) {
             <MaterialIcons name="menu" size={22} color="#C0C1FF" />
           </TouchableOpacity>
           <Text style={styles.brandTitle}>MONK MODE</Text>
-          <View style={{ width: 40 }} />
+          <TouchableOpacity
+            onPress={handleShareStreak}
+            disabled={sharing}
+            style={styles.menuBtn}
+            accessibilityLabel={t('share.streakAria', 'Streak paylaş')}
+          >
+            <MaterialIcons
+              name="ios-share"
+              size={22}
+              color={sharing ? '#5B5B70' : '#C0C1FF'}
+            />
+          </TouchableOpacity>
         </View>
 
         <ScrollView
@@ -351,6 +394,22 @@ export default function ProfileScreen({ navigation }) {
           achievementId={selectedAchievement?.id}
           unlocked={selectedAchievement && !selectedAchievement.locked}
         />
+
+        {/* Off-screen card used for streak share image capture */}
+        <View pointerEvents="none" style={styles.shareCardOffscreen}>
+          <StreakShareCard
+            ref={shareCardRef}
+            streak={currentStreak || 0}
+            longestStreak={longestStreak || 0}
+            lessonsCompleted={completedLessonsTotal || 0}
+            title={t('share.title', 'Monk Mode 🔥')}
+            subtitle={t('profile.shareSubtitle', 'Disiplin. Odak. Tekrar.')}
+            streakLabel={t('profile.shareStreakLabel', 'GÜN')}
+            longestLabel={t('profile.shareLongestLabel', 'EN UZUN')}
+            lessonsLabel={t('profile.shareLessonsLabel', 'DERS')}
+            appLabel="Ascend"
+          />
+        </View>
       </View>
     </SafeAreaView>
   );
@@ -359,6 +418,14 @@ export default function ProfileScreen({ navigation }) {
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: '#0B0B14' },
   container: { flex: 1, backgroundColor: '#0B0B14' },
+
+  // Card lives below the visible viewport so it can still be measured & captured
+  // (opacity 0 would render the snapshot transparent, so we keep it visible-but-offscreen)
+  shareCardOffscreen: {
+    position: 'absolute',
+    top: 10000,
+    left: 0,
+  },
 
   topBar: {
     flexDirection: 'row',

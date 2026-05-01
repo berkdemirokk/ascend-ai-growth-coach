@@ -92,7 +92,11 @@
     "completed": "✓ Completed",
     "navPath": "Path",
     "navAchievements": "Ranks",
-    "navSettings": "Settings"
+    "navSettings": "Settings",
+    "shareSubtitle": "Discipline. Focus. Repeat.",
+    "shareStreakLabel": "DAYS",
+    "shareLongestLabel": "LONGEST",
+    "shareLessonsLabel": "LESSONS"
   },
   "settings": {
     "title": "Settings",
@@ -187,6 +191,9 @@
   "share": {
     "streakStart": "Starting monk mode 🔥 Discipline. Focus. Repeat.",
     "streakActive": "{{streak}} days — monk mode running 🔥 Join me, don't let the flame die.",
-    "title": "Monk Mode 🔥"
+    "title": "Monk Mode 🔥",
+    "streakAria": "Share streak",
+    "failedTitle": "Couldn't share",
+    "failedBody": "Something went wrong. Try again."
   }
 }
