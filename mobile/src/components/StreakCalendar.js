@@ -10,12 +10,13 @@ const DAYS_PER_WEEK = 7;
 const CELL_SIZE = 14;
 const CELL_GAP = 3;
 
+// Vivid Impact light theme — red intensity scale.
 function getColorForCount(count) {
-  if (!count) return '#1B1B23';     // empty
-  if (count === 1) return '#3B3460'; // 1 lesson
-  if (count === 2) return '#6366F1'; // 2 lessons
-  if (count === 3) return '#8083FF'; // 3 lessons
-  return '#C0C1FF';                  // 4+ lessons
+  if (!count) return '#EEEEEE';      // empty (surfaceContainer)
+  if (count === 1) return '#FCC8C8'; // 25% red
+  if (count === 2) return '#F47373'; // 50% red
+  if (count === 3) return '#ED2D2D'; // 75% red
+  return '#B70006';                  // 4+ lessons (primary)
 }
 
 function formatDateKey(d) {
@@ -137,26 +138,24 @@ export default function StreakCalendar({ lessonHistory = {} }) {
   );
 }
 
+// Vivid Impact light theme styles.
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: 'rgba(31, 31, 39, 0.6)',
-    borderColor: 'rgba(70, 69, 84, 0.5)',
-    borderWidth: 1,
-    borderRadius: 14,
-    padding: 16,
+    backgroundColor: 'transparent',
   },
   header: { marginBottom: 14 },
   title: {
-    color: '#E4E1ED',
-    fontSize: 14,
+    color: '#1A1C1C',
+    fontSize: 12,
     fontWeight: '900',
-    letterSpacing: -0.2,
+    letterSpacing: 2,
+    textTransform: 'uppercase',
   },
   subtitle: {
-    color: '#9898B0',
+    color: '#5E3F3A',
     fontSize: 11,
     fontWeight: '600',
-    marginTop: 2,
+    marginTop: 4,
   },
   gridContainer: {
     flexDirection: 'row',
@@ -167,7 +166,7 @@ const styles = StyleSheet.create({
     paddingTop: 1,
   },
   dayLabel: {
-    color: '#6B6B85',
+    color: '#936E69',
     fontSize: 9,
     fontWeight: '700',
     height: CELL_SIZE,
@@ -195,9 +194,10 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   legendLabel: {
-    color: '#6B6B85',
+    color: '#936E69',
     fontSize: 10,
-    fontWeight: '600',
+    fontWeight: '700',
+    letterSpacing: 0.5,
   },
   legendCell: {
     width: 10,

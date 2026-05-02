@@ -4,11 +4,13 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { useTranslation } from 'react-i18next';
 
 import { useApp } from '../contexts/AppContext';
 import { useAuth } from '../contexts/AuthContext';
 
 import OnboardingScreen from '../screens/OnboardingScreen';
+import HomeScreen from '../screens/HomeScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import PaywallScreen from '../screens/PaywallScreen';
@@ -21,26 +23,32 @@ import LoginScreen from '../screens/auth/LoginScreen';
 import SignupScreen from '../screens/auth/SignupScreen';
 import ForgotPasswordScreen from '../screens/auth/ForgotPasswordScreen';
 
+import { LT } from '../config/lightTheme';
+
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
-import { useTranslation } from 'react-i18next';
-
+// Material icon name per tab.
 const TAB_ICONS = {
-  Home: 'auto-awesome',
-  Insights: 'bar-chart',
+  Home: 'home',
+  Paths: 'alt-route',
+  Stats: 'bar-chart',
+  Profile: 'person',
+};
+
+// Filled variants for active state (visual hint).
+const TAB_ICONS_FILLED = {
+  Home: 'home-filled',
+  Paths: 'alt-route',
+  Stats: 'bar-chart',
   Profile: 'person',
 };
 
 function TabIcon({ name, focused, color }) {
-  return (
-    <MaterialIcons
-      name={TAB_ICONS[name] || 'circle'}
-      size={22}
-      color={color}
-      style={{ opacity: focused ? 1 : 0.5 }}
-    />
-  );
+  const iconName = focused
+    ? TAB_ICONS_FILLED[name] || TAB_ICONS[name] || 'circle'
+    : TAB_ICONS[name] || 'circle';
+  return <MaterialIcons name={iconName} size={24} color={color} />;
 }
 
 function MainTabs() {
@@ -50,19 +58,24 @@ function MainTabs() {
       screenOptions={({ route }) => ({
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: '#0D0D15',
+          backgroundColor: LT.surface,
           borderTopWidth: 1,
-          borderTopColor: '#34343D',
-          height: 70,
-          paddingBottom: 10,
+          borderTopColor: LT.outlineVariant,
+          height: 78,
+          paddingBottom: 12,
           paddingTop: 8,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: -4 },
+          shadowOpacity: 0.04,
+          shadowRadius: 8,
+          elevation: 4,
         },
-        tabBarActiveTintColor: '#C0C1FF',
-        tabBarInactiveTintColor: '#6B6B85',
+        tabBarActiveTintColor: LT.primaryContainer,
+        tabBarInactiveTintColor: LT.onSurfaceVariant,
         tabBarLabelStyle: {
           fontSize: 10,
-          fontWeight: '800',
-          letterSpacing: 1,
+          fontWeight: '900',
+          letterSpacing: 1.5,
           textTransform: 'uppercase',
           marginTop: 2,
         },
@@ -73,13 +86,18 @@ function MainTabs() {
     >
       <Tab.Screen
         name="Home"
-        component={PathScreen}
-        options={{ title: t('nav.path', 'Path') }}
+        component={HomeScreen}
+        options={{ title: t('nav.home', 'Home') }}
       />
       <Tab.Screen
-        name="Insights"
+        name="Paths"
+        component={PathScreen}
+        options={{ title: t('nav.paths', 'Paths') }}
+      />
+      <Tab.Screen
+        name="Stats"
         component={InsightsScreen}
-        options={{ title: t('nav.insights', 'Stats') }}
+        options={{ title: t('nav.stats', 'Stats') }}
       />
       <Tab.Screen
         name="Profile"
@@ -95,12 +113,12 @@ function AuthLoading() {
     <View
       style={{
         flex: 1,
-        backgroundColor: '#0B0B14',
+        backgroundColor: LT.background,
         alignItems: 'center',
         justifyContent: 'center',
       }}
     >
-      <ActivityIndicator color="#6366F1" size="large" />
+      <ActivityIndicator color={LT.primaryContainer} size="large" />
     </View>
   );
 }
@@ -120,14 +138,18 @@ export default function AppNavigator() {
       <Stack.Navigator
         screenOptions={{
           headerShown: false,
-          contentStyle: { backgroundColor: '#0B0B14' },
+          contentStyle: { backgroundColor: LT.background },
           animation: 'slide_from_right',
           animationDuration: 250,
         }}
       >
         {needsAuth ? (
           <>
-            <Stack.Screen name="Welcome" component={WelcomeScreen} options={{ animation: 'fade' }} />
+            <Stack.Screen
+              name="Welcome"
+              component={WelcomeScreen}
+              options={{ animation: 'fade' }}
+            />
             <Stack.Screen name="Login" component={LoginScreen} />
             <Stack.Screen name="Signup" component={SignupScreen} />
             <Stack.Screen
@@ -136,9 +158,17 @@ export default function AppNavigator() {
             />
           </>
         ) : !onboarded ? (
-          <Stack.Screen name="Onboarding" component={OnboardingScreen} options={{ animation: 'fade' }} />
+          <Stack.Screen
+            name="Onboarding"
+            component={OnboardingScreen}
+            options={{ animation: 'fade' }}
+          />
         ) : (
-          <Stack.Screen name="MainTabs" component={MainTabs} options={{ animation: 'fade' }} />
+          <Stack.Screen
+            name="MainTabs"
+            component={MainTabs}
+            options={{ animation: 'fade' }}
+          />
         )}
         <Stack.Screen
           name="Paywall"

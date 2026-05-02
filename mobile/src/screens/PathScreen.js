@@ -31,6 +31,7 @@ import {
 import BannerAdBox from '../components/BannerAdBox';
 import OutOfHeartsModal from '../components/OutOfHeartsModal';
 import StreakInfoModal from '../components/StreakInfoModal';
+import LightTopAppBar from '../components/LightTopAppBar';
 import { LT, LT_SPACING, LT_RADIUS } from '../config/lightTheme';
 
 export default function PathScreen({ navigation }) {
@@ -106,35 +107,11 @@ export default function PathScreen({ navigation }) {
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="dark-content" backgroundColor={LT.background} />
 
-      {/* Top App Bar */}
-      <View style={styles.topBar}>
-        <TouchableOpacity
-          onPress={() => navigation.navigate('Settings')}
-          style={styles.avatarBtn}
-          accessibilityLabel="Settings"
-        >
-          <View style={styles.avatarCircle}>
-            <MaterialIcons
-              name="person-outline"
-              size={20}
-              color={LT.onSurfaceVariant}
-            />
-          </View>
-        </TouchableOpacity>
-        <Text style={styles.brand}>ASCEND</Text>
-        <TouchableOpacity
-          onPress={() => setStreakInfoVisible(true)}
-          style={styles.streakBtn}
-          accessibilityLabel="Streak"
-        >
-          <Text style={styles.streakNumber}>{currentStreak}</Text>
-          <MaterialIcons
-            name="local-fire-department"
-            size={20}
-            color={LT.primaryContainer}
-          />
-        </TouchableOpacity>
-      </View>
+      <LightTopAppBar
+        onAvatarPress={() => navigation.navigate('Settings')}
+        onStreakPress={() => setStreakInfoVisible(true)}
+        currentStreak={currentStreak}
+      />
 
       <ScrollView
         contentContainerStyle={styles.scrollContent}
@@ -434,58 +411,6 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: LT.background,
-  },
-
-  // Top bar
-  topBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 24,
-    height: 64,
-    backgroundColor: LT.surface,
-    borderBottomWidth: 1,
-    borderBottomColor: LT.outlineVariant,
-  },
-  avatarBtn: {
-    width: 40,
-    height: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  avatarCircle: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: LT.surfaceContainer,
-    borderWidth: 1,
-    borderColor: LT.outlineVariant,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  brand: {
-    fontSize: 18,
-    fontWeight: '900',
-    letterSpacing: 5,
-    color: LT.onSurface,
-    textTransform: 'uppercase',
-  },
-  streakBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: LT_RADIUS.pill,
-    backgroundColor: LT.surfaceContainerHighest,
-    borderWidth: 1,
-    borderColor: LT.outlineVariant,
-  },
-  streakNumber: {
-    fontSize: 16,
-    fontWeight: '900',
-    color: LT.primaryContainer,
-    letterSpacing: -0.4,
   },
 
   scrollContent: {

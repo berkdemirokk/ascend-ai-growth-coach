@@ -1,25 +1,30 @@
-// InsightsScreen — analytics & stats dashboard.
-// Shows: 7-day activity heatmap, quiz accuracy, time-of-day pattern,
-// path progress visualization, key milestones.
+// InsightsScreen — "Stats" tab in the redesigned 4-tab nav.
+// Vivid Impact light theme. Shows quiz accuracy, path progress, records,
+// premium upsell.
+//
+// File name kept as InsightsScreen.js to avoid touching navigation imports.
+// Tab label is "Stats" (set in AppNavigator).
+//
+// Backup: InsightsScreen.legacy.js
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   View,
   Text,
   ScrollView,
+  TouchableOpacity,
   StyleSheet,
   SafeAreaView,
-  TouchableOpacity,
-  Dimensions,
+  StatusBar,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialIcons } from '@expo/vector-icons';
 
 import { useApp } from '../contexts/AppContext';
 import { PATHS } from '../data/paths';
-
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
+import LightTopAppBar from '../components/LightTopAppBar';
+import StreakInfoModal from '../components/StreakInfoModal';
+import { LT, LT_SPACING, LT_RADIUS } from '../config/lightTheme';
 
 export default function InsightsScreen({ navigation }) {
   const { t } = useTranslation();
@@ -31,8 +36,8 @@ export default function InsightsScreen({ navigation }) {
     level,
     isPremium,
   } = useApp();
+  const [streakInfoVisible, setStreakInfoVisible] = useState(false);
 
-  // ─── Stats compute ───
   const stats = useMemo(() => {
     let totalLessons = 0;
     let totalQuizCorrect = 0;
@@ -47,7 +52,6 @@ export default function InsightsScreen({ navigation }) {
         (s, n) => s + (n || 0),
         0,
       );
-      // Estimate questions per lesson = 2
       const questionsTotal = completed * 2;
       totalLessons += completed;
       totalQuizCorrect += correctSum;
@@ -80,240 +84,207 @@ export default function InsightsScreen({ navigation }) {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <View style={styles.container}>
-        {/* Top bar */}
-        <View style={styles.topBar}>
-          <View style={styles.topLeft}>
-            <LinearGradient
-              colors={['#6366F1', '#8B5CF6']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={styles.logoBadge}
-            >
-              <MaterialIcons name="bar-chart" size={16} color="#FFFFFF" />
-            </LinearGradient>
-            <Text style={styles.brandTitle}>
-              {t('insights.title', 'İSTATİSTİK')}
-            </Text>
-          </View>
-          {!isPremium && (
-            <TouchableOpacity
-              onPress={() => navigation.navigate('Paywall')}
-              style={styles.premiumPill}
-              activeOpacity={0.7}
-            >
-              <MaterialIcons name="lock" size={12} color="#FFB783" />
-              <Text style={styles.premiumPillText}>PREMIUM</Text>
-            </TouchableOpacity>
-          )}
+      <StatusBar barStyle="dark-content" backgroundColor={LT.background} />
+
+      <LightTopAppBar
+        onAvatarPress={() => navigation.navigate('Settings')}
+        onStreakPress={() => setStreakInfoVisible(true)}
+        currentStreak={currentStreak}
+      />
+
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Page Header */}
+        <View style={styles.pageHeader}>
+          <Text style={styles.pageTitle}>
+            {t('insights.title', 'İstatistikler')}
+          </Text>
+          <Text style={styles.pageSubtitle}>
+            {t(
+              'insights.subtitle',
+              'Yolculuğun, sayılarda. Disiplinin somut ifadesi.',
+            )}
+          </Text>
         </View>
 
-        <ScrollView
-          contentContainerStyle={styles.scroll}
-          showsVerticalScrollIndicator={false}
-        >
-          {/* Big stat row */}
-          <View style={styles.bigStatRow}>
-            <BigStat
-              icon="bolt"
-              iconColor="#A5B4FC"
-              value={totalXP.toLocaleString()}
-              label="XP"
-            />
-            <BigStat
-              icon="local-fire-department"
-              iconColor="#F59E0B"
-              value={currentStreak}
-              label={t('insights.currentStreak', 'SERİ')}
-            />
-            <BigStat
-              icon="emoji-events"
-              iconColor="#FFB783"
-              value={level}
-              label={t('insights.level', 'SEVİYE')}
-            />
-          </View>
-
-          {/* Quiz accuracy card */}
-          <View style={styles.card}>
-            <View style={styles.cardHeader}>
-              <View style={styles.cardIconBox}>
-                <MaterialIcons name="quiz" size={20} color="#10B981" />
-              </View>
-              <View style={{ flex: 1 }}>
-                <Text style={styles.cardTitle}>
-                  {t('insights.quizAccuracy', 'Quiz Doğruluk')}
-                </Text>
-                <Text style={styles.cardSubtitle}>
-                  {stats.totalQuizCorrect} / {stats.totalQuizQuestions}{' '}
-                  {t('insights.correct', 'doğru')}
-                </Text>
-              </View>
-              <Text style={styles.cardBigValue}>
-                {stats.accuracy}
-                <Text style={styles.cardPercent}>%</Text>
-              </Text>
+        {/* Big number hero — Quiz accuracy */}
+        <View style={styles.bigHero}>
+          <View style={styles.bigHeroText}>
+            <Text style={styles.bigHeroLabel}>
+              {t('insights.heroLabel', 'QUIZ DOĞRULUK')}
+            </Text>
+            <View style={styles.bigHeroNumberRow}>
+              <Text style={styles.bigHeroNumber}>{stats.accuracy}</Text>
+              <Text style={styles.bigHeroPercent}>%</Text>
             </View>
-            <View style={styles.progressTrack}>
-              <View
-                style={[
-                  styles.progressFill,
-                  {
-                    width: `${Math.max(stats.accuracy, 2)}%`,
-                    backgroundColor: '#10B981',
-                  },
-                ]}
-              />
-            </View>
-            <Text style={styles.cardFooter}>
-              {stats.accuracy >= 80
-                ? t('insights.accuracyGreat', 'Mükemmel! Devam et.')
-                : stats.accuracy >= 60
-                  ? t('insights.accuracyGood', 'İyi gidiyorsun.')
-                  : stats.accuracy >= 30
-                    ? t(
-                        'insights.accuracyOk',
-                        'Daha dikkatli oku, sonuç gelir.',
-                      )
-                    : t(
-                        'insights.accuracyNew',
-                        'Quiz çözmeye yeni başladın.',
-                      )}
+            <Text style={styles.bigHeroSub}>
+              {stats.totalQuizCorrect} / {stats.totalQuizQuestions}{' '}
+              {t('insights.correct', 'doğru')}
             </Text>
           </View>
-
-          {/* Path progress card */}
-          <View style={styles.card}>
-            <View style={styles.cardHeader}>
-              <View
-                style={[
-                  styles.cardIconBox,
-                  { backgroundColor: 'rgba(192, 193, 255, 0.12)', borderColor: 'rgba(192, 193, 255, 0.3)' },
-                ]}
-              >
-                <MaterialIcons
-                  name="auto-awesome"
-                  size={20}
-                  color="#C0C1FF"
-                />
-              </View>
-              <View style={{ flex: 1 }}>
-                <Text style={styles.cardTitle}>
-                  {t('insights.pathProgress', 'Yol İlerlemesi')}
-                </Text>
-                <Text style={styles.cardSubtitle}>
-                  {stats.totalLessons} {t('insights.lessonsTotal', 'toplam ders')}
-                </Text>
-              </View>
-            </View>
-            <View style={styles.pathList}>
-              {stats.pathStats.map((s) => (
-                <PathProgressRow key={s.path.id} stat={s} t={t} />
-              ))}
-            </View>
+          <View style={styles.bigHeroVerdict}>
+            <MaterialIcons
+              name={stats.accuracy >= 60 ? 'trending-up' : 'tips-and-updates'}
+              size={24}
+              color={
+                stats.accuracy >= 60 ? LT.primaryContainer : LT.onSurfaceVariant
+              }
+            />
+            <Text style={styles.bigHeroVerdictText}>
+              {stats.accuracy >= 80
+                ? t('insights.accuracyGreat', 'Mükemmel')
+                : stats.accuracy >= 60
+                  ? t('insights.accuracyGood', 'İyi')
+                  : stats.accuracy >= 30
+                    ? t('insights.accuracyOk', 'Geliştir')
+                    : t('insights.accuracyNew', 'Başla')}
+            </Text>
           </View>
+        </View>
 
-          {/* Records card */}
-          <View style={styles.card}>
-            <View style={styles.cardHeader}>
-              <View
-                style={[
-                  styles.cardIconBox,
-                  { backgroundColor: 'rgba(255, 183, 131, 0.12)', borderColor: 'rgba(255, 183, 131, 0.3)' },
-                ]}
-              >
-                <MaterialIcons name="military-tech" size={20} color="#FFB783" />
-              </View>
-              <Text style={[styles.cardTitle, { flex: 1 }]}>
-                {t('insights.records', 'Rekorlar')}
+        {/* Quick stat row */}
+        <View style={styles.statRow}>
+          <QuickStat
+            icon="bolt"
+            label={t('insights.statXp', 'TOPLAM XP')}
+            value={totalXP.toLocaleString()}
+          />
+          <View style={styles.rowDivider} />
+          <QuickStat
+            icon="local-fire-department"
+            iconColor={LT.primaryContainer}
+            label={t('insights.statStreak', 'SERİ')}
+            value={`${currentStreak}`}
+          />
+          <View style={styles.rowDivider} />
+          <QuickStat
+            icon="emoji-events"
+            label={t('insights.statLevel', 'SEVİYE')}
+            value={`${level}`}
+          />
+        </View>
+
+        {/* Path Progress */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>
+            {t('insights.pathProgress', 'YOL İLERLEMESİ')}
+          </Text>
+          <Text style={styles.sectionSubtitle}>
+            {stats.totalLessons}{' '}
+            {t('insights.lessonsTotal', 'toplam ders tamamlandı')}
+          </Text>
+          <View style={styles.pathList}>
+            {stats.pathStats.map((s) => (
+              <PathProgressRow key={s.path.id} stat={s} t={t} />
+            ))}
+          </View>
+        </View>
+
+        {/* Records */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>
+            {t('insights.records', 'REKORLAR')}
+          </Text>
+          <View style={styles.recordList}>
+            <RecordRow
+              icon="local-fire-department"
+              label={t('insights.longestStreak', 'En uzun seri')}
+              value={`${longestStreak || 0}`}
+              unit={t('common.days', 'gün')}
+              accent
+            />
+            <RecordRow
+              icon="menu-book"
+              label={t('insights.lessonsTotal', 'Toplam ders')}
+              value={`${stats.totalLessons}`}
+              unit={t('common.lessons', 'ders')}
+            />
+            <RecordRow
+              icon="quiz"
+              label={t('insights.quizCorrect', 'Quiz doğru')}
+              value={`${stats.totalQuizCorrect}`}
+              unit={t('insights.questions', 'soru')}
+            />
+          </View>
+        </View>
+
+        {/* Premium upsell */}
+        {!isPremium && (
+          <TouchableOpacity
+            style={styles.upsell}
+            onPress={() => navigation.navigate('Paywall')}
+            activeOpacity={0.9}
+          >
+            <View style={styles.upsellInner}>
+              <Text style={styles.upsellLabel}>
+                {t('insights.upsellLabel', 'PREMIUM')}
               </Text>
-            </View>
-            <View style={styles.recordsGrid}>
-              <RecordItem
-                label={t('insights.longestStreak', 'En uzun seri')}
-                value={`${longestStreak || 0}`}
-                unit={t('common.days', 'gün')}
-                icon="local-fire-department"
-                color="#FFB783"
-              />
-              <RecordItem
-                label={t('insights.lessonsTotal', 'Toplam ders')}
-                value={`${stats.totalLessons}`}
-                unit={t('common.lessons', 'ders')}
-                icon="menu-book"
-                color="#D0BCFF"
-              />
-            </View>
-          </View>
-
-          {/* Premium prompt for non-premium */}
-          {!isPremium ? (
-            <TouchableOpacity
-              activeOpacity={0.9}
-              onPress={() => navigation.navigate('Paywall')}
-              style={styles.upsellWrap}
-            >
-              <LinearGradient
-                colors={['rgba(99, 102, 241, 0.2)', 'rgba(139, 92, 246, 0.15)']}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={styles.upsell}
-              >
-                <View style={styles.upsellLeft}>
-                  <MaterialIcons name="auto-awesome" size={20} color="#C0C1FF" />
-                  <View style={{ flex: 1 }}>
-                    <Text style={styles.upsellTitle}>
-                      {t('insights.upsellTitle', 'Daha derin analitik')}
-                    </Text>
-                    <Text style={styles.upsellBody}>
-                      {t(
-                        'insights.upsellBody',
-                        'Premium ile haftalık trend, en iyi saat, başarı zamanlama.',
-                      )}
-                    </Text>
-                  </View>
-                </View>
+              <Text style={styles.upsellTitle}>
+                {t('insights.upsellTitle', 'Daha derin istatistikler')}
+              </Text>
+              <Text style={styles.upsellBody}>
+                {t(
+                  'insights.upsellBody',
+                  'Haftalık trendler, en iyi performans saatleri, başarı korelasyonları.',
+                )}
+              </Text>
+              <View style={styles.upsellCta}>
+                <Text style={styles.upsellCtaText}>
+                  {t('insights.upsellCta', 'PREMIUM\'A GEÇ')}
+                </Text>
                 <MaterialIcons
-                  name="chevron-right"
-                  size={20}
-                  color="#C0C1FF"
+                  name="arrow-forward"
+                  size={16}
+                  color={LT.onPrimary}
                 />
-              </LinearGradient>
-            </TouchableOpacity>
-          ) : null}
+              </View>
+            </View>
+          </TouchableOpacity>
+        )}
 
-          <View style={{ height: 32 }} />
-        </ScrollView>
-      </View>
+        <View style={{ height: 80 }} />
+      </ScrollView>
+
+      <StreakInfoModal
+        visible={streakInfoVisible}
+        onClose={() => setStreakInfoVisible(false)}
+        currentStreak={currentStreak}
+      />
     </SafeAreaView>
   );
 }
 
-function BigStat({ icon, iconColor, value, label }) {
+// ─── Subcomponents ────────────────────────────────────────────────────────────
+
+function QuickStat({ icon, iconColor, label, value }) {
   return (
-    <View style={styles.bigStat}>
-      <MaterialIcons name={icon} size={22} color={iconColor} />
-      <Text style={styles.bigStatValue}>{value}</Text>
-      <Text style={styles.bigStatLabel}>{label}</Text>
+    <View style={styles.quickStat}>
+      <MaterialIcons name={icon} size={18} color={iconColor || LT.onSurfaceVariant} />
+      <Text style={styles.quickStatValue}>{value}</Text>
+      <Text style={styles.quickStatLabel}>{label}</Text>
     </View>
   );
 }
 
 function PathProgressRow({ stat, t }) {
+  const { path, completed, total, percent } = stat;
   return (
     <View style={styles.pathRow}>
       <View style={styles.pathRowHeader}>
-        <View
-          style={[
-            styles.pathRowDot,
-            { backgroundColor: stat.path.color },
-          ]}
-        />
-        <Text style={styles.pathRowName} numberOfLines={1}>
-          {t(`paths.${stat.path.id}.title`, stat.path.id)}
+        <View style={styles.pathRowIconWrap}>
+          <MaterialIcons
+            name={path.materialIcon}
+            size={16}
+            color={LT.onSurfaceVariant}
+          />
+        </View>
+        <Text style={styles.pathRowTitle} numberOfLines={1}>
+          {t(`paths.${path.id}.shortTitle`, path.id)}
         </Text>
         <Text style={styles.pathRowCount}>
-          {stat.completed} / {stat.total}
+          {completed}/{total}
         </Text>
       </View>
       <View style={styles.pathRowTrack}>
@@ -321,8 +292,9 @@ function PathProgressRow({ stat, t }) {
           style={[
             styles.pathRowFill,
             {
-              width: `${Math.max(stat.percent, 1)}%`,
-              backgroundColor: stat.path.color,
+              width: `${Math.max(percent, 2)}%`,
+              backgroundColor:
+                percent === 0 ? LT.outlineVariant : LT.primaryContainer,
             },
           ]}
         />
@@ -331,206 +303,270 @@ function PathProgressRow({ stat, t }) {
   );
 }
 
-function RecordItem({ label, value, unit, icon, color }) {
+function RecordRow({ icon, label, value, unit, accent }) {
   return (
-    <View style={styles.recordItem}>
-      <MaterialIcons name={icon} size={20} color={color} />
+    <View style={styles.recordRow}>
+      <View
+        style={[styles.recordIcon, accent && styles.recordIconAccent]}
+      >
+        <MaterialIcons
+          name={icon}
+          size={18}
+          color={accent ? LT.primaryContainer : LT.onSurfaceVariant}
+        />
+      </View>
       <Text style={styles.recordLabel}>{label}</Text>
-      <View style={styles.recordValueRow}>
-        <Text style={[styles.recordValue, { color }]}>{value}</Text>
+      <View style={styles.recordValueWrap}>
+        <Text
+          style={[styles.recordValue, accent && styles.recordValueAccent]}
+        >
+          {value}
+        </Text>
         <Text style={styles.recordUnit}>{unit}</Text>
       </View>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#0B0B14' },
-  container: { flex: 1, backgroundColor: '#0B0B14' },
+// ─── Styles ───────────────────────────────────────────────────────────────────
 
-  topBar: {
+const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: LT.background,
+  },
+  scrollContent: {
+    paddingBottom: 32,
+  },
+
+  // Page header
+  pageHeader: {
+    paddingHorizontal: LT_SPACING.containerMargin,
+    paddingTop: 28,
+    paddingBottom: 18,
+  },
+  pageTitle: {
+    fontSize: 32,
+    fontWeight: '900',
+    letterSpacing: -0.6,
+    lineHeight: 38,
+    color: LT.onSurface,
+    marginBottom: 6,
+  },
+  pageSubtitle: {
+    fontSize: 14,
+    fontWeight: '500',
+    lineHeight: 21,
+    color: LT.onSurfaceVariant,
+  },
+
+  // Big hero (quiz accuracy)
+  bigHero: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    backgroundColor: 'rgba(11, 11, 20, 0.85)',
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(42, 42, 66, 0.4)',
-  },
-  topLeft: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  logoBadge: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  brandTitle: {
-    color: '#E0E7FF',
-    fontSize: 16,
-    fontWeight: '900',
-    letterSpacing: -0.5,
-  },
-  premiumPill: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 999,
+    marginHorizontal: LT_SPACING.containerMargin,
+    marginBottom: 14,
+    backgroundColor: LT.surfaceContainerLowest,
+    borderRadius: LT_RADIUS.xl,
     borderWidth: 1,
-    borderColor: 'rgba(255, 183, 131, 0.4)',
-    backgroundColor: 'rgba(255, 183, 131, 0.1)',
+    borderColor: LT.outlineVariant,
+    padding: 20,
   },
-  premiumPillText: {
-    color: '#FFB783',
-    fontSize: 10,
-    fontWeight: '900',
-    letterSpacing: 1,
-  },
-
-  scroll: { padding: 20, gap: 14 },
-
-  bigStatRow: {
-    flexDirection: 'row',
-    gap: 10,
-    marginBottom: 4,
-  },
-  bigStat: {
+  bigHeroText: {
     flex: 1,
-    backgroundColor: '#1F1F27',
-    borderColor: 'rgba(70, 69, 84, 0.5)',
-    borderWidth: 1,
-    borderRadius: 14,
-    padding: 14,
-    alignItems: 'flex-start',
-    gap: 8,
   },
-  bigStatValue: {
-    color: '#FFFFFF',
-    fontSize: 22,
+  bigHeroLabel: {
+    fontSize: 11,
     fontWeight: '900',
-    letterSpacing: -0.5,
+    letterSpacing: 2,
+    color: LT.onSurfaceVariant,
+    marginBottom: 6,
   },
-  bigStatLabel: {
-    color: '#9898B0',
-    fontSize: 10,
-    fontWeight: '800',
-    letterSpacing: 1.2,
-  },
-
-  card: {
-    backgroundColor: '#1F1F27',
-    borderColor: 'rgba(70, 69, 84, 0.5)',
-    borderWidth: 1,
-    borderRadius: 16,
-    padding: 16,
-    gap: 12,
-  },
-  cardHeader: {
+  bigHeroNumberRow: {
     flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
+    alignItems: 'flex-end',
+    gap: 2,
   },
-  cardIconBox: {
-    width: 40,
-    height: 40,
-    borderRadius: 12,
-    backgroundColor: 'rgba(16, 185, 129, 0.12)',
-    borderWidth: 1,
-    borderColor: 'rgba(16, 185, 129, 0.3)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  cardTitle: {
-    color: '#FFFFFF',
-    fontSize: 15,
-    fontWeight: '800',
-    letterSpacing: -0.3,
-  },
-  cardSubtitle: {
-    color: '#9898B0',
-    fontSize: 12,
-    fontWeight: '500',
-    marginTop: 2,
-  },
-  cardBigValue: {
-    color: '#FFFFFF',
-    fontSize: 28,
+  bigHeroNumber: {
+    fontSize: 64,
     fontWeight: '900',
-    letterSpacing: -0.5,
+    letterSpacing: -2.5,
+    color: LT.primaryContainer,
+    lineHeight: 64,
   },
-  cardPercent: {
-    fontSize: 16,
-    color: '#9898B0',
-    fontWeight: '700',
+  bigHeroPercent: {
+    fontSize: 32,
+    fontWeight: '900',
+    color: LT.primaryContainer,
+    letterSpacing: -1,
+    marginBottom: 8,
   },
-  cardFooter: {
-    color: '#C7C4D7',
+  bigHeroSub: {
     fontSize: 12,
-    fontWeight: '500',
-    fontStyle: 'italic',
+    fontWeight: '700',
+    letterSpacing: 0.5,
+    color: LT.onSurfaceVariant,
     marginTop: 4,
   },
-  progressTrack: {
-    height: 8,
-    backgroundColor: '#34343D',
-    borderRadius: 4,
-    overflow: 'hidden',
+  bigHeroVerdict: {
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: LT_RADIUS.lg,
+    backgroundColor: LT.surfaceContainer,
+    borderWidth: 1,
+    borderColor: LT.outlineVariant,
   },
-  progressFill: {
-    height: '100%',
-    borderRadius: 4,
+  bigHeroVerdictText: {
+    fontSize: 11,
+    fontWeight: '900',
+    letterSpacing: 1,
+    color: LT.onSurface,
+    textTransform: 'uppercase',
   },
 
-  pathList: { gap: 14 },
-  pathRow: { gap: 6 },
+  // Quick stat row
+  statRow: {
+    flexDirection: 'row',
+    alignItems: 'stretch',
+    marginHorizontal: LT_SPACING.containerMargin,
+    marginBottom: 14,
+    backgroundColor: LT.surfaceContainerLowest,
+    borderRadius: LT_RADIUS.xl,
+    borderWidth: 1,
+    borderColor: LT.outlineVariant,
+    paddingVertical: 14,
+  },
+  rowDivider: {
+    width: 1,
+    backgroundColor: LT.outlineVariant,
+    marginVertical: 8,
+  },
+  quickStat: {
+    flex: 1,
+    alignItems: 'center',
+    gap: 4,
+  },
+  quickStatValue: {
+    fontSize: 22,
+    fontWeight: '900',
+    color: LT.onSurface,
+    letterSpacing: -0.4,
+  },
+  quickStatLabel: {
+    fontSize: 9,
+    fontWeight: '900',
+    letterSpacing: 1.5,
+    color: LT.onSurfaceVariant,
+  },
+
+  // Sections
+  section: {
+    marginHorizontal: LT_SPACING.containerMargin,
+    marginBottom: 14,
+    backgroundColor: LT.surfaceContainerLowest,
+    borderRadius: LT_RADIUS.xl,
+    borderWidth: 1,
+    borderColor: LT.outlineVariant,
+    padding: 18,
+  },
+  sectionTitle: {
+    fontSize: 12,
+    fontWeight: '900',
+    letterSpacing: 2,
+    color: LT.onSurface,
+    marginBottom: 4,
+  },
+  sectionSubtitle: {
+    fontSize: 12,
+    fontWeight: '500',
+    color: LT.onSurfaceVariant,
+    marginBottom: 14,
+  },
+
+  // Path list
+  pathList: {
+    gap: 12,
+  },
+  pathRow: {
+    gap: 6,
+  },
   pathRowHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
   },
-  pathRowDot: { width: 8, height: 8, borderRadius: 4 },
-  pathRowName: {
-    color: '#E4E1ED',
+  pathRowIconWrap: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: LT.surfaceContainer,
+    borderWidth: 1,
+    borderColor: LT.outlineVariant,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  pathRowTitle: {
+    flex: 1,
     fontSize: 13,
     fontWeight: '700',
-    flex: 1,
+    color: LT.onSurface,
   },
   pathRowCount: {
-    color: '#9898B0',
-    fontSize: 11,
-    fontWeight: '800',
+    fontSize: 12,
+    fontWeight: '900',
+    letterSpacing: -0.2,
+    color: LT.onSurfaceVariant,
+    minWidth: 50,
+    textAlign: 'right',
   },
   pathRowTrack: {
     height: 6,
-    backgroundColor: '#34343D',
     borderRadius: 3,
+    backgroundColor: LT.surfaceContainer,
     overflow: 'hidden',
+    marginLeft: 36,
   },
-  pathRowFill: { height: '100%', borderRadius: 3 },
+  pathRowFill: {
+    height: '100%',
+    borderRadius: 3,
+  },
 
-  recordsGrid: {
-    flexDirection: 'row',
-    gap: 10,
+  // Records list
+  recordList: {
+    gap: 0,
   },
-  recordItem: {
-    flex: 1,
-    backgroundColor: '#1B1B23',
-    borderColor: 'rgba(70, 69, 84, 0.5)',
+  recordRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: LT.outlineVariant,
+  },
+  recordIcon: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: LT.surfaceContainer,
     borderWidth: 1,
-    borderRadius: 12,
-    padding: 12,
-    gap: 6,
+    borderColor: LT.outlineVariant,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  recordIconAccent: {
+    backgroundColor: 'rgba(227, 18, 18, 0.08)',
+    borderColor: 'rgba(227, 18, 18, 0.18)',
   },
   recordLabel: {
-    color: '#9898B0',
-    fontSize: 11,
-    fontWeight: '700',
-    letterSpacing: 0.4,
+    flex: 1,
+    fontSize: 13,
+    fontWeight: '600',
+    color: LT.onSurface,
   },
-  recordValueRow: {
+  recordValueWrap: {
     flexDirection: 'row',
     alignItems: 'baseline',
     gap: 4,
@@ -538,42 +574,72 @@ const styles = StyleSheet.create({
   recordValue: {
     fontSize: 22,
     fontWeight: '900',
-    letterSpacing: -0.4,
+    letterSpacing: -0.6,
+    color: LT.onSurface,
+  },
+  recordValueAccent: {
+    color: LT.primaryContainer,
   },
   recordUnit: {
-    color: '#9898B0',
     fontSize: 11,
-    fontWeight: '600',
+    fontWeight: '700',
+    letterSpacing: 0.5,
+    color: LT.outline,
+    textTransform: 'uppercase',
   },
 
-  upsellWrap: {
-    borderRadius: 16,
-    overflow: 'hidden',
-  },
+  // Premium upsell
   upsell: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: 16,
-    borderWidth: 1,
-    borderColor: 'rgba(99, 102, 241, 0.3)',
-    borderRadius: 16,
+    marginHorizontal: LT_SPACING.containerMargin,
+    marginBottom: 14,
   },
-  upsellLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    flex: 1,
+  upsellInner: {
+    backgroundColor: LT.primaryContainer,
+    borderRadius: LT_RADIUS.xl,
+    padding: 22,
+    shadowColor: LT.primaryContainer,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 14,
+    elevation: 6,
+  },
+  upsellLabel: {
+    fontSize: 11,
+    fontWeight: '900',
+    letterSpacing: 3,
+    color: 'rgba(255,255,255,0.7)',
+    marginBottom: 8,
   },
   upsellTitle: {
-    color: '#E4E1ED',
-    fontSize: 14,
-    fontWeight: '800',
+    fontSize: 22,
+    fontWeight: '900',
+    letterSpacing: -0.5,
+    color: LT.onPrimary,
+    lineHeight: 28,
+    marginBottom: 6,
   },
   upsellBody: {
-    color: '#C7C4D7',
-    fontSize: 11,
+    fontSize: 13,
     fontWeight: '500',
-    marginTop: 2,
+    lineHeight: 19,
+    color: 'rgba(255,255,255,0.92)',
+    marginBottom: 18,
+  },
+  upsellCta: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    backgroundColor: 'rgba(255,255,255,0.18)',
+    height: 44,
+    borderRadius: LT_RADIUS.lg,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.25)',
+  },
+  upsellCtaText: {
+    color: LT.onPrimary,
+    fontSize: 13,
+    fontWeight: '900',
+    letterSpacing: 1.5,
   },
 });
