@@ -1,3 +1,10 @@
+// PathScreen — Modern Kartlar (Stitch Vivid Impact light theme).
+// Shows the active path's lessons as a vertical card list.
+// Active lesson is highlighted with a red border + pulsing animation + CTA.
+//
+// Backup of the previous (dark M3 Duolingo-style) screen:
+//   PathScreen.legacy.js
+
 import React, { useMemo, useEffect, useRef, useState } from 'react';
 import {
   View,
@@ -6,13 +13,11 @@ import {
   TouchableOpacity,
   StyleSheet,
   SafeAreaView,
-  Dimensions,
   Animated,
   Easing,
-  Image,
+  StatusBar,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialIcons } from '@expo/vector-icons';
 
 import { useApp } from '../contexts/AppContext';
@@ -26,8 +31,7 @@ import {
 import BannerAdBox from '../components/BannerAdBox';
 import OutOfHeartsModal from '../components/OutOfHeartsModal';
 import StreakInfoModal from '../components/StreakInfoModal';
-
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
+import { LT, LT_SPACING, LT_RADIUS } from '../config/lightTheme';
 
 export default function PathScreen({ navigation }) {
   const { t } = useTranslation();
@@ -37,12 +41,11 @@ export default function PathScreen({ navigation }) {
     setActivePath,
     isPremium,
     currentStreak,
-    totalXP,
     hearts,
     heartsRefillAt,
     refillHearts,
-    streakFreezes,
   } = useApp();
+
   const [outOfHeartsVisible, setOutOfHeartsVisible] = useState(false);
   const [streakInfoVisible, setStreakInfoVisible] = useState(false);
   const autoStartedRef = useRef(false);
@@ -51,7 +54,6 @@ export default function PathScreen({ navigation }) {
     () => getPathById(activePathId) || PATHS[0],
     [activePathId],
   );
-
   const lessons = useMemo(() => getPathLessons(activePath), [activePath]);
   const progress = useMemo(
     () => getPathProgress(activePath, pathProgress),
@@ -59,8 +61,6 @@ export default function PathScreen({ navigation }) {
   );
 
   // Auto-start first lesson on initial mount if user has zero progress.
-  // This drives engagement post-onboarding — user lands directly in a lesson
-  // instead of an empty path screen.
   useEffect(() => {
     if (autoStartedRef.current) return;
     autoStartedRef.current = true;
@@ -70,7 +70,6 @@ export default function PathScreen({ navigation }) {
       0,
     );
     if (totalCompleted === 0) {
-      // Defer 600ms so user briefly sees the path screen first
       const timer = setTimeout(() => {
         const firstLesson = lessons[0];
         if (firstLesson) {
@@ -84,839 +83,696 @@ export default function PathScreen({ navigation }) {
     }
   }, [activePath, lessons, pathProgress, navigation]);
 
-  // Hearts refill countdown — re-renders every 30s
-  const [now, setNow] = useState(Date.now());
-  useEffect(() => {
-    if (!heartsRefillAt || hearts >= 5 || isPremium) return;
-    const id = setInterval(() => setNow(Date.now()), 30 * 1000);
-    return () => clearInterval(id);
-  }, [heartsRefillAt, hearts, isPremium]);
-
-  const refillMins = (() => {
-    if (isPremium || hearts >= 5 || !heartsRefillAt) return null;
-    const ms = new Date(heartsRefillAt).getTime() - now;
-    if (ms <= 0) return 0;
-    return Math.ceil(ms / 60000);
-  })();
-
-  const handleLessonTap = (lesson, state) => {
-    if (state === 'locked') {
-      const freeLimit = activePath.freeLessons || 5;
-      const isLockedByPremium = !isPremium && lesson.order > freeLimit;
-      if (isLockedByPremium) {
-        navigation.navigate('Paywall');
-        return;
-      }
+  const handleLessonTap = (lesson, finalState) => {
+    if (finalState === 'premium') {
+      navigation.navigate('Paywall');
       return;
     }
-    // Block if out of hearts (free users only)
+    if (finalState === 'locked') {
+      // tapping locked is a no-op (we don't reveal hint via toast for now)
+      return;
+    }
     if (!isPremium && hearts <= 0) {
       setOutOfHeartsVisible(true);
       return;
     }
-    navigation.navigate('Lesson', { pathId: lesson.pathId, lessonId: lesson.id });
+    navigation.navigate('Lesson', {
+      pathId: lesson.pathId,
+      lessonId: lesson.id,
+    });
   };
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <View style={styles.container}>
-        {/* Top App Bar */}
-        <View style={styles.topAppBar}>
-          <View style={styles.topLeft}>
-            <LinearGradient
-              colors={['#6366F1', '#8B5CF6']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={styles.logoBadge}
-            >
-              <MaterialIcons name="star" size={16} color="#FFFFFF" />
-            </LinearGradient>
-            <Text style={styles.brandTitle}>MONK MODE</Text>
+      <StatusBar barStyle="dark-content" backgroundColor={LT.background} />
+
+      {/* Top App Bar */}
+      <View style={styles.topBar}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate('Settings')}
+          style={styles.avatarBtn}
+          accessibilityLabel="Settings"
+        >
+          <View style={styles.avatarCircle}>
+            <MaterialIcons
+              name="person-outline"
+              size={20}
+              color={LT.onSurfaceVariant}
+            />
           </View>
-          <TouchableOpacity
-            onPress={() => navigation.navigate('Settings')}
-            style={styles.xpPill}
-            activeOpacity={0.7}
-          >
-            <Text style={styles.xpPillText}>XP: {totalXP.toLocaleString()}</Text>
-          </TouchableOpacity>
+        </TouchableOpacity>
+        <Text style={styles.brand}>ASCEND</Text>
+        <TouchableOpacity
+          onPress={() => setStreakInfoVisible(true)}
+          style={styles.streakBtn}
+          accessibilityLabel="Streak"
+        >
+          <Text style={styles.streakNumber}>{currentStreak}</Text>
+          <MaterialIcons
+            name="local-fire-department"
+            size={20}
+            color={LT.primaryContainer}
+          />
+        </TouchableOpacity>
+      </View>
+
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Page Header */}
+        <View style={styles.pageHeader}>
+          <Text style={styles.pageTitle}>
+            {t(
+              `paths.${activePath.id}.title`,
+              t('path.developmentStages', 'Gelişim Aşamaları'),
+            )}
+          </Text>
+          <Text style={styles.pageSubtitle}>
+            {t(
+              `paths.${activePath.id}.subtitle`,
+              t(
+                'path.devSubtitle',
+                'Zihinsel ve ruhsal ustalığa giden yol haritanız.',
+              ),
+            )}
+          </Text>
+          <View style={styles.progressMeta}>
+            <Text style={styles.progressMetaText}>
+              {progress.completed} / {progress.total}{' '}
+              {t('path.lessonsLabel', 'ders')}
+            </Text>
+            <View style={styles.progressMetaDot} />
+            <Text style={styles.progressMetaText}>{progress.percent}%</Text>
+          </View>
         </View>
 
+        {/* Path Switcher Pills */}
         <ScrollView
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.pathSwitcher}
         >
-          {/* Streak / Hearts / XP hero */}
-          <View style={styles.heroCard}>
-            <TouchableOpacity
-              onPress={() => setStreakInfoVisible(true)}
-              activeOpacity={0.7}
-              style={styles.heroLeft}
-            >
-              <MaterialIcons name="local-fire-department" size={26} color="#F59E0B" />
-              <Text style={styles.streakValue}>{currentStreak}</Text>
-              <Text style={styles.streakLabel}>
-                {t('home.dayStreak', 'GÜN SERİ')}
-              </Text>
-              {streakFreezes > 0 && (
-                <View style={styles.streakFreezeBadge}>
-                  <MaterialIcons name="ac-unit" size={11} color="#A5B4FC" />
-                  <Text style={styles.streakFreezeText}>{streakFreezes}</Text>
-                </View>
-              )}
-            </TouchableOpacity>
-            <View style={styles.heroRight}>
-              {!isPremium && (
-                <TouchableOpacity
-                  onPress={() => navigation.navigate('Paywall')}
-                  style={styles.heroChip}
-                  activeOpacity={0.7}
-                >
-                  <MaterialIcons name="favorite" size={18} color="#EF4444" />
-                  <Text style={styles.heroChipText}>{hearts}</Text>
-                  {refillMins !== null && refillMins > 0 && (
-                    <Text style={styles.heroChipTimer}>{refillMins}m</Text>
-                  )}
-                </TouchableOpacity>
-              )}
-              <View style={[styles.heroChip, styles.xpChip]}>
-                <MaterialIcons name="bolt" size={18} color="#A5B4FC" />
-                <Text style={[styles.heroChipText, { color: '#A5B4FC' }]}>
-                  {totalXP.toLocaleString()}
-                </Text>
-              </View>
-            </View>
-          </View>
-
-          {/* Profile / active path with progress */}
-          <View style={styles.profileSection}>
-            <View style={styles.avatarWrap}>
-              <LinearGradient
-                colors={['#1E1B4B', '#0F172A']}
-                style={styles.avatarBg}
+          {PATHS.map((p) => {
+            const isActive = p.id === activePathId;
+            const pathProg =
+              pathProgress?.[p.id]?.completed?.length || 0;
+            return (
+              <TouchableOpacity
+                key={p.id}
+                onPress={() => setActivePath(p.id)}
+                style={[styles.pathPill, isActive && styles.pathPillActive]}
+                activeOpacity={0.85}
               >
-                <Image
-                  source={require('../../assets/icon.png')}
-                  style={styles.avatarImg}
-                  resizeMode="cover"
-                />
-              </LinearGradient>
-              <View style={[styles.avatarBadge, { backgroundColor: activePath.color }]}>
                 <MaterialIcons
-                  name={activePath.materialIcon}
-                  size={11}
-                  color="#FFFFFF"
+                  name={p.materialIcon}
+                  size={16}
+                  color={isActive ? LT.onPrimary : LT.onSurfaceVariant}
                 />
-              </View>
-            </View>
-            <View style={styles.profileText}>
-              <Text style={styles.profileName} numberOfLines={1}>
-                {t(`paths.${activePath.id}.title`, activePath.id)}
-              </Text>
-              <View style={styles.progressBar}>
-                <LinearGradient
-                  colors={[activePath.color, lighten(activePath.color, 0.25)]}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 0 }}
+                <Text
                   style={[
-                    styles.progressFill,
-                    { width: `${Math.max(progress.percent, 2)}%` },
+                    styles.pathPillText,
+                    isActive && styles.pathPillTextActive,
                   ]}
-                />
-              </View>
-              <Text style={styles.progressLabel}>
-                {progress.completed} / {progress.total}{' '}
-                {t('path.lessonsLabel', 'ders')}
-              </Text>
-            </View>
-          </View>
-
-          {/* Path switcher chips */}
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.chipsRow}
-          >
-            {PATHS.map((p) => {
-              const isActive = p.id === activePathId;
-              const pathProg = pathProgress?.[p.id]?.completed?.length || 0;
-              const isCompleted = pathProg >= p.duration;
-              return (
-                <TouchableOpacity
-                  key={p.id}
-                  onPress={() => setActivePath(p.id)}
-                  activeOpacity={0.7}
-                  style={[
-                    styles.chip,
-                    isActive && {
-                      backgroundColor: p.color,
-                      borderColor: p.color,
-                    },
-                  ]}
+                  numberOfLines={1}
                 >
+                  {t(`paths.${p.id}.shortTitle`, p.id)}
+                </Text>
+                {pathProg > 0 && (
                   <Text
                     style={[
-                      styles.chipLabel,
-                      isActive && { color: '#FFFFFF' },
+                      styles.pathPillBadge,
+                      isActive && styles.pathPillBadgeActive,
                     ]}
-                    numberOfLines={1}
                   >
-                    {t(`paths.${p.id}.title`, p.id)}
+                    {pathProg}
                   </Text>
-                  <View
-                    style={[
-                      styles.chipBadge,
-                      isActive && { backgroundColor: 'rgba(0,0,0,0.25)' },
-                    ]}
-                  >
-                    <Text
-                      style={[
-                        styles.chipBadgeText,
-                        isActive && { color: '#FFFFFF' },
-                      ]}
-                    >
-                      {pathProg}/{p.duration}
-                    </Text>
-                  </View>
-                  {isCompleted && (
-                    <MaterialIcons
-                      name="check-circle"
-                      size={14}
-                      color={isActive ? '#FFFFFF' : '#10B981'}
-                      style={{ marginLeft: 2 }}
-                    />
-                  )}
-                </TouchableOpacity>
-              );
-            })}
-          </ScrollView>
-
-          {/* Lesson zigzag tree */}
-          <View style={styles.tree}>
-            {lessons.map((lesson, index) => {
-              const state = getLessonState(lesson, pathProgress);
-              const isLockedByPremium =
-                !isPremium && lesson.order > (activePath.freeLessons || 5);
-              const finalState =
-                isLockedByPremium && state !== 'completed' ? 'premium' : state;
-
-              // Zigzag pattern: alternate left/right
-              const isOdd = index % 2 === 1;
-              const xOffset = isOdd ? 56 : -56;
-
-              return (
-                <View
-                  key={lesson.id}
-                  style={[
-                    styles.lessonNodeWrap,
-                    { transform: [{ translateX: xOffset }] },
-                  ]}
-                >
-                  <LessonNode
-                    lesson={lesson}
-                    state={finalState}
-                    pathColor={activePath.color}
-                    onPress={() => handleLessonTap(lesson, state)}
-                    t={t}
-                  />
-                </View>
-              );
-            })}
-
-            {progress.completed === 0 && (
-              <View
-                style={[styles.emptyHint, { borderColor: activePath.color }]}
-              >
-                <MaterialIcons
-                  name="touch-app"
-                  size={28}
-                  color={activePath.color}
-                />
-                <Text style={styles.emptyHintText}>
-                  {t('path.firstLessonHint', 'Bugün ilk dersini aç')}
-                </Text>
-                <Text style={styles.emptyHintSubtext}>
-                  {t(
-                    'path.firstLessonHintSub',
-                    '5 dakika. Tek görev. Sonra alev tutuşsun.',
-                  )}
-                </Text>
-              </View>
-            )}
-
-            {progress.completed === progress.total && progress.total > 0 && (
-              <View style={styles.completion}>
-                <MaterialIcons name="emoji-events" size={56} color="#FDE047" />
-                <Text style={styles.completionText}>
-                  {t('path.completed', 'Yol Tamamlandı')}
-                </Text>
-                <Text style={styles.completionSubtext}>
-                  {t(
-                    'path.completedHint',
-                    '50 günlük yolculuğu bitirdin. Yeni bir yola geç, ustalığını derinleştir.',
-                  )}
-                </Text>
-
-                {/* Suggest next path that user hasn't completed yet */}
-                {(() => {
-                  const nextSuggested = PATHS.find((p) => {
-                    if (p.id === activePath.id) return false;
-                    const completedCount = pathProgress?.[p.id]?.completed?.length || 0;
-                    return completedCount < p.duration;
-                  });
-                  if (!nextSuggested) {
-                    return (
-                      <Text style={styles.completionSubtext}>
-                        {t(
-                          'path.allComplete',
-                          'Tüm 5 yolu tamamladın. Sen artık bir master.',
-                        )}
-                      </Text>
-                    );
-                  }
-                  return (
-                    <TouchableOpacity
-                      onPress={() => setActivePath(nextSuggested.id)}
-                      activeOpacity={0.85}
-                      style={styles.completionCtaShadow}
-                    >
-                      <LinearGradient
-                        colors={[nextSuggested.color, lighten(nextSuggested.color, 0.2)]}
-                        start={{ x: 0, y: 0 }}
-                        end={{ x: 1, y: 0 }}
-                        style={styles.completionCta}
-                      >
-                        <MaterialIcons name={nextSuggested.materialIcon} size={18} color="#FFFFFF" />
-                        <Text style={styles.completionCtaText}>
-                          {t(`paths.${nextSuggested.id}.title`, nextSuggested.id)}
-                        </Text>
-                        <MaterialIcons name="arrow-forward" size={18} color="#FFFFFF" />
-                      </LinearGradient>
-                    </TouchableOpacity>
-                  );
-                })()}
-              </View>
-            )}
-
-            <View style={{ height: 80 }} />
-          </View>
+                )}
+              </TouchableOpacity>
+            );
+          })}
         </ScrollView>
 
-        {/* Banner ad (free users only) */}
-        <BannerAdBox />
+        {/* Lesson Cards */}
+        <View style={styles.cardsContainer}>
+          {lessons.map((lesson) => {
+            const state = getLessonState(lesson, pathProgress);
+            const isLockedByPremium =
+              !isPremium && lesson.order > (activePath.freeLessons || 5);
+            const finalState =
+              isLockedByPremium && state !== 'completed' ? 'premium' : state;
+            return (
+              <LessonCard
+                key={lesson.id}
+                lesson={lesson}
+                state={finalState}
+                pathColor={activePath.color}
+                onPress={() => handleLessonTap(lesson, finalState)}
+              />
+            );
+          })}
+        </View>
 
-        <OutOfHeartsModal
-          visible={outOfHeartsVisible}
-          onClose={() => setOutOfHeartsVisible(false)}
-          onRefill={refillHearts}
-          onPaywall={() => {
-            setOutOfHeartsVisible(false);
-            navigation.navigate('Paywall');
-          }}
-          refillMins={refillMins}
-        />
+        <View style={{ height: 80 }} />
+      </ScrollView>
 
-        <StreakInfoModal
-          visible={streakInfoVisible}
-          onClose={() => setStreakInfoVisible(false)}
-          streak={currentStreak}
-          freezes={streakFreezes || 0}
-          isPremium={isPremium}
-          onPaywall={() => navigation.navigate('Paywall')}
-        />
-      </View>
+      <BannerAdBox />
+
+      <OutOfHeartsModal
+        visible={outOfHeartsVisible}
+        onClose={() => setOutOfHeartsVisible(false)}
+        onRefill={() => {
+          refillHearts();
+          setOutOfHeartsVisible(false);
+        }}
+        heartsRefillAt={heartsRefillAt}
+      />
+
+      <StreakInfoModal
+        visible={streakInfoVisible}
+        onClose={() => setStreakInfoVisible(false)}
+        currentStreak={currentStreak}
+      />
     </SafeAreaView>
   );
 }
 
-function LessonNode({ lesson, state, pathColor, onPress, t }) {
-  const lessonTitle = t(
-    `lessons.${lesson.pathId}.${lesson.order}.title`,
-    `${lesson.order}`,
-  );
+// ─── LessonCard ───────────────────────────────────────────────────────────────
 
-  // Pulse animation for current lesson
-  const pulse = useRef(new Animated.Value(1)).current;
-  const glow = useRef(new Animated.Value(0.4)).current;
+function LessonCard({ lesson, state, onPress }) {
+  const { t } = useTranslation();
+  const isActive = state === 'current';
+  const isCompleted = state === 'completed';
+  const isLocked = state === 'locked';
+  const isPremium = state === 'premium';
 
+  // Pulse animation only for active card
+  const pulseAnim = useRef(new Animated.Value(1)).current;
   useEffect(() => {
-    if (state !== 'current') return;
-    const pulseLoop = Animated.loop(
+    if (!isActive) return undefined;
+    const loop = Animated.loop(
       Animated.sequence([
-        Animated.timing(pulse, {
-          toValue: 1.08,
-          duration: 1000,
-          easing: Easing.inOut(Easing.quad),
+        Animated.timing(pulseAnim, {
+          toValue: 1.03,
+          duration: 1300,
+          easing: Easing.inOut(Easing.ease),
           useNativeDriver: true,
         }),
-        Animated.timing(pulse, {
+        Animated.timing(pulseAnim, {
           toValue: 1,
-          duration: 1000,
-          easing: Easing.inOut(Easing.quad),
+          duration: 1300,
+          easing: Easing.inOut(Easing.ease),
           useNativeDriver: true,
         }),
       ]),
     );
-    const glowLoop = Animated.loop(
-      Animated.sequence([
-        Animated.timing(glow, {
-          toValue: 0.9,
-          duration: 1000,
-          useNativeDriver: false,
-        }),
-        Animated.timing(glow, {
-          toValue: 0.4,
-          duration: 1000,
-          useNativeDriver: false,
-        }),
-      ]),
-    );
-    pulseLoop.start();
-    glowLoop.start();
-    return () => {
-      pulseLoop.stop();
-      glowLoop.stop();
-    };
-  }, [state, pulse, glow]);
+    loop.start();
+    return () => loop.stop();
+  }, [isActive, pulseAnim]);
 
-  const config = (() => {
-    if (state === 'completed')
-      return {
-        bg: pathColor,
-        icon: 'check',
-        iconColor: '#FFFFFF',
-        size: 64,
-        labelOpacity: 0.7,
-        ringColor: 'rgba(255,255,255,0.15)',
-      };
-    if (state === 'current')
-      return {
-        bg: '#FDE047',
-        icon: 'local-fire-department',
-        iconColor: '#0B0B14',
-        size: 80,
-        labelOpacity: 1,
-        ringColor: '#FDE047',
-        showBadge: true,
-      };
-    if (state === 'premium')
-      return {
-        bg: '#1F1F33',
-        icon: 'workspace-premium',
-        iconColor: '#FDE047',
-        size: 64,
-        labelOpacity: 0.5,
-        ringColor: 'rgba(253,224,71,0.3)',
-      };
-    return {
-      bg: '#1F1F33',
-      icon: 'lock',
-      iconColor: '#6B6B85',
-      size: 64,
-      labelOpacity: 0.4,
-      ringColor: 'transparent',
-    };
-  })();
+  const orderText = String(lesson.order).padStart(2, '0');
+  const i18nKeyTitle = `lessons.${lesson.pathId}.${lesson.order}.title`;
+  const i18nKeySummary = `lessons.${lesson.pathId}.${lesson.order}.summary`;
+  const fallbackTitle = `${t('path.lessonLabel', 'Ders')} ${lesson.order}`;
+  const fallbackSummary = t(
+    'path.lessonGenericSummary',
+    'Disiplin yolunda bir adım daha. Tap to start.',
+  );
 
   return (
-    <TouchableOpacity
-      onPress={onPress}
-      activeOpacity={0.85}
-      style={styles.nodeContainer}
+    <Animated.View
+      style={[
+        styles.cardOuter,
+        isActive && { transform: [{ scale: pulseAnim }] },
+      ]}
     >
-      <Animated.View
+      <TouchableOpacity
+        activeOpacity={isLocked ? 1 : 0.85}
+        onPress={onPress}
         style={[
-          styles.nodeRing,
-          {
-            width: config.size + 8,
-            height: config.size + 8,
-            borderRadius: (config.size + 8) / 2,
-            borderColor: config.ringColor,
-          },
-          state === 'current' && {
-            shadowColor: '#FDE047',
-            shadowOffset: { width: 0, height: 0 },
-            shadowOpacity: glow,
-            shadowRadius: 20,
-            elevation: 12,
-          },
+          styles.card,
+          isActive && styles.cardActive,
+          isCompleted && styles.cardCompleted,
+          (isLocked || isPremium) && styles.cardLocked,
         ]}
       >
-        <Animated.View style={{ transform: [{ scale: pulse }] }}>
-          <View
-            style={[
-              styles.nodeCircle,
-              {
-                width: config.size,
-                height: config.size,
-                borderRadius: config.size / 2,
-                backgroundColor: config.bg,
-              },
-            ]}
-          >
-            <MaterialIcons
-              name={config.icon}
-              size={config.size * 0.5}
-              color={config.iconColor}
-            />
+        {/* Background big number (decorative) */}
+        <Text
+          style={[
+            styles.cardBgNumber,
+            isActive && styles.cardBgNumberActive,
+            (isLocked || isPremium) && styles.cardBgNumberLocked,
+          ]}
+          pointerEvents="none"
+          numberOfLines={1}
+        >
+          {orderText}
+        </Text>
+
+        <View style={styles.cardRow}>
+          <View style={styles.cardTextWrap}>
+            {isActive && (
+              <Text style={styles.cardActiveLabel}>
+                {t('path.activeStage', 'AKTİF DERS')}
+              </Text>
+            )}
+            <Text
+              style={[
+                styles.cardTitle,
+                (isLocked || isPremium) && styles.cardTitleMuted,
+              ]}
+              numberOfLines={2}
+            >
+              {t(i18nKeyTitle, fallbackTitle)}
+            </Text>
+            <Text
+              style={[
+                styles.cardDescription,
+                (isLocked || isPremium) && styles.cardDescriptionMuted,
+              ]}
+              numberOfLines={3}
+            >
+              {t(i18nKeySummary, fallbackSummary)}
+            </Text>
           </View>
-        </Animated.View>
-      </Animated.View>
 
-      {config.showBadge && (
-        <View style={styles.todayBadge}>
-          <Text style={styles.todayBadgeText}>BUGÜN</Text>
+          {/* Right-side icon */}
+          <View style={styles.cardIconWrap}>
+            {isActive && (
+              <View style={styles.iconActive}>
+                <MaterialIcons
+                  name="play-arrow"
+                  size={24}
+                  color={LT.onPrimary}
+                />
+              </View>
+            )}
+            {isCompleted && (
+              <View style={styles.iconCompleted}>
+                <MaterialIcons
+                  name="check"
+                  size={20}
+                  color={LT.primaryContainer}
+                />
+              </View>
+            )}
+            {(isLocked || isPremium) && (
+              <View style={styles.iconLocked}>
+                <MaterialIcons
+                  name={isPremium ? 'workspace-premium' : 'lock'}
+                  size={18}
+                  color={LT.onSurfaceVariant}
+                />
+              </View>
+            )}
+          </View>
         </View>
-      )}
 
-      <Text
-        style={[styles.nodeLabel, { opacity: config.labelOpacity }]}
-        numberOfLines={2}
-      >
-        {lessonTitle}
-      </Text>
-    </TouchableOpacity>
+        {/* Active card: progress bar showing user's position in this path */}
+        {isActive && (
+          <View style={styles.progressBarWrap}>
+            <View style={styles.progressBarLabels}>
+              <Text style={styles.progressBarLabel}>
+                {t('path.lessonProgress', 'İLERLEME')}
+              </Text>
+              <Text style={styles.progressBarValue}>
+                {Math.round(((lesson.order - 1) / 50) * 100)}%
+              </Text>
+            </View>
+            <View style={styles.progressBarTrack}>
+              <View
+                style={[
+                  styles.progressBarFill,
+                  { width: `${((lesson.order - 1) / 50) * 100}%` },
+                ]}
+              />
+            </View>
+          </View>
+        )}
+
+        {/* Premium hint pill */}
+        {isPremium && (
+          <View style={styles.premiumHintPill}>
+            <MaterialIcons
+              name="workspace-premium"
+              size={12}
+              color={LT.primaryContainer}
+            />
+            <Text style={styles.premiumHintText}>
+              {t('path.premiumToUnlock', 'PREMIUM İLE AÇ')}
+            </Text>
+          </View>
+        )}
+      </TouchableOpacity>
+    </Animated.View>
   );
 }
 
-function lighten(hex, amount) {
-  const c = parseInt(hex.replace('#', ''), 16);
-  const r = Math.min(255, ((c >> 16) & 0xff) + Math.round(255 * amount));
-  const g = Math.min(255, ((c >> 8) & 0xff) + Math.round(255 * amount));
-  const b = Math.min(255, (c & 0xff) + Math.round(255 * amount));
-  return `#${((r << 16) | (g << 8) | b).toString(16).padStart(6, '0')}`;
-}
+// ─── Styles ───────────────────────────────────────────────────────────────────
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#0B0B14' },
-  container: { flex: 1, backgroundColor: '#0B0B14' },
+  safeArea: {
+    flex: 1,
+    backgroundColor: LT.background,
+  },
 
-  topAppBar: {
+  // Top bar
+  topBar: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    backgroundColor: 'rgba(11, 11, 20, 0.85)',
+    paddingHorizontal: 24,
+    height: 64,
+    backgroundColor: LT.surface,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(42, 42, 66, 0.4)',
+    borderBottomColor: LT.outlineVariant,
   },
-  topLeft: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  logoBadge: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+  avatarBtn: {
+    width: 40,
+    height: 40,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#6366F1',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.5,
-    shadowRadius: 8,
   },
-  brandTitle: {
-    color: '#E0E7FF',
-    fontSize: 16,
+  avatarCircle: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: LT.surfaceContainer,
+    borderWidth: 1,
+    borderColor: LT.outlineVariant,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  brand: {
+    fontSize: 18,
     fontWeight: '900',
-    letterSpacing: -0.5,
-  },
-  xpPill: {
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-  },
-  xpPillText: {
-    color: '#6366F1',
-    fontSize: 11,
-    fontWeight: '800',
-    letterSpacing: 1.5,
+    letterSpacing: 5,
+    color: LT.onSurface,
     textTransform: 'uppercase',
   },
-
-  scrollContent: { paddingBottom: 24 },
-
-  // Hero stats card
-  heroCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: '#1F1F27',
-    borderRadius: 16,
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    marginHorizontal: 20,
-    marginTop: 16,
-    borderWidth: 1,
-    borderColor: 'rgba(70, 69, 84, 0.3)',
-  },
-  heroLeft: { flexDirection: 'row', alignItems: 'center', gap: 8, flexShrink: 1 },
-  streakFreezeBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 3,
-    backgroundColor: 'rgba(165, 180, 252, 0.15)',
-    borderColor: 'rgba(165, 180, 252, 0.3)',
-    borderWidth: 1,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 999,
-    marginLeft: 4,
-  },
-  streakFreezeText: {
-    color: '#A5B4FC',
-    fontSize: 11,
-    fontWeight: '900',
-  },
-  streakValue: {
-    color: '#F59E0B',
-    fontSize: 22,
-    fontWeight: '900',
-    letterSpacing: -0.5,
-  },
-  streakLabel: {
-    color: '#9898B0',
-    fontSize: 10,
-    fontWeight: '800',
-    letterSpacing: 1,
-  },
-  heroRight: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  heroChip: {
+  streakBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
     paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 999,
+    paddingVertical: 6,
+    borderRadius: LT_RADIUS.pill,
+    backgroundColor: LT.surfaceContainerHighest,
+    borderWidth: 1,
+    borderColor: LT.outlineVariant,
   },
-  xpChip: {
-    backgroundColor: 'rgba(99, 102, 241, 0.15)',
-  },
-  heroChipText: {
-    color: '#F5F5FA',
-    fontSize: 14,
-    fontWeight: '800',
-  },
-  heroChipTimer: {
-    color: '#9898B0',
-    fontSize: 9,
-    fontWeight: '700',
-    marginLeft: 2,
+  streakNumber: {
+    fontSize: 16,
+    fontWeight: '900',
+    color: LT.primaryContainer,
+    letterSpacing: -0.4,
   },
 
-  // Profile section
-  profileSection: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 14,
-    paddingHorizontal: 20,
-    marginTop: 24,
+  scrollContent: {
+    paddingBottom: 32,
   },
-  avatarWrap: { position: 'relative' },
-  avatarBg: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    overflow: 'hidden',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 2,
-    borderColor: 'rgba(99, 102, 241, 0.4)',
+
+  // Page header
+  pageHeader: {
+    paddingHorizontal: LT_SPACING.containerMargin,
+    paddingTop: 28,
+    paddingBottom: 18,
   },
-  avatarImg: { width: 40, height: 40 },
-  avatarBadge: {
-    position: 'absolute',
-    bottom: -2,
-    right: -2,
-    width: 22,
-    height: 22,
-    borderRadius: 11,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 2,
-    borderColor: '#0B0B14',
-  },
-  profileText: { flex: 1 },
-  profileName: {
-    color: '#FFFFFF',
-    fontSize: 20,
-    fontWeight: '800',
-    letterSpacing: -0.3,
-    marginBottom: 8,
-  },
-  progressBar: {
-    width: '100%',
-    height: 8,
-    backgroundColor: '#292932',
-    borderRadius: 4,
-    overflow: 'hidden',
+  pageTitle: {
+    fontSize: 32,
+    fontWeight: '900',
+    letterSpacing: -0.6,
+    lineHeight: 38,
+    color: LT.onSurface,
     marginBottom: 6,
   },
-  progressFill: {
-    height: '100%',
-    borderRadius: 4,
-    shadowColor: '#C0C1FF',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.5,
-    shadowRadius: 8,
+  pageSubtitle: {
+    fontSize: 14,
+    fontWeight: '500',
+    lineHeight: 21,
+    color: LT.onSurfaceVariant,
   },
-  progressLabel: {
-    color: '#9898B0',
-    fontSize: 11,
-    fontWeight: '700',
-  },
-
-  // Chips
-  chipsRow: {
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    gap: 8,
-  },
-  chip: {
+  progressMeta: {
     flexDirection: 'row',
     alignItems: 'center',
+    gap: 10,
+    marginTop: 14,
+  },
+  progressMetaText: {
+    fontSize: 11,
+    fontWeight: '700',
+    letterSpacing: 1.5,
+    textTransform: 'uppercase',
+    color: LT.outline,
+  },
+  progressMetaDot: {
+    width: 4,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: LT.outlineVariant,
+  },
+
+  // Path switcher pills
+  pathSwitcher: {
+    paddingHorizontal: LT_SPACING.containerMargin,
+    paddingVertical: 8,
     gap: 8,
+  },
+  pathPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
     paddingHorizontal: 14,
     paddingVertical: 8,
-    borderRadius: 999,
+    borderRadius: LT_RADIUS.pill,
+    backgroundColor: LT.surfaceContainer,
     borderWidth: 1,
-    borderColor: 'rgba(70, 69, 84, 0.4)',
-    backgroundColor: '#1F1F27',
-    marginRight: 8,
+    borderColor: LT.outlineVariant,
   },
-  chipLabel: {
-    color: '#C7C4D7',
-    fontSize: 11,
-    fontWeight: '800',
-    letterSpacing: 0.8,
-    textTransform: 'uppercase',
-    flexShrink: 1,
-    maxWidth: 100,
+  pathPillActive: {
+    backgroundColor: LT.primaryContainer,
+    borderColor: LT.primaryContainer,
   },
-  chipBadge: {
-    backgroundColor: '#393841',
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 6,
-  },
-  chipBadgeText: {
-    color: '#908FA0',
-    fontSize: 10,
-    fontWeight: '800',
-  },
-
-  // Tree
-  tree: {
-    paddingTop: 24,
-    paddingBottom: 32,
-    alignItems: 'center',
-  },
-  lessonNodeWrap: { alignItems: 'center', marginBottom: 32 },
-  nodeContainer: { alignItems: 'center', maxWidth: 130 },
-  nodeRing: {
-    borderWidth: 3,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  nodeCircle: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 4,
-    borderColor: '#0B0B14',
-  },
-  todayBadge: {
-    position: 'absolute',
-    top: -8,
-    right: -16,
-    backgroundColor: '#EF4444',
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 6,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.4,
-    shadowRadius: 4,
-    zIndex: 5,
-  },
-  todayBadgeText: {
-    color: '#FFFFFF',
-    fontSize: 9,
-    fontWeight: '900',
-    letterSpacing: 1,
-  },
-  nodeLabel: {
-    color: '#F5F5FA',
+  pathPillText: {
     fontSize: 12,
     fontWeight: '700',
-    marginTop: 10,
-    textAlign: 'center',
-    letterSpacing: 0.3,
-    textTransform: 'uppercase',
+    letterSpacing: 0.4,
+    color: LT.onSurfaceVariant,
   },
-
-  emptyHint: {
-    backgroundColor: 'rgba(22, 22, 38, 0.6)',
-    borderRadius: 16,
-    padding: 20,
-    marginHorizontal: 24,
-    marginBottom: 16,
-    borderWidth: 2,
-    borderStyle: 'dashed',
-    alignItems: 'center',
-    gap: 8,
+  pathPillTextActive: {
+    color: LT.onPrimary,
   },
-  emptyHintText: {
-    color: '#FFFFFF',
-    fontSize: 15,
-    fontWeight: '800',
-    textAlign: 'center',
-  },
-  emptyHintSubtext: {
-    color: '#9898B0',
-    fontSize: 12,
-    fontWeight: '500',
-    textAlign: 'center',
-  },
-
-  completion: {
-    alignItems: 'center',
-    marginTop: 24,
-    padding: 16,
-    gap: 6,
-  },
-  completionText: {
-    color: '#FDE047',
-    fontSize: 18,
+  pathPillBadge: {
+    fontSize: 10,
     fontWeight: '900',
-    marginTop: 8,
-    letterSpacing: -0.3,
-  },
-  completionSubtext: {
-    color: '#9898B0',
-    fontSize: 13,
+    color: LT.outline,
+    backgroundColor: LT.surfaceContainerLowest,
+    paddingHorizontal: 6,
+    paddingVertical: 1,
+    borderRadius: LT_RADIUS.pill,
+    overflow: 'hidden',
+    minWidth: 20,
     textAlign: 'center',
-    paddingHorizontal: 24,
-    lineHeight: 18,
-    marginBottom: 14,
   },
-  completionCtaShadow: {
-    borderRadius: 14,
-    shadowColor: '#000',
+  pathPillBadgeActive: {
+    color: LT.primaryContainer,
+    backgroundColor: '#FFFFFF',
+  },
+
+  // Cards container
+  cardsContainer: {
+    paddingHorizontal: LT_SPACING.containerMargin,
+    paddingTop: 8,
+    gap: 12,
+  },
+
+  cardOuter: {
+    // wrapper so transform pulse doesn't clip
+  },
+
+  // Card base
+  card: {
+    position: 'relative',
+    backgroundColor: LT.surfaceContainerLowest,
+    borderRadius: LT_RADIUS.xl,
+    borderWidth: 1,
+    borderColor: LT.outlineVariant,
+    paddingHorizontal: 18,
+    paddingVertical: 18,
+    overflow: 'hidden',
+    minHeight: 130,
+  },
+  cardActive: {
+    borderWidth: 2,
+    borderColor: LT.primaryContainer,
+    shadowColor: LT.primaryContainer,
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 12,
-    marginTop: 6,
+    shadowOpacity: 0.18,
+    shadowRadius: 18,
+    elevation: 6,
   },
-  completionCta: {
+  cardCompleted: {
+    backgroundColor: LT.surfaceContainerLowest,
+    opacity: 0.92,
+  },
+  cardLocked: {
+    backgroundColor: LT.surfaceContainerLow,
+    borderColor: 'rgba(232, 188, 182, 0.5)',
+  },
+
+  cardBgNumber: {
+    position: 'absolute',
+    right: -8,
+    bottom: -36,
+    fontSize: 140,
+    fontWeight: '900',
+    lineHeight: 140,
+    color: LT.onSurface,
+    opacity: 0.045,
+    letterSpacing: -4,
+  },
+  cardBgNumberActive: {
+    color: LT.primaryContainer,
+    opacity: 0.07,
+  },
+  cardBgNumberLocked: {
+    color: LT.outline,
+    opacity: 0.05,
+  },
+
+  cardRow: {
     flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    gap: 12,
+    zIndex: 1,
+  },
+  cardTextWrap: {
+    flex: 1,
+    paddingRight: 8,
+  },
+  cardActiveLabel: {
+    fontSize: 11,
+    fontWeight: '900',
+    letterSpacing: 2,
+    textTransform: 'uppercase',
+    color: LT.primaryContainer,
+    marginBottom: 8,
+  },
+  cardTitle: {
+    fontSize: 22,
+    fontWeight: '700',
+    lineHeight: 28,
+    letterSpacing: -0.4,
+    color: LT.onSurface,
+    marginBottom: 6,
+  },
+  cardTitleMuted: {
+    color: LT.onSurfaceVariant,
+  },
+  cardDescription: {
+    fontSize: 13,
+    fontWeight: '500',
+    lineHeight: 19,
+    color: LT.onSurfaceVariant,
+  },
+  cardDescriptionMuted: {
+    color: LT.outline,
+  },
+
+  cardIconWrap: {
+    alignItems: 'flex-end',
+    justifyContent: 'flex-start',
+  },
+  iconActive: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: LT.primaryContainer,
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 8,
-    paddingHorizontal: 18,
-    paddingVertical: 12,
-    borderRadius: 14,
+    shadowColor: LT.primaryContainer,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.32,
+    shadowRadius: 10,
+    elevation: 4,
   },
-  completionCtaText: {
-    color: '#FFFFFF',
-    fontSize: 14,
+  iconCompleted: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: 'rgba(227, 18, 18, 0.08)',
+    borderWidth: 1,
+    borderColor: 'rgba(227, 18, 18, 0.18)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  iconLocked: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: LT.surfaceContainerHigh,
+    borderWidth: 1,
+    borderColor: LT.outlineVariant,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  // Active card progress bar
+  progressBarWrap: {
+    marginTop: 18,
+    zIndex: 1,
+  },
+  progressBarLabels: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-end',
+    marginBottom: 6,
+  },
+  progressBarLabel: {
+    fontSize: 11,
+    fontWeight: '800',
+    letterSpacing: 1.5,
+    color: LT.onSurfaceVariant,
+  },
+  progressBarValue: {
+    fontSize: 11,
     fontWeight: '900',
-    letterSpacing: 0.3,
+    letterSpacing: 0.5,
+    color: LT.primaryContainer,
+  },
+  progressBarTrack: {
+    width: '100%',
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: LT.surfaceContainerHigh,
+    overflow: 'hidden',
+  },
+  progressBarFill: {
+    height: '100%',
+    backgroundColor: LT.primaryContainer,
+    borderRadius: 4,
+  },
+
+  // Premium hint pill at bottom of locked card
+  premiumHintPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    alignSelf: 'flex-start',
+    marginTop: 12,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: LT_RADIUS.pill,
+    backgroundColor: 'rgba(227, 18, 18, 0.08)',
+    borderWidth: 1,
+    borderColor: 'rgba(227, 18, 18, 0.2)',
+    zIndex: 1,
+  },
+  premiumHintText: {
+    fontSize: 10,
+    fontWeight: '900',
+    letterSpacing: 1.5,
+    color: LT.primaryContainer,
   },
 });
