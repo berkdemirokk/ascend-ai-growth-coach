@@ -19,20 +19,26 @@ let rewardedLoaded = false;
 
 // ─── Ad unit resolution ──────────────────────────────────────────────────────
 
+// New AdMob accounts have near-zero fill on TestFlight (no inventory yet),
+// so a TESTFLIGHT toggle in constants forces test units even in release.
+// Flip USE_TEST_ADS_IN_RELEASE to false before App Store submission.
+const shouldUseTestUnits = () =>
+  __DEV__ || ADMOB_IDS.USE_TEST_ADS_IN_RELEASE === true;
+
 const getInterstitialId = () => {
   if (Platform.OS !== 'ios') {
     return ADMOB_IDS.TEST_INTERSTITIAL_ANDROID;
   }
-  // Google recommends test ads in __DEV__ to avoid invalid-traffic flags on
-  // live ad units.
-  return __DEV__
+  return shouldUseTestUnits()
     ? ADMOB_IDS.TEST_INTERSTITIAL_IOS
     : ADMOB_IDS.INTERSTITIAL_IOS;
 };
 
 const getRewardedId = () => {
   if (Platform.OS !== 'ios') return null;
-  return __DEV__ ? ADMOB_IDS.TEST_REWARDED_IOS : ADMOB_IDS.REWARDED_IOS;
+  return shouldUseTestUnits()
+    ? ADMOB_IDS.TEST_REWARDED_IOS
+    : ADMOB_IDS.REWARDED_IOS;
 };
 
 // ─── ATT + init ──────────────────────────────────────────────────────────────
@@ -247,7 +253,9 @@ export const resetAdCounter = () => {
 // the others. We just expose the unit ID so the consumer component can pick it.
 export const getBannerId = () => {
   if (Platform.OS !== 'ios') return null;
-  return __DEV__ ? ADMOB_IDS.TEST_BANNER_IOS : ADMOB_IDS.BANNER_IOS;
+  return shouldUseTestUnits()
+    ? ADMOB_IDS.TEST_BANNER_IOS
+    : ADMOB_IDS.BANNER_IOS;
 };
 
 export const isAdsReady = () => adsReady;

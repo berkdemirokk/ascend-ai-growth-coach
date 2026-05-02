@@ -527,7 +527,8 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     backgroundColor: LT.surfaceContainer,
     overflow: 'hidden',
-    marginLeft: 36,
+    marginLeft: 36, // align under text (skip the 28pt icon + 8pt gap)
+    width: 'auto',
   },
   pathRowFill: {
     height: '100%',

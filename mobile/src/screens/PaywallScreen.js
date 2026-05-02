@@ -15,7 +15,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { useApp } from '../contexts/AppContext';
 import { purchasePremium, restorePurchases, getAvailablePackages } from '../services/purchases';
 import { getPaywallVariant, logPaywallEvent } from '../config/paywallVariants';
-import { LT, LT_RADIUS } from '../config/lightTheme';
+import { LT } from '../config/lightTheme';
 
 export default function PaywallScreen({ navigation }) {
   const { t } = useTranslation();

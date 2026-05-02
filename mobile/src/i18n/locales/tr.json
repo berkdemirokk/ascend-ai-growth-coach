@@ -17,7 +17,17 @@
     "today": "Bugün",
     "you": "Sen",
     "settings": "Ayarlar",
-    "profile": "Profil"
+    "profile": "Profil",
+    "gotIt": "ANLADIM",
+    "later": "Sonra",
+    "days": "Gün",
+    "lessons": "Ders"
+  },
+  "nav": {
+    "home": "Ana",
+    "paths": "Yollar",
+    "stats": "İstatistik",
+    "profile": "Sen"
   },
   "onboarding": {
     "title": "Monk Mode",
@@ -56,7 +66,31 @@
     "heartsRefill": "{{minutes}} dk sonra dolar",
     "outOfHearts": "Kalpler bitti",
     "outOfHeartsBody": "Yenilenmesini bekle veya Premium'a geç",
-    "premium": "Premium"
+    "premium": "Premium",
+    "greetingMorning": "GÜNAYDIN",
+    "greetingAfternoon": "İYİ ÖĞLEDEN SONRALAR",
+    "greetingEvening": "İYİ AKŞAMLAR",
+    "greetingNight": "GECE YARISI",
+    "greetingName": "Disiplinci",
+    "subtitle": "Disiplin yolunda bir gün daha. Hadi başla.",
+    "currentStreak": "MEVCUT SERİ",
+    "longestStreak": "EN UZUN",
+    "daysStrong": "GÜN",
+    "todayCta": "BUGÜNÜN GÖREVİ",
+    "allDone": "Tüm dersleri tamamladın 🎉",
+    "allDoneSub": "Yeni yola geçebilir veya tekrar pratiği yapabilirsin.",
+    "ctaGenericSub": "Bugünün adımı seni bekliyor. ~5 dakika.",
+    "startNow": "PRATİĞE BAŞLA",
+    "viewPaths": "YOLLARA GÖZAT",
+    "statXp": "XP",
+    "statLessons": "DERS",
+    "statLevel": "SEVİYE",
+    "premiumTitle": "Premium ile sınırları kaldır",
+    "premiumSub": "Reklamsız · Tüm yollar · Streak donduru · İndirim",
+    "linkReflections": "Yansımalarım",
+    "linkReflectionsSub": "Geçmiş ders yansımaları",
+    "linkSettings": "Ayarlar",
+    "linkSettingsSub": "Bildirim, ses, hesap"
   },
   "lesson": {
     "teaching": "Öğretim",
@@ -178,7 +212,41 @@
     "lessonsCount": "{{count}} ders",
     "tier": "Tier {{tier}}",
     "premiumLocked": "Premium ile aç",
-    "start": "Başla"
+    "start": "Başla",
+    "developmentStages": "Gelişim Aşamaları",
+    "devSubtitle": "Zihinsel ve ruhsal ustalığa giden yol haritanız.",
+    "activeStage": "AKTİF DERS",
+    "lessonProgress": "İLERLEME",
+    "premiumToUnlock": "PREMIUM İLE AÇ",
+    "lessonGenericSummary": "Disiplin yolunda bir adım daha.",
+    "lessonLabel": "Ders"
+  },
+  "paths": {
+    "dopamine-detox": {
+      "title": "Dopamin Detoks",
+      "shortTitle": "Detoks",
+      "subtitle": "Dijital gürültüden uzaklaş, gerçek dünyaya dön."
+    },
+    "silent-morning": {
+      "title": "Sessiz Sabah",
+      "shortTitle": "Sabah",
+      "subtitle": "Erken kalk. Dünya uyurken kazan."
+    },
+    "mind-discipline": {
+      "title": "Zihin Disiplini",
+      "shortTitle": "Zihin",
+      "subtitle": "Düşünceleri yönet, odağı kilitle."
+    },
+    "body-discipline": {
+      "title": "Beden Disiplini",
+      "shortTitle": "Beden",
+      "subtitle": "Hareket, beslenme, uyku — temeller."
+    },
+    "money-discipline": {
+      "title": "Para Disiplini",
+      "shortTitle": "Para",
+      "subtitle": "Kazan, harca değil. Birikim alışkanlığı."
+    }
   },
   "notifications": {
     "reminderTitleStart": "🔥 Monk mode başlasın",
@@ -195,5 +263,72 @@
     "streakAria": "Streak paylaş",
     "failedTitle": "Paylaşılamadı",
     "failedBody": "Bir sorun oluştu, tekrar dene."
+  },
+  "insights": {
+    "title": "İstatistikler",
+    "subtitle": "Yolculuğun, sayılarda. Disiplinin somut ifadesi.",
+    "heroLabel": "QUIZ DOĞRULUK",
+    "accuracyGreat": "Mükemmel",
+    "accuracyGood": "İyi",
+    "accuracyOk": "Geliştir",
+    "accuracyNew": "Başla",
+    "statXp": "TOPLAM XP",
+    "statStreak": "SERİ",
+    "statLevel": "SEVİYE",
+    "pathProgress": "YOL İLERLEMESİ",
+    "lessonsTotal": "toplam ders tamamlandı",
+    "records": "REKORLAR",
+    "longestStreak": "En uzun seri",
+    "quizCorrect": "Quiz doğru",
+    "questions": "soru",
+    "correct": "doğru",
+    "upsellLabel": "PREMIUM",
+    "upsellTitle": "Daha derin istatistikler",
+    "upsellBody": "Haftalık trendler, en iyi performans saatleri, başarı korelasyonları.",
+    "upsellCta": "PREMIUM'A GEÇ"
+  },
+  "streak": {
+    "infoTitle": "Seri Sistemi",
+    "days": "gün",
+    "howWorks": "Her gün bir ders tamamlayarak serini koru. Bir gün atlarsan seri sıfırlanır.",
+    "freezeTitle": "Seri Donduruculari",
+    "freezeAvailable": "{{count}} adet kullanılabilir. Bir gün atlarsan otomatik kullanılır.",
+    "freezeEmpty": "Henüz dondurucu yok. Premium ile 3 dondurucu kazan.",
+    "getFreezes": "PREMIUM İLE 3 DONDURUCU AL"
+  },
+  "hearts": {
+    "outTitle": "Kalpler Bitti",
+    "outSubtitle": "Devam etmek için kalp gerekli. Reklam izleyerek 1 kalp kazan veya Premium'a geç.",
+    "refillIn": "Otomatik dolum: {{mins}} dk",
+    "watchAd": "REKLAM İZLE, +1 KALP KAZAN",
+    "goPremium": "PREMIUM İLE SINIRSIZ KALPLER"
+  },
+  "calendar": {
+    "title": "AKTİVİTE HARİTASI",
+    "subtitle": "{{count}} ders son 8 hafta",
+    "less": "AZ",
+    "more": "ÇOK",
+    "sun": "P",
+    "mon": "P",
+    "tue": "S",
+    "wed": "Ç",
+    "thu": "P",
+    "fri": "C",
+    "sat": "C"
+  },
+  "reflections": {
+    "title": "Yansımalarım",
+    "subtitle": "Geçmiş derslerde yazdığın düşünceler. Geri dönüp oku, kendi yolculuğunu hatırla.",
+    "emptyTitle": "Henüz yansıma yok",
+    "emptyBody": "Ders tamamladıkça yazdığın yansımalar burada birikecek."
+  },
+  "level": {
+    "1": "Beginner",
+    "2": "Committed",
+    "3": "Dedicated",
+    "4": "Advanced",
+    "5": "Elite",
+    "6": "Master",
+    "7": "Legendary"
   }
 }

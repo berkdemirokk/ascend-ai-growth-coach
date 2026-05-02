@@ -5,11 +5,11 @@
     "version": "1.0.6",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "dark",
+    "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#0B0B14"
+      "backgroundColor": "#F9F9F9"
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
@@ -76,7 +76,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#0B0B14"
+        "backgroundColor": "#F9F9F9"
       },
       "package": "com.ascend.growth"
     },
@@ -85,7 +85,7 @@
         "expo-notifications",
         {
           "icon": "./assets/notification-icon.png",
-          "color": "#6366F1"
+          "color": "#E31212"
         }
       ],
       "expo-apple-authentication",

@@ -17,7 +17,17 @@
     "today": "Today",
     "you": "You",
     "settings": "Settings",
-    "profile": "Profile"
+    "profile": "Profile",
+    "gotIt": "GOT IT",
+    "later": "Later",
+    "days": "Days",
+    "lessons": "Lessons"
+  },
+  "nav": {
+    "home": "Home",
+    "paths": "Paths",
+    "stats": "Stats",
+    "profile": "You"
   },
   "onboarding": {
     "title": "Monk Mode",
@@ -56,7 +66,31 @@
     "heartsRefill": "Refills in {{minutes}} min",
     "outOfHearts": "Out of hearts",
     "outOfHeartsBody": "Wait for refill or go Premium",
-    "premium": "Premium"
+    "premium": "Premium",
+    "greetingMorning": "GOOD MORNING",
+    "greetingAfternoon": "GOOD AFTERNOON",
+    "greetingEvening": "GOOD EVENING",
+    "greetingNight": "LATE NIGHT",
+    "greetingName": "Disciple",
+    "subtitle": "Another day on the path. Let's go.",
+    "currentStreak": "CURRENT STREAK",
+    "longestStreak": "LONGEST",
+    "daysStrong": "DAYS",
+    "todayCta": "TODAY'S MISSION",
+    "allDone": "All lessons completed 🎉",
+    "allDoneSub": "Switch to a new path or revisit one for practice.",
+    "ctaGenericSub": "Today's step is waiting. ~5 minutes.",
+    "startNow": "START NOW",
+    "viewPaths": "BROWSE PATHS",
+    "statXp": "XP",
+    "statLessons": "LESSONS",
+    "statLevel": "LEVEL",
+    "premiumTitle": "Remove limits with Premium",
+    "premiumSub": "Ad-free · All paths · Streak freeze · Save 30%",
+    "linkReflections": "My Reflections",
+    "linkReflectionsSub": "Past lesson reflections",
+    "linkSettings": "Settings",
+    "linkSettingsSub": "Notifications, sound, account"
   },
   "lesson": {
     "teaching": "Teaching",
@@ -178,7 +212,41 @@
     "lessonsCount": "{{count}} lessons",
     "tier": "Tier {{tier}}",
     "premiumLocked": "Unlock with Premium",
-    "start": "Start"
+    "start": "Start",
+    "developmentStages": "Development Stages",
+    "devSubtitle": "Your roadmap to mental & spiritual mastery.",
+    "activeStage": "ACTIVE LESSON",
+    "lessonProgress": "PROGRESS",
+    "premiumToUnlock": "UNLOCK WITH PREMIUM",
+    "lessonGenericSummary": "Another step on the discipline path.",
+    "lessonLabel": "Lesson"
+  },
+  "paths": {
+    "dopamine-detox": {
+      "title": "Dopamine Detox",
+      "shortTitle": "Detox",
+      "subtitle": "Step away from digital noise. Return to the real world."
+    },
+    "silent-morning": {
+      "title": "Silent Morning",
+      "shortTitle": "Morning",
+      "subtitle": "Rise early. Win while the world sleeps."
+    },
+    "mind-discipline": {
+      "title": "Mind Discipline",
+      "shortTitle": "Mind",
+      "subtitle": "Master your thoughts. Lock in your focus."
+    },
+    "body-discipline": {
+      "title": "Body Discipline",
+      "shortTitle": "Body",
+      "subtitle": "Movement, food, sleep — the basics."
+    },
+    "money-discipline": {
+      "title": "Money Discipline",
+      "shortTitle": "Money",
+      "subtitle": "Earn first, spend later. Build savings."
+    }
   },
   "notifications": {
     "reminderTitleStart": "🔥 Begin monk mode",
@@ -195,5 +263,72 @@
     "streakAria": "Share streak",
     "failedTitle": "Couldn't share",
     "failedBody": "Something went wrong. Try again."
+  },
+  "insights": {
+    "title": "Stats",
+    "subtitle": "Your journey, in numbers. Discipline made tangible.",
+    "heroLabel": "QUIZ ACCURACY",
+    "accuracyGreat": "Excellent",
+    "accuracyGood": "Good",
+    "accuracyOk": "Improve",
+    "accuracyNew": "Begin",
+    "statXp": "TOTAL XP",
+    "statStreak": "STREAK",
+    "statLevel": "LEVEL",
+    "pathProgress": "PATH PROGRESS",
+    "lessonsTotal": "lessons completed",
+    "records": "RECORDS",
+    "longestStreak": "Longest streak",
+    "quizCorrect": "Quiz correct",
+    "questions": "questions",
+    "correct": "correct",
+    "upsellLabel": "PREMIUM",
+    "upsellTitle": "Deeper insights",
+    "upsellBody": "Weekly trends, peak performance hours, success correlations.",
+    "upsellCta": "GO PREMIUM"
+  },
+  "streak": {
+    "infoTitle": "Streak System",
+    "days": "days",
+    "howWorks": "Complete one lesson daily to maintain your streak. Skip a day and it resets.",
+    "freezeTitle": "Streak Freezes",
+    "freezeAvailable": "{{count}} available. Auto-used when you skip a day.",
+    "freezeEmpty": "No freezes yet. Get 3 with Premium.",
+    "getFreezes": "GET 3 FREEZES WITH PREMIUM"
+  },
+  "hearts": {
+    "outTitle": "Out of Hearts",
+    "outSubtitle": "Need a heart to continue. Watch an ad for +1 or go Premium.",
+    "refillIn": "Auto-refill: {{mins}} min",
+    "watchAd": "WATCH AD, +1 HEART",
+    "goPremium": "GO PREMIUM, UNLIMITED HEARTS"
+  },
+  "calendar": {
+    "title": "ACTIVITY MAP",
+    "subtitle": "{{count}} lessons in last 8 weeks",
+    "less": "LESS",
+    "more": "MORE",
+    "sun": "S",
+    "mon": "M",
+    "tue": "T",
+    "wed": "W",
+    "thu": "T",
+    "fri": "F",
+    "sat": "S"
+  },
+  "reflections": {
+    "title": "My Reflections",
+    "subtitle": "Thoughts you wrote on past lessons. Look back, remember your journey.",
+    "emptyTitle": "No reflections yet",
+    "emptyBody": "As you complete lessons, your reflections will collect here."
+  },
+  "level": {
+    "1": "Beginner",
+    "2": "Committed",
+    "3": "Dedicated",
+    "4": "Advanced",
+    "5": "Elite",
+    "6": "Master",
+    "7": "Legendary"
   }
 }

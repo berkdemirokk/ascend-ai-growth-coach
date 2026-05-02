@@ -16,7 +16,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useAuth } from '../../contexts/AuthContext';
-import { LT, LT_RADIUS } from '../../config/lightTheme';
+import { LT } from '../../config/lightTheme';
 
 export default function LoginScreen({ navigation }) {
   const { t } = useTranslation();
