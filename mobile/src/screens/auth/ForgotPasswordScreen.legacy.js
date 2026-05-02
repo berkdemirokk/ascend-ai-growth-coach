@@ -11,12 +11,11 @@ import {
   ScrollView,
   ActivityIndicator,
   Alert,
-  StatusBar,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useAuth } from '../../contexts/AuthContext';
-import { LT, LT_RADIUS } from '../../config/lightTheme';
 
 export default function ForgotPasswordScreen({ navigation }) {
   const { t } = useTranslation();
@@ -43,7 +42,6 @@ export default function ForgotPasswordScreen({ navigation }) {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="dark-content" backgroundColor={LT.background} />
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -60,7 +58,7 @@ export default function ForgotPasswordScreen({ navigation }) {
               onPress={() => navigation.goBack()}
               style={styles.backBtn}
             >
-              <MaterialIcons name="arrow-back" size={22} color={LT.onSurfaceVariant} />
+              <MaterialIcons name="arrow-back" size={22} color="#C7C4D7" />
             </TouchableOpacity>
           </View>
 
@@ -69,7 +67,7 @@ export default function ForgotPasswordScreen({ navigation }) {
               <MaterialIcons
                 name={sent ? 'mark-email-read' : 'lock-reset'}
                 size={32}
-                color={sent ? LT.success : LT.primary}
+                color={sent ? '#10B981' : '#C0C1FF'}
               />
             </View>
             <Text style={styles.title}>
@@ -100,12 +98,12 @@ export default function ForgotPasswordScreen({ navigation }) {
                     emailFocused && styles.inputWrapFocused,
                   ]}
                 >
-                  <MaterialIcons name="mail-outline" size={18} color={LT.onSurfaceVariant} />
+                  <MaterialIcons name="mail-outline" size={18} color="#908FA0" />
                   <TextInput
                     value={email}
                     onChangeText={setEmail}
                     placeholder="example@mail.com"
-                    placeholderTextColor={LT.onSurfaceVariant}
+                    placeholderTextColor="#5B5B70"
                     keyboardType="email-address"
                     autoCapitalize="none"
                     autoCorrect={false}
@@ -122,24 +120,29 @@ export default function ForgotPasswordScreen({ navigation }) {
                 activeOpacity={0.9}
                 style={[styles.ctaShadow, { marginTop: 8 }]}
               >
-                <View style={[styles.ctaButton, loading && { opacity: 0.7 }]}>
+                <LinearGradient
+                  colors={['#6366F1', '#8B5CF6']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                  style={[styles.ctaButton, loading && { opacity: 0.7 }]}
+                >
                   {loading ? (
-                    <ActivityIndicator color={LT.onPrimary} />
+                    <ActivityIndicator color="#FFFFFF" />
                   ) : (
                     <>
-                      <MaterialIcons name="send" size={18} color={LT.onPrimary} />
+                      <MaterialIcons name="send" size={18} color="#FFFFFF" />
                       <Text style={styles.ctaText}>
                         {t('auth.sendResetLink', 'Sıfırlama linki gönder')}
                       </Text>
                     </>
                   )}
-                </View>
+                </LinearGradient>
               </TouchableOpacity>
             </View>
           ) : (
             <View style={styles.successBox}>
               <View style={styles.successCheckCircle}>
-                <MaterialIcons name="check" size={32} color={LT.success} />
+                <MaterialIcons name="check" size={32} color="#10B981" />
               </View>
               <Text style={styles.successText}>{email}</Text>
               <TouchableOpacity
@@ -147,12 +150,17 @@ export default function ForgotPasswordScreen({ navigation }) {
                 style={[styles.ctaShadow, { width: '100%', marginTop: 24 }]}
                 activeOpacity={0.9}
               >
-                <View style={styles.ctaButton}>
+                <LinearGradient
+                  colors={['#6366F1', '#8B5CF6']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                  style={styles.ctaButton}
+                >
                   <Text style={styles.ctaText}>
                     {t('auth.backToLogin', 'Girişe dön')}
                   </Text>
-                  <MaterialIcons name="arrow-forward" size={20} color={LT.onPrimary} />
-                </View>
+                  <MaterialIcons name="arrow-forward" size={20} color="#FFFFFF" />
+                </LinearGradient>
               </TouchableOpacity>
             </View>
           )}
@@ -163,7 +171,7 @@ export default function ForgotPasswordScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: LT.background },
+  safeArea: { flex: 1, backgroundColor: '#13131b' },
   scroll: { padding: 24, paddingBottom: 40, flexGrow: 1 },
 
   bgGlow: {
@@ -173,8 +181,8 @@ const styles = StyleSheet.create({
     width: 280,
     height: 280,
     borderRadius: 140,
-    backgroundColor: LT.outlineVariant,
-    opacity: 0.25,
+    backgroundColor: 'rgba(99, 102, 241, 0.12)',
+    opacity: 0.6,
   },
 
   topBar: { marginBottom: 24 },
@@ -182,9 +190,9 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: LT.surfaceContainerLowest,
+    backgroundColor: '#1F1F27',
     borderWidth: 1,
-    borderColor: LT.outlineVariant,
+    borderColor: '#464554',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -194,15 +202,15 @@ const styles = StyleSheet.create({
     width: 72,
     height: 72,
     borderRadius: 36,
-    backgroundColor: LT.surfaceContainerLow,
+    backgroundColor: 'rgba(99, 102, 241, 0.15)',
     borderWidth: 1,
-    borderColor: LT.outlineVariant,
+    borderColor: 'rgba(99, 102, 241, 0.3)',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 18,
   },
   title: {
-    color: LT.onSurface,
+    color: '#FFFFFF',
     fontSize: 28,
     fontWeight: '900',
     letterSpacing: -0.5,
@@ -211,7 +219,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
   },
   subtitle: {
-    color: LT.onSurfaceVariant,
+    color: '#C7C4D7',
     fontSize: 14,
     fontWeight: '500',
     textAlign: 'center',
@@ -222,7 +230,7 @@ const styles = StyleSheet.create({
   form: { marginBottom: 24 },
   field: { marginBottom: 12 },
   label: {
-    color: LT.onSurfaceVariant,
+    color: '#C7C4D7',
     fontSize: 11,
     fontWeight: '800',
     letterSpacing: 1.5,
@@ -233,23 +241,23 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
-    backgroundColor: LT.surfaceContainerLowest,
+    backgroundColor: '#1B1B23',
     borderWidth: 1.5,
-    borderColor: LT.outlineVariant,
+    borderColor: '#464554',
     borderRadius: 12,
     paddingHorizontal: 14,
   },
   inputWrapFocused: {
-    borderColor: LT.primary,
-    shadowColor: LT.primary,
+    borderColor: '#C0C1FF',
+    shadowColor: '#6366F1',
     shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.2,
+    shadowOpacity: 0.3,
     shadowRadius: 8,
   },
   input: {
     flex: 1,
     paddingVertical: 14,
-    color: LT.onSurface,
+    color: '#E4E1ED',
     fontSize: 15,
     fontWeight: '500',
   },
@@ -262,25 +270,24 @@ const styles = StyleSheet.create({
     width: 64,
     height: 64,
     borderRadius: 32,
-    backgroundColor: LT.surfaceContainerLow,
+    backgroundColor: 'rgba(16, 185, 129, 0.15)',
     borderWidth: 1,
-    borderColor: LT.success,
+    borderColor: 'rgba(16, 185, 129, 0.4)',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 16,
   },
   successText: {
-    color: LT.onSurface,
+    color: '#E4E1ED',
     fontSize: 14,
     fontWeight: '700',
   },
 
   ctaShadow: {
     borderRadius: 16,
-    backgroundColor: LT.primary,
-    shadowColor: LT.primary,
+    shadowColor: '#6366F1',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
+    shadowOpacity: 0.4,
     shadowRadius: 16,
     elevation: 8,
   },
@@ -291,10 +298,9 @@ const styles = StyleSheet.create({
     gap: 8,
     paddingVertical: 16,
     borderRadius: 16,
-    backgroundColor: LT.primary,
   },
   ctaText: {
-    color: LT.onPrimary,
+    color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '800',
     letterSpacing: 0.3,

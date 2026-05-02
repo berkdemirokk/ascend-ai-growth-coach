@@ -16,6 +16,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 
 import { useApp } from '../contexts/AppContext';
 import { PATHS } from '../data/paths';
+import { LT, LT_RADIUS } from '../config/lightTheme';
 
 export default function ReflectionsScreen({ navigation }) {
   const { t } = useTranslation();
@@ -49,7 +50,7 @@ export default function ReflectionsScreen({ navigation }) {
             onPress={() => navigation.goBack()}
             style={styles.backBtn}
           >
-            <MaterialIcons name="arrow-back" size={22} color="#C7C4D7" />
+            <MaterialIcons name="arrow-back" size={22} color={LT.onSurface} />
           </TouchableOpacity>
           <Text style={styles.title}>
             {t('reflections.title', 'Yansımalarım')}
@@ -60,7 +61,7 @@ export default function ReflectionsScreen({ navigation }) {
         {sections.length === 0 ? (
           <View style={styles.empty}>
             <View style={styles.emptyIconWrap}>
-              <MaterialIcons name="auto-stories" size={48} color="#908FA0" />
+              <MaterialIcons name="auto-stories" size={48} color={LT.outline} />
             </View>
             <Text style={styles.emptyTitle}>
               {t('reflections.emptyTitle', 'Henüz yansıma yok')}
@@ -139,7 +140,7 @@ export default function ReflectionsScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#13131b' },
+  safeArea: { flex: 1, backgroundColor: LT.background },
   container: { flex: 1 },
 
   topBar: {
@@ -149,7 +150,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#34343D',
+    borderBottomColor: LT.outlineVariant,
+    backgroundColor: LT.surface,
   },
   backBtn: {
     width: 40,
@@ -158,15 +160,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   title: {
-    color: '#E4E1ED',
+    color: LT.onSurface,
     fontSize: 18,
-    fontWeight: '800',
-    letterSpacing: -0.3,
+    fontWeight: '900',
+    letterSpacing: 2,
+    textTransform: 'uppercase',
   },
 
   scroll: { padding: 20, paddingTop: 16 },
   subtitle: {
-    color: '#C7C4D7',
+    color: LT.onSurfaceVariant,
     fontSize: 13,
     lineHeight: 18,
     marginBottom: 24,
@@ -189,27 +192,32 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   sectionTitle: {
-    color: '#FFFFFF',
-    fontSize: 16,
+    color: LT.onSurface,
+    fontSize: 12,
     fontWeight: '900',
-    letterSpacing: -0.3,
+    letterSpacing: 2,
+    textTransform: 'uppercase',
     flex: 1,
   },
   sectionCount: {
-    color: '#908FA0',
+    color: LT.onSurfaceVariant,
     fontSize: 11,
     fontWeight: '800',
-    backgroundColor: '#1F1F27',
-    paddingHorizontal: 8,
+    backgroundColor: LT.surfaceContainer,
+    paddingHorizontal: 10,
     paddingVertical: 3,
-    borderRadius: 999,
+    borderRadius: LT_RADIUS.pill,
+    borderWidth: 1,
+    borderColor: LT.outlineVariant,
+    minWidth: 28,
+    textAlign: 'center',
   },
 
   card: {
-    backgroundColor: 'rgba(31, 31, 39, 0.6)',
+    backgroundColor: LT.surfaceContainerLowest,
     borderWidth: 1,
-    borderColor: 'rgba(70, 69, 84, 0.5)',
-    borderRadius: 14,
+    borderColor: LT.outlineVariant,
+    borderRadius: LT_RADIUS.lg,
     padding: 14,
     marginBottom: 10,
   },
@@ -220,23 +228,25 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   cardLessonNum: {
-    color: '#C0C1FF',
+    color: LT.primaryContainer,
     fontSize: 10,
     fontWeight: '900',
-    letterSpacing: 1.2,
-    backgroundColor: 'rgba(192, 193, 255, 0.12)',
+    letterSpacing: 1.5,
+    backgroundColor: 'rgba(227, 18, 18, 0.08)',
+    borderWidth: 1,
+    borderColor: 'rgba(227, 18, 18, 0.18)',
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 6,
   },
   cardLessonTitle: {
-    color: '#C7C4D7',
+    color: LT.onSurfaceVariant,
     fontSize: 12,
     fontWeight: '600',
     flex: 1,
   },
   cardText: {
-    color: '#E4E1ED',
+    color: LT.onSurface,
     fontSize: 14,
     lineHeight: 20,
     fontStyle: 'italic',
@@ -252,22 +262,22 @@ const styles = StyleSheet.create({
     width: 96,
     height: 96,
     borderRadius: 48,
-    backgroundColor: 'rgba(31, 31, 39, 0.6)',
+    backgroundColor: LT.surfaceContainer,
     borderWidth: 1,
-    borderColor: 'rgba(70, 69, 84, 0.5)',
+    borderColor: LT.outlineVariant,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 20,
   },
   emptyTitle: {
-    color: '#FFFFFF',
+    color: LT.onSurface,
     fontSize: 20,
     fontWeight: '900',
     marginBottom: 8,
     letterSpacing: -0.3,
   },
   emptyBody: {
-    color: '#9898B0',
+    color: LT.onSurfaceVariant,
     fontSize: 13,
     textAlign: 'center',
     lineHeight: 19,

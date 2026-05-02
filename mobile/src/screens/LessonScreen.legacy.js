@@ -10,7 +10,6 @@ import {
   Animated,
   Easing,
   Image,
-  StatusBar,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -24,7 +23,6 @@ import MilestoneModal, { isMilestone } from '../components/MilestoneModal';
 import OutOfHeartsModal from '../components/OutOfHeartsModal';
 import { playSound } from '../services/sounds';
 import { requestReviewIfAppropriate } from '../services/review';
-import { LT, LT_RADIUS } from '../config/lightTheme';
 
 const STEP = {
   TEACHING: 'teaching',
@@ -268,7 +266,7 @@ export default function LessonScreen({ navigation, route }) {
         style={styles.closeBtn}
         hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
       >
-        <MaterialIcons name="close" size={22} color={LT.onSurfaceVariant} />
+        <MaterialIcons name="close" size={22} color="#9898B0" />
       </TouchableOpacity>
       <View style={styles.progressTrack}>
         <Animated.View
@@ -283,7 +281,7 @@ export default function LessonScreen({ navigation, route }) {
           ]}
         >
           <LinearGradient
-            colors={[LT.primaryContainer, LT.primaryContainer]}
+            colors={['#8083FF', '#6366F1']}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
             style={styles.progressFill}
@@ -306,11 +304,11 @@ export default function LessonScreen({ navigation, route }) {
 
       <View style={styles.heroBox}>
         <LinearGradient
-          colors={[LT.surfaceContainerLowest, LT.surfaceContainerLowest]}
+          colors={['rgba(99, 102, 241, 0.18)', 'rgba(11, 11, 20, 0.85)']}
           style={StyleSheet.absoluteFillObject}
         />
         <View style={styles.heroMascot}>
-          <MaterialIcons name="self-improvement" size={68} color={LT.primaryContainer} />
+          <MaterialIcons name="self-improvement" size={68} color="#8083FF" />
         </View>
       </View>
 
@@ -357,7 +355,7 @@ export default function LessonScreen({ navigation, route }) {
 
             const cardStyle = [styles.optionCard];
             const letterBoxStyle = [styles.optionLetterBox];
-            let letterColor = LT.onSurfaceVariant;
+            let letterColor = '#908FA0';
 
             if (showCorrect) {
               cardStyle.push({
@@ -375,11 +373,11 @@ export default function LessonScreen({ navigation, route }) {
               letterColor = '#FFFFFF';
             } else if (isSelected) {
               cardStyle.push({
-                backgroundColor: LT.surfaceContainerLowest,
-                borderColor: LT.primaryContainer,
+                backgroundColor: '#1F1F33',
+                borderColor: '#8083FF',
               });
-              letterBoxStyle.push({ backgroundColor: LT.primaryContainer, borderColor: LT.primaryContainer });
-              letterColor = LT.onPrimary;
+              letterBoxStyle.push({ backgroundColor: '#8083FF', borderColor: '#8083FF' });
+              letterColor = '#0D0096';
             }
 
             return (
@@ -433,7 +431,7 @@ export default function LessonScreen({ navigation, route }) {
 
       <View style={styles.commitMascotWrap}>
         <LinearGradient
-          colors={[LT.surfaceContainerLowest, LT.surfaceContainerLowest]}
+          colors={['#1F1F33', '#0D0D15']}
           style={styles.commitMascotCircle}
         >
           <Image
@@ -459,7 +457,7 @@ export default function LessonScreen({ navigation, route }) {
           ]}
         >
           {(actionDone || alreadyCompleted) && (
-            <MaterialIcons name="check" size={18} color={LT.onPrimary} />
+            <MaterialIcons name="check" size={18} color="#FFFFFF" />
           )}
         </View>
         <View style={{ flex: 1 }}>
@@ -480,13 +478,13 @@ export default function LessonScreen({ navigation, route }) {
               value={reflection}
               onChangeText={(txt) => setReflection(txt.slice(0, REFLECTION_MAX))}
               placeholder={t('lesson.reflectionPlaceholder', 'Düşüncelerini buraya yaz...')}
-              placeholderTextColor={LT.outline}
+              placeholderTextColor="#5B5B70"
               multiline
               style={styles.reflectionInput}
               editable={!alreadyCompleted}
             />
             <View style={styles.reflectionEditIcon} pointerEvents="none">
-              <MaterialIcons name="edit-note" size={20} color={LT.outline} />
+              <MaterialIcons name="edit-note" size={20} color="#5B5B70" />
             </View>
           </View>
           <View style={styles.reflectionMeta}>
@@ -510,13 +508,13 @@ export default function LessonScreen({ navigation, route }) {
         <View style={styles.bottomCTAWrap}>
           <TouchableOpacity onPress={handleTeachingNext} activeOpacity={0.9} style={styles.ctaShadow}>
             <LinearGradient
-              colors={[LT.primaryContainer, LT.primaryContainer]}
+              colors={['#6366F1', '#8B5CF6']}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
               style={styles.ctaButton}
             >
               <Text style={styles.ctaText}>{t('lesson.gotIt', 'Anladım')}</Text>
-              <MaterialIcons name="arrow-forward" size={20} color={LT.onPrimary} />
+              <MaterialIcons name="arrow-forward" size={20} color="#FFFFFF" />
             </LinearGradient>
           </TouchableOpacity>
         </View>
@@ -532,7 +530,7 @@ export default function LessonScreen({ navigation, route }) {
             style={styles.ctaShadow}
           >
             <LinearGradient
-              colors={revealed ? [LT.primaryContainer, LT.primaryContainer] : [LT.surfaceContainerHigh, LT.surfaceContainerHigh]}
+              colors={revealed ? ['#8083FF', '#6366F1'] : ['#3A3A5A', '#3A3A5A']}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
               style={styles.ctaButton}
@@ -544,7 +542,7 @@ export default function LessonScreen({ navigation, route }) {
                     : t('common.next', 'İleri')
                   : t('lesson.selectAnswer', 'Bir cevap seç')}
               </Text>
-              {revealed && <MaterialIcons name="arrow-forward" size={20} color={LT.onPrimary} />}
+              {revealed && <MaterialIcons name="arrow-forward" size={20} color="#FFFFFF" />}
             </LinearGradient>
           </TouchableOpacity>
         </View>
@@ -564,14 +562,14 @@ export default function LessonScreen({ navigation, route }) {
               alreadyCompleted
                 ? ['#10B981', '#059669']
                 : canComplete
-                  ? [LT.primaryContainer, LT.primaryContainer]
-                  : ['rgba(227, 18, 18, 0.4)', 'rgba(227, 18, 18, 0.4)']
+                  ? ['#6366F1', '#8B5CF6']
+                  : ['rgba(99,102,241,0.4)', 'rgba(139,92,246,0.4)']
             }
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={styles.ctaButton}
           >
-            <MaterialIcons name="check-circle" size={20} color={LT.onPrimary} />
+            <MaterialIcons name="check-circle" size={20} color="#FFFFFF" />
             <Text style={[styles.ctaText, !canComplete && { opacity: 0.6 }]}>
               {alreadyCompleted
                 ? t('lesson.completed', '✓ Tamamlandı')
@@ -590,7 +588,6 @@ export default function LessonScreen({ navigation, route }) {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="dark-content" />
       <View style={styles.container}>
         <View style={[styles.glow, { top: -80, right: -60 }]} pointerEvents="none" />
         <View
@@ -690,7 +687,7 @@ export default function LessonScreen({ navigation, route }) {
                 style={styles.celebrationPrimaryShadow}
               >
                 <LinearGradient
-                  colors={[LT.primaryContainer, LT.primaryContainer]}
+                  colors={['#6366F1', '#8B5CF6']}
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 0 }}
                   style={styles.celebrationPrimaryBtn}
@@ -698,7 +695,7 @@ export default function LessonScreen({ navigation, route }) {
                   <Text style={styles.celebrationPrimaryText}>
                     {t('lesson.nextLesson', 'Sonraki Dersi Başla')}
                   </Text>
-                  <MaterialIcons name="arrow-forward" size={20} color={LT.onPrimary} />
+                  <MaterialIcons name="arrow-forward" size={20} color="#FFFFFF" />
                 </LinearGradient>
               </TouchableOpacity>
 
@@ -720,21 +717,21 @@ export default function LessonScreen({ navigation, route }) {
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: LT.background },
-  container: { flex: 1, backgroundColor: LT.background },
+  safeArea: { flex: 1, backgroundColor: '#0B0B14' },
+  container: { flex: 1, backgroundColor: '#0B0B14' },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  errorText: { color: LT.onSurface, fontSize: 16 },
-  backText: { color: LT.primaryContainer, fontSize: 16 },
+  errorText: { color: '#F5F5FA', fontSize: 16 },
+  backText: { color: '#6366F1', fontSize: 16 },
 
   glow: {
     position: 'absolute',
     width: 300,
     height: 300,
     borderRadius: 150,
-    backgroundColor: 'rgba(227, 18, 18, 0.05)',
+    backgroundColor: 'rgba(99, 102, 241, 0.08)',
     opacity: 0.6,
   },
-  glowPurple: { backgroundColor: 'rgba(55, 65, 225, 0.04)' },
+  glowPurple: { backgroundColor: 'rgba(139, 92, 246, 0.06)' },
 
   topBar: {
     flexDirection: 'row',
@@ -744,7 +741,7 @@ const styles = StyleSheet.create({
     paddingBottom: 12,
     gap: 14,
     borderBottomWidth: 1,
-    borderBottomColor: LT.outlineVariant,
+    borderBottomColor: 'rgba(42, 42, 66, 0.5)',
   },
   closeBtn: {
     width: 36, height: 36, borderRadius: 12,
@@ -752,42 +749,42 @@ const styles = StyleSheet.create({
   },
   progressTrack: {
     flex: 1, height: 8,
-    backgroundColor: LT.surfaceContainerHigh,
+    backgroundColor: '#1F1F33',
     borderRadius: 4, overflow: 'hidden',
   },
   progressFillWrap: { height: '100%', borderRadius: 4 },
   progressFill: {
     flex: 1, borderRadius: 4,
-    shadowColor: LT.primaryContainer,
+    shadowColor: '#6366F1',
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.5, shadowRadius: 8,
   },
   heartsBadge: {
     flexDirection: 'row', alignItems: 'center',
-    backgroundColor: LT.surfaceContainerLowest, borderRadius: 999,
+    backgroundColor: '#161626', borderRadius: 999,
     paddingHorizontal: 12, paddingVertical: 6,
-    borderWidth: 1, borderColor: LT.outlineVariant, gap: 4,
+    borderWidth: 1, borderColor: '#2A2A42', gap: 4,
   },
-  heartsText: { color: LT.primaryContainer, fontSize: 13, fontWeight: '800' },
+  heartsText: { color: '#A5B4FC', fontSize: 13, fontWeight: '800' },
 
   content: { paddingHorizontal: 20, paddingTop: 16, paddingBottom: 32 },
 
   stepLabel: {
-    color: LT.primaryContainer,
+    color: '#8083FF',
     fontSize: 12, fontWeight: '900',
     letterSpacing: 2, textTransform: 'uppercase',
     marginBottom: 8,
   },
   stepChip: {
     alignSelf: 'flex-start',
-    backgroundColor: 'rgba(227, 18, 18, 0.08)',
-    borderColor: 'rgba(227, 18, 18, 0.25)',
+    backgroundColor: 'rgba(99, 102, 241, 0.1)',
+    borderColor: 'rgba(99, 102, 241, 0.25)',
     borderWidth: 1,
     paddingHorizontal: 12, paddingVertical: 6,
     borderRadius: 8,
   },
   stepChipText: {
-    color: LT.primaryContainer,
+    color: '#C0C1FF',
     fontSize: 11, fontWeight: '900',
     letterSpacing: 2, textTransform: 'uppercase',
   },
@@ -804,28 +801,28 @@ const styles = StyleSheet.create({
   },
 
   title: {
-    color: LT.onSurface, fontSize: 24, fontWeight: '900',
+    color: '#F5F5FA', fontSize: 24, fontWeight: '900',
     marginBottom: 24, lineHeight: 30, letterSpacing: -0.4,
   },
 
   heroBox: {
     width: '100%', aspectRatio: 1,
     borderRadius: 24, overflow: 'hidden',
-    backgroundColor: LT.surfaceContainerLowest,
-    borderWidth: 1, borderColor: LT.outlineVariant,
+    backgroundColor: 'rgba(22, 22, 38, 0.8)',
+    borderWidth: 1, borderColor: '#2A2A42',
     alignItems: 'center', justifyContent: 'center',
     marginBottom: 24,
   },
   heroMascot: {
     width: 132, height: 132, borderRadius: 66,
-    borderWidth: 2, borderColor: 'rgba(227, 18, 18, 0.3)',
+    borderWidth: 2, borderColor: 'rgba(99, 102, 241, 0.3)',
     alignItems: 'center', justifyContent: 'center',
   },
 
   teachingCard: {
-    backgroundColor: LT.surfaceContainerLowest,
+    backgroundColor: 'rgba(22, 22, 38, 0.85)',
     borderRadius: 18, padding: 18,
-    borderWidth: 1, borderColor: LT.outlineVariant,
+    borderWidth: 1, borderColor: '#2A2A42',
     overflow: 'hidden',
   },
   cornerAccent: {
@@ -834,65 +831,61 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 18,
     borderBottomLeftRadius: 64,
     borderTopWidth: 1, borderRightWidth: 1,
-    borderColor: 'rgba(227, 18, 18, 0.2)',
-    backgroundColor: 'rgba(227, 18, 18, 0.05)',
+    borderColor: 'rgba(99, 102, 241, 0.2)',
+    backgroundColor: 'rgba(128, 131, 255, 0.05)',
   },
   teachingText: {
-    color: LT.onSurface, fontSize: 15,
+    color: '#C7C4D7', fontSize: 15,
     lineHeight: 24, fontWeight: '500',
   },
 
   proTipBox: {
     flexDirection: 'row',
-    backgroundColor: LT.surfaceContainerLowest,
+    backgroundColor: '#1B1B23',
     borderLeftWidth: 4, borderLeftColor: '#FDE047',
     borderRadius: 12, padding: 16, marginTop: 24,
     gap: 12, alignItems: 'flex-start',
-    borderTopWidth: 1, borderRightWidth: 1, borderBottomWidth: 1,
-    borderTopColor: LT.outlineVariant,
-    borderRightColor: LT.outlineVariant,
-    borderBottomColor: LT.outlineVariant,
   },
   proTipLabel: {
-    color: '#B45309', fontSize: 11, fontWeight: '900',
+    color: '#FDE047', fontSize: 11, fontWeight: '900',
     letterSpacing: 1.5, marginBottom: 4,
   },
   proTipBody: {
-    color: LT.onSurfaceVariant, fontSize: 13,
+    color: '#9898B0', fontSize: 13,
     lineHeight: 18, fontWeight: '500',
   },
 
   questionSubtitle: {
-    color: LT.onSurfaceVariant, fontSize: 14,
+    color: '#9898B0', fontSize: 14,
     marginTop: -16, marginBottom: 20,
     fontWeight: '500', lineHeight: 20,
   },
   optionsContainer: { gap: 12 },
   optionCard: {
     flexDirection: 'row', alignItems: 'center',
-    backgroundColor: LT.surfaceContainerLowest,
-    borderWidth: 2, borderColor: LT.outlineVariant,
+    backgroundColor: '#161626',
+    borderWidth: 2, borderColor: '#2A2A42',
     borderRadius: 18, padding: 14, gap: 14,
   },
   optionLetterBox: {
     width: 40, height: 40, borderRadius: 12,
     alignItems: 'center', justifyContent: 'center',
-    backgroundColor: LT.surfaceContainer,
-    borderWidth: 1, borderColor: LT.outlineVariant,
+    backgroundColor: '#1F1F27',
+    borderWidth: 1, borderColor: '#2A2A42',
   },
   optionLetter: { fontSize: 16, fontWeight: '900' },
-  optionText: { flex: 1, color: LT.onSurface, fontSize: 15, fontWeight: '600' },
+  optionText: { flex: 1, color: '#F5F5FA', fontSize: 15, fontWeight: '600' },
 
   explainBox: {
     flexDirection: 'row',
     alignItems: 'flex-start',
     gap: 10,
-    backgroundColor: LT.surfaceContainerLowest,
+    backgroundColor: '#1B1B23',
     borderRadius: 12, padding: 14, marginTop: 16,
-    borderWidth: 1, borderColor: LT.outlineVariant,
+    borderWidth: 1, borderColor: '#2A2A42',
   },
   explainText: {
-    flex: 1, color: LT.onSurface,
+    flex: 1, color: '#C7C4D7',
     fontSize: 13, lineHeight: 20, fontStyle: 'italic',
   },
 
@@ -900,34 +893,34 @@ const styles = StyleSheet.create({
   commitMascotCircle: {
     width: 192, height: 192, borderRadius: 96,
     alignItems: 'center', justifyContent: 'center',
-    borderWidth: 1, borderColor: LT.outlineVariant,
+    borderWidth: 1, borderColor: '#2A2A42',
     overflow: 'hidden',
   },
   commitMascotImg: { width: 132, height: 132, opacity: 0.9 },
 
   actionCard: {
-    backgroundColor: LT.surfaceContainerLowest,
-    borderWidth: 1, borderColor: 'rgba(227, 18, 18, 0.3)',
+    backgroundColor: '#161626',
+    borderWidth: 1, borderColor: 'rgba(99, 102, 241, 0.3)',
     borderRadius: 18, padding: 16, marginBottom: 24,
     flexDirection: 'row', gap: 14, alignItems: 'flex-start',
   },
   actionCardActive: {
-    borderColor: LT.primaryContainer,
-    backgroundColor: 'rgba(227, 18, 18, 0.06)',
+    borderColor: '#6366F1',
+    backgroundColor: 'rgba(99, 102, 241, 0.08)',
   },
   checkbox: {
     width: 28, height: 28, borderRadius: 8,
-    borderWidth: 2, borderColor: LT.outlineVariant,
+    borderWidth: 2, borderColor: '#2A2A42',
     backgroundColor: 'transparent',
     alignItems: 'center', justifyContent: 'center',
     marginTop: 2,
   },
   checkboxActive: {
-    backgroundColor: LT.primaryContainer, borderColor: LT.primaryContainer,
+    backgroundColor: '#6366F1', borderColor: '#6366F1',
   },
-  actionText: { color: LT.onSurface, fontSize: 15, fontWeight: '600', lineHeight: 22 },
+  actionText: { color: '#F5F5FA', fontSize: 15, fontWeight: '600', lineHeight: 22 },
   actionHint: {
-    color: LT.outline,
+    color: '#5B5B70',
     fontSize: 11, fontWeight: '700',
     letterSpacing: 1, textTransform: 'uppercase',
     marginTop: 8,
@@ -935,16 +928,16 @@ const styles = StyleSheet.create({
 
   reflectionWrap: { gap: 8 },
   reflectionLabel: {
-    color: LT.primaryContainer,
+    color: '#A5B4FC',
     fontSize: 13, fontWeight: '600',
     fontStyle: 'italic', paddingHorizontal: 4,
   },
   reflectionBox: { position: 'relative' },
   reflectionInput: {
-    backgroundColor: LT.surfaceContainerLowest,
-    borderWidth: 1, borderColor: LT.outlineVariant,
+    backgroundColor: '#1F1F33',
+    borderWidth: 1, borderColor: '#2A2A42',
     borderRadius: 12, padding: 14, paddingRight: 40,
-    color: LT.onSurface, fontSize: 14,
+    color: '#F5F5FA', fontSize: 14,
     minHeight: 100, textAlignVertical: 'top',
   },
   reflectionEditIcon: { position: 'absolute', bottom: 10, right: 10 },
@@ -954,18 +947,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
   },
   reflectionMetaText: {
-    color: LT.outline, fontSize: 10, fontWeight: '700',
+    color: '#5B5B70', fontSize: 10, fontWeight: '700',
     letterSpacing: 1, textTransform: 'uppercase',
   },
 
   bottomCTAWrap: {
     position: 'absolute', bottom: 0, left: 0, right: 0,
     paddingHorizontal: 20, paddingBottom: 24, paddingTop: 12,
-    backgroundColor: 'rgba(249, 249, 249, 0.95)',
+    backgroundColor: 'rgba(11, 11, 20, 0.95)',
   },
   ctaShadow: {
     borderRadius: 18,
-    shadowColor: LT.primaryContainer,
+    shadowColor: '#6366F1',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.4, shadowRadius: 20,
     elevation: 8,
@@ -976,11 +969,11 @@ const styles = StyleSheet.create({
     paddingVertical: 18, borderRadius: 18, gap: 8,
   },
   ctaText: {
-    color: LT.onPrimary,
+    color: '#FFFFFF',
     fontSize: 16, fontWeight: '800', letterSpacing: 0.3,
   },
   ctaHint: {
-    color: LT.outline, fontSize: 10, fontWeight: '700',
+    color: '#5B5B70', fontSize: 10, fontWeight: '700',
     letterSpacing: 2, textAlign: 'center',
     textTransform: 'uppercase', marginTop: 12,
   },
@@ -988,7 +981,7 @@ const styles = StyleSheet.create({
   celebration: {
     position: 'absolute',
     top: 0, left: 0, right: 0, bottom: 0,
-    backgroundColor: LT.background,
+    backgroundColor: 'rgba(11, 11, 20, 0.96)',
     zIndex: 999,
   },
   celebrationTopBar: {
@@ -999,11 +992,11 @@ const styles = StyleSheet.create({
     paddingTop: 16,
     paddingBottom: 12,
     borderBottomWidth: 1,
-    borderBottomColor: LT.outlineVariant,
-    backgroundColor: LT.background,
+    borderBottomColor: '#2A2A42',
+    backgroundColor: '#0B0B14',
   },
   celebrationTopTitle: {
-    color: LT.onSurface, fontSize: 17, fontWeight: '700',
+    color: '#F5F5FA', fontSize: 17, fontWeight: '700',
   },
   celebrationCenter: {
     flex: 1,
@@ -1028,10 +1021,10 @@ const styles = StyleSheet.create({
     width: 180, height: 180,
     borderRadius: 90,
     borderWidth: 1,
-    borderColor: 'rgba(227, 18, 18, 0.2)',
+    borderColor: 'rgba(99, 102, 241, 0.2)',
   },
   celebrationXP: {
-    color: '#B45309',
+    color: '#FDE047',
     fontSize: 36,
     fontWeight: '900',
     letterSpacing: -0.5,
@@ -1041,14 +1034,14 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   celebrationHeading: {
-    color: LT.onSurface,
+    color: '#FFFFFF',
     fontSize: 24,
     fontWeight: '900',
     marginBottom: 8,
     letterSpacing: -0.4,
   },
   celebrationSubtitle: {
-    color: LT.onSurfaceVariant,
+    color: '#9898B0',
     fontSize: 15,
     fontWeight: '500',
     textAlign: 'center',
@@ -1080,7 +1073,7 @@ const styles = StyleSheet.create({
   },
   celebrationPrimaryShadow: {
     borderRadius: 18,
-    shadowColor: LT.primaryContainer,
+    shadowColor: '#6366F1',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.4,
     shadowRadius: 16,
@@ -1095,7 +1088,7 @@ const styles = StyleSheet.create({
     borderRadius: 18,
   },
   celebrationPrimaryText: {
-    color: LT.onPrimary,
+    color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '800',
     letterSpacing: 0.3,
@@ -1105,7 +1098,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   celebrationSecondaryText: {
-    color: LT.onSurfaceVariant,
+    color: '#C7C4D7',
     fontSize: 14,
     fontWeight: '700',
   },

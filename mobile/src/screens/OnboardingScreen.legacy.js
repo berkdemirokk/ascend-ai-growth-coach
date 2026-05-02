@@ -9,8 +9,8 @@ import {
   Animated,
   Easing,
   Image,
-  StatusBar,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import Animated2, {
   useSharedValue,
   useAnimatedStyle,
@@ -20,7 +20,6 @@ import { useTranslation } from 'react-i18next';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useApp } from '../contexts/AppContext';
 import { COLORS } from '../config/constants';
-import { LT, LT_RADIUS } from '../config/lightTheme';
 import { PATHS } from '../data/paths';
 import { setLanguage, getCurrentLanguage, SUPPORTED_LANGUAGES } from '../i18n';
 
@@ -75,8 +74,7 @@ export default function OnboardingScreen({ navigation }) {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="dark-content" backgroundColor={LT.background} />
-      <View style={styles.container}>
+      <LinearGradient colors={['#0B0B14', '#161626']} style={styles.container}>
         {/* Hero ambient glow */}
         <View style={styles.heroGlow} pointerEvents="none" />
 
@@ -109,9 +107,14 @@ export default function OnboardingScreen({ navigation }) {
             })}
           </View>
 
-          {/* Primary CTA — solid red */}
+          {/* Primary CTA — gradient with shine */}
           <TouchableOpacity onPress={handleNext} activeOpacity={0.9} style={styles.primaryWrap}>
-            <View style={styles.primaryButton}>
+            <LinearGradient
+              colors={['#6366F1', '#8B5CF6']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.primaryButton}
+            >
               <Text style={styles.primaryButtonText}>
                 {step === 'welcome'
                   ? t('onboarding.cta', 'Başla')
@@ -119,8 +122,8 @@ export default function OnboardingScreen({ navigation }) {
                     ? t('onboarding.startPath', 'Bu yolu başlat')
                     : t('onboarding.skipUpsell', 'Şimdilik Atla')}
               </Text>
-              <MaterialIcons name="arrow-forward" size={20} color={LT.onPrimary} style={{ marginLeft: 6 }} />
-            </View>
+              <MaterialIcons name="arrow-forward" size={20} color="#FFFFFF" style={{ marginLeft: 6 }} />
+            </LinearGradient>
           </TouchableOpacity>
 
           {/* Caption */}
@@ -132,7 +135,7 @@ export default function OnboardingScreen({ navigation }) {
                 : t('onboarding.captionUpsell', 'PREMIUM İLE TAMAM')}
           </Text>
         </Animated2.View>
-      </View>
+      </LinearGradient>
     </SafeAreaView>
   );
 }
@@ -184,29 +187,29 @@ function WelcomeStep({ t }) {
       <Text style={styles.title}>{t('onboarding.title', 'MONK MODE').toUpperCase()}</Text>
       <Text style={styles.subtitle}>{t('onboarding.subtitle', 'Disiplini seç. Yolu yürü. Kendini dönüştür.')}</Text>
 
-      {/* Card features */}
+      {/* Glass-card features */}
       <View style={styles.featuresContainer}>
         <FeatureCard
           icon="menu-book"
-          iconColor={LT.primary}
-          tint={LT.surfaceContainerLow}
-          border={LT.outlineVariant}
+          iconColor="#A5B4FC"
+          tint="rgba(99, 102, 241, 0.15)"
+          border="rgba(99, 102, 241, 0.25)"
           title={t('onboarding.bullet1', 'Her gün tek ders')}
           subtitle={t('onboarding.bullet1Sub', 'Odaklanmış gelişim için mikro öğrenme.')}
         />
         <FeatureCard
           icon="psychology"
-          iconColor={LT.primaryContainer}
-          tint={LT.surfaceContainerLow}
-          border={LT.outlineVariant}
+          iconColor="#C4B5FD"
+          tint="rgba(139, 92, 246, 0.15)"
+          border="rgba(139, 92, 246, 0.25)"
           title={t('onboarding.bullet2', 'Quiz ile pekiştir')}
           subtitle={t('onboarding.bullet2Sub', 'Bilgini anında test et ve kalıcı kıl.')}
         />
         <FeatureCard
           icon="favorite"
-          iconColor={LT.primary}
-          tint={LT.surfaceContainerLow}
-          border={LT.outlineVariant}
+          iconColor="#FCA5A5"
+          tint="rgba(239, 68, 68, 0.15)"
+          border="rgba(239, 68, 68, 0.25)"
           title={t('onboarding.bullet3', 'Kalpleri kaybetme')}
           subtitle={t('onboarding.bullet3Sub', 'Serini koru ve ustalık seviyeni yükselt.')}
         />
@@ -269,22 +272,22 @@ function UpsellStep({ t, onSubscribe }) {
       <View style={styles.upsellFeatures}>
         <UpsellFeature
           icon="favorite"
-          color={LT.primary}
+          color="#EF4444"
           title={t('onboarding.upsellF1', 'Sınırsız kalpler')}
         />
         <UpsellFeature
           icon="workspace-premium"
-          color={LT.primaryContainer}
+          color="#FFB783"
           title={t('onboarding.upsellF2', 'Tüm 5 yolun kilidi açık')}
         />
         <UpsellFeature
           icon="block"
-          color={LT.tertiary}
+          color="#A5B4FC"
           title={t('onboarding.upsellF3', 'Reklamsız deneyim')}
         />
         <UpsellFeature
           icon="auto-awesome"
-          color={LT.primary}
+          color="#D0BCFF"
           title={t('onboarding.upsellF4', 'Premium başarılar')}
         />
       </View>
@@ -294,12 +297,17 @@ function UpsellStep({ t, onSubscribe }) {
         activeOpacity={0.9}
         style={styles.upsellCtaWrap}
       >
-        <View style={styles.upsellCta}>
-          <MaterialIcons name="auto-awesome" size={18} color={LT.onPrimary} />
+        <LinearGradient
+          colors={['#6366F1', '#8B5CF6']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+          style={styles.upsellCta}
+        >
+          <MaterialIcons name="auto-awesome" size={18} color="#FFFFFF" />
           <Text style={styles.upsellCtaText}>
             {t('onboarding.upsellCta', '7 gün ücretsiz dene')}
           </Text>
-        </View>
+        </LinearGradient>
       </TouchableOpacity>
 
       <Text style={styles.upsellDisclaimer}>
@@ -315,7 +323,7 @@ function UpsellStep({ t, onSubscribe }) {
 function UpsellFeature({ icon, color, title }) {
   return (
     <View style={styles.upsellFeature}>
-      <View style={[styles.upsellFeatureIcon, { backgroundColor: LT.surfaceContainerLow, borderColor: LT.outlineVariant }]}>
+      <View style={[styles.upsellFeatureIcon, { backgroundColor: `${color}22`, borderColor: `${color}55` }]}>
         <MaterialIcons name={icon} size={20} color={color} />
       </View>
       <Text style={styles.upsellFeatureText}>{title}</Text>
@@ -346,24 +354,26 @@ function PickPathStep({ t, selectedPath, onSelect }) {
               style={[
                 styles.pathGridCard,
                 {
-                  borderColor: isSelected ? LT.primary : LT.outlineVariant,
+                  borderColor: isSelected ? p.color : `${p.color}4D`,
                   borderWidth: isSelected ? 2 : 1,
-                  backgroundColor: LT.surfaceContainerLowest,
-                  shadowColor: isSelected ? LT.primary : '#000',
-                  shadowOpacity: isSelected ? 0.18 : 0.05,
-                  shadowRadius: 12,
-                  shadowOffset: { width: 0, height: 4 },
-                  elevation: isSelected ? 6 : 2,
+                  backgroundColor: isSelected
+                    ? `${p.color}15`
+                    : 'rgba(22, 22, 38, 0.7)',
+                  shadowColor: isSelected ? p.color : 'transparent',
+                  shadowOpacity: isSelected ? 0.4 : 0,
+                  shadowRadius: 16,
+                  shadowOffset: { width: 0, height: 0 },
+                  elevation: isSelected ? 6 : 0,
                 },
               ]}
             >
               {isSelected && (
                 <View style={styles.pathCheckBadge}>
-                  <MaterialIcons name="check-circle" size={20} color={LT.primary} />
+                  <MaterialIcons name="check-circle" size={20} color={p.color} />
                 </View>
               )}
               <View style={styles.pathGridIconBox}>
-                <MaterialIcons name={p.materialIcon} size={32} color={isSelected ? LT.primary : LT.onSurfaceVariant} />
+                <MaterialIcons name={p.materialIcon} size={32} color={p.color} />
               </View>
               <Text style={styles.pathGridName}>
                 {t(`paths.${p.id}.title`, p.id)}
@@ -380,8 +390,8 @@ function PickPathStep({ t, selectedPath, onSelect }) {
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: LT.background },
-  container: { flex: 1, backgroundColor: LT.background },
+  safeArea: { flex: 1, backgroundColor: '#0B0B14' },
+  container: { flex: 1 },
 
   heroGlow: {
     position: 'absolute',
@@ -391,8 +401,8 @@ const styles = StyleSheet.create({
     height: 300,
     marginLeft: -150,
     borderRadius: 150,
-    backgroundColor: LT.outlineVariant,
-    opacity: 0.25,
+    backgroundColor: 'rgba(99, 102, 241, 0.18)',
+    opacity: 0.6,
     transform: [{ scale: 1.4 }],
   },
 
@@ -417,23 +427,23 @@ const styles = StyleSheet.create({
     height: 220,
     borderRadius: 110,
     borderWidth: 1,
-    borderColor: LT.outlineVariant,
+    borderColor: 'rgba(99, 102, 241, 0.4)',
     borderStyle: 'dashed',
-    opacity: 0.7,
+    opacity: 0.5,
   },
   heroCircle: {
     width: 184,
     height: 184,
     borderRadius: 92,
     overflow: 'hidden',
-    backgroundColor: LT.surfaceContainerLowest,
+    backgroundColor: '#1B1B23',
     borderWidth: 1,
-    borderColor: LT.outlineVariant,
-    shadowColor: LT.primary,
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.18,
-    shadowRadius: 18,
-    elevation: 8,
+    borderColor: 'rgba(99, 102, 241, 0.25)',
+    shadowColor: '#6366F1',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.4,
+    shadowRadius: 24,
+    elevation: 12,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -442,14 +452,14 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 32,
     fontWeight: '900',
-    color: LT.onSurface,
+    color: '#FFFFFF',
     textAlign: 'center',
     letterSpacing: -1,
     marginBottom: 10,
   },
   subtitle: {
     fontSize: 15,
-    color: LT.onSurfaceVariant,
+    color: '#9898B0',
     textAlign: 'center',
     lineHeight: 22,
     marginBottom: 28,
@@ -457,7 +467,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
 
-  // Cards
+  // Glass cards
   featuresContainer: {
     width: '100%',
     gap: 12,
@@ -466,9 +476,9 @@ const styles = StyleSheet.create({
   featureCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: LT.surfaceContainerLowest,
+    backgroundColor: 'rgba(31, 31, 51, 0.5)',
     borderWidth: 1,
-    borderColor: LT.outlineVariant,
+    borderColor: 'rgba(42, 42, 66, 0.7)',
     borderRadius: 14,
     padding: 14,
     gap: 14,
@@ -483,13 +493,13 @@ const styles = StyleSheet.create({
   },
   featureText: { flex: 1 },
   featureTitle: {
-    color: LT.onSurface,
+    color: '#E0E7FF',
     fontSize: 15,
     fontWeight: '700',
     marginBottom: 2,
   },
   featureSubtitle: {
-    color: LT.onSurfaceVariant,
+    color: '#8B8BA8',
     fontSize: 12,
     lineHeight: 16,
     fontWeight: '500',
@@ -508,16 +518,16 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 10,
     borderWidth: 1.5,
-    borderColor: LT.outlineVariant,
-    backgroundColor: LT.surfaceContainerLowest,
+    borderColor: '#2A2A42',
+    backgroundColor: 'rgba(22, 22, 38, 0.6)',
   },
   langBtnActive: {
-    borderColor: LT.primary,
-    backgroundColor: LT.surfaceContainerLow,
+    borderColor: '#6366F1',
+    backgroundColor: 'rgba(99, 102, 241, 0.18)',
   },
   langFlag: { fontSize: 18, marginBottom: 2 },
-  langLabel: { fontSize: 11, color: LT.onSurfaceVariant, fontWeight: '600' },
-  langLabelActive: { color: LT.primary, fontWeight: '700' },
+  langLabel: { fontSize: 11, color: '#9898B0', fontWeight: '600' },
+  langLabelActive: { color: '#FFFFFF', fontWeight: '700' },
 
   // Pick path step
   pickPathContent: { flex: 1, paddingTop: 40 },
@@ -532,12 +542,12 @@ const styles = StyleSheet.create({
   upsellEmoji: {
     fontSize: 56,
     marginBottom: 12,
-    textShadowColor: 'rgba(183, 0, 6, 0.3)',
+    textShadowColor: 'rgba(245, 158, 11, 0.4)',
     textShadowOffset: { width: 0, height: 0 },
     textShadowRadius: 14,
   },
   upsellTitle: {
-    color: LT.primary,
+    color: '#FFFFFF',
     fontSize: 28,
     fontWeight: '900',
     letterSpacing: -0.6,
@@ -545,7 +555,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   upsellSubtitle: {
-    color: LT.onSurfaceVariant,
+    color: '#C7C4D7',
     fontSize: 14,
     fontWeight: '500',
     textAlign: 'center',
@@ -562,8 +572,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
-    backgroundColor: LT.surfaceContainerLowest,
-    borderColor: LT.outlineVariant,
+    backgroundColor: 'rgba(31, 31, 51, 0.5)',
+    borderColor: 'rgba(70, 69, 84, 0.6)',
     borderWidth: 1,
     borderRadius: 12,
     paddingHorizontal: 14,
@@ -578,7 +588,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   upsellFeatureText: {
-    color: LT.onSurface,
+    color: '#E4E1ED',
     fontSize: 14,
     fontWeight: '700',
     flex: 1,
@@ -587,13 +597,12 @@ const styles = StyleSheet.create({
     width: '100%',
     borderRadius: 16,
     overflow: 'hidden',
-    shadowColor: LT.primary,
+    shadowColor: '#6366F1',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
+    shadowOpacity: 0.4,
     shadowRadius: 16,
     elevation: 8,
     marginBottom: 12,
-    backgroundColor: LT.primary,
   },
   upsellCta: {
     flexDirection: 'row',
@@ -601,16 +610,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 8,
     paddingVertical: 16,
-    backgroundColor: LT.primary,
   },
   upsellCtaText: {
-    color: LT.onPrimary,
+    color: '#FFFFFF',
     fontSize: 15,
     fontWeight: '900',
     letterSpacing: 0.3,
   },
   upsellDisclaimer: {
-    color: LT.onSurfaceVariant,
+    color: '#908FA0',
     fontSize: 11,
     textAlign: 'center',
     lineHeight: 16,
@@ -619,7 +627,7 @@ const styles = StyleSheet.create({
   pickTitle: {
     fontSize: 26,
     fontWeight: '900',
-    color: LT.onSurface,
+    color: '#FFFFFF',
     textAlign: 'center',
     paddingHorizontal: 24,
     marginBottom: 8,
@@ -627,7 +635,7 @@ const styles = StyleSheet.create({
   },
   pickSubtitle: {
     fontSize: 13,
-    color: LT.onSurfaceVariant,
+    color: '#9898B0',
     textAlign: 'center',
     paddingHorizontal: 32,
     marginBottom: 24,
@@ -664,14 +672,14 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   pathGridName: {
-    color: LT.onSurface,
+    color: '#FFFFFF',
     fontSize: 15,
     fontWeight: '800',
     marginBottom: 4,
     letterSpacing: -0.2,
   },
   pathGridDuration: {
-    color: LT.onSurfaceVariant,
+    color: '#9898B0',
     fontSize: 11,
     fontWeight: '700',
     textTransform: 'uppercase',
@@ -696,14 +704,14 @@ const styles = StyleSheet.create({
     width: 6,
     height: 6,
     borderRadius: 3,
-    backgroundColor: LT.outlineVariant,
+    backgroundColor: '#34343D',
   },
   dotActive: {
-    backgroundColor: LT.primary,
+    backgroundColor: '#6366F1',
     width: 28,
-    shadowColor: LT.primary,
+    shadowColor: '#6366F1',
     shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.5,
+    shadowOpacity: 0.6,
     shadowRadius: 8,
   },
 
@@ -711,10 +719,9 @@ const styles = StyleSheet.create({
     width: '100%',
     borderRadius: 16,
     overflow: 'hidden',
-    backgroundColor: LT.primary,
-    shadowColor: LT.primary,
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.3,
+    shadowColor: '#6366F1',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.4,
     shadowRadius: 16,
     elevation: 8,
   },
@@ -724,10 +731,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: LT.primary,
   },
   primaryButtonText: {
-    color: LT.onPrimary,
+    color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '800',
     letterSpacing: 0.3,
@@ -735,7 +741,7 @@ const styles = StyleSheet.create({
 
   caption: {
     fontSize: 10,
-    color: LT.onSurfaceVariant,
+    color: '#5B5B70',
     fontWeight: '700',
     letterSpacing: 2,
     textTransform: 'uppercase',

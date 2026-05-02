@@ -9,12 +9,11 @@ import {
   Platform,
   Alert,
   ActivityIndicator,
-  StatusBar,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useAuth } from '../../contexts/AuthContext';
-import { LT, LT_RADIUS } from '../../config/lightTheme';
 import { setLanguage, getCurrentLanguage, SUPPORTED_LANGUAGES } from '../../i18n';
 
 export default function WelcomeScreen({ navigation }) {
@@ -57,7 +56,6 @@ export default function WelcomeScreen({ navigation }) {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="dark-content" backgroundColor={LT.background} />
       <View style={styles.container}>
         {/* Ambient glow background */}
         <View style={styles.heroGlow} pointerEvents="none" />
@@ -87,7 +85,7 @@ export default function WelcomeScreen({ navigation }) {
               disabled={appleLoading}
             >
               {appleLoading ? (
-                <ActivityIndicator color="#FFFFFF" />
+                <ActivityIndicator color="#0B0B14" />
               ) : (
                 <>
                   <Text style={styles.appleIcon}></Text>
@@ -104,12 +102,17 @@ export default function WelcomeScreen({ navigation }) {
             activeOpacity={0.9}
             onPress={() => navigation.navigate('Signup')}
           >
-            <View style={styles.primaryBtn}>
-              <MaterialIcons name="email" size={18} color={LT.onPrimary} />
+            <LinearGradient
+              colors={['#6366F1', '#8B5CF6']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.primaryBtn}
+            >
+              <MaterialIcons name="email" size={18} color="#FFFFFF" />
               <Text style={styles.primaryText}>
                 {t('auth.signupWithEmail', 'E-posta ile kayıt ol')}
               </Text>
-            </View>
+            </LinearGradient>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -169,13 +172,12 @@ export default function WelcomeScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: LT.background },
+  safeArea: { flex: 1, backgroundColor: '#13131b' },
   container: {
     flex: 1,
     paddingHorizontal: 24,
     paddingVertical: 24,
     justifyContent: 'space-between',
-    backgroundColor: LT.background,
   },
 
   heroGlow: {
@@ -186,8 +188,8 @@ const styles = StyleSheet.create({
     height: 320,
     marginLeft: -160,
     borderRadius: 160,
-    backgroundColor: LT.outlineVariant,
-    opacity: 0.25,
+    backgroundColor: 'rgba(99, 102, 241, 0.15)',
+    opacity: 0.5,
   },
 
   hero: {
@@ -201,26 +203,26 @@ const styles = StyleSheet.create({
     height: 144,
     borderRadius: 72,
     overflow: 'hidden',
-    backgroundColor: LT.surfaceContainerLowest,
+    backgroundColor: '#1F1F27',
     borderWidth: 2,
-    borderColor: LT.outlineVariant,
+    borderColor: 'rgba(99, 102, 241, 0.3)',
     marginBottom: 24,
-    shadowColor: LT.primary,
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.2,
-    shadowRadius: 24,
+    shadowColor: '#6366F1',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.4,
+    shadowRadius: 30,
     elevation: 12,
   },
   iconImage: { width: '100%', height: '100%' },
   brand: {
-    color: LT.onSurface,
+    color: '#FFFFFF',
     fontSize: 36,
     fontWeight: '900',
     letterSpacing: -1,
     marginBottom: 10,
   },
   tagline: {
-    color: LT.onSurfaceVariant,
+    color: '#C7C4D7',
     fontSize: 14,
     fontWeight: '700',
     letterSpacing: 3,
@@ -233,7 +235,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   appleBtn: {
-    backgroundColor: '#000000',
+    backgroundColor: '#FFFFFF',
     borderRadius: 14,
     paddingVertical: 14,
     flexDirection: 'row',
@@ -241,15 +243,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 8,
   },
-  appleIcon: { fontSize: 18, color: '#FFFFFF' },
-  appleText: { color: '#FFFFFF', fontSize: 15, fontWeight: '700' },
+  appleIcon: { fontSize: 18, color: '#0B0B14' },
+  appleText: { color: '#0B0B14', fontSize: 15, fontWeight: '700' },
   primaryBtnWrap: {
     borderRadius: 14,
     overflow: 'hidden',
-    backgroundColor: LT.primary,
-    shadowColor: LT.primary,
+    shadowColor: '#6366F1',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
+    shadowOpacity: 0.4,
     shadowRadius: 16,
     elevation: 8,
   },
@@ -259,20 +260,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
-    backgroundColor: LT.primary,
   },
-  primaryText: { color: LT.onPrimary, fontSize: 15, fontWeight: '800' },
+  primaryText: { color: '#FFFFFF', fontSize: 15, fontWeight: '800' },
   secondaryBtn: {
-    backgroundColor: LT.surfaceContainerLowest,
+    backgroundColor: 'rgba(31, 31, 39, 0.8)',
     borderRadius: 14,
     paddingVertical: 14,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: LT.outlineVariant,
+    borderColor: 'rgba(70, 69, 84, 0.6)',
   },
-  secondaryText: { color: LT.primary, fontSize: 14, fontWeight: '700' },
+  secondaryText: { color: '#C0C1FF', fontSize: 14, fontWeight: '700' },
   guestBtn: { paddingVertical: 12, alignItems: 'center', marginTop: 4 },
-  guestText: { color: LT.onSurfaceVariant, fontSize: 13, fontWeight: '600' },
+  guestText: { color: '#908FA0', fontSize: 13, fontWeight: '600' },
 
   langRow: {
     flexDirection: 'row',
@@ -288,19 +288,19 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     borderRadius: 999,
     borderWidth: 1,
-    borderColor: LT.outlineVariant,
-    backgroundColor: LT.surfaceContainerLowest,
+    borderColor: 'rgba(70, 69, 84, 0.5)',
+    backgroundColor: 'rgba(31, 31, 39, 0.4)',
   },
   langChipActive: {
-    borderColor: LT.primary,
-    backgroundColor: LT.surfaceContainerLow,
+    borderColor: '#C0C1FF',
+    backgroundColor: 'rgba(192, 193, 255, 0.15)',
   },
   langFlag: { fontSize: 14 },
-  langLabel: { color: LT.onSurfaceVariant, fontSize: 11, fontWeight: '800', letterSpacing: 1 },
-  langLabelActive: { color: LT.primary },
+  langLabel: { color: '#908FA0', fontSize: 11, fontWeight: '800', letterSpacing: 1 },
+  langLabelActive: { color: '#C0C1FF' },
 
   warningText: {
-    color: LT.primary,
+    color: '#FFB783',
     fontSize: 11,
     fontWeight: '600',
     textAlign: 'center',

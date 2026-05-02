@@ -6,16 +6,15 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Alert,
-  StatusBar,
   StyleSheet,
   SafeAreaView,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useApp } from '../contexts/AppContext';
 import { purchasePremium, restorePurchases, getAvailablePackages } from '../services/purchases';
 import { getPaywallVariant, logPaywallEvent } from '../config/paywallVariants';
-import { LT, LT_RADIUS } from '../config/lightTheme';
 
 export default function PaywallScreen({ navigation }) {
   const { t } = useTranslation();
@@ -107,7 +106,6 @@ export default function PaywallScreen({ navigation }) {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="dark-content" />
       {/* Background glow */}
       <View style={styles.bgGlow} pointerEvents="none" />
 
@@ -117,7 +115,7 @@ export default function PaywallScreen({ navigation }) {
           onPress={() => navigation.goBack()}
           style={styles.closeBtn}
         >
-          <MaterialIcons name="close" size={22} color={LT.onSurface} />
+          <MaterialIcons name="close" size={22} color="#FFFFFF" />
         </TouchableOpacity>
       </View>
 
@@ -136,7 +134,7 @@ export default function PaywallScreen({ navigation }) {
           </Text>
           {variant?.showSocialProof ? (
             <View style={styles.socialProofPill}>
-              <MaterialIcons name="people" size={14} color={LT.primary} />
+              <MaterialIcons name="people" size={14} color="#10B981" />
               <Text style={styles.socialProofText}>
                 {t('paywall.socialProof', '10.000+ disiplinli kullanıcı')}
               </Text>
@@ -147,19 +145,19 @@ export default function PaywallScreen({ navigation }) {
         {/* Trust signals row */}
         <View style={styles.trustRow}>
           <View style={styles.trustItem}>
-            <MaterialIcons name="lock" size={20} color={LT.onSurfaceVariant} />
+            <MaterialIcons name="lock" size={20} color="#908FA0" />
             <Text style={styles.trustLabel}>
               {t('paywall.trustPrivate', 'GİZLİ')}
             </Text>
           </View>
           <View style={styles.trustItem}>
-            <MaterialIcons name="history" size={20} color={LT.onSurfaceVariant} />
+            <MaterialIcons name="history" size={20} color="#908FA0" />
             <Text style={styles.trustLabel}>
               {t('paywall.trustCancel', 'İPTAL ET')}
             </Text>
           </View>
           <View style={styles.trustItem}>
-            <MaterialIcons name="article" size={20} color={LT.onSurfaceVariant} />
+            <MaterialIcons name="article" size={20} color="#908FA0" />
             <Text style={styles.trustLabel}>
               {t('paywall.trustNoTrack', 'İZLEME YOK')}
             </Text>
@@ -170,27 +168,27 @@ export default function PaywallScreen({ navigation }) {
         <View style={styles.features}>
           <FeatureRow
             icon="block"
-            iconColor={LT.primary}
+            iconColor="#FFB4AB"
             label={t('paywall.feature1', 'Sınırsız kalpler')}
           />
           <FeatureRow
             icon="workspace-premium"
-            iconColor={LT.primaryContainer}
+            iconColor="#FFB783"
             label={t('paywall.feature2', 'Tüm yolların kilidi açık')}
           />
           <FeatureRow
             icon="block"
-            iconColor={LT.primary}
+            iconColor="#C0C1FF"
             label={t('paywall.feature3', 'Reklamsız deneyim')}
           />
           <FeatureRow
             icon="sync"
-            iconColor={LT.primaryContainer}
+            iconColor="#D0BCFF"
             label={t('paywall.feature4', 'Cihazlar arası senkron')}
           />
           <FeatureRow
             icon="auto-awesome"
-            iconColor={LT.primary}
+            iconColor="#FFDCC5"
             label={t('paywall.feature5', 'Premium başarılar')}
           />
         </View>
@@ -198,14 +196,14 @@ export default function PaywallScreen({ navigation }) {
         {/* Price cards */}
         {loadingPackages ? (
           <View style={styles.loadingBox}>
-            <ActivityIndicator color={LT.primaryContainer} />
+            <ActivityIndicator color="#C0C1FF" />
             <Text style={styles.loadingText}>
               {t('paywall.loadingPrices', 'Fiyatlar yükleniyor...')}
             </Text>
           </View>
         ) : !packages.monthly && !packages.yearly ? (
           <View style={styles.errorBox}>
-            <MaterialIcons name="warning" size={32} color={LT.primary} />
+            <MaterialIcons name="warning" size={32} color="#FDE047" />
             <Text style={styles.errorTitle}>
               {t('paywall.notReadyTitle', 'Abonelikler yüklenemedi')}
             </Text>
@@ -240,8 +238,7 @@ export default function PaywallScreen({ navigation }) {
               activeOpacity={0.85}
               style={[
                 styles.priceCard,
-                styles.priceCardYearly,
-                selected === 'yearly' && styles.priceCardYearlyActive,
+                selected === 'yearly' && styles.priceCardActive,
               ]}
             >
               <View style={styles.bestValueBadge}>
@@ -249,11 +246,11 @@ export default function PaywallScreen({ navigation }) {
                   {t(variant?.bestValueBadge || 'paywall.bestValue', 'EN İYİ FİYAT')}
                 </Text>
               </View>
-              <Text style={styles.pricePeriodYearly}>
+              <Text style={styles.pricePeriod}>
                 {t('paywall.yearly', 'YILLIK').toUpperCase()}
               </Text>
-              <Text style={styles.priceAmountYearly}>{yearlyPrice}</Text>
-              <Text style={styles.pricePerMonthYearly}>{yearlyPerMonth} / ay</Text>
+              <Text style={styles.priceAmount}>{yearlyPrice}</Text>
+              <Text style={styles.pricePerMonth}>{yearlyPerMonth} / ay</Text>
             </TouchableOpacity>
 
             {/* Monthly */}
@@ -262,8 +259,8 @@ export default function PaywallScreen({ navigation }) {
               activeOpacity={0.85}
               style={[
                 styles.priceCard,
-                styles.priceCardMonthly,
-                selected === 'monthly' && styles.priceCardMonthlyActive,
+                styles.priceCardSecondary,
+                selected === 'monthly' && styles.priceCardActive,
               ]}
             >
               <Text style={styles.pricePeriod}>
@@ -284,20 +281,23 @@ export default function PaywallScreen({ navigation }) {
           activeOpacity={0.9}
           style={styles.ctaShadow}
         >
-          <View
+          <LinearGradient
+            colors={['#6366F1', '#8B5CF6']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
             style={[
               styles.ctaButton,
               (isSubscribing || isRestoring) && { opacity: 0.6 },
             ]}
           >
             {isSubscribing ? (
-              <ActivityIndicator color={LT.onPrimary} />
+              <ActivityIndicator color="#FFFFFF" />
             ) : (
               <Text style={styles.ctaText}>
                 {t(variant?.ctaText || 'paywall.ctaTrial', '7 gün ücretsiz başla')}
               </Text>
             )}
-          </View>
+          </LinearGradient>
         </TouchableOpacity>
 
         {/* Footer */}
@@ -314,7 +314,7 @@ export default function PaywallScreen({ navigation }) {
           style={styles.restoreBtn}
         >
           {isRestoring ? (
-            <ActivityIndicator color={LT.primary} size="small" />
+            <ActivityIndicator color="#C0C1FF" size="small" />
           ) : (
             <Text style={styles.restoreText}>
               {t('settings.restorePurchases', 'Satın Alımları Geri Yükle')}
@@ -336,7 +336,7 @@ function FeatureRow({ icon, iconColor, label }) {
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: LT.background },
+  safeArea: { flex: 1, backgroundColor: '#0B0B14' },
 
   bgGlow: {
     position: 'absolute',
@@ -346,7 +346,7 @@ const styles = StyleSheet.create({
     width: 400,
     height: 240,
     borderRadius: 200,
-    backgroundColor: 'rgba(227, 18, 18, 0.08)',
+    backgroundColor: 'rgba(99, 102, 241, 0.06)',
     opacity: 0.5,
   },
 
@@ -360,7 +360,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: LT.surfaceContainer,
+    backgroundColor: '#1F1F27',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -380,12 +380,12 @@ const styles = StyleSheet.create({
   heroEmoji: {
     fontSize: 60,
     marginBottom: 12,
-    textShadowColor: 'rgba(227, 18, 18, 0.25)',
+    textShadowColor: 'rgba(245, 158, 11, 0.4)',
     textShadowOffset: { width: 0, height: 0 },
     textShadowRadius: 15,
   },
   heroTitle: {
-    color: LT.onSurface,
+    color: '#F5F5FA',
     fontSize: 32,
     fontWeight: '900',
     letterSpacing: -1,
@@ -393,7 +393,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   heroSubtitle: {
-    color: LT.primary,
+    color: '#F59E0B',
     fontSize: 16,
     fontWeight: '700',
   },
@@ -401,8 +401,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    backgroundColor: 'rgba(227, 18, 18, 0.08)',
-    borderColor: 'rgba(232, 188, 182, 0.6)',
+    backgroundColor: 'rgba(16, 185, 129, 0.12)',
+    borderColor: 'rgba(16, 185, 129, 0.3)',
     borderWidth: 1,
     paddingHorizontal: 12,
     paddingVertical: 5,
@@ -410,7 +410,7 @@ const styles = StyleSheet.create({
     marginTop: 12,
   },
   socialProofText: {
-    color: LT.primary,
+    color: '#10B981',
     fontSize: 11,
     fontWeight: '800',
     letterSpacing: 0.4,
@@ -425,7 +425,7 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     borderTopWidth: 1,
     borderBottomWidth: 1,
-    borderColor: LT.outlineVariant,
+    borderColor: '#464554',
     marginBottom: 24,
   },
   trustItem: {
@@ -433,7 +433,7 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   trustLabel: {
-    color: LT.onSurfaceVariant,
+    color: '#9898B0',
     fontSize: 10,
     fontWeight: '800',
     letterSpacing: 1.5,
@@ -450,15 +450,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 14,
-    backgroundColor: LT.surfaceContainerLowest,
+    backgroundColor: '#1B1B23',
     borderWidth: 1,
-    borderColor: 'rgba(232, 188, 182, 0.5)',
+    borderColor: 'rgba(70, 69, 84, 0.4)',
     borderRadius: 14,
     paddingVertical: 14,
     paddingHorizontal: 14,
   },
   featureLabel: {
-    color: LT.onSurface,
+    color: '#E4E1ED',
     fontSize: 15,
     fontWeight: '600',
     flex: 1,
@@ -472,14 +472,14 @@ const styles = StyleSheet.create({
     width: '100%',
     maxWidth: 420,
   },
-  loadingText: { color: LT.onSurfaceVariant, fontSize: 13 },
+  loadingText: { color: '#9898B0', fontSize: 13 },
 
   errorBox: {
     width: '100%',
     maxWidth: 420,
-    backgroundColor: LT.surfaceContainerLowest,
+    backgroundColor: '#1B1B23',
     borderWidth: 1,
-    borderColor: LT.outlineVariant,
+    borderColor: 'rgba(253, 224, 71, 0.3)',
     borderRadius: 14,
     padding: 20,
     alignItems: 'center',
@@ -487,24 +487,24 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   errorTitle: {
-    color: LT.onSurface,
+    color: '#F5F5FA',
     fontSize: 15,
     fontWeight: '800',
     textAlign: 'center',
   },
   errorBody: {
-    color: LT.onSurfaceVariant,
+    color: '#9898B0',
     fontSize: 13,
     textAlign: 'center',
     marginBottom: 8,
   },
   retryBtn: {
-    backgroundColor: LT.primaryContainer,
+    backgroundColor: '#C0C1FF',
     paddingHorizontal: 18,
     paddingVertical: 10,
     borderRadius: 10,
   },
-  retryText: { color: LT.onPrimary, fontSize: 13, fontWeight: '800' },
+  retryText: { color: '#0D0096', fontSize: 13, fontWeight: '800' },
 
   // Price cards
   priceCards: {
@@ -516,94 +516,63 @@ const styles = StyleSheet.create({
   },
   priceCard: {
     flex: 1,
+    backgroundColor: '#292932',
+    borderWidth: 2,
+    borderColor: '#C0C1FF',
     borderRadius: 18,
     padding: 18,
     paddingTop: 22,
     alignItems: 'center',
     minHeight: 130,
+    shadowColor: '#C0C1FF',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.1,
+    shadowRadius: 20,
   },
-  // Yearly = solid red bg
-  priceCardYearly: {
-    backgroundColor: LT.primaryContainer,
-    borderWidth: 2,
-    borderColor: LT.primaryContainer,
-    shadowColor: LT.primary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.18,
-    shadowRadius: 14,
-  },
-  priceCardYearlyActive: {
-    borderColor: LT.primary,
-    borderWidth: 3,
-    shadowOpacity: 0.28,
-  },
-  // Monthly = white bg, thin black border
-  priceCardMonthly: {
-    backgroundColor: LT.surfaceContainerLowest,
+  priceCardSecondary: {
+    backgroundColor: '#1F1F27',
+    borderColor: '#464554',
     borderWidth: 1,
-    borderColor: LT.onSurface,
+    shadowOpacity: 0,
   },
-  priceCardMonthlyActive: {
-    borderColor: LT.primary,
-    borderWidth: 3,
+  priceCardActive: {
+    borderColor: '#C0C1FF',
+    borderWidth: 2,
+    shadowOpacity: 0.2,
   },
   bestValueBadge: {
     position: 'absolute',
     top: -10,
-    right: -6,
-    backgroundColor: '#000000',
+    backgroundColor: '#FFB783',
     paddingHorizontal: 10,
-    paddingVertical: 4,
+    paddingVertical: 3,
     borderRadius: 999,
   },
   bestValueText: {
-    color: '#FFFFFF',
+    color: '#4F2500',
     fontSize: 10,
     fontWeight: '900',
     letterSpacing: 1.2,
   },
-  // Monthly text
   pricePeriod: {
-    color: LT.onSurfaceVariant,
+    color: '#C7C4D7',
     fontSize: 11,
     fontWeight: '800',
     letterSpacing: 1.5,
     marginBottom: 4,
   },
   priceAmount: {
-    color: LT.onSurface,
+    color: '#FFFFFF',
     fontSize: 22,
     fontWeight: '800',
     letterSpacing: -0.4,
   },
   pricePerMonth: {
-    color: LT.onSurfaceVariant,
+    color: '#908FA0',
     fontSize: 11,
     fontWeight: '500',
     marginTop: 2,
     textAlign: 'center',
-  },
-  // Yearly text (white on red)
-  pricePeriodYearly: {
-    color: LT.onPrimary,
-    fontSize: 11,
-    fontWeight: '800',
-    letterSpacing: 1.5,
-    marginBottom: 4,
-  },
-  priceAmountYearly: {
-    color: LT.onPrimary,
-    fontSize: 22,
-    fontWeight: '800',
-    letterSpacing: -0.4,
-  },
-  pricePerMonthYearly: {
-    color: LT.onPrimary,
-    fontSize: 11,
-    fontWeight: '600',
-    marginTop: 2,
-    textAlign: 'center',
-    opacity: 0.9,
   },
 
   // CTA
@@ -611,28 +580,27 @@ const styles = StyleSheet.create({
     width: '100%',
     maxWidth: 420,
     borderRadius: 18,
-    shadowColor: LT.primary,
+    shadowColor: '#6366F1',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.32,
+    shadowOpacity: 0.4,
     shadowRadius: 20,
     marginBottom: 16,
   },
   ctaButton: {
     height: 64,
     borderRadius: 18,
-    backgroundColor: LT.primary,
     alignItems: 'center',
     justifyContent: 'center',
   },
   ctaText: {
-    color: LT.onPrimary,
+    color: '#FFFFFF',
     fontSize: 18,
     fontWeight: '800',
     letterSpacing: 0.3,
   },
 
   footerNote: {
-    color: LT.onSurfaceVariant,
+    color: '#908FA0',
     fontSize: 11,
     lineHeight: 16,
     textAlign: 'center',
@@ -643,10 +611,10 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
   },
   restoreText: {
-    color: LT.primary,
+    color: '#C0C1FF',
     fontSize: 12,
     fontWeight: '700',
     textDecorationLine: 'underline',
-    textDecorationColor: 'rgba(183, 0, 6, 0.4)',
+    textDecorationColor: 'rgba(192, 193, 255, 0.3)',
   },
 });

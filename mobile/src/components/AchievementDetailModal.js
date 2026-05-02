@@ -12,6 +12,7 @@ import {
 import { MaterialIcons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { ACHIEVEMENTS, RARITY_COLORS } from '../config/achievements';
+import { LT, LT_RADIUS } from '../config/lightTheme';
 
 const RARITY_LABEL_KEY = {
   common: 'achievements.rarity.common',
@@ -60,15 +61,15 @@ export default function AchievementDetailModal({
       >
         <TouchableOpacity activeOpacity={1} style={styles.card}>
           <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
-            <MaterialIcons name="close" size={20} color="#9898B0" />
+            <MaterialIcons name="close" size={20} color={LT.onSurfaceVariant} />
           </TouchableOpacity>
 
           <View
             style={[
               styles.iconWrap,
               {
-                backgroundColor: unlocked ? `${rarityColor}22` : '#292932',
-                borderColor: unlocked ? rarityColor : '#464554',
+                backgroundColor: unlocked ? `${rarityColor}1F` : LT.surfaceContainer,
+                borderColor: unlocked ? rarityColor : LT.outlineVariant,
               },
             ]}
           >
@@ -100,14 +101,18 @@ export default function AchievementDetailModal({
 
           {unlocked ? (
             <View style={styles.unlockedRow}>
-              <MaterialIcons name="check-circle" size={18} color="#10B981" />
+              <MaterialIcons
+                name="check-circle"
+                size={18}
+                color={LT.primaryContainer}
+              />
               <Text style={styles.unlockedText}>
-                {t('achievements.unlocked', 'Açıldı')}
+                {t('achievements.unlocked', 'AÇILDI')}
               </Text>
             </View>
           ) : (
             <View style={styles.lockedRow}>
-              <MaterialIcons name="lock" size={16} color="#908FA0" />
+              <MaterialIcons name="lock" size={16} color={LT.outline} />
               <Text style={styles.lockedText}>
                 {t('achievements.locked', 'Henüz açılmadı')}
               </Text>
@@ -128,7 +133,7 @@ export default function AchievementDetailModal({
 const styles = StyleSheet.create({
   backdrop: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    backgroundColor: 'rgba(26, 28, 28, 0.45)',
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 20,
@@ -136,15 +141,15 @@ const styles = StyleSheet.create({
   card: {
     width: '100%',
     maxWidth: 340,
-    backgroundColor: '#1F1F27',
-    borderRadius: 24,
+    backgroundColor: LT.surfaceContainerLowest,
+    borderRadius: LT_RADIUS.xl,
     padding: 24,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(70, 69, 84, 0.4)',
+    borderColor: LT.outlineVariant,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 12 },
-    shadowOpacity: 0.5,
+    shadowOpacity: 0.18,
     shadowRadius: 24,
     elevation: 20,
   },
@@ -157,7 +162,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#292932',
+    backgroundColor: LT.surfaceContainer,
   },
   iconWrap: {
     width: 96,
@@ -173,7 +178,7 @@ const styles = StyleSheet.create({
   rarityBadge: {
     paddingHorizontal: 10,
     paddingVertical: 4,
-    borderRadius: 999,
+    borderRadius: LT_RADIUS.pill,
     borderWidth: 1,
     marginBottom: 12,
   },
@@ -183,7 +188,7 @@ const styles = StyleSheet.create({
     letterSpacing: 1.5,
   },
   title: {
-    color: '#FFFFFF',
+    color: LT.onSurface,
     fontSize: 22,
     fontWeight: '900',
     letterSpacing: -0.4,
@@ -191,7 +196,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   description: {
-    color: '#C7C4D7',
+    color: LT.onSurfaceVariant,
     fontSize: 14,
     fontWeight: '500',
     textAlign: 'center',
@@ -203,19 +208,19 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    backgroundColor: 'rgba(16, 185, 129, 0.12)',
+    backgroundColor: 'rgba(227, 18, 18, 0.08)',
     paddingHorizontal: 12,
     paddingVertical: 6,
-    borderRadius: 999,
+    borderRadius: LT_RADIUS.pill,
     borderWidth: 1,
-    borderColor: 'rgba(16, 185, 129, 0.3)',
+    borderColor: 'rgba(227, 18, 18, 0.2)',
     marginBottom: 14,
   },
   unlockedText: {
-    color: '#10B981',
+    color: LT.primaryContainer,
     fontSize: 12,
-    fontWeight: '800',
-    letterSpacing: 0.5,
+    fontWeight: '900',
+    letterSpacing: 1,
   },
   lockedRow: {
     flexDirection: 'row',
@@ -224,14 +229,15 @@ const styles = StyleSheet.create({
     marginBottom: 14,
   },
   lockedText: {
-    color: '#908FA0',
+    color: LT.outline,
     fontSize: 12,
     fontWeight: '700',
   },
   gotItBtn: { paddingVertical: 8 },
   gotItText: {
-    color: '#9898B0',
+    color: LT.outline,
     fontSize: 13,
-    fontWeight: '700',
+    fontWeight: '900',
+    letterSpacing: 1,
   },
 });

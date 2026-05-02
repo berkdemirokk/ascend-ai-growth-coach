@@ -11,12 +11,11 @@ import {
   ScrollView,
   ActivityIndicator,
   Alert,
-  StatusBar,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useAuth } from '../../contexts/AuthContext';
-import { LT, LT_RADIUS } from '../../config/lightTheme';
 
 export default function SignupScreen({ navigation }) {
   const { t } = useTranslation();
@@ -55,7 +54,6 @@ export default function SignupScreen({ navigation }) {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="dark-content" backgroundColor={LT.background} />
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -72,13 +70,13 @@ export default function SignupScreen({ navigation }) {
               onPress={() => navigation.goBack()}
               style={styles.backBtn}
             >
-              <MaterialIcons name="arrow-back" size={22} color={LT.onSurfaceVariant} />
+              <MaterialIcons name="arrow-back" size={22} color="#C7C4D7" />
             </TouchableOpacity>
           </View>
 
           <View style={styles.hero}>
             <View style={styles.iconWrap}>
-              <MaterialIcons name="person-add" size={32} color={LT.primary} />
+              <MaterialIcons name="person-add" size={32} color="#C0C1FF" />
             </View>
             <Text style={styles.title}>
               {t('auth.createAccount', 'Hesap oluştur')}
@@ -136,18 +134,23 @@ export default function SignupScreen({ navigation }) {
               activeOpacity={0.9}
               style={[styles.ctaShadow, { marginTop: 12 }]}
             >
-              <View style={[styles.ctaButton, loading && { opacity: 0.7 }]}>
+              <LinearGradient
+                colors={['#6366F1', '#8B5CF6']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                style={[styles.ctaButton, loading && { opacity: 0.7 }]}
+              >
                 {loading ? (
-                  <ActivityIndicator color={LT.onPrimary} />
+                  <ActivityIndicator color="#FFFFFF" />
                 ) : (
                   <>
                     <Text style={styles.ctaText}>
                       {t('auth.signup', 'Kayıt Ol')}
                     </Text>
-                    <MaterialIcons name="arrow-forward" size={20} color={LT.onPrimary} />
+                    <MaterialIcons name="arrow-forward" size={20} color="#FFFFFF" />
                   </>
                 )}
-              </View>
+              </LinearGradient>
             </TouchableOpacity>
 
             <Text style={styles.legalText}>
@@ -187,9 +190,9 @@ function Field({
     <View style={styles.field}>
       <Text style={styles.label}>{label}</Text>
       <View style={[styles.inputWrap, focused && styles.inputWrapFocused]}>
-        <MaterialIcons name={icon} size={18} color={LT.onSurfaceVariant} />
+        <MaterialIcons name={icon} size={18} color="#908FA0" />
         <TextInput
-          placeholderTextColor={LT.onSurfaceVariant}
+          placeholderTextColor="#5B5B70"
           style={styles.input}
           {...inputProps}
         />
@@ -198,7 +201,7 @@ function Field({
             onPress={onRightPress}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           >
-            <MaterialIcons name={rightIcon} size={20} color={LT.onSurfaceVariant} />
+            <MaterialIcons name={rightIcon} size={20} color="#908FA0" />
           </TouchableOpacity>
         )}
       </View>
@@ -208,7 +211,7 @@ function Field({
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: LT.background },
+  safeArea: { flex: 1, backgroundColor: '#13131b' },
   scroll: { padding: 24, paddingBottom: 40, flexGrow: 1 },
 
   bgGlow: {
@@ -218,8 +221,8 @@ const styles = StyleSheet.create({
     width: 280,
     height: 280,
     borderRadius: 140,
-    backgroundColor: LT.outlineVariant,
-    opacity: 0.25,
+    backgroundColor: 'rgba(99, 102, 241, 0.12)',
+    opacity: 0.6,
   },
 
   topBar: { marginBottom: 24 },
@@ -227,9 +230,9 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: LT.surfaceContainerLowest,
+    backgroundColor: '#1F1F27',
     borderWidth: 1,
-    borderColor: LT.outlineVariant,
+    borderColor: '#464554',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -239,15 +242,15 @@ const styles = StyleSheet.create({
     width: 72,
     height: 72,
     borderRadius: 36,
-    backgroundColor: LT.surfaceContainerLow,
+    backgroundColor: 'rgba(99, 102, 241, 0.15)',
     borderWidth: 1,
-    borderColor: LT.outlineVariant,
+    borderColor: 'rgba(99, 102, 241, 0.3)',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 18,
   },
   title: {
-    color: LT.onSurface,
+    color: '#FFFFFF',
     fontSize: 28,
     fontWeight: '900',
     letterSpacing: -0.5,
@@ -255,7 +258,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   subtitle: {
-    color: LT.onSurfaceVariant,
+    color: '#C7C4D7',
     fontSize: 14,
     fontWeight: '500',
     textAlign: 'center',
@@ -265,7 +268,7 @@ const styles = StyleSheet.create({
   form: { marginBottom: 24 },
   field: { marginBottom: 12 },
   label: {
-    color: LT.onSurfaceVariant,
+    color: '#C7C4D7',
     fontSize: 11,
     fontWeight: '800',
     letterSpacing: 1.5,
@@ -276,28 +279,28 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
-    backgroundColor: LT.surfaceContainerLowest,
+    backgroundColor: '#1B1B23',
     borderWidth: 1.5,
-    borderColor: LT.outlineVariant,
+    borderColor: '#464554',
     borderRadius: 12,
     paddingHorizontal: 14,
   },
   inputWrapFocused: {
-    borderColor: LT.primary,
-    shadowColor: LT.primary,
+    borderColor: '#C0C1FF',
+    shadowColor: '#6366F1',
     shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.2,
+    shadowOpacity: 0.3,
     shadowRadius: 8,
   },
   input: {
     flex: 1,
     paddingVertical: 14,
-    color: LT.onSurface,
+    color: '#E4E1ED',
     fontSize: 15,
     fontWeight: '500',
   },
   hint: {
-    color: LT.onSurfaceVariant,
+    color: '#908FA0',
     fontSize: 11,
     fontWeight: '500',
     marginTop: 4,
@@ -306,10 +309,9 @@ const styles = StyleSheet.create({
 
   ctaShadow: {
     borderRadius: 16,
-    backgroundColor: LT.primary,
-    shadowColor: LT.primary,
+    shadowColor: '#6366F1',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
+    shadowOpacity: 0.4,
     shadowRadius: 16,
     elevation: 8,
   },
@@ -320,17 +322,16 @@ const styles = StyleSheet.create({
     gap: 8,
     paddingVertical: 16,
     borderRadius: 16,
-    backgroundColor: LT.primary,
   },
   ctaText: {
-    color: LT.onPrimary,
+    color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '800',
     letterSpacing: 0.3,
   },
 
   legalText: {
-    color: LT.onSurfaceVariant,
+    color: '#908FA0',
     fontSize: 11,
     textAlign: 'center',
     marginTop: 14,
@@ -343,6 +344,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingVertical: 12,
   },
-  footerText: { color: LT.onSurfaceVariant, fontSize: 13, fontWeight: '500' },
-  footerLink: { color: LT.primary, fontSize: 13, fontWeight: '800' },
+  footerText: { color: '#908FA0', fontSize: 13, fontWeight: '500' },
+  footerLink: { color: '#C0C1FF', fontSize: 13, fontWeight: '800' },
 });

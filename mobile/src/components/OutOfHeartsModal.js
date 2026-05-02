@@ -1,5 +1,6 @@
 // OutOfHeartsModal — shown when hearts === 0 and user tries to start a lesson.
 // Two paths to refill: watch a rewarded ad OR upgrade to premium.
+// Vivid Impact light theme.
 
 import React, { useState } from 'react';
 import {
@@ -10,10 +11,10 @@ import {
   StyleSheet,
   ActivityIndicator,
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { showRewarded, isAdsReady } from '../services/ads';
+import { LT, LT_RADIUS } from '../config/lightTheme';
 
 export default function OutOfHeartsModal({
   visible,
@@ -48,11 +49,15 @@ export default function OutOfHeartsModal({
       <View style={styles.backdrop}>
         <View style={styles.card}>
           <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
-            <MaterialIcons name="close" size={20} color="#9898B0" />
+            <MaterialIcons name="close" size={20} color={LT.onSurfaceVariant} />
           </TouchableOpacity>
 
           <View style={styles.heartIcon}>
-            <MaterialIcons name="heart-broken" size={56} color="#FFB4AB" />
+            <MaterialIcons
+              name="heart-broken"
+              size={56}
+              color={LT.primaryContainer}
+            />
           </View>
 
           <Text style={styles.title}>
@@ -61,20 +66,22 @@ export default function OutOfHeartsModal({
           <Text style={styles.subtitle}>
             {t(
               'hearts.outSubtitle',
-              'Devam etmek için kalp gerekli. Reklam izleyerek 1 kalp kazan veya Premium\'a geç.',
+              "Devam etmek için kalp gerekli. Reklam izleyerek 1 kalp kazan veya Premium'a geç.",
             )}
           </Text>
 
           {refillMins !== null && refillMins > 0 ? (
             <View style={styles.timerPill}>
-              <MaterialIcons name="timer" size={14} color="#9898B0" />
+              <MaterialIcons name="timer" size={14} color={LT.onSurfaceVariant} />
               <Text style={styles.timerText}>
-                {t('hearts.refillIn', 'Otomatik dolum: {{mins}} dk', { mins: refillMins })}
+                {t('hearts.refillIn', 'Otomatik dolum: {{mins}} dk', {
+                  mins: refillMins,
+                })}
               </Text>
             </View>
           ) : null}
 
-          {/* Watch ad CTA — primary */}
+          {/* Watch ad CTA — secondary outline */}
           {isAdsReady() ? (
             <TouchableOpacity
               onPress={handleWatchAd}
@@ -84,12 +91,16 @@ export default function OutOfHeartsModal({
             >
               <View style={styles.watchAdContent}>
                 {watching ? (
-                  <ActivityIndicator color="#0D0096" />
+                  <ActivityIndicator color={LT.onSurface} />
                 ) : (
                   <>
-                    <MaterialIcons name="play-circle" size={20} color="#0D0096" />
+                    <MaterialIcons
+                      name="play-circle"
+                      size={20}
+                      color={LT.onSurface}
+                    />
                     <Text style={styles.watchAdText}>
-                      {t('hearts.watchAd', 'Reklam izle, +1 kalp kazan')}
+                      {t('hearts.watchAd', 'REKLAM İZLE, +1 KALP KAZAN')}
                     </Text>
                   </>
                 )}
@@ -97,25 +108,20 @@ export default function OutOfHeartsModal({
             </TouchableOpacity>
           ) : null}
 
-          {/* Premium CTA — gradient */}
-          <TouchableOpacity onPress={onPaywall} activeOpacity={0.85} style={styles.premiumWrap}>
-            <LinearGradient
-              colors={['#6366F1', '#8B5CF6']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              style={styles.premiumBtn}
-            >
-              <MaterialIcons name="auto-awesome" size={18} color="#FFFFFF" />
-              <Text style={styles.premiumText}>
-                {t('hearts.goPremium', 'Premium ile sınırsız kalpler')}
-              </Text>
-            </LinearGradient>
+          {/* Premium CTA — primary red */}
+          <TouchableOpacity
+            onPress={onPaywall}
+            activeOpacity={0.85}
+            style={styles.premiumBtn}
+          >
+            <MaterialIcons name="workspace-premium" size={18} color={LT.onPrimary} />
+            <Text style={styles.premiumText}>
+              {t('hearts.goPremium', "PREMIUM İLE SINIRSIZ KALPLER")}
+            </Text>
           </TouchableOpacity>
 
           <TouchableOpacity onPress={onClose} style={styles.skipBtn}>
-            <Text style={styles.skipText}>
-              {t('common.later', 'Sonra')}
-            </Text>
+            <Text style={styles.skipText}>{t('common.later', 'Sonra')}</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -126,7 +132,7 @@ export default function OutOfHeartsModal({
 const styles = StyleSheet.create({
   backdrop: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    backgroundColor: 'rgba(26, 28, 28, 0.45)',
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 20,
@@ -134,15 +140,15 @@ const styles = StyleSheet.create({
   card: {
     width: '100%',
     maxWidth: 380,
-    backgroundColor: '#1F1F27',
-    borderRadius: 24,
+    backgroundColor: LT.surfaceContainerLowest,
+    borderRadius: LT_RADIUS.xl,
     padding: 24,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(70, 69, 84, 0.4)',
+    borderColor: LT.outlineVariant,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 12 },
-    shadowOpacity: 0.5,
+    shadowOpacity: 0.18,
     shadowRadius: 24,
     elevation: 20,
   },
@@ -155,28 +161,28 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#292932',
+    backgroundColor: LT.surfaceContainer,
   },
   heartIcon: {
     width: 96,
     height: 96,
     borderRadius: 48,
-    backgroundColor: 'rgba(255, 180, 171, 0.1)',
+    backgroundColor: 'rgba(227, 18, 18, 0.08)',
     borderWidth: 1,
-    borderColor: 'rgba(255, 180, 171, 0.3)',
+    borderColor: 'rgba(227, 18, 18, 0.22)',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 18,
   },
   title: {
-    color: '#E4E1ED',
+    color: LT.onSurface,
     fontSize: 22,
     fontWeight: '900',
     marginBottom: 8,
     letterSpacing: -0.4,
   },
   subtitle: {
-    color: '#C7C4D7',
+    color: LT.onSurfaceVariant,
     fontSize: 13,
     fontWeight: '500',
     textAlign: 'center',
@@ -188,23 +194,26 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    backgroundColor: '#1B1B23',
+    backgroundColor: LT.surfaceContainer,
     paddingHorizontal: 12,
     paddingVertical: 6,
-    borderRadius: 999,
+    borderRadius: LT_RADIUS.pill,
     borderWidth: 1,
-    borderColor: 'rgba(70, 69, 84, 0.6)',
+    borderColor: LT.outlineVariant,
     marginBottom: 20,
   },
   timerText: {
-    color: '#9898B0',
+    color: LT.onSurfaceVariant,
     fontSize: 11,
     fontWeight: '700',
   },
+
   watchAdBtn: {
     width: '100%',
-    backgroundColor: '#FFB783',
-    borderRadius: 14,
+    backgroundColor: LT.surfaceContainerLowest,
+    borderRadius: LT_RADIUS.lg,
+    borderWidth: 1.5,
+    borderColor: LT.onSurface,
     paddingVertical: 14,
     alignItems: 'center',
     marginBottom: 10,
@@ -215,38 +224,40 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   watchAdText: {
-    color: '#0D0096',
-    fontSize: 14,
-    fontWeight: '800',
+    color: LT.onSurface,
+    fontSize: 13,
+    fontWeight: '900',
+    letterSpacing: 1,
   },
-  premiumWrap: {
-    width: '100%',
-    borderRadius: 14,
-    overflow: 'hidden',
-    shadowColor: '#6366F1',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.4,
-    shadowRadius: 12,
-  },
+
   premiumBtn: {
+    width: '100%',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
     paddingVertical: 14,
+    backgroundColor: LT.primaryContainer,
+    borderRadius: LT_RADIUS.lg,
+    shadowColor: LT.primaryContainer,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.32,
+    shadowRadius: 12,
+    elevation: 4,
   },
   premiumText: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    fontWeight: '800',
+    color: LT.onPrimary,
+    fontSize: 13,
+    fontWeight: '900',
+    letterSpacing: 1,
   },
   skipBtn: {
     marginTop: 14,
     paddingVertical: 6,
   },
   skipText: {
-    color: '#9898B0',
+    color: LT.outline,
     fontSize: 12,
-    fontWeight: '600',
+    fontWeight: '700',
   },
 });

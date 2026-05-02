@@ -9,8 +9,6 @@ import {
   StyleSheet,
   SafeAreaView,
   Linking,
-  StatusBar,
-  ActivityIndicator,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -20,7 +18,6 @@ import Constants from 'expo-constants';
 import { useApp } from '../contexts/AppContext';
 import { useAuth } from '../contexts/AuthContext';
 import { LEGAL } from '../config/constants';
-import { LT, LT_RADIUS } from '../config/lightTheme';
 import { setLanguage, getCurrentLanguage, SUPPORTED_LANGUAGES } from '../i18n';
 import {
   requestNotificationPermissions,
@@ -197,7 +194,6 @@ export default function SettingsScreen({ navigation }) {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="dark-content" />
       <View style={styles.container}>
         {/* Header */}
         <View style={styles.header}>
@@ -205,14 +201,14 @@ export default function SettingsScreen({ navigation }) {
             onPress={() => navigation.goBack()}
             style={styles.headerBack}
           >
-            <MaterialIcons name="arrow-back" size={22} color={LT.onSurfaceVariant} />
+            <MaterialIcons name="arrow-back" size={22} color="#9898B0" />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>
             {t('settings.title', 'Ayarlar')}
           </Text>
           {isPremium ? (
             <View style={styles.premiumBadge}>
-              <MaterialIcons name="auto-awesome" size={14} color={LT.onPrimary} />
+              <MaterialIcons name="auto-awesome" size={14} color="#A5B4FC" />
               <Text style={styles.premiumBadgeText}>PREMIUM</Text>
             </View>
           ) : (
@@ -272,8 +268,8 @@ export default function SettingsScreen({ navigation }) {
               <Switch
                 value={notificationsEnabled}
                 onValueChange={toggleNotifications}
-                trackColor={{ false: LT.outlineVariant, true: LT.primaryContainer }}
-                thumbColor={LT.surfaceContainerLowest}
+                trackColor={{ false: '#34343D', true: '#494BD6' }}
+                thumbColor={notificationsEnabled ? '#C0C1FF' : '#908FA0'}
               />
             </View>
 
@@ -294,8 +290,8 @@ export default function SettingsScreen({ navigation }) {
               <Switch
                 value={soundsEnabled}
                 onValueChange={toggleSounds}
-                trackColor={{ false: LT.outlineVariant, true: LT.primaryContainer }}
-                thumbColor={LT.surfaceContainerLowest}
+                trackColor={{ false: '#34343D', true: '#494BD6' }}
+                thumbColor={soundsEnabled ? '#C0C1FF' : '#908FA0'}
               />
             </View>
           </Section>
@@ -311,7 +307,7 @@ export default function SettingsScreen({ navigation }) {
                 <MaterialIcons
                   name="workspace-premium"
                   size={22}
-                  color={LT.primaryContainer}
+                  color="#FFB783"
                 />
                 <Text style={styles.rowLabel}>
                   {t('settings.premiumStatus', 'Premium Durumu')}
@@ -321,7 +317,7 @@ export default function SettingsScreen({ navigation }) {
                 <Text
                   style={[
                     styles.rowValue,
-                    { color: isPremium ? LT.primaryContainer : LT.onSurfaceVariant },
+                    { color: isPremium ? '#FFB783' : '#9898B0' },
                   ]}
                 >
                   {isPremium
@@ -331,7 +327,7 @@ export default function SettingsScreen({ navigation }) {
                 <MaterialIcons
                   name="chevron-right"
                   size={18}
-                  color={LT.onSurfaceVariant}
+                  color="#908FA0"
                 />
               </View>
             </TouchableOpacity>
@@ -343,15 +339,11 @@ export default function SettingsScreen({ navigation }) {
               style={[styles.row, styles.rowBorder]}
             >
               <View style={styles.rowLeft}>
-                {restoring ? (
-                  <ActivityIndicator size="small" color={LT.primaryContainer} />
-                ) : (
-                  <MaterialIcons
-                    name="restore"
-                    size={22}
-                    color={LT.onSurfaceVariant}
-                  />
-                )}
+                <MaterialIcons
+                  name="restore"
+                  size={22}
+                  color="#9898B0"
+                />
                 <Text style={styles.rowLabel}>
                   {restoring
                     ? t('settings.restoring', 'Geri yükleniyor...')
@@ -367,29 +359,26 @@ export default function SettingsScreen({ navigation }) {
                 style={[styles.row, styles.rowBorder]}
               >
                 <View style={styles.rowLeft}>
-                  <MaterialIcons name="logout" size={22} color={LT.onSurfaceVariant} />
+                  <MaterialIcons name="logout" size={22} color="#9898B0" />
                   <Text style={styles.rowLabel}>
                     {t('settings.logout', 'Çıkış Yap')}
                   </Text>
                 </View>
               </TouchableOpacity>
             )}
-          </Section>
 
-          {/* Danger Zone */}
-          <Section title={t('settings.dangerZone', 'TEHLİKELİ BÖLGE (DANGER ZONE)')}>
             <TouchableOpacity
               onPress={handleResetProgress}
               activeOpacity={0.7}
-              style={[styles.row, styles.rowBorder, styles.dangerRow]}
+              style={[styles.row, styles.rowBorder]}
             >
               <View style={styles.rowLeft}>
                 <MaterialIcons
                   name="refresh"
                   size={22}
-                  color={LT.onPrimary}
+                  color="#FFB783"
                 />
-                <Text style={[styles.rowLabel, styles.dangerLabel]}>
+                <Text style={styles.rowLabel}>
                   {t('settings.resetProgress', 'İlerlemeyi Sıfırla')}
                 </Text>
               </View>
@@ -404,9 +393,9 @@ export default function SettingsScreen({ navigation }) {
                 <MaterialIcons
                   name="delete-forever"
                   size={22}
-                  color={LT.error}
+                  color="#FFB4AB"
                 />
-                <Text style={[styles.rowLabel, { color: LT.error }]}>
+                <Text style={[styles.rowLabel, { color: '#FFB4AB' }]}>
                   {t('settings.deleteAccount', 'Hesabı Sil')}
                 </Text>
               </View>
@@ -423,7 +412,7 @@ export default function SettingsScreen({ navigation }) {
               <Text style={styles.rowLabel}>
                 {t('settings.privacyPolicy', 'Gizlilik Politikası')}
               </Text>
-              <MaterialIcons name="open-in-new" size={18} color={LT.onSurfaceVariant} />
+              <MaterialIcons name="open-in-new" size={18} color="#908FA0" />
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => Linking.openURL(LEGAL.TERMS_URL)}
@@ -433,7 +422,7 @@ export default function SettingsScreen({ navigation }) {
               <Text style={styles.rowLabel}>
                 {t('settings.termsOfService', 'Kullanım Koşulları')}
               </Text>
-              <MaterialIcons name="open-in-new" size={18} color={LT.onSurfaceVariant} />
+              <MaterialIcons name="open-in-new" size={18} color="#908FA0" />
             </TouchableOpacity>
             <View style={styles.row}>
               <Text style={styles.rowLabel}>
@@ -447,7 +436,7 @@ export default function SettingsScreen({ navigation }) {
 
           {/* Footer mascot */}
           <View style={styles.footer}>
-            <MaterialIcons name="self-improvement" size={56} color={LT.primaryContainer} />
+            <MaterialIcons name="self-improvement" size={56} color="#6366F1" />
             <Text style={styles.footerText}>
               MONK MODE • DIGITAL STOICISM
             </Text>
@@ -470,22 +459,22 @@ function Section({ title, children }) {
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: LT.background },
-  container: { flex: 1, backgroundColor: LT.background },
+  safeArea: { flex: 1, backgroundColor: '#0B0B14' },
+  container: { flex: 1, backgroundColor: '#0B0B14' },
 
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 20,
     paddingVertical: 14,
-    backgroundColor: LT.surfaceContainer,
+    backgroundColor: '#1F1F27',
     borderBottomWidth: 1,
-    borderBottomColor: LT.outlineVariant,
+    borderBottomColor: '#464554',
   },
   headerBack: { width: 36, height: 36, alignItems: 'center', justifyContent: 'center' },
   headerTitle: {
     flex: 1,
-    color: LT.onSurface,
+    color: '#E4E1ED',
     fontSize: 20,
     fontWeight: '800',
     letterSpacing: -0.4,
@@ -497,13 +486,13 @@ const styles = StyleSheet.create({
     gap: 4,
     paddingHorizontal: 10,
     paddingVertical: 4,
-    backgroundColor: LT.primaryContainer,
-    borderRadius: LT_RADIUS.pill,
+    backgroundColor: 'rgba(192, 193, 255, 0.1)',
+    borderRadius: 999,
     borderWidth: 1,
-    borderColor: LT.primary,
+    borderColor: 'rgba(192, 193, 255, 0.25)',
   },
   premiumBadgeText: {
-    color: LT.onPrimary,
+    color: '#A5B4FC',
     fontSize: 10,
     fontWeight: '900',
     letterSpacing: 1.5,
@@ -513,7 +502,7 @@ const styles = StyleSheet.create({
 
   section: { marginTop: 16 },
   sectionTitle: {
-    color: LT.onSurfaceVariant,
+    color: '#C7C4D7',
     fontSize: 11,
     fontWeight: '900',
     letterSpacing: 1.5,
@@ -522,12 +511,12 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
   },
   sectionCard: {
-    backgroundColor: LT.surfaceContainerLowest,
+    backgroundColor: '#1F1F27',
     marginHorizontal: 20,
-    borderRadius: LT_RADIUS.lg,
+    borderRadius: 12,
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: LT.outlineVariant,
+    borderColor: '#464554',
   },
 
   row: {
@@ -539,7 +528,7 @@ const styles = StyleSheet.create({
   },
   rowBorder: {
     borderBottomWidth: 1,
-    borderBottomColor: LT.outlineVariant,
+    borderBottomColor: '#2A2A42',
   },
   rowLeft: {
     flexDirection: 'row',
@@ -553,18 +542,18 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   rowLabel: {
-    color: LT.onSurface,
+    color: '#E4E1ED',
     fontSize: 15,
     fontWeight: '600',
   },
   rowSub: {
-    color: LT.onSurfaceVariant,
+    color: '#C7C4D7',
     fontSize: 12,
     fontWeight: '500',
     marginTop: 2,
   },
   rowValue: {
-    color: LT.onSurfaceVariant,
+    color: '#9898B0',
     fontSize: 13,
     fontWeight: '600',
   },
@@ -573,41 +562,32 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
 
-  // Danger zone — destructive red background
-  dangerRow: {
-    backgroundColor: '#EF4444',
-  },
-  dangerLabel: {
-    color: LT.onPrimary,
-    fontWeight: '700',
-  },
-
   flag: { fontSize: 22 },
   radio: {
     width: 22,
     height: 22,
     borderRadius: 11,
     borderWidth: 2,
-    borderColor: LT.outline,
+    borderColor: '#908FA0',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  radioActive: { borderColor: LT.primaryContainer },
+  radioActive: { borderColor: '#C0C1FF' },
   radioDot: {
     width: 12,
     height: 12,
     borderRadius: 6,
-    backgroundColor: LT.primaryContainer,
+    backgroundColor: '#C0C1FF',
   },
 
   footer: {
     alignItems: 'center',
     marginTop: 32,
-    opacity: 0.5,
+    opacity: 0.4,
     gap: 8,
   },
   footerText: {
-    color: LT.onSurfaceVariant,
+    color: '#C7C4D7',
     fontSize: 11,
     fontWeight: '700',
     letterSpacing: 2,
