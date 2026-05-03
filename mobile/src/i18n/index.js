@@ -5,12 +5,11 @@ import { I18nManager, NativeModules, Platform } from 'react-native';
 
 import tr from './locales/tr.json';
 import en from './locales/en.json';
-import ar from './locales/ar.json';
 import lessonsTR from './locales/lessons.tr.json';
 import lessonsEN from './locales/lessons.en.json';
 
 const STORAGE_KEY = 'ascend.language';
-const SUPPORTED = ['tr', 'en', 'ar'];
+const SUPPORTED = ['tr', 'en'];
 const DEFAULT_LANG = 'tr';
 
 // Deep-merge so 'lessons' key is combined, not overwritten.
@@ -36,7 +35,9 @@ const merge = (base, extra) => {
 const resources = {
   tr: { translation: merge(tr, lessonsTR) },
   en: { translation: merge(en, lessonsEN) },
-  ar: { translation: merge(ar, lessonsTR) }, // AR fallback to TR for now (curriculum)
+  // Note: AR was removed for App Store v1. Apple flagged that AR users
+  // would see TR lesson content (curriculum not yet translated). Re-add
+  // when we have professionally translated lessons.
 };
 
 const getDeviceLanguageCode = () => {
@@ -80,16 +81,17 @@ export const initI18n = async () => {
     returnNull: false,
   });
 
-  applyRTL(lng);
+  // RTL no longer needed since we removed AR. Keep helper in case we
+  // re-add RTL languages later — but apply LTR explicitly.
+  applyRTL(false);
   return i18n;
 };
 
-const applyRTL = (lng) => {
-  const isRTL = lng === 'ar';
-  if (I18nManager.isRTL !== isRTL) {
+const applyRTL = (rtl) => {
+  if (I18nManager.isRTL !== rtl) {
     try {
-      I18nManager.allowRTL(isRTL);
-      I18nManager.forceRTL(isRTL);
+      I18nManager.allowRTL(rtl);
+      I18nManager.forceRTL(rtl);
     } catch {}
   }
 };
@@ -100,7 +102,6 @@ export const setLanguage = async (lng) => {
     await AsyncStorage.setItem(STORAGE_KEY, lng);
   } catch {}
   await i18n.changeLanguage(lng);
-  applyRTL(lng);
 };
 
 export const getCurrentLanguage = () => i18n.language || DEFAULT_LANG;
@@ -108,7 +109,6 @@ export const getCurrentLanguage = () => i18n.language || DEFAULT_LANG;
 export const SUPPORTED_LANGUAGES = [
   { code: 'tr', label: 'Türkçe', flag: '🇹🇷' },
   { code: 'en', label: 'English', flag: '🇺🇸' },
-  { code: 'ar', label: 'العربية', flag: '🇸🇦' },
 ];
 
 export default i18n;

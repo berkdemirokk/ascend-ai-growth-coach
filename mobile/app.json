@@ -19,7 +19,7 @@
       "usesAppleSignIn": true,
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
-        "CFBundleLocalizations": ["tr", "en", "ar"],
+        "CFBundleLocalizations": ["tr", "en"],
         "CFBundleAllowMixedLocalizations": true,
         "NSUserTrackingUsageDescription": "Allow tracking so we can show fewer, more relevant ads. Tap Decline to keep generic ads. Premium removes all ads.",
         "SKAdNetworkItems": [
