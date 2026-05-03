@@ -2,7 +2,7 @@
   "expo": {
     "name": "Ascend: Monk Mode",
     "slug": "ascend-level-up",
-    "version": "1.0.9",
+    "version": "1.0.10",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -15,7 +15,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.ascend.growth",
-      "buildNumber": "23",
+      "buildNumber": "24",
       "usesAppleSignIn": true,
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
@@ -93,7 +93,7 @@
         "react-native-google-mobile-ads",
         {
           "iosAppId": "ca-app-pub-9898903071826160~9553442066",
-          "androidAppId": "ca-app-pub-9898903071826160~9553442066",
+          "androidAppId": "ca-app-pub-3940256099942544~3347511713",
           "userTrackingUsageDescription": "Allow tracking so we can show fewer, more relevant ads. Tap Decline to keep generic ads. Premium removes all ads."
         }
       ],

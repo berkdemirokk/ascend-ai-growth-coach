@@ -17,6 +17,7 @@ const SYNCED_KEYS = [
   'heartsRefillAt',
   'pathProgress',
   'activePathId',
+  'lessonHistory',
 ];
 
 export function pickSyncableState(state) {
@@ -76,26 +77,104 @@ export async function pushState(userId, state) {
   }
 }
 
-/**
- * Compare local vs cloud snapshots; return whichever has more progress.
- * Returns the winning payload (local or cloud).
- */
-export function chooseWinner(localState, cloudPayload) {
-  if (!cloudPayload) return localState;
-  const localLessons = countLessons(localState.pathProgress);
-  const cloudLessons = countLessons(cloudPayload.pathProgress);
-  if (cloudLessons > localLessons) return cloudPayload;
-  if (localLessons > cloudLessons) return localState;
-  // Tie: most recent lastCompletedDate wins
-  const localDate = localState.lastCompletedDate || '';
-  const cloudDate = cloudPayload.lastCompletedDate || '';
-  return cloudDate > localDate ? cloudPayload : localState;
+// ── Merge ────────────────────────────────────────────────────────────────────
+//
+// Earlier versions of this file picked a single "winner" between local and
+// cloud. That dropped progress made on a second device when the first device
+// happened to have one more completed lesson on a different path. We now merge
+// per-path so that completing lesson 5 of "mind-discipline" on phone A and
+// lesson 3 of "body-discipline" on phone B never overwrites either side.
+
+function mergePathProgress(local = {}, cloud = {}) {
+  const out = {};
+  const allPathIds = new Set([...Object.keys(local), ...Object.keys(cloud)]);
+  for (const pathId of allPathIds) {
+    const l = local[pathId] || { completed: [], reflections: {}, quizCorrect: {} };
+    const c = cloud[pathId] || { completed: [], reflections: {}, quizCorrect: {} };
+    const completed = Array.from(new Set([...(l.completed || []), ...(c.completed || [])]));
+    // Reflections: prefer cloud when both sides wrote different text — assume
+    // cloud is from a later push. Local-only reflections are kept untouched.
+    const reflections = { ...(l.reflections || {}), ...(c.reflections || {}) };
+    // Quiz correctness: keep the higher score.
+    const quizCorrect = { ...(l.quizCorrect || {}) };
+    Object.entries(c.quizCorrect || {}).forEach(([lessonId, n]) => {
+      quizCorrect[lessonId] = Math.max(quizCorrect[lessonId] || 0, n || 0);
+    });
+    out[pathId] = { completed, reflections, quizCorrect };
+  }
+  return out;
 }
 
-function countLessons(pathProgress) {
-  if (!pathProgress) return 0;
-  return Object.values(pathProgress).reduce(
-    (sum, p) => sum + (p?.completed?.length || 0),
-    0,
-  );
+function mergeLessonHistory(local = {}, cloud = {}) {
+  const out = { ...local };
+  Object.entries(cloud).forEach(([date, n]) => {
+    out[date] = Math.max(out[date] || 0, n || 0);
+  });
+  return out;
 }
+
+function pickNewer(localDate, cloudDate) {
+  return (cloudDate || '') > (localDate || '') ? 'cloud' : 'local';
+}
+
+/**
+ * Merge local and cloud state into a single conflict-free snapshot.
+ * Both inputs may be partial. Returns the merged payload — never null when
+ * `local` is a valid object.
+ */
+export function mergeStates(localState, cloudPayload) {
+  if (!cloudPayload) return localState;
+
+  const newer = pickNewer(localState.lastCompletedDate, cloudPayload.lastCompletedDate);
+  const newerSide = newer === 'cloud' ? cloudPayload : localState;
+
+  return {
+    onboarded: !!(localState.onboarded || cloudPayload.onboarded),
+    // Prefer the newer side's profile if it's non-empty; else fall back.
+    userProfile:
+      newerSide.userProfile && Object.keys(newerSide.userProfile).length > 0
+        ? newerSide.userProfile
+        : cloudPayload.userProfile || localState.userProfile || null,
+    totalXP: Math.max(localState.totalXP || 0, cloudPayload.totalXP || 0),
+    level: Math.max(localState.level || 1, cloudPayload.level || 1),
+    // Streak: take the side with the more recent lastCompletedDate; their
+    // count is authoritative because streak only advances on a completion.
+    currentStreak: newerSide.currentStreak || 0,
+    longestStreak: Math.max(
+      localState.longestStreak || 0,
+      cloudPayload.longestStreak || 0,
+    ),
+    lastCompletedDate:
+      (cloudPayload.lastCompletedDate || '') > (localState.lastCompletedDate || '')
+        ? cloudPayload.lastCompletedDate
+        : localState.lastCompletedDate || null,
+    streakFreezes: Math.max(
+      localState.streakFreezes || 0,
+      cloudPayload.streakFreezes || 0,
+    ),
+    unlockedAchievements: Array.from(
+      new Set([
+        ...(localState.unlockedAchievements || []),
+        ...(cloudPayload.unlockedAchievements || []),
+      ]),
+    ),
+    // Hearts: take the more recent side's number — hearts decay over time
+    // and the newer client has the truer state. RefillAt is whichever is
+    // furthest in the future (so we don't grant a free refill).
+    hearts: newerSide.hearts ?? 5,
+    heartsRefillAt:
+      (cloudPayload.heartsRefillAt || '') > (localState.heartsRefillAt || '')
+        ? cloudPayload.heartsRefillAt
+        : localState.heartsRefillAt || null,
+    pathProgress: mergePathProgress(localState.pathProgress, cloudPayload.pathProgress),
+    activePathId: newerSide.activePathId || localState.activePathId || cloudPayload.activePathId,
+    lessonHistory: mergeLessonHistory(localState.lessonHistory, cloudPayload.lessonHistory),
+  };
+}
+
+/**
+ * @deprecated Kept for backwards compatibility — callers should switch to
+ * `mergeStates` and always dispatch the result. This shim still works because
+ * the merged payload is, by design, a superset of either side.
+ */
+export const chooseWinner = mergeStates;

@@ -89,22 +89,33 @@ monkmode,disiplin,streak,sprint,odak,alışkanlık,motivasyon,kişiselgelişim,h
 
 ## App Store Connect "Privacy Nutrition Labels"
 
-### Data Collected
-- **Contact Info → Email Address**
-  - Linked to user: ✅
-  - Used for: App Functionality (account)
-- **Identifiers → User ID**
-  - Linked to user: ✅
-  - Used for: App Functionality
-- **Usage Data → Product Interaction** (if you add analytics later)
-  - Linked: ✅
-  - Used for: Analytics
+> ⚠️ Reklam SDK'sı (Google AdMob) aktif olduğu için "Used to Track You"
+> bölümünde **IDFA** işaretlenmek ZORUNDA. Aşağıdaki dağılım ücretsiz +
+> premium kullanıcı ayrımına göredir.
+
+### Data Collected and Linked to User
+- **Contact Info → Email Address** — App Functionality (Supabase auth)
+- **Identifiers → User ID** — App Functionality (Supabase, RevenueCat anon ID)
+- **User Content → Other User Content** — App Functionality (lesson reflections)
+
+### Data Collected and NOT Linked to User
+- **Usage Data → Product Interaction** — Analytics & Third-Party Advertising
+  (lesson completes, XP, paywall events fed to AdMob/SKAdNetwork)
+- **Diagnostics → Crash Data** — opsiyonel (Sentry henüz kurulu değil; ekleyince
+  bu satırı işaretle)
+
+### Data Used to Track You
+- **Identifiers → Device ID (IDFA)** — Third-Party Advertising
+  (sadece kullanıcı App Tracking Transparency'de "İzin Ver"e basarsa)
 
 ### Data NOT Collected
-- Location, contacts, photos, browsing history, sensitive info, financial info — NONE
+- Location, contacts, photos, browsing history, health, financial info — NONE
 
 ### Tracking
-- App Tracking Transparency: NOT REQUIRED (no ad SDK, no cross-app tracking)
+- App Tracking Transparency: **REQUIRED** — Google AdMob entegre, IDFA'yı
+  ücretsiz kullanıcılarda kullanıyor. ATT prompt ilk ders sonrası tetiklenir
+  (Apple guideline 5.1.2 uyumlu — kullanıcı uygulamayı anladıktan sonra sor).
+  Premium aboneler reklam görmez ama IDFA toggle'ı yine sistem ayarlarındadır.
 
 ## Privacy Policy + Terms URL
 

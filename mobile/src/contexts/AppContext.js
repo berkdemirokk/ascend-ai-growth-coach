@@ -4,7 +4,8 @@ import { STORAGE_KEYS, checkLevelUp } from '../config/constants';
 import { checkAchievements } from '../config/achievements';
 import { checkPremiumStatus } from '../services/purchases';
 import { getRank } from '../config/ranks';
-import { pullState, pushState, chooseWinner } from '../services/cloudSync';
+import { getPathById } from '../data/paths';
+import { pullState, pushState, mergeStates } from '../services/cloudSync';
 import { useAuth } from './AuthContext';
 import { supabase } from '../services/supabase';
 import { cancelAllNotifications } from '../services/notifications';
@@ -303,11 +304,10 @@ export function AppProvider({ children }) {
 
         const local = { ...state };
         delete local._loaded;
-        const winner = chooseWinner(local, remote);
-
-        if (winner === remote) {
-          dispatch({ type: ACTION_TYPES.LOAD_STATE, payload: remote });
-        }
+        // Per-path merge — never drops progress from either side. See
+        // services/cloudSync.js for the merge rules.
+        const merged = mergeStates(local, remote);
+        dispatch({ type: ACTION_TYPES.LOAD_STATE, payload: merged });
       } catch (e) {
         console.warn('[AppContext] Cloud pull failed:', e?.message);
       }
@@ -431,8 +431,13 @@ export function AppProvider({ children }) {
   }, []);
 
   // ── Derived ────────────────────────────────────────────────────────────
+  // A path counts as completed (for rank purposes) when the user has finished
+  // all of its lessons. Falls back to 50 if the path isn't found.
   const completedPathsCount = Object.entries(state.pathProgress).filter(
-    ([pathId, prog]) => prog?.completed?.length >= 21,
+    ([pathId, prog]) => {
+      const required = getPathById(pathId)?.duration ?? 50;
+      return (prog?.completed?.length || 0) >= required;
+    },
   ).length;
   const rank = getRank(completedPathsCount);
 

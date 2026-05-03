@@ -9,62 +9,137 @@
   h1 { font-size: 1.6rem; }
   h2 { font-size: 1.2rem; margin-top: 2rem; }
   small { color: #666; }
+  table { border-collapse: collapse; width: 100%; margin-top: 8px; }
+  th, td { border: 1px solid #ccc; padding: 8px 10px; text-align: left; vertical-align: top; font-size: 0.95rem; }
+  th { background: #f5f5f5; }
+  .lang-switch { text-align: right; font-size: 0.9rem; margin-bottom: -16px; }
+  .lang-switch a { color: #555; text-decoration: none; border-bottom: 1px dotted #999; }
 </style>
 </head>
 <body>
+<div class="lang-switch"><a href="privacy.en.html">English version →</a></div>
+
 <h1>Gizlilik Politikası</h1>
-<small>Son güncelleme: 29 Nisan 2026</small>
+<small>Son güncelleme: 3 Mayıs 2026 · Yürürlük: 3 Mayıs 2026</small>
 
-<p>Ascend Monk Mode ("uygulama"), Berk Demirok tarafından geliştirilen bir kişisel disiplin uygulamasıdır. Bu politika, hangi verileri topladığımızı, nasıl kullandığımızı ve haklarınızı açıklar.</p>
+<p>Ascend: Monk Mode ("uygulama"), Berk Demirok ("biz") tarafından geliştirilen bir kişisel disiplin ve alışkanlık uygulamasıdır. Bu politika hangi verileri topladığımızı, nasıl kullandığımızı, kimlerle paylaştığımızı ve haklarınızı açıklar. Uygulamayı kullanarak bu politikayı kabul etmiş olursunuz.</p>
 
-<h2>Topladığımız Veriler</h2>
+<h2>1. Topladığımız Veriler</h2>
+
+<h3>1.1 Sizin sağladığınız bilgiler</h3>
 <ul>
-  <li><strong>Hesap bilgileri:</strong> e-posta adresi, ad (kullanıcı sağlarsa). Hesap oluşturmak ve oturum açmak için kullanılır.</li>
-  <li><strong>Uygulama içi veri:</strong> seçtiğiniz disiplin yolu, sprint ilerlemeniz, görev tamamlamalarınız, streak sayınız, tercih ayarlarınız.</li>
-  <li><strong>Cihaz tanımlayıcıları:</strong> sadece bildirim göndermek için cihazınıza özel push token.</li>
+  <li><strong>Hesap bilgileri:</strong> e-posta, isim (opsiyonel). E-posta/şifre ile veya "Apple ile Giriş Yap" ile sağlanır. Apple ile girişte e-postayı gizleyebilirsiniz; bu durumda sadece Apple'ın ürettiği özel ileti adresi tutulur.</li>
+  <li><strong>Uygulama içi içerik:</strong> seçtiğiniz disiplin yolu, ders ilerlemesi, quiz cevapları, streak (gün serisi), XP, başarımlar, kalp sayısı, opsiyonel olarak yazdığınız ders yansımaları (reflection metinleri).</li>
+  <li><strong>Ayar tercihleri:</strong> uygulama dili, ses açık/kapalı, bildirim tercihi.</li>
 </ul>
 
-<h2>Toplamadığımız Veriler</h2>
+<h3>1.2 Otomatik toplanan bilgiler</h3>
 <ul>
-  <li>Konum bilgisi</li>
-  <li>Kişiler / rehber</li>
-  <li>Fotoğraf / kamera</li>
-  <li>Tarama geçmişi</li>
-  <li>Hassas finansal bilgi</li>
-  <li>Reklam tanımlayıcıları (uygulamada reklam yoktur)</li>
+  <li><strong>Cihaz tanımlayıcıları:</strong> Apple Push Notification token (sadece bildirim izni verirseniz). Apple App Store sandbox subscription kontrol bilgileri.</li>
+  <li><strong>Reklam tanımlayıcıları (IDFA):</strong> SADECE App Tracking Transparency (ATT) izniyle "İzin Ver"e basarsanız Google AdMob bu tanımlayıcıyı reklam ölçümü için kullanır. "Reddet"e basarsanız jenerik (kişiselleştirilmemiş) reklam görür ve IDFA paylaşılmaz. Premium kullanıcılarda hiçbir reklam SDK'sı çalışmaz.</li>
+  <li><strong>Tanılama:</strong> Şu an aktif crash reporting veya analytics SDK'sı kullanmıyoruz. İleride eklersek bu politikayı güncelleyeceğiz ve uygulama içinde bildiririz.</li>
 </ul>
 
-<h2>Verileri Nasıl Kullanırız</h2>
+<h2>2. Toplamadığımız Veriler</h2>
 <ul>
-  <li>Hesabınızı oluşturmak ve cihazlar arası senkronize etmek</li>
-  <li>İlerlemenizi kaydetmek</li>
-  <li>Günlük hatırlatma bildirimi göndermek (kullanıcı izniyle)</li>
-  <li>Premium abonelik durumunu doğrulamak</li>
+  <li>Konum bilgisi (GPS, IP-tabanlı konum)</li>
+  <li>Kişiler / rehber, takvim</li>
+  <li>Fotoğraf, video, kamera, mikrofon</li>
+  <li>Tarama geçmişi, başka uygulamaların verileri</li>
+  <li>Hassas finansal bilgi (kart numarası, banka bilgisi). Tüm satın almalar Apple App Store üzerinden yapılır; ödeme bilgilerine erişimimiz yoktur.</li>
+  <li>Sağlık verileri</li>
 </ul>
 
-<h2>Veri Saklama ve Üçüncü Taraflar</h2>
-<p>Verileriniz aşağıdaki servis sağlayıcılarda saklanır:</p>
+<h2>3. Verileri Nasıl Kullanırız</h2>
 <ul>
-  <li><strong>Supabase</strong> — kullanıcı hesabı ve uygulama verileri (AB veri merkezi)</li>
-  <li><strong>RevenueCat</strong> — abonelik durumu doğrulama</li>
-  <li><strong>Apple App Store</strong> — abonelik satın alma kayıtları</li>
-</ul>
-<p>Hiçbir verinizi reklamcılık veya pazarlama amacıyla üçüncü taraflarla paylaşmayız.</p>
-
-<h2>Haklarınız</h2>
-<ul>
-  <li>Verilerinize erişme hakkı</li>
-  <li>Verilerinizin silinmesini talep etme hakkı (uygulama içi "Hesabı Sil" veya e-posta ile)</li>
-  <li>Bildirimleri kapatma hakkı (cihaz ayarlarından)</li>
+  <li>Hesabınızı oluşturmak ve cihazlar arası senkronize tutmak</li>
+  <li>İlerlemenizi kaydetmek ve geri yüklemek</li>
+  <li>Günlük hatırlatma push bildirimi göndermek (sadece izin verirseniz)</li>
+  <li>Premium abonelik durumunu doğrulamak ve içeriği uygun şekilde kilitlemek/açmak</li>
+  <li>ATT izni ile reklam göstermek ve reklam ölçümü yapmak (ücretsiz kullanıcılar)</li>
+  <li>Hizmet kötüye kullanımını önlemek (örn. spam onbinlerce hesap oluşturma)</li>
 </ul>
 
-<h2>Çocuklar</h2>
-<p>Uygulama 13 yaş altı çocuklara yönelik değildir. Bilerek 13 yaş altı kullanıcılardan veri toplamayız.</p>
+<h2>4. Üçüncü Taraf Servis Sağlayıcılar</h2>
 
-<h2>Değişiklikler</h2>
-<p>Bu politikada değişiklik yaparsak, uygulamada bildirim göstereceğiz.</p>
+<p>Aşağıdaki servis sağlayıcılarla minimum düzeyde veri paylaşırız. Hepsi kendi gizlilik politikalarına tabidir.</p>
 
-<h2>İletişim</h2>
-<p>Soru ve talepleriniz için: <a href="mailto:berkkdemirok@gmail.com">berkkdemirok@gmail.com</a></p>
+<table>
+  <thead>
+    <tr>
+      <th>Sağlayıcı</th>
+      <th>Amaç</th>
+      <th>Paylaşılan veri</th>
+      <th>Gizlilik politikası</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Supabase (PostgreSQL hosted, AB)</td>
+      <td>Kullanıcı hesabı, oturum, ilerleme verisi</td>
+      <td>E-posta, şifre hash'i, uygulama ilerlemesi</td>
+      <td><a href="https://supabase.com/privacy">supabase.com/privacy</a></td>
+    </tr>
+    <tr>
+      <td>Apple App Store / Sign in with Apple</td>
+      <td>Hesap kimlik doğrulaması, abonelik satın alma</td>
+      <td>Apple ID kimlik token'ı, abonelik makbuzu</td>
+      <td><a href="https://www.apple.com/legal/privacy/">apple.com/legal/privacy</a></td>
+    </tr>
+    <tr>
+      <td>RevenueCat</td>
+      <td>Abonelik durumu doğrulama (entitlement)</td>
+      <td>Anonim cihaz/uygulama kullanıcı kimliği, abonelik durumu</td>
+      <td><a href="https://www.revenuecat.com/privacy/">revenuecat.com/privacy</a></td>
+    </tr>
+    <tr>
+      <td>Google AdMob (sadece ücretsiz kullanıcılar)</td>
+      <td>Banner / interstitial / rewarded reklam gösterimi</td>
+      <td>ATT izni varsa IDFA; yoksa cihaz tipi + sürüm gibi non-personalized sinyaller</td>
+      <td><a href="https://policies.google.com/technologies/ads">policies.google.com/technologies/ads</a></td>
+    </tr>
+    <tr>
+      <td>Expo Application Services (EAS)</td>
+      <td>Build ve dağıtım pipeline'ı (kullanıcı verisi paylaşılmaz)</td>
+      <td>Yok</td>
+      <td><a href="https://expo.dev/privacy">expo.dev/privacy</a></td>
+    </tr>
+  </tbody>
+</table>
+
+<p><strong>Hiçbir verinizi reklam yeniden hedefleme (retargeting), e-posta pazarlaması veya başka uygulama geliştiricileriyle veri ticareti için satmayız.</strong> AdMob reklamları, ATT izniniz yoksa kişiselleştirilmez.</p>
+
+<h2>5. App Tracking Transparency (ATT)</h2>
+<p>iOS'un ATT politikasına uyuyoruz. İlk dersinizi tamamladıktan sonra Apple'ın standart "İzin Ver / İzin Verme" sistem diyaloğunu görürsünüz. "İzin Verme"yi seçerseniz IDFA paylaşılmaz; uygulama tam olarak çalışmaya devam eder, sadece reklamlar jenerik kalır. Bu seçimi cihaz Ayarlar → Gizlilik & Güvenlik → Takip menüsünden istediğiniz zaman değiştirebilirsiniz. Premium aboneler hiçbir reklam görmez.</p>
+
+<h2>6. Veri Saklama ve Konumu</h2>
+<ul>
+  <li>Hesap ve ilerleme verisi Supabase'in AB (Frankfurt) bölgesinde saklanır.</li>
+  <li>Hesabınızı silerseniz Supabase'deki kullanıcı satırınız ve ilişkili tüm ilerleme verisi 30 gün içinde geri dönüşsüz silinir (cascade DELETE).</li>
+  <li>Apple'ın kendi sunucularında tuttuğu abonelik makbuzu kayıtlarını biz silemeyiz; bunun için Apple'a başvurmanız gerekir.</li>
+</ul>
+
+<h2>7. Çocukların Gizliliği</h2>
+<p>Uygulama 13 yaş altı çocuklara yönelik DEĞİLDİR. Bilerek 13 yaş altı kullanıcılardan veri toplamayız. 13 yaş altı bir çocuğun veri sağladığını fark edersek hesabı sileriz. Şüpheli durumları <a href="mailto:berkkdemirok@gmail.com">berkkdemirok@gmail.com</a> adresine bildirebilirsiniz.</p>
+
+<h2>8. Haklarınız (KVKK / GDPR)</h2>
+<ul>
+  <li><strong>Erişim:</strong> Hangi verilerinizi tuttuğumuzu öğrenme hakkı</li>
+  <li><strong>Silme:</strong> Uygulama içinden Ayarlar → Tehlikeli Bölge → "Hesabı Sil" ile tüm sunucu verilerinizi anında silebilirsiniz. Apple App Store guideline 5.1.1(v)'e uygun, server-side cascade DELETE.</li>
+  <li><strong>Düzeltme:</strong> Hesap bilgilerinizi uygulamadan veya destek e-postası ile düzelttirebilirsiniz</li>
+  <li><strong>Veri taşınabilirliği:</strong> Verilerinizin JSON kopyasını e-posta ile talep edebilirsiniz</li>
+  <li><strong>İtiraz / kısıtlama:</strong> Bildirimleri cihaz ayarlarından, ATT iznini cihaz Gizlilik ayarlarından kapatabilirsiniz</li>
+  <li><strong>Şikayet hakkı:</strong> Türkiye'de KVKK'ya, AB'de yerel veri koruma otoritesine başvurabilirsiniz</li>
+</ul>
+
+<h2>9. Güvenlik</h2>
+<p>Veriler HTTPS üzerinden iletilir. Şifreler Supabase tarafından bcrypt ile hash'lenip saklanır — düz metin şifrenizi biz dahil kimse görmez. Apple App Store ödeme verilerini Apple'ın altyapısı korur.</p>
+
+<h2>10. Politika Değişiklikleri</h2>
+<p>Bu politikada değişiklik yaparsak, yürürlük tarihini güncelleriz ve önemli değişikliklerde uygulama içinde bildirim göstereceğiz. Önceki versiyonlar için bize yazabilirsiniz.</p>
+
+<h2>11. İletişim</h2>
+<p>Soru, talep ve şikayetler için: <a href="mailto:berkkdemirok@gmail.com">berkkdemirok@gmail.com</a><br>
+Veri sorumlusu: Berk Demirok, Türkiye</p>
 </body>
 </html>

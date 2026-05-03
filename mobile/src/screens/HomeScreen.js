@@ -16,6 +16,7 @@ import { useTranslation } from 'react-i18next';
 import { MaterialIcons } from '@expo/vector-icons';
 
 import { useApp } from '../contexts/AppContext';
+import { useAuth } from '../contexts/AuthContext';
 import {
   PATHS,
   getPathById,
@@ -37,7 +38,9 @@ export default function HomeScreen({ navigation }) {
     longestStreak,
     totalXP,
     level,
+    userProfile,
   } = useApp();
+  const { user } = useAuth();
 
   const [streakInfoVisible, setStreakInfoVisible] = useState(false);
 
@@ -69,7 +72,18 @@ export default function HomeScreen({ navigation }) {
     });
   };
 
-  const username = t('home.greetingName', 'Disiplinci');
+  // Prefer the user's actual name when we have one. Sources, in order:
+  //   1. Onboarding profile (user typed it)
+  //   2. Supabase auth metadata (signup or Apple Sign-In full name)
+  //   3. The local part of the email (e.g. "berk@x.com" -> "berk")
+  //   4. Generic fallback string
+  const profileName = userProfile?.name?.trim();
+  const metaName = user?.user_metadata?.name?.trim();
+  const emailLocal = (user?.email || '').split('@')[0];
+  const username =
+    profileName ||
+    metaName ||
+    (emailLocal ? capitalize(emailLocal) : t('home.greetingName', 'Disiplinci'));
   const greeting = getGreeting(t);
 
   return (
@@ -327,6 +341,11 @@ function getGreeting(t) {
   if (hour < 12) return t('home.greetingMorning', 'GÜNAYDIN');
   if (hour < 18) return t('home.greetingAfternoon', 'İYİ ÖĞLEDEN SONRALAR');
   return t('home.greetingEvening', 'İYİ AKŞAMLAR');
+}
+
+function capitalize(s) {
+  if (!s) return '';
+  return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
