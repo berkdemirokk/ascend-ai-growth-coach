@@ -658,9 +658,10 @@ const styles = StyleSheet.create({
     color: LT.onSurfaceVariant,
     fontSize: 11,
     lineHeight: 16,
-    textAlign: 'center',
-    maxWidth: 320,
+    textAlign: 'left',
+    maxWidth: 380,
     marginBottom: 8,
+    paddingHorizontal: 4,
   },
   legalRow: {
     flexDirection: 'row',
