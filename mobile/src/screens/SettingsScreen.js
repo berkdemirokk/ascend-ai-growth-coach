@@ -189,11 +189,12 @@ export default function SettingsScreen({ navigation }) {
     );
   };
 
-  const version = Constants?.expoConfig?.version || '1.0.1';
+  // Fallbacks track the current app.json — keep in sync when bumping version.
+  const version = Constants?.expoConfig?.version || '1.0.10';
   const buildNumber =
     Constants?.expoConfig?.ios?.buildNumber ||
     Constants?.manifest?.ios?.buildNumber ||
-    '15';
+    '24';
 
   return (
     <SafeAreaView style={styles.safeArea}>

@@ -1,61 +1,26 @@
-// Material 3 design tokens — aligned with Stitch DESIGN.md.
-// Dark theme: primary is the LIGHT version of the color, used on dark surfaces.
-export const M3 = {
-  // Surfaces (tonal layers)
-  background: '#13131b',
-  surface: '#13131b',
-  surfaceContainerLowest: '#0d0d15',
-  surfaceContainerLow: '#1b1b23',
-  surfaceContainer: '#1f1f27',
-  surfaceContainerHigh: '#292932',
-  surfaceContainerHighest: '#34343d',
-  surfaceVariant: '#34343d',
-  surfaceBright: '#393841',
-  // Text on surfaces
-  onSurface: '#e4e1ed',
-  onSurfaceVariant: '#c7c4d7',
-  outline: '#908fa0',
-  outlineVariant: '#464554',
-  // Primary (indigo)
-  primary: '#c0c1ff',
-  onPrimary: '#1000a9',
-  primaryContainer: '#8083ff',
-  onPrimaryContainer: '#0d0096',
-  inversePrimary: '#494bd6',
-  // Secondary (purple)
-  secondary: '#d0bcff',
-  onSecondary: '#3c0091',
-  secondaryContainer: '#571bc1',
-  onSecondaryContainer: '#c4abff',
-  // Tertiary (gold/amber)
-  tertiary: '#ffb783',
-  onTertiary: '#4f2500',
-  tertiaryContainer: '#d97721',
-  onTertiaryContainer: '#452000',
-  // Error
-  error: '#ffb4ab',
-  onError: '#690005',
-  errorContainer: '#93000a',
-  onErrorContainer: '#ffdad6',
-};
+// Active theme tokens live in `./lightTheme.js` (LT). The dark M3 palette that
+// used to live here has been removed — nothing imported it after the brand
+// switch to the red/white light theme. New screens should import from
+// `./lightTheme.js`.
 
-// Legacy COLORS export — kept for compatibility but now mapped to M3 tokens.
-// New code should use M3 directly.
+// Legacy COLORS export — still imported by a couple of screens & helpers
+// (achievements config, OnboardingScreen, AchievementDetailModal). Kept as
+// flat hex values now that the M3 dark palette is gone.
 export const COLORS = {
   primary: '#6366F1',          // Brand gradient start (legacy, kept for CTA gradients)
   primaryDark: '#4F46E5',
   accent: '#8B5CF6',           // Brand gradient end
   accentDark: '#7C3AED',
-  background: M3.background,
-  surface: M3.surfaceContainer,
-  surfaceLight: M3.surfaceContainerHigh,
-  border: M3.outlineVariant,
-  text: M3.onSurface,
-  textSecondary: M3.onSurfaceVariant,
-  textMuted: M3.outline,
+  background: '#13131b',
+  surface: '#1f1f27',
+  surfaceLight: '#292932',
+  border: '#464554',
+  text: '#e4e1ed',
+  textSecondary: '#c7c4d7',
+  textMuted: '#908fa0',
   success: '#10B981',
   warning: '#F59E0B',
-  error: M3.error,
+  error: '#ffb4ab',
   gold: '#FDE047',
   // Path colors (kept for backward compat)
   health: '#10B981',

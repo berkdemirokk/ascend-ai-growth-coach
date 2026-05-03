@@ -20,14 +20,16 @@ export const PAYWALL_VARIANTS = {
     bestValueBadge: 'paywall.bestValueA',  // "EN İYİ FİYAT"
     yearlyHighlight: true,
   },
-  // Variant B: Urgency-driven, social proof
+  // Variant B: Urgency-driven (no fake social proof — Apple guideline 5.1.1
+  // forbids inflated user counts. Re-enable showSocialProof only after the
+  // app has the real install base to back the claim.)
   B: {
     id: 'B',
     headline: 'paywall.titleB',           // "BU FIRSATI KAÇIRMA"
     subheadline: 'paywall.subtitleB',      // "Premium'la 3x daha hızlı ilerle"
     heroEmoji: '⚡',
-    showSocialProof: true,                  // "10,000+ disiplinli kullanıcı"
-    showCountdown: true,                    // 24h offer countdown
+    showSocialProof: false,
+    showCountdown: false,                   // countdown timer also misleading without real offer
     ctaText: 'paywall.ctaTrialB',          // "Bana özel teklifi al"
     features: ['hearts', 'paths', 'ads', 'sync', 'achievements'],
     bestValueBadge: 'paywall.bestValueB',  // "%70 KAZANÇ"
@@ -39,7 +41,7 @@ export const PAYWALL_VARIANTS = {
     headline: 'paywall.titleC',           // "DİSİPLİN MASTER OL"
     subheadline: 'paywall.subtitleC',      // "50 günde yeni sen"
     heroEmoji: '🧘',
-    showSocialProof: true,
+    showSocialProof: false,
     showCountdown: false,
     ctaText: 'paywall.ctaTrialC',          // "Master yolculuğunu başlat"
     features: ['hearts', 'paths', 'ads', 'sync', 'achievements'],
