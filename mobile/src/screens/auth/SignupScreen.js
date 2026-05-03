@@ -12,11 +12,13 @@ import {
   ActivityIndicator,
   Alert,
   StatusBar,
+  Linking,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useAuth } from '../../contexts/AuthContext';
 import { LT } from '../../config/lightTheme';
+import { LEGAL } from '../../config/constants';
 
 export default function SignupScreen({ navigation }) {
   const { t } = useTranslation();
@@ -151,10 +153,25 @@ export default function SignupScreen({ navigation }) {
             </TouchableOpacity>
 
             <Text style={styles.legalText}>
-              {t(
-                'auth.legalAgree',
-                'Kayıt olarak Kullanım Koşulları ve Gizlilik Politikamızı kabul etmiş olursun.',
-              )}
+              {t('auth.legalAgreePrefix', 'Kayıt olarak ')}
+              <Text
+                style={styles.legalLink}
+                onPress={() =>
+                  Linking.openURL(LEGAL.TERMS_URL).catch(() => {})
+                }
+              >
+                {t('auth.legalTerms', 'Kullanım Koşulları')}
+              </Text>
+              {t('auth.legalAgreeAnd', ' ve ')}
+              <Text
+                style={styles.legalLink}
+                onPress={() =>
+                  Linking.openURL(LEGAL.PRIVACY_URL).catch(() => {})
+                }
+              >
+                {t('auth.legalPrivacy', 'Gizlilik Politikamızı')}
+              </Text>
+              {t('auth.legalAgreeSuffix', ' kabul etmiş olursun.')}
             </Text>
           </View>
 
@@ -336,6 +353,11 @@ const styles = StyleSheet.create({
     marginTop: 14,
     paddingHorizontal: 20,
     lineHeight: 16,
+  },
+  legalLink: {
+    color: LT.primary,
+    fontWeight: '700',
+    textDecorationLine: 'underline',
   },
 
   footer: {

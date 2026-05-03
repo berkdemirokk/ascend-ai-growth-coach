@@ -180,7 +180,20 @@
     "ctaTrial": "Start 7-day free trial",
     "ctaContinue": "Continue for now",
     "autoRenew": "Auto-renews. Cancel anytime in App Store.",
-    "loading": "Processing..."
+    "loading": "Processing...",
+    "notReadyTitle": "Subscriptions not ready",
+    "notReadyBody": "Couldn't reach App Store. Check your connection and try again in a few minutes.",
+    "notReadyBodyShort": "Couldn't load. Try again in a moment.",
+    "loadingPrices": "Loading prices...",
+    "notConfigured": "Subscriptions aren't visible in store yet. Try again shortly.",
+    "networkError": "Network error. Check your connection.",
+    "bestValue": "BEST VALUE",
+    "billedMonthly": "Billed monthly",
+    "trustPrivate": "PRIVATE",
+    "trustCancel": "CANCEL",
+    "trustNoTrack": "NO TRACKING",
+    "privacyPolicy": "Privacy Policy",
+    "termsOfService": "Terms of Service"
   },
   "lessonComplete": {
     "title": "Lesson Complete!",

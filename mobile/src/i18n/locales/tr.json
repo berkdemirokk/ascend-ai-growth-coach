@@ -179,8 +179,21 @@
     "saveAmount": "{{amount}} tasarruf",
     "ctaTrial": "7 gün ücretsiz başla",
     "ctaContinue": "Şimdilik devam et",
-    "autoRenew": "Otomatik yenilenir. App Store'dan iptal edilebilir.",
-    "loading": "İşlem sürüyor..."
+    "autoRenew": "Abonelik otomatik olarak yenilenir. İstediğin zaman ayarlardan veya App Store hesabından iptal edebilirsin.",
+    "loading": "İşlem sürüyor...",
+    "notReadyTitle": "Abonelikler hazır değil",
+    "notReadyBody": "App Store bağlantısı kurulamadı. İnternetini kontrol et veya birkaç dakika sonra tekrar dene.",
+    "notReadyBodyShort": "Yüklenemedi. Birazdan tekrar dene.",
+    "loadingPrices": "Fiyatlar yükleniyor...",
+    "notConfigured": "Abonelik henüz mağazada görünür değil. Lütfen birkaç dakika sonra tekrar dene.",
+    "networkError": "Bağlantı hatası. İnterneti kontrol et.",
+    "bestValue": "EN İYİ FİYAT",
+    "billedMonthly": "Aylık tahsil edilir",
+    "trustPrivate": "GİZLİ",
+    "trustCancel": "İPTAL ET",
+    "trustNoTrack": "İZLEME YOK",
+    "privacyPolicy": "Gizlilik Politikası",
+    "termsOfService": "Kullanım Koşulları"
   },
   "lessonComplete": {
     "title": "Ders Tamamlandı!",

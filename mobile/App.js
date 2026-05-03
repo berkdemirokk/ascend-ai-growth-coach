@@ -9,8 +9,8 @@ import AppNavigator from './src/navigation/AppNavigator';
 import ErrorBoundary from './src/components/ErrorBoundary';
 import { initPurchases } from './src/services/purchases';
 import { initAds, loadInterstitial, loadRewarded } from './src/services/ads';
-import { requestNotificationPermissions, scheduleDailyReminder } from './src/services/notifications';
 import { initI18n } from './src/i18n';
+import { LT } from './src/config/lightTheme';
 
 export default function App() {
   const [i18nReady, setI18nReady] = useState(false);
@@ -36,19 +36,25 @@ export default function App() {
       } catch (e) {
         console.warn('Ads init failed:', e?.message);
       }
-      try {
-        const granted = await requestNotificationPermissions();
-        if (granted) await scheduleDailyReminder();
-      } catch (e) {
-        console.warn('Notifications init failed:', e?.message);
-      }
+      // Note: notification permission is NOT requested here. Apple guideline
+      // 5.1.1 requires we ask only at a meaningful moment. The prompt is
+      // triggered:
+      //   - At the end of onboarding (OnboardingScreen.finishOnboarding)
+      //   - When the user toggles "Daily Reminder" in Settings
     })();
   }, []);
 
   if (!i18nReady) {
     return (
-      <View style={{ flex: 1, backgroundColor: '#0B0B14', alignItems: 'center', justifyContent: 'center' }}>
-        <ActivityIndicator color="#6366F1" size="large" />
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: LT.background,
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <ActivityIndicator color={LT.primaryContainer} size="large" />
       </View>
     );
   }
@@ -59,7 +65,7 @@ export default function App() {
         <SafeAreaProvider>
           <AuthProvider>
             <AppProvider>
-              <StatusBar style="light" />
+              <StatusBar style="dark" />
               <AppNavigator />
             </AppProvider>
           </AuthProvider>

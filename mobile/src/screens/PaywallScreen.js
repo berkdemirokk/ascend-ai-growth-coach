@@ -9,6 +9,7 @@ import {
   StatusBar,
   StyleSheet,
   SafeAreaView,
+  Linking,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -16,6 +17,7 @@ import { useApp } from '../contexts/AppContext';
 import { purchasePremium, restorePurchases, getAvailablePackages } from '../services/purchases';
 import { getPaywallVariant, logPaywallEvent } from '../config/paywallVariants';
 import { LT } from '../config/lightTheme';
+import { LEGAL } from '../config/constants';
 
 export default function PaywallScreen({ navigation }) {
   const { t } = useTranslation();
@@ -307,6 +309,27 @@ export default function PaywallScreen({ navigation }) {
             'Abonelik otomatik olarak yenilenir. İstediğin zaman ayarlardan veya App Store hesabından iptal edebilirsin.',
           )}
         </Text>
+
+        {/* Legal links — required by Apple Guideline 3.1.2 */}
+        <View style={styles.legalRow}>
+          <TouchableOpacity
+            onPress={() => Linking.openURL(LEGAL.PRIVACY_URL).catch(() => {})}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.legalLink}>
+              {t('paywall.privacyPolicy', 'Gizlilik Politikası')}
+            </Text>
+          </TouchableOpacity>
+          <Text style={styles.legalSep}>·</Text>
+          <TouchableOpacity
+            onPress={() => Linking.openURL(LEGAL.TERMS_URL).catch(() => {})}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.legalLink}>
+              {t('paywall.termsOfService', 'Kullanım Koşulları')}
+            </Text>
+          </TouchableOpacity>
+        </View>
 
         <TouchableOpacity
           onPress={handleRestore}
@@ -638,6 +661,25 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     maxWidth: 320,
     marginBottom: 8,
+  },
+  legalRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    marginTop: 4,
+    marginBottom: 4,
+  },
+  legalLink: {
+    color: LT.primary,
+    fontSize: 11,
+    fontWeight: '700',
+    textDecorationLine: 'underline',
+  },
+  legalSep: {
+    color: LT.outline,
+    fontSize: 11,
+    fontWeight: '700',
   },
   restoreBtn: {
     paddingVertical: 12,

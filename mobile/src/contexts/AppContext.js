@@ -6,6 +6,8 @@ import { checkPremiumStatus } from '../services/purchases';
 import { getRank } from '../config/ranks';
 import { pullState, pushState, chooseWinner } from '../services/cloudSync';
 import { useAuth } from './AuthContext';
+import { supabase } from '../services/supabase';
+import { cancelAllNotifications } from '../services/notifications';
 
 // ─── Initial State ───────────────────────────────────────────────────────────
 
@@ -367,6 +369,24 @@ export function AppProvider({ children }) {
   }, []);
 
   const deleteAccount = useCallback(async () => {
+    // Apple guideline 5.1.1(v): account creation requires server-side
+    // deletion. Call the Supabase Edge Function 'delete-user' which removes
+    // the auth.users row (cascades to user_state via FK).
+    let serverOk = false;
+    try {
+      const { error } = await supabase.functions.invoke('delete-user');
+      if (!error) serverOk = true;
+      else console.warn('delete-user function error:', error.message);
+    } catch (e) {
+      console.warn('delete-user invoke failed:', e?.message);
+    }
+
+    // Cancel scheduled local notifications so they stop firing.
+    try {
+      await cancelAllNotifications();
+    } catch {}
+
+    // Wipe local cache regardless of server outcome — user wants out.
     try {
       await AsyncStorage.multiRemove([
         STORAGE_KEYS.USER_STATE,
@@ -375,6 +395,9 @@ export function AppProvider({ children }) {
       ]);
     } catch {}
     dispatch({ type: ACTION_TYPES.DELETE_ACCOUNT });
+
+    // Surface server failure to the caller so it can re-attempt or warn.
+    return serverOk;
   }, []);
 
   const setActivePath = useCallback((pathId) => {

@@ -148,11 +148,11 @@ export const ADMOB_IDS = {
   TEST_BANNER_IOS: 'ca-app-pub-3940256099942544/2934735716',
   TEST_INTERSTITIAL_ANDROID: 'ca-app-pub-3940256099942544/1033173712',
 
-  // ⚠️ TESTFLIGHT TOGGLE — set to false before App Store submission!
-  // While true, app uses Google's guaranteed-fill test ads in release
-  // builds too. Necessary for TestFlight verification because new AdMob
-  // accounts have ~0% fill rate before going live on App Store.
-  USE_TEST_ADS_IN_RELEASE: true,
+  // ⚠️ TESTFLIGHT TOGGLE — must be false for App Store submission!
+  // Google AdMob bans accounts that serve test ads in production traffic
+  // detected via App Store distribution. Flip to true ONLY for TestFlight
+  // verification before final submission.
+  USE_TEST_ADS_IN_RELEASE: false,
 };
 
 export const PAYWALL_FEATURES = [

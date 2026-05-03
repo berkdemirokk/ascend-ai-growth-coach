@@ -78,12 +78,16 @@ export async function setPaywallVariant(id) {
 }
 
 // Track which variant the user saw + whether they purchased.
-// Cleanly logged to console for now (can pipe to analytics later).
+// Logged to console only in dev — production silently no-ops until we
+// pipe to a real analytics provider.
 export function logPaywallEvent(variantId, event, meta = {}) {
-  console.log('[PAYWALL_AB]', JSON.stringify({
-    variant: variantId,
-    event,         // 'view' | 'select_yearly' | 'select_monthly' | 'purchase' | 'restore' | 'close'
-    ...meta,
-    ts: Date.now(),
-  }));
+  if (__DEV__) {
+    // eslint-disable-next-line no-console
+    console.log('[PAYWALL_AB]', JSON.stringify({
+      variant: variantId,
+      event,
+      ...meta,
+      ts: Date.now(),
+    }));
+  }
 }

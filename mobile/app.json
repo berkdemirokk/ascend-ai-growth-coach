@@ -2,7 +2,7 @@
   "expo": {
     "name": "Ascend: Monk Mode",
     "slug": "ascend-level-up",
-    "version": "1.0.7",
+    "version": "1.0.8",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -15,13 +15,13 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.ascend.growth",
-      "buildNumber": "21",
+      "buildNumber": "22",
       "usesAppleSignIn": true,
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "CFBundleLocalizations": ["tr", "en", "ar"],
         "CFBundleAllowMixedLocalizations": true,
-        "NSUserTrackingUsageDescription": "We use this to deliver more relevant ads. Premium users see no ads.",
+        "NSUserTrackingUsageDescription": "Allow tracking so we can show fewer, more relevant ads. Tap Decline to keep generic ads. Premium removes all ads.",
         "SKAdNetworkItems": [
           { "SKAdNetworkIdentifier": "cstr6suwn9.skadnetwork" },
           { "SKAdNetworkIdentifier": "4fzdc2evr5.skadnetwork" },
@@ -94,7 +94,7 @@
         {
           "iosAppId": "ca-app-pub-9898903071826160~9553442066",
           "androidAppId": "ca-app-pub-9898903071826160~9553442066",
-          "userTrackingUsageDescription": "We use this to deliver more relevant ads. Premium users see no ads."
+          "userTrackingUsageDescription": "Allow tracking so we can show fewer, more relevant ads. Tap Decline to keep generic ads. Premium removes all ads."
         }
       ],
       "expo-tracking-transparency"
