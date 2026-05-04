@@ -111,6 +111,8 @@
     "linkSettingsSub": "Notifications, sound, account"
   },
   "lesson": {
+    "playAudio": "Listen",
+    "stopAudio": "Stop",
     "teaching": "Teaching",
     "quiz": "Quiz",
     "action": "Do today",

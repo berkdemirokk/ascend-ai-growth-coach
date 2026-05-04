@@ -23,6 +23,8 @@ import { showInterstitial, shouldShowAd, requestTrackingPermissionIfNeeded } fro
 import MilestoneModal, { isMilestone } from '../components/MilestoneModal';
 import OutOfHeartsModal from '../components/OutOfHeartsModal';
 import { playSound } from '../services/sounds';
+import { speak as ttsSpeak, stop as ttsStop } from '../services/tts';
+import { getCurrentLanguage } from '../i18n';
 import { requestReviewIfAppropriate } from '../services/review';
 import { LT, LT_RADIUS } from '../config/lightTheme';
 
@@ -69,6 +71,31 @@ export default function LessonScreen({ navigation, route }) {
   const [milestoneStreak, setMilestoneStreak] = useState(0);
   const [outOfHeartsVisible, setOutOfHeartsVisible] = useState(false);
   const [now, setNow] = useState(Date.now());
+  const [isSpeaking, setIsSpeaking] = useState(false);
+
+  // Stop any in-progress narration when the user navigates away mid-read.
+  useEffect(() => {
+    return () => {
+      ttsStop().catch(() => {});
+    };
+  }, []);
+
+  const handleToggleSpeak = async () => {
+    if (isSpeaking) {
+      await ttsStop();
+      setIsSpeaking(false);
+      return;
+    }
+    if (!teaching) return;
+    setIsSpeaking(true);
+    const lang = getCurrentLanguage?.() === 'en' ? 'en-US' : 'tr-TR';
+    const ok = await ttsSpeak(teaching, {
+      lang,
+      onDone: () => setIsSpeaking(false),
+      onError: () => setIsSpeaking(false),
+    });
+    if (!ok) setIsSpeaking(false);
+  };
 
   // Track countdown for hearts refill
   useEffect(() => {
@@ -316,6 +343,27 @@ export default function LessonScreen({ navigation, route }) {
 
       <View style={styles.teachingCard}>
         <View style={styles.cornerAccent} />
+        <TouchableOpacity
+          onPress={handleToggleSpeak}
+          activeOpacity={0.85}
+          style={styles.speakBtn}
+          accessibilityLabel={
+            isSpeaking
+              ? t('lesson.stopAudio', 'Sesi durdur')
+              : t('lesson.playAudio', 'Sesli oku')
+          }
+        >
+          <MaterialIcons
+            name={isSpeaking ? 'stop' : 'volume-up'}
+            size={18}
+            color={LT.onPrimary}
+          />
+          <Text style={styles.speakBtnText}>
+            {isSpeaking
+              ? t('lesson.stopAudio', 'Durdur')
+              : t('lesson.playAudio', 'Sesli dinle')}
+          </Text>
+        </TouchableOpacity>
         <Text style={styles.teachingText}>{teaching}</Text>
       </View>
 
@@ -827,6 +875,23 @@ const styles = StyleSheet.create({
     borderRadius: 18, padding: 18,
     borderWidth: 1, borderColor: LT.outlineVariant,
     overflow: 'hidden',
+  },
+  speakBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    gap: 6,
+    backgroundColor: LT.primary,
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+    borderRadius: 999,
+    marginBottom: 12,
+  },
+  speakBtnText: {
+    color: LT.onPrimary,
+    fontSize: 12,
+    fontWeight: '800',
+    letterSpacing: 0.3,
   },
   cornerAccent: {
     position: 'absolute', top: 0, right: 0,

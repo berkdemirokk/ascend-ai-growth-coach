@@ -47,7 +47,8 @@
     "react-native-view-shot": "~4.0.3",
     "react-native-svg": "15.8.0",
     "expo-sharing": "~13.0.1",
-    "expo-file-system": "~18.0.10"
+    "expo-file-system": "~18.0.10",
+    "expo-speech": "~13.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2"

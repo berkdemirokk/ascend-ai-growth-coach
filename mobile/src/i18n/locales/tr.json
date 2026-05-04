@@ -111,6 +111,8 @@
     "linkSettingsSub": "Bildirim, ses, hesap"
   },
   "lesson": {
+    "playAudio": "Sesli dinle",
+    "stopAudio": "Durdur",
     "teaching": "Öğretim",
     "quiz": "Quiz",
     "action": "Bugün yap",
