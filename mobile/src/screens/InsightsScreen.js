@@ -35,6 +35,7 @@ export default function InsightsScreen({ navigation }) {
     longestStreak,
     level,
     isPremium,
+    lessonHistory,
   } = useApp();
   const [streakInfoVisible, setStreakInfoVisible] = useState(false);
 
@@ -82,6 +83,26 @@ export default function InsightsScreen({ navigation }) {
     };
   }, [pathProgress]);
 
+  // Last 7 days, oldest first. Includes today.
+  const weekStats = useMemo(() => {
+    const days = [];
+    let totalLessons = 0;
+    let activeDays = 0;
+    let bestCount = 0;
+    const today = new Date();
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(today);
+      d.setDate(today.getDate() - i);
+      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+      const count = (lessonHistory || {})[key] || 0;
+      if (count > 0) activeDays += 1;
+      if (count > bestCount) bestCount = count;
+      totalLessons += count;
+      days.push({ key, count, dayNum: d.getDate(), isToday: i === 0 });
+    }
+    return { days, totalLessons, activeDays, bestCount };
+  }, [lessonHistory]);
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="dark-content" backgroundColor={LT.background} />
@@ -107,6 +128,71 @@ export default function InsightsScreen({ navigation }) {
               'Yolculuğun, sayılarda. Disiplinin somut ifadesi.',
             )}
           </Text>
+        </View>
+
+        {/* Weekly Recap — last 7 days */}
+        <View style={styles.weekCard}>
+          <View style={styles.weekHeader}>
+            <View>
+              <Text style={styles.weekLabel}>
+                {t('insights.weekLabel', 'BU HAFTA')}
+              </Text>
+              <Text style={styles.weekTotal}>
+                {weekStats.totalLessons}{' '}
+                <Text style={styles.weekTotalUnit}>
+                  {t('insights.weekLessons', 'ders')}
+                </Text>
+              </Text>
+            </View>
+            <View style={styles.weekActiveBadge}>
+              <MaterialIcons
+                name="event-available"
+                size={14}
+                color={LT.primaryContainer}
+              />
+              <Text style={styles.weekActiveText}>
+                {t('insights.weekActiveDays', '{{count}}/7 gün aktif', {
+                  count: weekStats.activeDays,
+                })}
+              </Text>
+            </View>
+          </View>
+
+          <View style={styles.weekBars}>
+            {weekStats.days.map((d, idx) => {
+              const ratio =
+                weekStats.bestCount > 0
+                  ? Math.max(0.08, d.count / weekStats.bestCount)
+                  : 0.08;
+              return (
+                <View key={d.key} style={styles.weekBarColumn}>
+                  <View style={styles.weekBarTrack}>
+                    <View
+                      style={[
+                        styles.weekBarFill,
+                        {
+                          height: `${ratio * 100}%`,
+                          backgroundColor:
+                            d.count > 0
+                              ? LT.primaryContainer
+                              : LT.outlineVariant,
+                        },
+                        d.isToday && styles.weekBarFillToday,
+                      ]}
+                    />
+                  </View>
+                  <Text
+                    style={[
+                      styles.weekBarLabel,
+                      d.isToday && styles.weekBarLabelToday,
+                    ]}
+                  >
+                    {d.dayNum}
+                  </Text>
+                </View>
+              );
+            })}
+          </View>
         </View>
 
         {/* Big number hero — Quiz accuracy */}
@@ -358,6 +444,97 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     lineHeight: 21,
     color: LT.onSurfaceVariant,
+  },
+
+  // Weekly recap
+  weekCard: {
+    marginHorizontal: LT_SPACING.containerMargin,
+    marginBottom: 14,
+    backgroundColor: LT.surfaceContainerLowest,
+    borderRadius: LT_RADIUS.xl,
+    borderWidth: 1,
+    borderColor: LT.outlineVariant,
+    padding: 18,
+  },
+  weekHeader: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    marginBottom: 14,
+  },
+  weekLabel: {
+    fontSize: 11,
+    fontWeight: '900',
+    letterSpacing: 2,
+    color: LT.onSurfaceVariant,
+    marginBottom: 4,
+  },
+  weekTotal: {
+    fontSize: 36,
+    fontWeight: '900',
+    letterSpacing: -1,
+    color: LT.onSurface,
+    lineHeight: 38,
+  },
+  weekTotalUnit: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: LT.onSurfaceVariant,
+    letterSpacing: 0,
+  },
+  weekActiveBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 999,
+    backgroundColor: LT.surfaceContainer,
+    borderWidth: 1,
+    borderColor: LT.outlineVariant,
+  },
+  weekActiveText: {
+    fontSize: 11,
+    fontWeight: '800',
+    color: LT.onSurface,
+  },
+  weekBars: {
+    flexDirection: 'row',
+    height: 96,
+    alignItems: 'flex-end',
+    gap: 6,
+  },
+  weekBarColumn: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    height: '100%',
+  },
+  weekBarTrack: {
+    width: '100%',
+    flex: 1,
+    backgroundColor: LT.surfaceContainer,
+    borderRadius: 6,
+    overflow: 'hidden',
+    justifyContent: 'flex-end',
+    marginBottom: 6,
+  },
+  weekBarFill: {
+    width: '100%',
+    borderRadius: 6,
+  },
+  weekBarFillToday: {
+    borderWidth: 1.5,
+    borderColor: LT.primary,
+  },
+  weekBarLabel: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: LT.onSurfaceVariant,
+  },
+  weekBarLabelToday: {
+    color: LT.primary,
+    fontWeight: '900',
   },
 
   // Big hero (quiz accuracy)
