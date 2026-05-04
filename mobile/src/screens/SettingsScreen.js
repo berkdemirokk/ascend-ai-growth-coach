@@ -35,7 +35,75 @@ const SOUNDS_MUTED_KEY = '@ascend/sounds_muted_v1';
 
 export default function SettingsScreen({ navigation }) {
   const { t } = useTranslation();
-  const { isPremium, deleteAccount, setPremium, resetProgress, streakFreezes } = useApp();
+  const {
+    isPremium,
+    deleteAccount,
+    setPremium,
+    resetProgress,
+    streakFreezes,
+    vacationUntil,
+    startVacation,
+    endVacation,
+  } = useApp();
+
+  const vacationActive = (() => {
+    if (!vacationUntil) return false;
+    const today = new Date();
+    const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+    return vacationUntil >= todayStr;
+  })();
+
+  const handleToggleVacation = () => {
+    if (vacationActive) {
+      Alert.alert(
+        t('settings.vacationEndTitle', 'Tatil modu kapatılsın mı?'),
+        t(
+          'settings.vacationEndConfirm',
+          'Tatil modu kapanırsa streak korumasının kalan günleri kaybolur.',
+        ),
+        [
+          { text: t('common.cancel', 'İptal'), style: 'cancel' },
+          {
+            text: t('common.confirm', 'Onayla'),
+            style: 'destructive',
+            onPress: () => endVacation(),
+          },
+        ],
+      );
+      return;
+    }
+    if (!isPremium) {
+      Alert.alert(
+        t('settings.vacationPremiumTitle', 'Premium gerekli'),
+        t(
+          'settings.vacationPremiumBody',
+          'Tatil modu sadece Premium üyelere açık. Premium\'a geç, 7 güne kadar streak\'ini koru.',
+        ),
+        [
+          { text: t('common.cancel', 'İptal'), style: 'cancel' },
+          {
+            text: t('common.goPremium', "Premium'a geç"),
+            onPress: () => navigation.navigate('Paywall'),
+          },
+        ],
+      );
+      return;
+    }
+    Alert.alert(
+      t('settings.vacationStartTitle', 'Tatil modunu aç (7 gün)'),
+      t(
+        'settings.vacationStartBody',
+        '7 gün boyunca ders yapmasan da streak\'in sıfırlanmaz. İstediğin zaman kapatabilirsin.',
+      ),
+      [
+        { text: t('common.cancel', 'İptal'), style: 'cancel' },
+        {
+          text: t('common.start', 'Başlat'),
+          onPress: () => startVacation(7),
+        },
+      ],
+    );
+  };
   const { isAuthenticated, signOut } = useAuth();
 
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
@@ -375,6 +443,47 @@ export default function SettingsScreen({ navigation }) {
                 </Text>
               </View>
             </View>
+
+            <TouchableOpacity
+              onPress={handleToggleVacation}
+              activeOpacity={0.7}
+              style={[styles.row, styles.rowBorder]}
+            >
+              <View style={styles.rowLeft}>
+                <MaterialIcons
+                  name={vacationActive ? 'beach-access' : 'flight-takeoff'}
+                  size={22}
+                  color={vacationActive ? LT.primary : LT.onSurfaceVariant}
+                />
+                <View>
+                  <Text style={styles.rowLabel}>
+                    {t('settings.vacation', 'Tatil Modu')}
+                  </Text>
+                  <Text style={styles.rowSub}>
+                    {vacationActive
+                      ? t('settings.vacationActiveSub', 'Aktif: {{date}}\'e kadar', {
+                          date: vacationUntil,
+                        })
+                      : t(
+                          'settings.vacationSub',
+                          '7 güne kadar streak\'ini koru (Premium)',
+                        )}
+                  </Text>
+                </View>
+              </View>
+              <View style={styles.rowRight}>
+                <Text
+                  style={[
+                    styles.rowValue,
+                    { color: vacationActive ? LT.primary : LT.onSurfaceVariant },
+                  ]}
+                >
+                  {vacationActive
+                    ? t('settings.vacationOn', 'AÇIK')
+                    : t('settings.vacationOff', 'KAPALI')}
+                </Text>
+              </View>
+            </TouchableOpacity>
 
             <TouchableOpacity
               onPress={handleRestore}

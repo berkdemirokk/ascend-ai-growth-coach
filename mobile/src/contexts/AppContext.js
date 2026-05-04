@@ -68,6 +68,12 @@ const initialState = {
   // sign-in and re-used across devices via cloudSync.
   anonUsername: null,
 
+  // Streak Vacation Mode (premium): user can pause their streak for up to
+  // 7 days at a time. While active, the auto-burn freeze logic is bypassed
+  // and the streak isn't extended (no lesson required) but also doesn't
+  // reset on missed days. Stored as the ISO date the vacation ends.
+  vacationUntil: null,
+
   // Internal
   _loaded: false,
 };
@@ -112,6 +118,8 @@ const ACTION_TYPES = {
   RESET_AD_COUNTER: 'RESET_AD_COUNTER',
   RESET_PROGRESS: 'RESET_PROGRESS',
   ENSURE_ANON_USERNAME: 'ENSURE_ANON_USERNAME',
+  START_VACATION: 'START_VACATION',
+  END_VACATION: 'END_VACATION',
 };
 
 function appReducer(state, action) {
@@ -149,9 +157,18 @@ function appReducer(state, action) {
       // alive — assuming they have one. Setting lastCompletedDate to
       // yesterday makes the next lesson today extend the streak normally.
       if ((state.currentStreak || 0) === 0) return state;
-      if ((state.streakFreezes || 0) <= 0) return state;
+      // If on vacation, skip — streak is frozen, not at risk.
       const today = getTodayDateString();
       const yesterday = getYesterdayDateString();
+      if (state.vacationUntil && state.vacationUntil >= today) {
+        // Bring lastCompletedDate forward to yesterday so the next lesson
+        // counts as +1 streak normally without resetting.
+        if (state.lastCompletedDate !== today && state.lastCompletedDate !== yesterday) {
+          return { ...state, lastCompletedDate: yesterday };
+        }
+        return state;
+      }
+      if ((state.streakFreezes || 0) <= 0) return state;
       // No save needed if they're already up-to-date
       if (state.lastCompletedDate === today) return state;
       if (state.lastCompletedDate === yesterday) return state;
@@ -176,6 +193,20 @@ function appReducer(state, action) {
 
     case ACTION_TYPES.CLEAR_STREAK_FREEZE_TOAST:
       return { ...state, _streakFreezeToast: null };
+
+    case ACTION_TYPES.START_VACATION: {
+      // payload = { days } — clamps 1..7
+      const days = Math.max(1, Math.min(7, action.payload?.days || 7));
+      const end = new Date();
+      end.setDate(end.getDate() + days);
+      const y = end.getFullYear();
+      const m = String(end.getMonth() + 1).padStart(2, '0');
+      const dd = String(end.getDate()).padStart(2, '0');
+      return { ...state, vacationUntil: `${y}-${m}-${dd}` };
+    }
+
+    case ACTION_TYPES.END_VACATION:
+      return { ...state, vacationUntil: null };
 
     case ACTION_TYPES.ENSURE_ANON_USERNAME: {
       // Generate once, then sticky. cloudSync will replicate the chosen
@@ -488,6 +519,14 @@ export function AppProvider({ children }) {
     dispatch({ type: ACTION_TYPES.CLEAR_STREAK_FREEZE_TOAST });
   }, []);
 
+  const startVacation = useCallback((days = 7) => {
+    dispatch({ type: ACTION_TYPES.START_VACATION, payload: { days } });
+  }, []);
+
+  const endVacation = useCallback(() => {
+    dispatch({ type: ACTION_TYPES.END_VACATION });
+  }, []);
+
   const deleteAccount = useCallback(async () => {
     // Apple guideline 5.1.1(v): account creation requires server-side
     // deletion. Call the Supabase Edge Function 'delete-user' which removes
@@ -584,6 +623,8 @@ export function AppProvider({ children }) {
     setPremium,
     useStreakFreezeAction,
     clearStreakFreezeToast,
+    startVacation,
+    endVacation,
     deleteAccount,
     setActivePath,
     completePathLesson,

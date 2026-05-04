@@ -19,6 +19,7 @@ const SYNCED_KEYS = [
   'activePathId',
   'lessonHistory',
   'anonUsername',
+  'vacationUntil',
 ];
 
 export function pickSyncableState(state) {
