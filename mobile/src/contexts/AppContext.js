@@ -2,7 +2,11 @@ import { createContext, useContext, useReducer, useEffect, useCallback } from 'r
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { STORAGE_KEYS, checkLevelUp } from '../config/constants';
 import { checkAchievements } from '../config/achievements';
-import { checkPremiumStatus } from '../services/purchases';
+import {
+  checkPremiumStatus,
+  linkPurchaseUser,
+  unlinkPurchaseUser,
+} from '../services/purchases';
 import { getRank } from '../config/ranks';
 import { getPathById } from '../data/paths';
 import { pullState, pushState, mergeStates } from '../services/cloudSync';
@@ -332,15 +336,33 @@ export function AppProvider({ children }) {
   }, [state, isAuthenticated, userId]);
 
   // ── Premium status check on auth ────────────────────────────────────────
+  // Also keeps the RevenueCat customer record in sync with the Supabase
+  // session so subscriptions follow the user across devices.
   useEffect(() => {
+    let cancelled = false;
     (async () => {
       try {
+        if (userId) {
+          await linkPurchaseUser(userId);
+        } else {
+          await unlinkPurchaseUser();
+        }
+      } catch (e) {
+        console.warn('[AppContext] Purchase user link failed:', e?.message);
+      }
+      if (cancelled) return;
+      try {
         const isPremium = await checkPremiumStatus();
-        dispatch({ type: ACTION_TYPES.SET_PREMIUM, payload: isPremium });
+        if (!cancelled) {
+          dispatch({ type: ACTION_TYPES.SET_PREMIUM, payload: isPremium });
+        }
       } catch (e) {
         console.warn('[AppContext] Premium check failed:', e?.message);
       }
     })();
+    return () => {
+      cancelled = true;
+    };
   }, [userId]);
 
   // ── Today refresh on date change ────────────────────────────────────────
