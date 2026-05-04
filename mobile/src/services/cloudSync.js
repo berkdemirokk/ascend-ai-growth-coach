@@ -20,6 +20,7 @@ const SYNCED_KEYS = [
   'lessonHistory',
   'anonUsername',
   'vacationUntil',
+  'dailyChallengeCompletedAt',
 ];
 
 export function pickSyncableState(state) {

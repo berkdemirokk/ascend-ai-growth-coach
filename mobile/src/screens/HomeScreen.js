@@ -27,6 +27,10 @@ import {
 import LightTopAppBar from '../components/LightTopAppBar';
 import StreakInfoModal from '../components/StreakInfoModal';
 import BannerAdBox from '../components/BannerAdBox';
+import {
+  getDailyChallenge,
+  DAILY_CHALLENGE_BONUS_XP,
+} from '../config/dailyChallenges';
 import { LT, LT_SPACING, LT_RADIUS } from '../config/lightTheme';
 
 export default function HomeScreen({ navigation }) {
@@ -44,7 +48,17 @@ export default function HomeScreen({ navigation }) {
     _streakFreezeToast,
     streakFreezes,
     clearStreakFreezeToast,
+    dailyChallengeCompletedAt,
+    completeDailyChallenge,
   } = useApp();
+
+  // Today's pseudo-random challenge — same for everyone on the same date.
+  const todayStr = (() => {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  })();
+  const dailyChallenge = useMemo(() => getDailyChallenge(todayStr), [todayStr]);
+  const dailyChallengeDone = dailyChallengeCompletedAt === todayStr;
 
   // One-shot alert when AppContext auto-burned a streak repair token because
   // the user missed yesterday but had a token to spare.
@@ -186,6 +200,40 @@ export default function HomeScreen({ navigation }) {
             </Text>
           </View>
         </TouchableOpacity>
+
+        {/* Daily Mystery Challenge */}
+        {dailyChallenge ? (
+          <TouchableOpacity
+            onPress={dailyChallengeDone ? undefined : () => completeDailyChallenge(DAILY_CHALLENGE_BONUS_XP)}
+            activeOpacity={dailyChallengeDone ? 1 : 0.85}
+            style={[
+              styles.challengeCard,
+              dailyChallengeDone && styles.challengeCardDone,
+            ]}
+          >
+            <View style={styles.challengeIconBox}>
+              <Text style={styles.challengeIcon}>{dailyChallenge.icon}</Text>
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.challengeLabel}>
+                {dailyChallengeDone
+                  ? t('home.challengeDone', 'BUGÜNÜN BONUSU TAMAMLANDI')
+                  : t('home.challengeLabel', 'BUGÜNÜN BONUSU · +25 XP')}
+              </Text>
+              <Text style={styles.challengeTitle}>
+                {t(dailyChallenge.titleKey, dailyChallenge.titleFallback)}
+              </Text>
+              <Text style={styles.challengeBody} numberOfLines={2}>
+                {t(dailyChallenge.bodyKey, dailyChallenge.bodyFallback)}
+              </Text>
+            </View>
+            {dailyChallengeDone ? (
+              <MaterialIcons name="check-circle" size={26} color={LT.primaryContainer} />
+            ) : (
+              <MaterialIcons name="bolt" size={22} color={LT.primary} />
+            )}
+          </TouchableOpacity>
+        ) : null}
 
         {/* Today's CTA Card */}
         <View style={styles.ctaCard}>
@@ -499,6 +547,59 @@ const styles = StyleSheet.create({
   },
 
   // Today's CTA card
+  challengeCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    marginHorizontal: LT_SPACING.containerMargin,
+    marginBottom: 12,
+    padding: 14,
+    borderRadius: LT_RADIUS.xl,
+    backgroundColor: LT.surfaceContainerLowest,
+    borderWidth: 1.5,
+    borderColor: LT.primary,
+    shadowColor: LT.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.12,
+    shadowRadius: 12,
+    elevation: 4,
+  },
+  challengeCardDone: {
+    borderColor: LT.outlineVariant,
+    backgroundColor: LT.surfaceContainer,
+    shadowOpacity: 0,
+    elevation: 0,
+  },
+  challengeIconBox: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: LT.surfaceContainer,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  challengeIcon: { fontSize: 22 },
+  challengeLabel: {
+    fontSize: 10,
+    fontWeight: '900',
+    letterSpacing: 1.5,
+    color: LT.primary,
+    marginBottom: 2,
+  },
+  challengeTitle: {
+    fontSize: 15,
+    fontWeight: '800',
+    color: LT.onSurface,
+    marginBottom: 2,
+    letterSpacing: -0.2,
+  },
+  challengeBody: {
+    fontSize: 12,
+    color: LT.onSurfaceVariant,
+    fontWeight: '500',
+    lineHeight: 16,
+  },
+
   ctaCard: {
     marginHorizontal: LT_SPACING.containerMargin,
     marginBottom: 14,

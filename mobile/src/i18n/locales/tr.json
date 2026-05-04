@@ -111,7 +111,9 @@
     "linkReflections": "Yansımalarım",
     "linkReflectionsSub": "Geçmiş ders yansımaları",
     "linkSettings": "Ayarlar",
-    "linkSettingsSub": "Bildirim, ses, hesap"
+    "linkSettingsSub": "Bildirim, ses, hesap",
+    "challengeLabel": "BUGÜNÜN BONUSU · +25 XP",
+    "challengeDone": "BUGÜNÜN BONUSU TAMAMLANDI"
   },
   "lesson": {
     "playAudio": "Sesli dinle",

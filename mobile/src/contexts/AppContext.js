@@ -79,6 +79,10 @@ const initialState = {
   // reset on missed days. Stored as the ISO date the vacation ends.
   vacationUntil: null,
 
+  // Daily mystery challenge — last completed date string. The pool resets
+  // every day so this is a single sticky flag, not a list.
+  dailyChallengeCompletedAt: null,
+
   // Internal
   _loaded: false,
 };
@@ -125,6 +129,7 @@ const ACTION_TYPES = {
   ENSURE_ANON_USERNAME: 'ENSURE_ANON_USERNAME',
   START_VACATION: 'START_VACATION',
   END_VACATION: 'END_VACATION',
+  COMPLETE_DAILY_CHALLENGE: 'COMPLETE_DAILY_CHALLENGE',
 };
 
 function appReducer(state, action) {
@@ -212,6 +217,21 @@ function appReducer(state, action) {
 
     case ACTION_TYPES.END_VACATION:
       return { ...state, vacationUntil: null };
+
+    case ACTION_TYPES.COMPLETE_DAILY_CHALLENGE: {
+      const today = getTodayDateString();
+      // Already done today — no-op. Prevents double-claiming bonus XP.
+      if (state.dailyChallengeCompletedAt === today) return state;
+      const bonus = action.payload?.bonusXp || 25;
+      const newTotalXP = (state.totalXP || 0) + bonus;
+      const newLevel = checkLevelUp(newTotalXP, state.level || 1);
+      return {
+        ...state,
+        dailyChallengeCompletedAt: today,
+        totalXP: newTotalXP,
+        level: newLevel,
+      };
+    }
 
     case ACTION_TYPES.ENSURE_ANON_USERNAME: {
       // Generate once, then sticky. cloudSync will replicate the chosen
@@ -564,6 +584,13 @@ export function AppProvider({ children }) {
     dispatch({ type: ACTION_TYPES.END_VACATION });
   }, []);
 
+  const completeDailyChallenge = useCallback((bonusXp = 25) => {
+    dispatch({
+      type: ACTION_TYPES.COMPLETE_DAILY_CHALLENGE,
+      payload: { bonusXp },
+    });
+  }, []);
+
   const deleteAccount = useCallback(async () => {
     // Apple guideline 5.1.1(v): account creation requires server-side
     // deletion. Call the Supabase Edge Function 'delete-user' which removes
@@ -662,6 +689,7 @@ export function AppProvider({ children }) {
     clearStreakFreezeToast,
     startVacation,
     endVacation,
+    completeDailyChallenge,
     deleteAccount,
     setActivePath,
     completePathLesson,

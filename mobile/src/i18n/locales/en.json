@@ -111,7 +111,9 @@
     "linkReflections": "My Reflections",
     "linkReflectionsSub": "Past lesson reflections",
     "linkSettings": "Settings",
-    "linkSettingsSub": "Notifications, sound, account"
+    "linkSettingsSub": "Notifications, sound, account",
+    "challengeLabel": "TODAY'S BONUS · +25 XP",
+    "challengeDone": "TODAY'S BONUS DONE"
   },
   "lesson": {
     "playAudio": "Listen",
