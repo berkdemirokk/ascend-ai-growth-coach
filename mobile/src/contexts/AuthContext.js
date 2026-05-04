@@ -6,6 +6,14 @@ import React, {
   useCallback,
 } from 'react';
 import { supabase, SUPABASE_CONFIGURED } from '../services/supabase';
+import { unlinkPurchaseUser } from '../services/purchases';
+
+// Cap network calls so a slow/offline reviewer doesn't see a frozen splash.
+const withTimeout = (promise, ms) =>
+  Promise.race([
+    promise,
+    new Promise((resolve) => setTimeout(() => resolve({ data: null }), ms)),
+  ]);
 
 const AuthContext = createContext(null);
 
@@ -27,7 +35,7 @@ export function AuthProvider({ children }) {
           setLoading(false);
           return;
         }
-        const { data } = await supabase.auth.getSession();
+        const { data } = await withTimeout(supabase.auth.getSession(), 5000);
         setSession(data?.session ?? null);
       } catch (e) {
         console.warn('[AuthContext] getSession failed:', e?.message);
@@ -78,6 +86,13 @@ export function AuthProvider({ children }) {
   }, []);
 
   const signOut = useCallback(async () => {
+    // Unlink RevenueCat first so the next sign-in starts fresh and the
+    // anonymous user from logout doesn't keep the previous user's entitlements.
+    try {
+      await unlinkPurchaseUser();
+    } catch (e) {
+      console.warn('[AuthContext] unlinkPurchaseUser failed:', e?.message);
+    }
     try {
       await supabase.auth.signOut();
     } catch (e) {

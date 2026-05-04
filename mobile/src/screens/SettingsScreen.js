@@ -181,8 +181,25 @@ export default function SettingsScreen({ navigation }) {
           text: t('common.delete', 'Sil'),
           style: 'destructive',
           onPress: async () => {
-            await deleteAccount();
-            if (signOut) await signOut();
+            try {
+              const ok = await deleteAccount();
+              if (!ok) {
+                Alert.alert(
+                  t('common.error', 'Hata'),
+                  t(
+                    'settings.deleteAccountFailed',
+                    'Hesap silinemedi. İnternet bağlantını kontrol et ve tekrar dene.',
+                  ),
+                );
+                return;
+              }
+              if (signOut) await signOut();
+            } catch (e) {
+              Alert.alert(
+                t('common.error', 'Hata'),
+                e?.message || t('common.tryAgain', 'Tekrar dene'),
+              );
+            }
           },
         },
       ],

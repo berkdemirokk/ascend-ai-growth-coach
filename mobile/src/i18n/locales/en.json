@@ -144,6 +144,7 @@
     "logout": "Log Out",
     "deleteAccount": "Delete Account",
     "deleteAccountConfirm": "Are you sure you want to delete your account? This cannot be undone.",
+    "deleteAccountFailed": "Could not delete your account. Check your connection and try again.",
     "premium": "Premium",
     "managePremium": "Manage Premium",
     "restorePurchases": "Restore Purchases",

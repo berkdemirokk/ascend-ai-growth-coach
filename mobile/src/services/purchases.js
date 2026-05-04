@@ -5,6 +5,8 @@ let Purchases = null;
 let isInitialized = false;
 let initPromise = null;
 let currentAppUserID = null;
+let lastInitError = null;
+let lastOfferingsError = null;
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -14,7 +16,9 @@ const loadPurchasesModule = async () => {
     const mod = await import('react-native-purchases');
     Purchases = mod.default ?? mod;
     return Purchases;
-  } catch {
+  } catch (e) {
+    lastInitError = `module load failed: ${e?.message || e}`;
+    console.warn('[RC] react-native-purchases module load failed:', e?.message || e);
     return null;
   }
 };
@@ -26,7 +30,10 @@ export const initPurchases = async () => {
   initPromise = (async () => {
     try {
       const P = await loadPurchasesModule();
-      if (!P) return false;
+      if (!P) {
+        lastInitError = lastInitError || 'native module not available';
+        return false;
+      }
       // Android isn't shipped yet — skip configure but mark "ready" so callers
       // don't block forever waiting for a configure that won't happen.
       if (Platform.OS !== 'ios') {
@@ -35,14 +42,18 @@ export const initPurchases = async () => {
       }
       try {
         if (P.LOG_LEVEL && typeof P.setLogLevel === 'function') {
-          P.setLogLevel(__DEV__ ? P.LOG_LEVEL.DEBUG : P.LOG_LEVEL.WARN);
+          // INFO level surfaces useful diagnostic info on TestFlight without
+          // spamming. Visible in Xcode/Console.app device logs.
+          P.setLogLevel(__DEV__ ? P.LOG_LEVEL.DEBUG : P.LOG_LEVEL.INFO);
         }
       } catch {}
       await P.configure({ apiKey: REVENUECAT_CONFIG.API_KEY_IOS });
       isInitialized = true;
+      lastInitError = null;
       return true;
     } catch (e) {
-      console.warn('RevenueCat init error:', e?.message);
+      lastInitError = e?.message || String(e);
+      console.warn('[RC] init error:', lastInitError);
       // Allow a future retry by clearing the in-flight promise.
       initPromise = null;
       return false;
@@ -51,6 +62,15 @@ export const initPurchases = async () => {
 
   return initPromise;
 };
+
+// Exposed for diagnostic UI (Settings → debug, error toasts) so we can show
+// the actual reason instead of a generic "not ready" message.
+export const getPurchasesDiagnostics = () => ({
+  initialized: isInitialized,
+  lastInitError,
+  lastOfferingsError,
+  hasModule: !!Purchases,
+});
 
 const ensureReady = async () => {
   if (!isInitialized) await initPurchases();
@@ -115,24 +135,31 @@ const pickOffering = (offerings) => {
 
 export const getOfferings = async () => {
   const P = await ensureReady();
-  if (!P) return null;
+  if (!P) {
+    lastOfferingsError = lastInitError || 'not initialized';
+    return null;
+  }
 
   // StoreKit can take a moment after launch to wire up product metadata.
   // Retry a few times with backoff before giving up.
-  const delays = [0, 800, 1800];
+  const delays = [0, 800, 1800, 3500];
   let lastError = null;
   for (let i = 0; i < delays.length; i++) {
     if (delays[i] > 0) await sleep(delays[i]);
     try {
       const offerings = await P.getOfferings();
       const picked = pickOffering(offerings);
-      if (picked) return picked;
+      if (picked) {
+        lastOfferingsError = null;
+        return picked;
+      }
       lastError = new Error('No packages in offering');
     } catch (e) {
       lastError = e;
     }
   }
-  if (lastError) console.warn('getOfferings retries exhausted:', lastError?.message);
+  lastOfferingsError = lastError?.message || 'offerings unavailable';
+  if (lastError) console.warn('[RC] getOfferings retries exhausted:', lastError?.message);
   return null;
 };
 

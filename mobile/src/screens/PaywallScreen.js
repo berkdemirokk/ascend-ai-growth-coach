@@ -14,7 +14,12 @@ import {
 import { useTranslation } from 'react-i18next';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useApp } from '../contexts/AppContext';
-import { purchasePremium, restorePurchases, getAvailablePackages } from '../services/purchases';
+import {
+  purchasePremium,
+  restorePurchases,
+  getAvailablePackages,
+  getPurchasesDiagnostics,
+} from '../services/purchases';
 import { getPaywallVariant, logPaywallEvent } from '../config/paywallVariants';
 import { LT } from '../config/lightTheme';
 import { LEGAL } from '../config/constants';
@@ -217,6 +222,16 @@ export default function PaywallScreen({ navigation }) {
                 'Mağaza bağlantısı kurulamadı. Birkaç dakika sonra tekrar dene.',
               )}
             </Text>
+            {(() => {
+              const diag = getPurchasesDiagnostics();
+              const detail = diag.lastOfferingsError || diag.lastInitError;
+              if (!detail) return null;
+              return (
+                <Text style={styles.errorDetail} numberOfLines={2}>
+                  {detail}
+                </Text>
+              );
+            })()}
             <TouchableOpacity
               onPress={async () => {
                 setLoadingPackages(true);
@@ -520,6 +535,15 @@ const styles = StyleSheet.create({
     fontSize: 13,
     textAlign: 'center',
     marginBottom: 8,
+  },
+  errorDetail: {
+    color: LT.onSurfaceVariant,
+    fontSize: 11,
+    textAlign: 'center',
+    fontStyle: 'italic',
+    opacity: 0.7,
+    marginBottom: 8,
+    paddingHorizontal: 8,
   },
   retryBtn: {
     backgroundColor: LT.primaryContainer,

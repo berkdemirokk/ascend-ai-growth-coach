@@ -403,6 +403,14 @@ export function AppProvider({ children }) {
       console.warn('delete-user invoke failed:', e?.message);
     }
 
+    // Detach the deleted user from RevenueCat so a fresh signup doesn't
+    // inherit the deleted user's entitlements.
+    try {
+      await unlinkPurchaseUser();
+    } catch (e) {
+      console.warn('unlinkPurchaseUser failed during deleteAccount:', e?.message);
+    }
+
     // Cancel scheduled local notifications so they stop firing.
     try {
       await cancelAllNotifications();
