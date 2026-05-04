@@ -277,13 +277,13 @@
         "proTip": "Grayscale = renk yok. Beyin renksiz uygulamaları sıkıcı bulur, otomatik bırakır."
       },
       "9": {
-        "title": "Pornoyu Kes",
-        "teaching": "Porno modern dopamin sömürüsünün en güçlü hali. Sınırsız çeşitlilik, anlık doyum, gerçek olmayan stimülasyon — beyni gerçek ilişkilere ilgisizleştirir.\n\nNoFap araştırmaları net: 30 günlük detoks sonrası enerji, motivasyon, kadınlarla doğal etkileşim ve genel öz-saygı artıyor.\n\nBu utançlık konu değil. Optimal beyin için temel disiplin.",
-        "action": "Bugünden başla: 30 gün porno yok. Tarayıcıda site engelleme uygulaması (Cold Turkey, BlockSite) kur. Karar bugün.",
+        "title": "Aşırı Uyaranı Kes",
+        "teaching": "Modern dopamin sömürüsünün en güçlü hali kısa-video bağımlılığı. TikTok, Reels, Shorts — sınırsız çeşitlilik, 15 saniyelik doyum, gerçek-dışı stimülasyon. Beyni gerçek hayatın yavaş ödüllerine ilgisizleştirir.\n\nAlgoritma beynine 30 saniyede ne istediğini öğrenir, sonra durmadan o ödülü verir. 30 dakika scroll edince zaman algın bozulur, dikkat süren çöker, sonra bir kitabı 5 dakika okumak zorlaşır.\n\n30 günlük detoks bilimi net: kısa-video uygulamalarını kaldırınca dopamin baseline'ı 2-4 haftada normale döner. Dikkat süreleri uzar, can sıkıntısına tahammülün artar.",
+        "action": "Bugünden başla: 30 gün TikTok / Reels / Shorts yok. Uygulamaları telefondan kaldır. Sosyal medya zorunluysa sadece masaüstünden gir.",
         "reflectionPrompt": "Bu kararı verirken hangi engel aklına geldi?",
         "quiz": [
           {
-            "q": "Porno etkisi?",
+            "q": "Sonsuz scroll'un dopamin etkisi?",
             "options": [
               "Doğal",
               "Dopamin enflasyonu",
@@ -291,21 +291,21 @@
               "Pozitif"
             ],
             "correct": 1,
-            "explain": "Doğal dopamini değersizleştirir."
+            "explain": "Algoritma her saniye ödül verir — beyin gerçek hayatın yavaş ödüllerini değersizleştirir."
           },
           {
-            "q": "Gerçek bağa etkisi?",
+            "q": "Dikkat süresine etkisi?",
             "options": [
-              "Pozitif",
-              "Düşmanca",
+              "Geliştirir",
+              "Yıkıcı",
               "Etkisiz",
-              "Hızlandırır"
+              "Artırır"
             ],
             "correct": 1,
-            "explain": "Gerçek bağı zorlaştırır."
+            "explain": "Sürekli kısa-uyaranlı içerik, uzun odaklanmayı imkansızlaştırır."
           }
         ],
-        "proTip": "Porno = dopamin enflasyonu. Gerçek bağa düşmanca bir etkidir."
+        "proTip": "Sonsuz scroll = dopamin enflasyonu. Gerçek odaklanmaya düşmanca etkidir."
       },
       "10": {
         "title": "10 Gün Tamamlandı — Mid-point Yansıma",

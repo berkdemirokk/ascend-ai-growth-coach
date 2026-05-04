@@ -159,9 +159,9 @@ disiplin,alışkanlık,monk,duolingo,detoks,odak,streak,stoik,erken kalk,sabah r
 
 **EN:**
 ```
-discipline,habit,monk,stoic,detox,focus,streak,morning,routine,nofap,journal
+discipline,habit,monk,stoic,detox,focus,streak,morning,routine,mindful,journal
 ```
-(70 chars)
+(72 chars)
 
 ---
 
@@ -214,7 +214,7 @@ ASC → App Information → Age Rating → Edit. **12+** olmalı:
 |------|-------|
 | Cartoon or Fantasy Violence | None |
 | Realistic Violence | None |
-| Sexual Content or Nudity | **Infrequent/Mild** ⚠️ (NoFap dersi yüzünden) |
+| Sexual Content or Nudity | None |
 | Profanity or Crude Humor | None |
 | Alcohol, Tobacco, or Drug Use References | **Infrequent/Mild** ⚠️ (Alkol dersi yüzünden) |
 | Mature/Suggestive Themes | None |

@@ -277,13 +277,13 @@
         "proTip": "Grayscale = no color. Brain finds colorless apps boring, drops them automatically."
       },
       "9": {
-        "title": "Cut Porn",
-        "teaching": "Porn is the most extreme form of modern dopamine exploitation. Unlimited variety, instant gratification, unreal stimulation — it desensitizes the brain to real relationships.\n\nNoFap research is clear: after 30 days off, energy, motivation, natural interaction with the opposite sex, and overall self-esteem rise.\n\nThis isn't shame. It's basic discipline for an optimal brain.",
-        "action": "Starting today: 30 days, no porn. Install a site-blocker (Cold Turkey, BlockSite). Decide today.",
+        "title": "Cut Hyperstimulation",
+        "teaching": "The strongest form of modern dopamine exploitation is short-form video addiction. TikTok, Reels, Shorts — unlimited variety, 15-second hits, unreal stimulation. The brain becomes indifferent to the slower rewards of real life.\n\nThe algorithm learns what your brain wants in 30 seconds, then delivers that reward non-stop. After 30 minutes of scrolling your sense of time breaks, your attention span collapses, and reading a book for 5 minutes becomes hard.\n\nThe science of a 30-day detox is clear: removing short-video apps brings dopamine baseline back to normal in 2-4 weeks. Attention spans lengthen. Tolerance for boredom returns.",
+        "action": "Starting today: 30 days, no TikTok / Reels / Shorts. Remove the apps from your phone. If you must use social media, only use it from desktop.",
         "reflectionPrompt": "What objection came to mind when you made this decision?",
         "quiz": [
           {
-            "q": "Porn effect?",
+            "q": "Effect of infinite scroll on dopamine?",
             "options": [
               "Natural",
               "Dopamine inflation",
@@ -291,21 +291,21 @@
               "Positive"
             ],
             "correct": 1,
-            "explain": "Devalues natural dopamine."
+            "explain": "The algorithm rewards every second — the brain devalues the slow rewards of real life."
           },
           {
-            "q": "Effect on real bond?",
+            "q": "Effect on attention span?",
             "options": [
-              "Positive",
-              "Hostile",
+              "Improves",
+              "Destructive",
               "No effect",
-              "Speeds up"
+              "Increases"
             ],
             "correct": 1,
-            "explain": "Real bonding harder."
+            "explain": "Constant short-stimulus content makes long focus impossible."
           }
         ],
-        "proTip": "Porn = dopamine inflation. Hostile to real bonding."
+        "proTip": "Infinite scroll = dopamine inflation. Hostile to real focus."
       },
       "10": {
         "title": "Day 10 — Mid-point Reflection",
