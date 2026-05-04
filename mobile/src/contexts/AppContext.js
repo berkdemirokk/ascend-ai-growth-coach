@@ -261,6 +261,7 @@ function appReducer(state, action) {
         streak: newStreak,
         level: newLevel,
         unlocked: state.unlockedAchievements,
+        isPremium: state.isPremium,
       });
 
       return {

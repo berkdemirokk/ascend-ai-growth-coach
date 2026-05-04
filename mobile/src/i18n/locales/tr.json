@@ -313,6 +313,12 @@
     "adNotReadyTitle": "Reklam hazır değil",
     "adNotReadyBody": "Şu an gösterilebilecek bir reklam yok. Birazdan tekrar dene ya da Premium'a geçerek reklamsız + sınırsız kalp al."
   },
+  "achievements": {
+    "unlocked": "AÇILDI",
+    "locked": "Henüz açılmadı",
+    "premiumGated": "Hedefe ulaştın — Premium ile aç",
+    "upgradeCta": "PREMIUM'A GEÇ"
+  },
   "leaderboard": {
     "title": "Liderlik Tablosu",
     "intro": "En uzun streak'e sahip 50 disiplinci. Sıralama anonim — gerçek kimliklerin paylaşılmaz.",

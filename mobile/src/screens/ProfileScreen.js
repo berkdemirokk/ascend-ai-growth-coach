@@ -316,6 +316,7 @@ export default function ProfileScreen({ navigation }) {
         onClose={() => setSelectedAchievement(null)}
         achievementId={selectedAchievement?.id}
         unlocked={selectedAchievement && !selectedAchievement.locked}
+        onUpgrade={() => navigation.navigate('Paywall')}
       />
 
       {/* Off-screen card used for streak share image capture */}

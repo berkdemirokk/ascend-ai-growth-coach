@@ -313,6 +313,12 @@
     "adNotReadyTitle": "Ad not ready",
     "adNotReadyBody": "No ad is available right now. Try again in a moment, or go Premium for ad-free + unlimited hearts."
   },
+  "achievements": {
+    "unlocked": "UNLOCKED",
+    "locked": "Not unlocked yet",
+    "premiumGated": "Goal reached — unlock with Premium",
+    "upgradeCta": "GO PREMIUM"
+  },
   "leaderboard": {
     "title": "Leaderboard",
     "intro": "Top 50 disciplined users by current streak. Ranking is anonymous — real identities are never shared.",

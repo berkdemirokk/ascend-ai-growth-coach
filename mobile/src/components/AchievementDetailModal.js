@@ -11,7 +11,8 @@ import {
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { ACHIEVEMENTS, RARITY_COLORS } from '../config/achievements';
+import { ACHIEVEMENTS, RARITY_COLORS, isPremiumGated } from '../config/achievements';
+import { useApp } from '../contexts/AppContext';
 import { LT, LT_RADIUS } from '../config/lightTheme';
 
 const RARITY_LABEL_KEY = {
@@ -35,8 +36,15 @@ export default function AchievementDetailModal({
   onClose,
   achievementId,
   unlocked,
+  onUpgrade,
 }) {
   const { t } = useTranslation();
+  const {
+    isPremium,
+    totalLessonsCompleted,
+    currentStreak,
+    level,
+  } = useApp();
   if (!achievementId) return null;
   const ach = ACHIEVEMENTS.find((a) => a.id === achievementId);
   if (!ach) return null;
@@ -46,6 +54,15 @@ export default function AchievementDetailModal({
     RARITY_LABEL_KEY[ach.rarity],
     RARITY_LABEL_FALLBACK[ach.rarity] || 'YAYGIN',
   );
+
+  // Premium-locked state — user already met the target but the badge is
+  // gated. We show progress + "Premium ile aç" instead of generic locked.
+  const premiumGated = isPremiumGated(ach, {
+    isPremium,
+    totalLessonsCompleted,
+    streak: currentStreak,
+    level,
+  });
 
   return (
     <Modal
@@ -110,6 +127,16 @@ export default function AchievementDetailModal({
                 {t('achievements.unlocked', 'AÇILDI')}
               </Text>
             </View>
+          ) : premiumGated ? (
+            <View style={styles.premiumGatedRow}>
+              <MaterialIcons name="workspace-premium" size={16} color={LT.primary} />
+              <Text style={styles.premiumGatedText}>
+                {t(
+                  'achievements.premiumGated',
+                  'Hedefe ulaştın — Premium ile aç',
+                )}
+              </Text>
+            </View>
           ) : (
             <View style={styles.lockedRow}>
               <MaterialIcons name="lock" size={16} color={LT.outline} />
@@ -119,11 +146,27 @@ export default function AchievementDetailModal({
             </View>
           )}
 
-          <TouchableOpacity onPress={onClose} style={styles.gotItBtn}>
-            <Text style={styles.gotItText}>
-              {t('common.close', 'Kapat')}
-            </Text>
-          </TouchableOpacity>
+          {premiumGated ? (
+            <TouchableOpacity
+              onPress={() => {
+                onClose?.();
+                onUpgrade?.();
+              }}
+              style={styles.upgradeBtn}
+              activeOpacity={0.85}
+            >
+              <MaterialIcons name="auto-awesome" size={16} color={LT.onPrimary} />
+              <Text style={styles.upgradeText}>
+                {t('achievements.upgradeCta', "PREMIUM'A GEÇ")}
+              </Text>
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity onPress={onClose} style={styles.gotItBtn}>
+              <Text style={styles.gotItText}>
+                {t('common.close', 'Kapat')}
+              </Text>
+            </TouchableOpacity>
+          )}
         </TouchableOpacity>
       </TouchableOpacity>
     </Modal>
@@ -232,6 +275,46 @@ const styles = StyleSheet.create({
     color: LT.outline,
     fontSize: 12,
     fontWeight: '700',
+  },
+  premiumGatedRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: 'rgba(227, 18, 18, 0.08)',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: LT_RADIUS.pill,
+    borderWidth: 1,
+    borderColor: 'rgba(227, 18, 18, 0.22)',
+    marginBottom: 14,
+  },
+  premiumGatedText: {
+    color: LT.primary,
+    fontSize: 11,
+    fontWeight: '900',
+    letterSpacing: 0.5,
+  },
+  upgradeBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    paddingHorizontal: 18,
+    paddingVertical: 12,
+    backgroundColor: LT.primary,
+    borderRadius: LT_RADIUS.lg,
+    shadowColor: LT.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 12,
+    elevation: 4,
+    marginTop: 4,
+  },
+  upgradeText: {
+    color: LT.onPrimary,
+    fontSize: 13,
+    fontWeight: '900',
+    letterSpacing: 1.2,
   },
   gotItBtn: { paddingVertical: 8 },
   gotItText: {
