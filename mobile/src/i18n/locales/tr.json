@@ -113,7 +113,9 @@
     "linkSettings": "Ayarlar",
     "linkSettingsSub": "Bildirim, ses, hesap",
     "challengeLabel": "BUGÜNÜN BONUSU · +25 XP",
-    "challengeDone": "BUGÜNÜN BONUSU TAMAMLANDI"
+    "challengeDone": "BUGÜNÜN BONUSU TAMAMLANDI",
+    "weekendDeal": "HAFTA SONU",
+    "weekendOfferBody": "Premium ile streak donduruculari, sınırsız kalp, reklamsız."
   },
   "lesson": {
     "playAudio": "Sesli dinle",

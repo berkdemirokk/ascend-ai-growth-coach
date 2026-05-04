@@ -45,6 +45,7 @@ export default function HomeScreen({ navigation }) {
     level,
     userProfile,
     todayCompleted,
+    lessonHistory,
     _streakFreezeToast,
     streakFreezes,
     clearStreakFreezeToast,
@@ -59,6 +60,33 @@ export default function HomeScreen({ navigation }) {
   })();
   const dailyChallenge = useMemo(() => getDailyChallenge(todayStr), [todayStr]);
   const dailyChallengeDone = dailyChallengeCompletedAt === todayStr;
+
+  // Habit chain: last 7 days as a row of dots — filled = lesson done that
+  // day, empty = missed. Loss-aversion visual: a half-broken chain hurts
+  // more than a number that just dropped from 7 to 3.
+  const chainDays = useMemo(() => {
+    const out = [];
+    const today = new Date();
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(today);
+      d.setDate(today.getDate() - i);
+      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+      out.push({
+        key,
+        active: !!(lessonHistory || {})[key],
+        isToday: i === 0,
+      });
+    }
+    return out;
+  }, [lessonHistory]);
+
+  // Time-limited paywall offer. Saturday/Sunday show "weekend deal" banner
+  // pushing premium — nudges high-intent users on rest days. UI-only for
+  // now; the actual price doesn't change in StoreKit.
+  const isWeekendOffer = (() => {
+    const d = new Date().getDay();
+    return d === 0 || d === 6;
+  })();
 
   // One-shot alert when AppContext auto-burned a streak repair token because
   // the user missed yesterday but had a token to spare.
@@ -200,6 +228,43 @@ export default function HomeScreen({ navigation }) {
             </Text>
           </View>
         </TouchableOpacity>
+
+        {/* Habit chain — last 7 days */}
+        <View style={styles.chainRow}>
+          {chainDays.map((d) => (
+            <View
+              key={d.key}
+              style={[
+                styles.chainDot,
+                d.active && styles.chainDotActive,
+                d.isToday && styles.chainDotToday,
+                d.isToday && d.active && styles.chainDotTodayActive,
+              ]}
+            />
+          ))}
+        </View>
+
+        {/* Weekend Premium offer — only Sat/Sun, nudges high-intent users */}
+        {isWeekendOffer && !isPremium ? (
+          <TouchableOpacity
+            onPress={() => navigation.navigate('Paywall')}
+            activeOpacity={0.85}
+            style={styles.weekendOffer}
+          >
+            <View style={styles.weekendOfferBadge}>
+              <Text style={styles.weekendOfferBadgeText}>
+                {t('home.weekendDeal', 'HAFTA SONU')}
+              </Text>
+            </View>
+            <Text style={styles.weekendOfferText}>
+              {t(
+                'home.weekendOfferBody',
+                'Premium ile streak donduruculari, sınırsız kalp, reklamsız.',
+              )}
+            </Text>
+            <MaterialIcons name="arrow-forward" size={18} color={LT.onPrimary} />
+          </TouchableOpacity>
+        ) : null}
 
         {/* Daily Mystery Challenge */}
         {dailyChallenge ? (
@@ -547,6 +612,70 @@ const styles = StyleSheet.create({
   },
 
   // Today's CTA card
+  chainRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 8,
+    marginHorizontal: LT_SPACING.containerMargin,
+    marginBottom: 14,
+  },
+  chainDot: {
+    width: 14,
+    height: 14,
+    borderRadius: 7,
+    backgroundColor: LT.outlineVariant,
+  },
+  chainDotActive: {
+    backgroundColor: LT.primary,
+  },
+  chainDotToday: {
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+    borderWidth: 2,
+    borderColor: LT.primary,
+    backgroundColor: 'transparent',
+  },
+  chainDotTodayActive: {
+    backgroundColor: LT.primary,
+  },
+
+  weekendOffer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    marginHorizontal: LT_SPACING.containerMargin,
+    marginBottom: 12,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    backgroundColor: LT.primary,
+    borderRadius: LT_RADIUS.lg,
+    shadowColor: LT.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 12,
+    elevation: 4,
+  },
+  weekendOfferBadge: {
+    backgroundColor: 'rgba(255, 255, 255, 0.18)',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 999,
+  },
+  weekendOfferBadgeText: {
+    color: LT.onPrimary,
+    fontSize: 9,
+    fontWeight: '900',
+    letterSpacing: 1.4,
+  },
+  weekendOfferText: {
+    flex: 1,
+    color: LT.onPrimary,
+    fontSize: 12,
+    fontWeight: '700',
+    lineHeight: 16,
+  },
+
   challengeCard: {
     flexDirection: 'row',
     alignItems: 'center',
