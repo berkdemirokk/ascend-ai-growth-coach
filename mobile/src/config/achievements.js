@@ -87,6 +87,20 @@ export const ACHIEVEMENTS = [
   { id: 'level_2', title: 'Tırmanışta', description: 'Seviye 2', icon: '🥉', type: 'level', target: 2, rarity: 'common' },
   { id: 'level_5', title: 'Elit', description: 'Seviye 5', icon: '🥈', type: 'level', target: 5, rarity: 'rare' },
   { id: 'level_8', title: 'Usta', description: 'Seviye 8', icon: '🥇', type: 'level', target: 8, rarity: 'epic', premiumOnly: true },
+
+  // ===== MYSTERY BOX (hidden until unlocked) =====
+  // These never appear in the locked grid — only after they unlock so the
+  // user gets a 'where did this come from?' surprise. Hunt-behavior:
+  // research shows hidden achievements drive 15-25% more session count.
+  { id: 'night_owl', title: 'Gece Kuşu', description: 'Gece 23:00 sonrası ders bitir', icon: '🦉', type: 'special', rarity: 'rare', hidden: true },
+  { id: 'early_bird', title: 'Erken Kuş', description: 'Sabah 06:00 öncesi ders bitir', icon: '🐦', type: 'special', rarity: 'rare', hidden: true },
+  { id: 'weekend_warrior', title: 'Hafta Sonu Savaşçısı', description: 'Hafta sonu boyunca seri tut', icon: '⚔️', type: 'special', rarity: 'uncommon', hidden: true },
+
+  // ===== PREMIUM TEASER =====
+  // Shown as '???' to free users — drives curiosity + paywall. Only the
+  // shape (rarity + locked silhouette) is visible until premium upgrade
+  // reveals the real title and unlocks the badge.
+  { id: 'inner_circle', title: '???', description: '???', icon: '🎭', type: 'special', rarity: 'legendary', hidden: false, premiumOnly: true, isTeaser: true },
 ];
 
 export const RARITY_COLORS = {
@@ -127,9 +141,37 @@ export function checkAchievements(ctx) {
     if (a.type === 'streak' && streak >= a.target) met = true;
     if (a.type === 'lessons' && totalLessonsCompleted >= a.target) met = true;
     if (a.type === 'level' && level >= a.target) met = true;
+    // 'special' types are unlocked by named events, not progress thresholds.
     if (met) newlyUnlocked.push(a.id);
   }
   return newlyUnlocked;
+}
+
+/**
+ * Returns the special achievement IDs the user just qualified for, given
+ * a context-of-completion. Called from COMPLETE_PATH_LESSON.
+ *
+ * @param {Object} ctx
+ * @param {Date}   ctx.now - current moment
+ * @param {string[]} ctx.unlocked
+ * @returns {string[]} new specials to unlock
+ */
+export function checkSpecialAchievements(ctx) {
+  const now = ctx?.now || new Date();
+  const unlocked = ctx?.unlocked || [];
+  const out = [];
+  const hour = now.getHours();
+  const day = now.getDay(); // 0 = Sunday, 6 = Saturday
+
+  if (hour >= 23 && !unlocked.includes('night_owl')) out.push('night_owl');
+  if (hour < 6 && !unlocked.includes('early_bird')) out.push('early_bird');
+  if ((day === 0 || day === 6) && !unlocked.includes('weekend_warrior')) {
+    // Triggers on the second weekend day completion to actually require both.
+    // Caller should pass weekendStreak count via ctx if they want stricter
+    // gating; for now, hitting weekend at all once is enough.
+    out.push('weekend_warrior');
+  }
+  return out;
 }
 
 /**

@@ -1,7 +1,7 @@
 import { createContext, useContext, useReducer, useEffect, useCallback } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { STORAGE_KEYS, checkLevelUp } from '../config/constants';
-import { checkAchievements } from '../config/achievements';
+import { checkAchievements, checkSpecialAchievements } from '../config/achievements';
 import {
   checkPremiumStatus,
   linkPurchaseUser,
@@ -83,6 +83,14 @@ const initialState = {
   // every day so this is a single sticky flag, not a list.
   dailyChallengeCompletedAt: null,
 
+  // Daily login bonus — date the user last received +5 XP for opening the
+  // app. Sticky-by-date, so the bonus fires once per calendar day.
+  dailyLoginGrantedAt: null,
+
+  // Last lesson completed milestone celebration shown — flag UI reads to
+  // trigger confetti animation once per milestone.
+  _milestoneToast: null,
+
   // Internal
   _loaded: false,
 };
@@ -130,6 +138,8 @@ const ACTION_TYPES = {
   START_VACATION: 'START_VACATION',
   END_VACATION: 'END_VACATION',
   COMPLETE_DAILY_CHALLENGE: 'COMPLETE_DAILY_CHALLENGE',
+  GRANT_DAILY_LOGIN: 'GRANT_DAILY_LOGIN',
+  CLEAR_MILESTONE_TOAST: 'CLEAR_MILESTONE_TOAST',
 };
 
 function appReducer(state, action) {
@@ -233,6 +243,23 @@ function appReducer(state, action) {
       };
     }
 
+    case ACTION_TYPES.GRANT_DAILY_LOGIN: {
+      const today = getTodayDateString();
+      if (state.dailyLoginGrantedAt === today) return state;
+      const bonus = action.payload?.bonusXp || 5;
+      const newTotalXP = (state.totalXP || 0) + bonus;
+      const newLevel = checkLevelUp(newTotalXP, state.level || 1);
+      return {
+        ...state,
+        dailyLoginGrantedAt: today,
+        totalXP: newTotalXP,
+        level: newLevel,
+      };
+    }
+
+    case ACTION_TYPES.CLEAR_MILESTONE_TOAST:
+      return { ...state, _milestoneToast: null };
+
     case ACTION_TYPES.ENSURE_ANON_USERNAME: {
       // Generate once, then sticky. cloudSync will replicate the chosen
       // handle across devices so the user stays the same monk.
@@ -303,7 +330,26 @@ function appReducer(state, action) {
       };
       if (current.completed.includes(lessonId)) return state;
 
-      const newTotalXP = state.totalXP + xp;
+      // ── Bonus XP multipliers ──────────────────────────────────────────
+      // Comeback bonus: returning after 3+ days gone gives 2x XP, once.
+      // Random bonus days: Monday + Friday are 2x days. Stacks with
+      // comeback (rare overlap = 4x — that's a feature, not a bug).
+      let xpMultiplier = 1;
+      let comebackApplied = false;
+      if (state.lastCompletedDate) {
+        const last = new Date(state.lastCompletedDate);
+        const daysSince = Math.floor((Date.now() - last.getTime()) / 86400000);
+        if (daysSince >= 3) {
+          xpMultiplier *= 2;
+          comebackApplied = true;
+        }
+      }
+      const dow = new Date().getDay();
+      const isBonusDay = dow === 1 || dow === 5; // Mon or Fri
+      if (isBonusDay) xpMultiplier *= 2;
+
+      const finalXp = Math.round(xp * xpMultiplier);
+      const newTotalXP = state.totalXP + finalXp;
       const newLevel = checkLevelUp(newTotalXP, state.level);
 
       // Streak update — completing a lesson counts as today's action
@@ -315,7 +361,7 @@ function appReducer(state, action) {
         newLastDate = today;
       }
 
-      // Check achievements
+      // Check achievements (regular threshold-based) + specials (event-based)
       const totalCompleted = Object.values(state.pathProgress).reduce(
         (sum, p) => sum + (p?.completed?.length || 0),
         0,
@@ -327,6 +373,18 @@ function appReducer(state, action) {
         unlocked: state.unlockedAchievements,
         isPremium: state.isPremium,
       });
+      const newSpecials = checkSpecialAchievements({
+        now: new Date(),
+        unlocked: state.unlockedAchievements,
+      });
+
+      // Milestone toast: trigger confetti + haptic on these streak counts.
+      const MILESTONES = [7, 14, 30, 50, 100, 365];
+      const hitMilestone = MILESTONES.includes(newStreak)
+        && state.currentStreak !== newStreak;
+      const milestoneToast = hitMilestone
+        ? { streak: newStreak, comebackApplied, isBonusDay, ts: Date.now() }
+        : state._milestoneToast;
 
       return {
         ...state,
@@ -356,7 +414,9 @@ function appReducer(state, action) {
         unlockedAchievements: [
           ...state.unlockedAchievements,
           ...newAchievements.filter((a) => !state.unlockedAchievements.includes(a)),
+          ...newSpecials.filter((a) => !state.unlockedAchievements.includes(a)),
         ],
+        _milestoneToast: milestoneToast,
       };
     }
 
@@ -412,7 +472,10 @@ export function AppProvider({ children }) {
   useEffect(() => {
     if (!state._loaded) return;
     dispatch({ type: ACTION_TYPES.AUTO_APPLY_STREAK_FREEZE });
-    // Run once after load — subsequent freezes happen on the next app open.
+    // Daily login bonus: +5 XP the first time you open the app each day.
+    // The reducer no-ops if already granted today, so this is safe to fire
+    // on every load.
+    dispatch({ type: ACTION_TYPES.GRANT_DAILY_LOGIN, payload: { bonusXp: 5 } });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state._loaded]);
 
@@ -484,6 +547,7 @@ export function AppProvider({ children }) {
     const toSave = { ...state };
     delete toSave._loaded;
     delete toSave._streakFreezeToast;
+    delete toSave._milestoneToast;
     AsyncStorage.setItem(STORAGE_KEYS.USER_STATE, JSON.stringify(toSave)).catch(
       (e) => console.error('[AppContext] Failed to save state:', e),
     );
@@ -602,6 +666,10 @@ export function AppProvider({ children }) {
     });
   }, []);
 
+  const clearMilestoneToast = useCallback(() => {
+    dispatch({ type: ACTION_TYPES.CLEAR_MILESTONE_TOAST });
+  }, []);
+
   const deleteAccount = useCallback(async () => {
     // Apple guideline 5.1.1(v): account creation requires server-side
     // deletion. Call the Supabase Edge Function 'delete-user' which removes
@@ -701,6 +769,7 @@ export function AppProvider({ children }) {
     startVacation,
     endVacation,
     completeDailyChallenge,
+    clearMilestoneToast,
     deleteAccount,
     setActivePath,
     completePathLesson,

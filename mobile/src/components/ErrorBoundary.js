@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { LT } from '../config/lightTheme';
 import { LEGAL } from '../config/constants';
+import { logError } from '../services/analytics';
 
 const RAPID_CRASH_WINDOW_MS = 60_000;
 const RAPID_CRASH_THRESHOLD = 3;
@@ -31,6 +32,13 @@ export default class ErrorBoundary extends React.Component {
     );
     recent.push(now);
     this.setState({ info, recentCrashes: recent });
+    // Log to Supabase for post-mortem. Best-effort, fire-and-forget.
+    try {
+      logError({
+        error,
+        source: 'ErrorBoundary',
+      });
+    } catch {}
   }
 
   handleReset = () => {

@@ -21,6 +21,7 @@ const SYNCED_KEYS = [
   'anonUsername',
   'vacationUntil',
   'dailyChallengeCompletedAt',
+  'dailyLoginGrantedAt',
 ];
 
 export function pickSyncableState(state) {

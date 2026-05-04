@@ -110,6 +110,36 @@ create policy "streak_leaderboard: delete own"
   using (auth.uid() = user_id);
 
 -- ──────────────────────────────────────────────────────────────────────────────
+-- Table: analytics_events
+-- Lightweight in-app event log (taps, feature usage, JS errors). Insert-only;
+-- nobody reads it from the client. PII is the user's responsibility — never
+-- log real name / email / IDs that re-identify the user.
+-- ──────────────────────────────────────────────────────────────────────────────
+create table if not exists public.analytics_events (
+  id           uuid primary key default gen_random_uuid(),
+  user_id      uuid references auth.users(id) on delete cascade,
+  anon_user_id text,
+  event        text not null,
+  props        jsonb,
+  created_at   timestamptz not null default now()
+);
+
+create index if not exists analytics_events_event_idx
+  on public.analytics_events (event, created_at desc);
+create index if not exists analytics_events_user_idx
+  on public.analytics_events (user_id, created_at desc);
+
+alter table public.analytics_events enable row level security;
+
+drop policy if exists "events: insert own" on public.analytics_events;
+create policy "events: insert own"
+  on public.analytics_events for insert
+  with check (auth.uid() = user_id or user_id is null);
+
+-- No select / update / delete policies — events are write-only from the client.
+-- The owner reads them via service-role from a dashboard or via Supabase UI.
+
+-- ──────────────────────────────────────────────────────────────────────────────
 -- Auth settings you still need to check in the Supabase dashboard:
 --   Authentication → Providers → Email: enable "Confirm email" if you want
 --     e-mail verification. The app handles both confirmed and unconfirmed
