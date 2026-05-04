@@ -16,7 +16,12 @@ import {
 } from '../services/leaderboard';
 import { useAuth } from './AuthContext';
 import { supabase } from '../services/supabase';
-import { cancelAllNotifications } from '../services/notifications';
+import {
+  cancelAllNotifications,
+  scheduleStreakAtRiskReminder,
+  scheduleComebackReminder,
+  cancelComebackReminder,
+} from '../services/notifications';
 
 // ─── Initial State ───────────────────────────────────────────────────────────
 
@@ -389,6 +394,38 @@ export function AppProvider({ children }) {
       payload: generateAnonUsername(),
     });
   }, [state._loaded, state.anonUsername]);
+
+  // ── Smart re-engagement notifications ────────────────────────────────────
+  // Streak-at-risk: re-evaluated whenever today's completion or streak
+  // changes, so it cancels itself the moment the user does today's lesson.
+  // Comeback: only fires when the user has been gone 3+ days; cancels the
+  // next time the app opens (state._loaded effect below).
+  useEffect(() => {
+    if (!state._loaded) return;
+    const today = getTodayDateString();
+    const onVacation =
+      !!state.vacationUntil && state.vacationUntil >= today;
+    scheduleStreakAtRiskReminder({
+      todayCompleted: state.lastCompletedDate === today,
+      currentStreak: state.currentStreak || 0,
+      onVacation,
+    }).catch(() => {});
+  }, [
+    state._loaded,
+    state.lastCompletedDate,
+    state.currentStreak,
+    state.vacationUntil,
+  ]);
+
+  useEffect(() => {
+    if (!state._loaded) return;
+    // Cancel any comeback push immediately on app open (user is back), then
+    // schedule a fresh one based on the latest lastCompletedDate.
+    cancelComebackReminder().catch(() => {});
+    scheduleComebackReminder({
+      lastCompletedDate: state.lastCompletedDate,
+    }).catch(() => {});
+  }, [state._loaded, state.lastCompletedDate]);
 
   // ── Push streak to public leaderboard whenever it changes ────────────────
   useEffect(() => {

@@ -321,7 +321,11 @@
     "reminderBodyDanger": "This much effort can't be wasted. Today's lesson awaits.",
     "reminderBodyProgress": "Complete today, keep the streak alive.",
     "weeklyRecapTitle": "How was your week? 📊",
-    "weeklyRecapBody": "Check your 7-day recap on the Stats tab — a new week starts tomorrow."
+    "weeklyRecapBody": "Check your 7-day recap on the Stats tab — a new week starts tomorrow.",
+    "streakAtRiskTitle": "🔥 {{streak}} days at risk",
+    "streakAtRiskBody": "You haven't completed today. 3 hours until the day ends — protect your streak, just 5 minutes.",
+    "comebackTitle": "Come back. Just one lesson.",
+    "comebackBody": "You've been gone {{days}} days. Don't let your streak reset — just 5 minutes to start again."
   },
   "share": {
     "streakStart": "Starting monk mode 🔥 Discipline. Focus. Repeat.",
