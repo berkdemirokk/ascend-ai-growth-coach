@@ -35,7 +35,7 @@ const SOUNDS_MUTED_KEY = '@ascend/sounds_muted_v1';
 
 export default function SettingsScreen({ navigation }) {
   const { t } = useTranslation();
-  const { isPremium, deleteAccount, setPremium, resetProgress } = useApp();
+  const { isPremium, deleteAccount, setPremium, resetProgress, streakFreezes } = useApp();
   const { isAuthenticated, signOut } = useAuth();
 
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
@@ -353,6 +353,28 @@ export default function SettingsScreen({ navigation }) {
                 />
               </View>
             </TouchableOpacity>
+
+            <View style={[styles.row, styles.rowBorder]}>
+              <View style={styles.rowLeft}>
+                <MaterialIcons name="ac-unit" size={22} color={LT.primaryContainer} />
+                <View>
+                  <Text style={styles.rowLabel}>
+                    {t('settings.streakRepair', 'Streak Onarım Jetonu')}
+                  </Text>
+                  <Text style={styles.rowSub}>
+                    {t(
+                      'settings.streakRepairSub',
+                      'Bir gün kaçırırsan jeton seriyi otomatik korur',
+                    )}
+                  </Text>
+                </View>
+              </View>
+              <View style={styles.rowRight}>
+                <Text style={[styles.rowValue, { color: LT.primaryContainer }]}>
+                  {streakFreezes ?? 0}
+                </Text>
+              </View>
+            </View>
 
             <TouchableOpacity
               onPress={handleRestore}

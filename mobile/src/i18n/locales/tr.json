@@ -150,6 +150,10 @@
     "shareLongestLabel": "EN UZUN",
     "shareLessonsLabel": "DERS"
   },
+  "streakFreeze": {
+    "savedTitle": "Streak kurtarıldı 🛡️",
+    "savedBody": "Dün ders yapmamıştın ama bir streak onarım jetonu kullanıldı. {{count}} jetonun kaldı."
+  },
   "settings": {
     "title": "Ayarlar",
     "language": "Dil",
@@ -158,6 +162,8 @@
     "reminderTime": "Hatırlatma Saati",
     "sound": "Ses",
     "haptics": "Titreşim",
+    "streakRepair": "Streak Onarım Jetonu",
+    "streakRepairSub": "Bir gün kaçırırsan jeton seriyi otomatik korur",
     "account": "Hesap",
     "logout": "Çıkış Yap",
     "deleteAccount": "Hesabı Sil",

@@ -93,6 +93,8 @@ const ACTION_TYPES = {
   SET_USER_PROFILE: 'SET_USER_PROFILE',
   SET_PREMIUM: 'SET_PREMIUM',
   USE_STREAK_FREEZE: 'USE_STREAK_FREEZE',
+  AUTO_APPLY_STREAK_FREEZE: 'AUTO_APPLY_STREAK_FREEZE',
+  CLEAR_STREAK_FREEZE_TOAST: 'CLEAR_STREAK_FREEZE_TOAST',
   DELETE_ACCOUNT: 'DELETE_ACCOUNT',
   REFRESH_TODAY: 'REFRESH_TODAY',
   COMPLETE_PATH_LESSON: 'COMPLETE_PATH_LESSON',
@@ -120,15 +122,51 @@ function appReducer(state, action) {
         isPremium: !!action.payload,
         // Premium = unlimited hearts effectively
         hearts: action.payload ? 5 : state.hearts,
-        // Premium activation grants 3 streak freezes one-time (don't reduce)
+        // Premium activation grants 12 streak repair tokens (≈ 1/month for a
+        // yearly sub). Existing token count is kept if higher so users who
+        // already had some don't lose them on re-activation.
         streakFreezes: action.payload
-          ? Math.max(state.streakFreezes || 0, 3)
+          ? Math.max(state.streakFreezes || 0, 12)
           : state.streakFreezes,
       };
 
     case ACTION_TYPES.USE_STREAK_FREEZE:
       if (state.streakFreezes <= 0) return state;
       return { ...state, streakFreezes: state.streakFreezes - 1 };
+
+    case ACTION_TYPES.AUTO_APPLY_STREAK_FREEZE: {
+      // Called on app load. If the user has an active streak but missed
+      // exactly yesterday, automatically burn a token to keep the streak
+      // alive — assuming they have one. Setting lastCompletedDate to
+      // yesterday makes the next lesson today extend the streak normally.
+      if ((state.currentStreak || 0) === 0) return state;
+      if ((state.streakFreezes || 0) <= 0) return state;
+      const today = getTodayDateString();
+      const yesterday = getYesterdayDateString();
+      // No save needed if they're already up-to-date
+      if (state.lastCompletedDate === today) return state;
+      if (state.lastCompletedDate === yesterday) return state;
+      // Only save a single missed day. Multiple missed days = streak ends.
+      const dayBeforeYesterday = (() => {
+        const d = new Date();
+        d.setDate(d.getDate() - 2);
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, '0');
+        const dd = String(d.getDate()).padStart(2, '0');
+        return `${y}-${m}-${dd}`;
+      })();
+      if (state.lastCompletedDate !== dayBeforeYesterday) return state;
+      return {
+        ...state,
+        streakFreezes: state.streakFreezes - 1,
+        lastCompletedDate: yesterday,
+        // UI reads this to surface a one-shot toast.
+        _streakFreezeToast: Date.now(),
+      };
+    }
+
+    case ACTION_TYPES.CLEAR_STREAK_FREEZE_TOAST:
+      return { ...state, _streakFreezeToast: null };
 
     case ACTION_TYPES.DELETE_ACCOUNT:
       return { ...initialState, _loaded: true };
@@ -286,11 +324,20 @@ export function AppProvider({ children }) {
     })();
   }, []);
 
+  // ── On load, try to save the streak with a freeze if user missed yesterday
+  useEffect(() => {
+    if (!state._loaded) return;
+    dispatch({ type: ACTION_TYPES.AUTO_APPLY_STREAK_FREEZE });
+    // Run once after load — subsequent freezes happen on the next app open.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state._loaded]);
+
   // ── Save state to AsyncStorage on every change ─────────────────────────
   useEffect(() => {
     if (!state._loaded) return;
     const toSave = { ...state };
     delete toSave._loaded;
+    delete toSave._streakFreezeToast;
     AsyncStorage.setItem(STORAGE_KEYS.USER_STATE, JSON.stringify(toSave)).catch(
       (e) => console.error('[AppContext] Failed to save state:', e),
     );
@@ -390,6 +437,10 @@ export function AppProvider({ children }) {
     dispatch({ type: ACTION_TYPES.USE_STREAK_FREEZE });
   }, []);
 
+  const clearStreakFreezeToast = useCallback(() => {
+    dispatch({ type: ACTION_TYPES.CLEAR_STREAK_FREEZE_TOAST });
+  }, []);
+
   const deleteAccount = useCallback(async () => {
     // Apple guideline 5.1.1(v): account creation requires server-side
     // deletion. Call the Supabase Edge Function 'delete-user' which removes
@@ -485,6 +536,7 @@ export function AppProvider({ children }) {
     setUserProfile,
     setPremium,
     useStreakFreezeAction,
+    clearStreakFreezeToast,
     deleteAccount,
     setActivePath,
     completePathLesson,

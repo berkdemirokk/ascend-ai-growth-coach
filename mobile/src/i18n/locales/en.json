@@ -150,6 +150,10 @@
     "shareLongestLabel": "LONGEST",
     "shareLessonsLabel": "LESSONS"
   },
+  "streakFreeze": {
+    "savedTitle": "Streak saved 🛡️",
+    "savedBody": "You missed yesterday but a streak repair token kept your streak alive. You have {{count}} tokens left."
+  },
   "settings": {
     "title": "Settings",
     "language": "Language",
@@ -158,6 +162,8 @@
     "reminderTime": "Reminder Time",
     "sound": "Sound",
     "haptics": "Haptics",
+    "streakRepair": "Streak Repair Tokens",
+    "streakRepairSub": "If you miss a day, a token automatically saves your streak",
     "account": "Account",
     "logout": "Log Out",
     "deleteAccount": "Delete Account",

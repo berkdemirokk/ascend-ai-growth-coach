@@ -2,7 +2,7 @@
 // Shows: streak hero, today's CTA (jump to current lesson), premium upsell (if free),
 // quick stats, recent activity. Vivid Impact light theme.
 
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -11,6 +11,7 @@ import {
   StyleSheet,
   SafeAreaView,
   StatusBar,
+  Alert,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -39,7 +40,25 @@ export default function HomeScreen({ navigation }) {
     totalXP,
     level,
     userProfile,
+    _streakFreezeToast,
+    streakFreezes,
+    clearStreakFreezeToast,
   } = useApp();
+
+  // One-shot alert when AppContext auto-burned a streak repair token because
+  // the user missed yesterday but had a token to spare.
+  useEffect(() => {
+    if (!_streakFreezeToast) return;
+    Alert.alert(
+      t('streakFreeze.savedTitle', 'Streak kurtarıldı 🛡️'),
+      t(
+        'streakFreeze.savedBody',
+        'Dün ders yapmamıştın ama bir streak onarım jetonu kullanıldı. {{count}} jetonun kaldı.',
+        { count: streakFreezes },
+      ),
+      [{ text: 'OK', onPress: () => clearStreakFreezeToast() }],
+    );
+  }, [_streakFreezeToast, streakFreezes, clearStreakFreezeToast, t]);
   const { user } = useAuth();
 
   const [streakInfoVisible, setStreakInfoVisible] = useState(false);
