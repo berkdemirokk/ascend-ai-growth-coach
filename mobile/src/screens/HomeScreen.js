@@ -2,7 +2,7 @@
 // Shows: streak hero, today's CTA (jump to current lesson), premium upsell (if free),
 // quick stats, recent activity. Vivid Impact light theme.
 
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useMemo, useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -40,6 +40,7 @@ export default function HomeScreen({ navigation }) {
     totalXP,
     level,
     userProfile,
+    todayCompleted,
     _streakFreezeToast,
     streakFreezes,
     clearStreakFreezeToast,
@@ -90,6 +91,28 @@ export default function HomeScreen({ navigation }) {
       lessonId: currentLesson.id,
     });
   };
+
+  // One-tap cold open: returning users (3+ day streak who haven't done today's
+  // lesson yet) skip the home tab and land directly in their next lesson.
+  // We only fire once per cold start via a ref so that swiping back from the
+  // lesson screen doesn't re-trigger the route.
+  const autoRoutedRef = useRef(false);
+  useEffect(() => {
+    if (autoRoutedRef.current) return;
+    if (todayCompleted) return;
+    if (!currentLesson) return;
+    if ((currentStreak || 0) < 3) return;
+    autoRoutedRef.current = true;
+    // Tiny delay so the home screen's first frame paints — avoids a jarring
+    // jump that looks like a glitch.
+    const id = setTimeout(() => {
+      navigation.navigate('Lesson', {
+        pathId: currentLesson.pathId,
+        lessonId: currentLesson.id,
+      });
+    }, 250);
+    return () => clearTimeout(id);
+  }, [todayCompleted, currentLesson, currentStreak, navigation]);
 
   // Prefer the user's actual name when we have one. Sources, in order:
   //   1. Onboarding profile (user typed it)
