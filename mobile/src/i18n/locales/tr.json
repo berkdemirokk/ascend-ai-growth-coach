@@ -312,7 +312,9 @@
     "reminderTitleProgress": "🔥 {{streak}} gün — disiplin",
     "reminderBodyStart": "İlk dersi tamamla. 5 dakika.",
     "reminderBodyDanger": "Bu kadar emek söndürülmez. Bugünkü ders seni bekliyor.",
-    "reminderBodyProgress": "Bugün tamamla, streak sürsün."
+    "reminderBodyProgress": "Bugün tamamla, streak sürsün.",
+    "weeklyRecapTitle": "Haftan nasıl geçti? 📊",
+    "weeklyRecapBody": "Stats sekmesinden 7 günlük özetine bak — yeni hafta yarın başlıyor."
   },
   "share": {
     "streakStart": "Monk mode başlatıyorum 🔥 Disiplin. Odak. Tekrar.",

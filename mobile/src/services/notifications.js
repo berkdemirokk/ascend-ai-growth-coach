@@ -18,6 +18,7 @@ const SchedulableTriggerInputTypes =
 
 const DAILY_REMINDER_ID = 'ascend-daily-reminder';
 const EVENING_REMINDER_ID = 'ascend-evening-reminder';
+const WEEKLY_RECAP_ID = 'ascend-weekly-recap';
 
 export const requestNotificationPermissions = async () => {
   if (!Device.isDevice) {
@@ -90,6 +91,40 @@ export const scheduleStreakReminder = async () => {
     trigger: {
       type: SchedulableTriggerInputTypes.DATE ?? 'date',
       date: evening,
+    },
+  });
+};
+
+/**
+ * Schedule a weekly recap notification — every Sunday at 19:00 local time.
+ * The notification is the come-back trigger that pulls the user into the
+ * Stats tab on the slowest engagement day of the week.
+ */
+export const scheduleWeeklyRecap = async () => {
+  try {
+    await Notifications.cancelScheduledNotificationAsync(WEEKLY_RECAP_ID);
+  } catch {
+    // no-op
+  }
+  await Notifications.scheduleNotificationAsync({
+    identifier: WEEKLY_RECAP_ID,
+    content: {
+      title: i18n.t(
+        'notifications.weeklyRecapTitle',
+        'Haftan nasıl geçti? 📊',
+      ),
+      body: i18n.t(
+        'notifications.weeklyRecapBody',
+        'Stats sekmesinden 7 günlük özetine bak — yeni hafta yarın başlıyor.',
+      ),
+      sound: true,
+    },
+    trigger: {
+      type: SchedulableTriggerInputTypes.WEEKLY ?? 'weekly',
+      // 1 = Sunday in expo-notifications' weekly trigger
+      weekday: 1,
+      hour: 19,
+      minute: 0,
     },
   });
 };

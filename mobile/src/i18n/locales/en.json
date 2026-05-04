@@ -312,7 +312,9 @@
     "reminderTitleProgress": "🔥 {{streak}} days — discipline",
     "reminderBodyStart": "Take the first step. 5 minutes.",
     "reminderBodyDanger": "This much effort can't be wasted. Today's lesson awaits.",
-    "reminderBodyProgress": "Complete today, keep the streak alive."
+    "reminderBodyProgress": "Complete today, keep the streak alive.",
+    "weeklyRecapTitle": "How was your week? 📊",
+    "weeklyRecapBody": "Check your 7-day recap on the Stats tab — a new week starts tomorrow."
   },
   "share": {
     "streakStart": "Starting monk mode 🔥 Discipline. Focus. Repeat.",

@@ -23,7 +23,11 @@ import { COLORS } from '../config/constants';
 import { LT, LT_RADIUS } from '../config/lightTheme';
 import { PATHS } from '../data/paths';
 import { setLanguage, getCurrentLanguage, SUPPORTED_LANGUAGES } from '../i18n';
-import { requestNotificationPermissions, scheduleDailyReminder } from '../services/notifications';
+import {
+  requestNotificationPermissions,
+  scheduleDailyReminder,
+  scheduleWeeklyRecap,
+} from '../services/notifications';
 
 const STEPS = ['welcome', 'personalize', 'pickPath', 'upsell'];
 
@@ -60,7 +64,9 @@ export default function OnboardingScreen({ navigation }) {
     // why we want it (Apple guideline 5.1.1). Fire-and-forget — don't block.
     requestNotificationPermissions()
       .then((granted) => {
-        if (granted) scheduleDailyReminder().catch(() => {});
+        if (!granted) return;
+        scheduleDailyReminder().catch(() => {});
+        scheduleWeeklyRecap().catch(() => {});
       })
       .catch(() => {});
   };
