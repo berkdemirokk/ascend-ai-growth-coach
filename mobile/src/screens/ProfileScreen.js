@@ -22,7 +22,9 @@ import Svg, { Circle } from 'react-native-svg';
 import { useApp } from '../contexts/AppContext';
 import { useAuth } from '../contexts/AuthContext';
 import { LEVEL_THRESHOLDS, getNextLevel } from '../config/constants';
-import { ACHIEVEMENTS } from '../config/achievements';
+import { ACHIEVEMENTS, getEarnedIdentityBadges } from '../config/achievements';
+import { PATHS } from '../data/paths';
+import { getCurrentLanguage } from '../i18n';
 import { getRank, getNextRank } from '../config/ranks';
 import StreakCalendar from '../components/StreakCalendar';
 import AchievementDetailModal from '../components/AchievementDetailModal';
@@ -75,6 +77,11 @@ export default function ProfileScreen({ navigation }) {
   const levelPercent = Math.min(
     100,
     Math.round((xpInLevel / xpForNext) * 100),
+  );
+
+  const identityBadges = useMemo(
+    () => getEarnedIdentityBadges(pathProgress, PATHS, getCurrentLanguage?.() || 'tr'),
+    [pathProgress],
   );
 
   const recentAchievements = useMemo(() => {
@@ -236,6 +243,29 @@ export default function ProfileScreen({ navigation }) {
             </View>
           ) : null}
         </View>
+
+        {/* Identity badges — earned by hitting 80%+ on a path */}
+        {identityBadges.length > 0 ? (
+          <View style={styles.badgesSection}>
+            <Text style={styles.sectionTitle}>
+              {t('profile.identityTitle', 'KİMLİĞİN')}
+            </Text>
+            <Text style={styles.badgesIntro}>
+              {t(
+                'profile.identitySub',
+                'Bitirdiğin yollar seni şekillendiriyor. Sen artık şusun:',
+              )}
+            </Text>
+            <View style={styles.badgesRow}>
+              {identityBadges.map((b) => (
+                <View key={b.id} style={styles.badgeChip}>
+                  <Text style={styles.badgeIcon}>{b.icon}</Text>
+                  <Text style={styles.badgeTitle}>{b.title}</Text>
+                </View>
+              ))}
+            </View>
+          </View>
+        ) : null}
 
         {/* Achievements */}
         <View style={styles.achievementsSection}>
@@ -659,6 +689,47 @@ const styles = StyleSheet.create({
   },
 
   // Achievements
+  badgesSection: {
+    marginHorizontal: LT_SPACING.containerMargin,
+    marginBottom: 16,
+    backgroundColor: LT.surfaceContainerLowest,
+    borderRadius: LT_RADIUS.xl,
+    borderWidth: 1,
+    borderColor: LT.outlineVariant,
+    padding: 16,
+  },
+  badgesIntro: {
+    fontSize: 12,
+    color: LT.onSurfaceVariant,
+    fontWeight: '500',
+    marginBottom: 12,
+    marginTop: 4,
+    lineHeight: 17,
+  },
+  badgesRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  badgeChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    backgroundColor: LT.surfaceContainer,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: 'rgba(227, 18, 18, 0.22)',
+  },
+  badgeIcon: { fontSize: 16 },
+  badgeTitle: {
+    fontSize: 13,
+    fontWeight: '900',
+    color: LT.onSurface,
+    letterSpacing: -0.2,
+  },
+
   achievementsSection: {
     marginBottom: 14,
   },

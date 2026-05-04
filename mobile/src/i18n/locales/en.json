@@ -159,6 +159,10 @@
     "savedTitle": "Streak saved 🛡️",
     "savedBody": "You missed yesterday but a streak repair token kept your streak alive. You have {{count}} tokens left."
   },
+  "profile": {
+    "identityTitle": "YOUR IDENTITY",
+    "identitySub": "The paths you finish shape who you are. You are now:"
+  },
   "settings": {
     "title": "Settings",
     "language": "Language",

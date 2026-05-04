@@ -159,6 +159,10 @@
     "savedTitle": "Streak kurtarıldı 🛡️",
     "savedBody": "Dün ders yapmamıştın ama bir streak onarım jetonu kullanıldı. {{count}} jetonun kaldı."
   },
+  "profile": {
+    "identityTitle": "KİMLİĞİN",
+    "identitySub": "Bitirdiğin yollar seni şekillendiriyor. Sen artık şusun:"
+  },
   "settings": {
     "title": "Ayarlar",
     "language": "Dil",

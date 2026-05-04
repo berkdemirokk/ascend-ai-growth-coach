@@ -1,6 +1,70 @@
 // Path-based achievements (Discipline Academy)
 // Triggered by: total lessons completed, streak milestones, level
 
+// Identity badges — path-completion-based titles the user displays on their
+// profile. Atomic Habits framing: identity > behavior. "I'm not someone who
+// finishes a discipline path; I AM the Sleep Champion."
+export const IDENTITY_BADGES = {
+  'dopamine-detox': {
+    id: 'dopamine-warrior',
+    icon: '🧘',
+    title: 'Dopamin Savaşçısı',
+    titleEn: 'Dopamine Warrior',
+  },
+  'silent-morning': {
+    id: 'morning-master',
+    icon: '🌅',
+    title: 'Sabah Ustası',
+    titleEn: 'Morning Master',
+  },
+  'mind-discipline': {
+    id: 'focus-architect',
+    icon: '🧠',
+    title: 'Odak Mimarı',
+    titleEn: 'Focus Architect',
+  },
+  'body-discipline': {
+    id: 'body-champion',
+    icon: '💪',
+    title: 'Beden Şampiyonu',
+    titleEn: 'Body Champion',
+  },
+  'money-discipline': {
+    id: 'wealth-builder',
+    icon: '💰',
+    title: 'Servet Mimarı',
+    titleEn: 'Wealth Builder',
+  },
+};
+
+/**
+ * Returns the identity badges the user has earned by completing 80%+ of a
+ * path's lessons. Picks the badge title in the user's display language.
+ * @param {Object} pathProgress - { [pathId]: { completed: string[] } }
+ * @param {string} lang - 'tr' or 'en'
+ * @returns {Array<{ id, icon, title }>}
+ */
+export function getEarnedIdentityBadges(pathProgress, paths, lang = 'tr') {
+  const earned = [];
+  if (!pathProgress || !paths) return earned;
+  for (const path of paths) {
+    const prog = pathProgress[path.id];
+    if (!prog?.completed?.length) continue;
+    const ratio = prog.completed.length / (path.duration || 50);
+    // 80% gate so the badge feels earned but doesn't force a perfectionist
+    // grind to 100%.
+    if (ratio < 0.8) continue;
+    const badge = IDENTITY_BADGES[path.id];
+    if (!badge) continue;
+    earned.push({
+      id: badge.id,
+      icon: badge.icon,
+      title: lang === 'en' ? badge.titleEn : badge.title,
+    });
+  }
+  return earned;
+}
+
 export const ACHIEVEMENTS = [
   // ===== STREAK =====
   { id: 'first_flame', title: 'İlk Alev', description: '3 günlük seri', icon: '🔥', type: 'streak', target: 3, rarity: 'common' },
