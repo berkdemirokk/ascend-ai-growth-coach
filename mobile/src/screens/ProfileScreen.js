@@ -15,6 +15,7 @@ import {
   SafeAreaView,
   Alert,
   StatusBar,
+  Share,
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import Svg, { Circle } from 'react-native-svg';
@@ -44,6 +45,7 @@ export default function ProfileScreen({ navigation }) {
     pathProgress,
     unlockedAchievements,
     lessonHistory,
+    anonUsername,
   } = useApp();
   const [selectedAchievement, setSelectedAchievement] = useState(null);
   const [sharing, setSharing] = useState(false);
@@ -96,6 +98,19 @@ export default function ProfileScreen({ navigation }) {
   }, [unlockedAchievements]);
 
   const username = user?.email?.split('@')[0] || 'StoicMonk';
+
+  const handleSharePublicProfile = async () => {
+    const handle = anonUsername || 'monk';
+    const link = `https://ascend.app/u/${encodeURIComponent(handle)}`;
+    const message = t(
+      'profile.publicShareMessage',
+      "Ascend'de profilim 🔥\n{{streak}} gün streak · {{xp}} XP · seviye {{level}}\n{{link}}",
+      { streak: currentStreak, xp: totalXP, level, link },
+    );
+    try {
+      await Share.share({ message });
+    } catch {}
+  };
 
   const handleShareStreak = async () => {
     if (sharing) return;
@@ -247,9 +262,21 @@ export default function ProfileScreen({ navigation }) {
         {/* Identity badges — earned by hitting 80%+ on a path */}
         {identityBadges.length > 0 ? (
           <View style={styles.badgesSection}>
-            <Text style={styles.sectionTitle}>
-              {t('profile.identityTitle', 'KİMLİĞİN')}
-            </Text>
+            <View style={styles.badgesHeader}>
+              <Text style={styles.sectionTitle}>
+                {t('profile.identityTitle', 'KİMLİĞİN')}
+              </Text>
+              <TouchableOpacity
+                onPress={handleSharePublicProfile}
+                activeOpacity={0.7}
+                style={styles.publicShareBtn}
+              >
+                <MaterialIcons name="ios-share" size={14} color={LT.primary} />
+                <Text style={styles.publicShareText}>
+                  {t('profile.publicShareCta', 'PROFİLİ PAYLAŞ')}
+                </Text>
+              </TouchableOpacity>
+            </View>
             <Text style={styles.badgesIntro}>
               {t(
                 'profile.identitySub',
@@ -697,6 +724,24 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: LT.outlineVariant,
     padding: 16,
+  },
+  badgesHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  publicShareBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+  },
+  publicShareText: {
+    color: LT.primary,
+    fontSize: 10,
+    fontWeight: '900',
+    letterSpacing: 1.2,
   },
   badgesIntro: {
     fontSize: 12,

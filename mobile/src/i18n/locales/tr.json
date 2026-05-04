@@ -169,7 +169,9 @@
   },
   "profile": {
     "identityTitle": "KİMLİĞİN",
-    "identitySub": "Bitirdiğin yollar seni şekillendiriyor. Sen artık şusun:"
+    "identitySub": "Bitirdiğin yollar seni şekillendiriyor. Sen artık şusun:",
+    "publicShareCta": "PROFİLİ PAYLAŞ",
+    "publicShareMessage": "Ascend'de profilim 🔥\n{{streak}} gün streak · {{xp}} XP · seviye {{level}}\n{{link}}"
   },
   "settings": {
     "title": "Ayarlar",

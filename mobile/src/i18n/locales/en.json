@@ -169,7 +169,9 @@
   },
   "profile": {
     "identityTitle": "YOUR IDENTITY",
-    "identitySub": "The paths you finish shape who you are. You are now:"
+    "identitySub": "The paths you finish shape who you are. You are now:",
+    "publicShareCta": "SHARE PROFILE",
+    "publicShareMessage": "My Ascend profile 🔥\n{{streak}}-day streak · {{xp}} XP · level {{level}}\n{{link}}"
   },
   "settings": {
     "title": "Settings",
