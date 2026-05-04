@@ -23,6 +23,7 @@
         "CFBundleAllowMixedLocalizations": true,
         "NSUserTrackingUsageDescription": "We use your device's advertising ID to show you ads tailored to your interests. You can change this preference anytime in Settings.",
         "NSPhotoLibraryAddUsageDescription": "Ascend needs permission to save your streak share cards to your photo library when you choose to save them.",
+        "NSMicrophoneUsageDescription": "Ascend uses the microphone only to record your voice journal reflections. Recordings are stored locally on your device and can be deleted at any time.",
         "SKAdNetworkItems": [
           { "SKAdNetworkIdentifier": "cstr6suwn9.skadnetwork" },
           { "SKAdNetworkIdentifier": "4fzdc2evr5.skadnetwork" },

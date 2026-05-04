@@ -118,6 +118,10 @@
   "lesson": {
     "playAudio": "Listen",
     "stopAudio": "Stop",
+    "voiceRecord": "RECORD VOICE",
+    "voiceStop": "STOP RECORDING",
+    "voiceReRecord": "RE-RECORD",
+    "voicePlay": "PLAY",
     "teaching": "Teaching",
     "quiz": "Quiz",
     "action": "Do today",

@@ -286,11 +286,19 @@ function appReducer(state, action) {
       return { ...state, actionsSinceLastAd: 0 };
 
     case ACTION_TYPES.COMPLETE_PATH_LESSON: {
-      const { pathId, lessonId, reflection, quizCorrect = 0, xp = 15 } = action.payload;
+      const {
+        pathId,
+        lessonId,
+        reflection,
+        reflectionAudioUri,
+        quizCorrect = 0,
+        xp = 15,
+      } = action.payload;
       const today = getTodayDateString();
       const current = state.pathProgress[pathId] || {
         completed: [],
         reflections: {},
+        reflectionAudio: {},
         quizCorrect: {},
       };
       if (current.completed.includes(lessonId)) return state;
@@ -329,6 +337,9 @@ function appReducer(state, action) {
             reflections: reflection
               ? { ...current.reflections, [lessonId]: reflection }
               : current.reflections,
+            reflectionAudio: reflectionAudioUri
+              ? { ...(current.reflectionAudio || {}), [lessonId]: reflectionAudioUri }
+              : current.reflectionAudio || {},
             quizCorrect: { ...current.quizCorrect, [lessonId]: quizCorrect },
           },
         },
@@ -636,10 +647,10 @@ export function AppProvider({ children }) {
   }, []);
 
   const completePathLesson = useCallback(
-    ({ pathId, lessonId, reflection, quizCorrect = 0, xp = 15 }) => {
+    ({ pathId, lessonId, reflection, reflectionAudioUri, quizCorrect = 0, xp = 15 }) => {
       dispatch({
         type: ACTION_TYPES.COMPLETE_PATH_LESSON,
-        payload: { pathId, lessonId, reflection, quizCorrect, xp },
+        payload: { pathId, lessonId, reflection, reflectionAudioUri, quizCorrect, xp },
       });
     },
     [],

@@ -24,6 +24,11 @@ import MilestoneModal, { isMilestone } from '../components/MilestoneModal';
 import OutOfHeartsModal from '../components/OutOfHeartsModal';
 import { playSound } from '../services/sounds';
 import { speak as ttsSpeak, stop as ttsStop } from '../services/tts';
+import {
+  startRecording,
+  stopRecording,
+  playRecording,
+} from '../services/voiceRecording';
 import { getCurrentLanguage } from '../i18n';
 import { requestReviewIfAppropriate } from '../services/review';
 import { LT, LT_RADIUS } from '../config/lightTheme';
@@ -72,6 +77,9 @@ export default function LessonScreen({ navigation, route }) {
   const [outOfHeartsVisible, setOutOfHeartsVisible] = useState(false);
   const [now, setNow] = useState(Date.now());
   const [isSpeaking, setIsSpeaking] = useState(false);
+  const [recording, setRecording] = useState(false);
+  const [recordingUri, setRecordingUri] = useState(null);
+  const playbackRef = useRef(null);
 
   // Async-safe state updates: many things in this screen race against the
   // user navigating away (haptics, sounds, TTS, completion celebration). If a
@@ -88,6 +96,36 @@ export default function LessonScreen({ navigation, route }) {
   }, []);
   const safeSet = (setter) => (...args) => {
     if (mountedRef.current) setter(...args);
+  };
+
+  const handleToggleRecord = async () => {
+    if (recording) {
+      const uri = await stopRecording();
+      safeSet(setRecording)(false);
+      if (uri) safeSet(setRecordingUri)(uri);
+      return;
+    }
+    // Stop any active narration before recording so the mic isn't fighting
+    // the speaker.
+    if (isSpeaking) {
+      await ttsStop();
+      safeSet(setIsSpeaking)(false);
+    }
+    const ok = await startRecording();
+    if (ok) safeSet(setRecording)(true);
+  };
+
+  const handlePlayRecording = async () => {
+    if (!recordingUri) return;
+    if (playbackRef.current) {
+      try {
+        await playbackRef.current.stopAsync();
+        await playbackRef.current.unloadAsync();
+      } catch {}
+      playbackRef.current = null;
+    }
+    const sound = await playRecording(recordingUri);
+    playbackRef.current = sound;
   };
 
   const handleToggleSpeak = async () => {
@@ -211,6 +249,7 @@ export default function LessonScreen({ navigation, route }) {
       pathId,
       lessonId,
       reflection: reflection.trim(),
+      reflectionAudioUri: recordingUri || null,
       quizCorrect: correctCount,
       xp: 15 + correctCount * 5,
     });
@@ -556,6 +595,46 @@ export default function LessonScreen({ navigation, route }) {
             <Text style={styles.reflectionMetaText}>
               {reflection.length} / {REFLECTION_MAX}
             </Text>
+          </View>
+
+          {/* Voice journal — record / play row. Stored locally. */}
+          <View style={styles.voiceRow}>
+            <TouchableOpacity
+              onPress={handleToggleRecord}
+              activeOpacity={0.85}
+              style={[styles.voiceBtn, recording && styles.voiceBtnRecording]}
+              disabled={alreadyCompleted}
+            >
+              <MaterialIcons
+                name={recording ? 'stop-circle' : 'mic'}
+                size={18}
+                color={recording ? LT.onPrimary : LT.primary}
+              />
+              <Text
+                style={[
+                  styles.voiceBtnText,
+                  recording && styles.voiceBtnTextRecording,
+                ]}
+              >
+                {recording
+                  ? t('lesson.voiceStop', 'KAYDI DURDUR')
+                  : recordingUri
+                  ? t('lesson.voiceReRecord', 'YENİDEN KAYDET')
+                  : t('lesson.voiceRecord', 'SESLİ KAYIT')}
+              </Text>
+            </TouchableOpacity>
+            {recordingUri && !recording ? (
+              <TouchableOpacity
+                onPress={handlePlayRecording}
+                activeOpacity={0.85}
+                style={styles.voicePlayBtn}
+              >
+                <MaterialIcons name="play-circle-fill" size={20} color={LT.primary} />
+                <Text style={styles.voicePlayText}>
+                  {t('lesson.voicePlay', 'DİNLE')}
+                </Text>
+              </TouchableOpacity>
+            ) : null}
           </View>
         </View>
       ) : null}
@@ -1033,6 +1112,48 @@ const styles = StyleSheet.create({
   reflectionMetaText: {
     color: LT.outline, fontSize: 10, fontWeight: '700',
     letterSpacing: 1, textTransform: 'uppercase',
+  },
+  voiceRow: {
+    flexDirection: 'row',
+    gap: 8,
+    marginTop: 8,
+  },
+  voiceBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: LT.surfaceContainerLow,
+    borderWidth: 1,
+    borderColor: LT.primary,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: 999,
+  },
+  voiceBtnRecording: {
+    backgroundColor: LT.primary,
+    borderColor: LT.primary,
+  },
+  voiceBtnText: {
+    color: LT.primary,
+    fontSize: 11,
+    fontWeight: '900',
+    letterSpacing: 1.2,
+  },
+  voiceBtnTextRecording: {
+    color: LT.onPrimary,
+  },
+  voicePlayBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+  },
+  voicePlayText: {
+    color: LT.primary,
+    fontSize: 11,
+    fontWeight: '900',
+    letterSpacing: 1.2,
   },
 
   bottomCTAWrap: {

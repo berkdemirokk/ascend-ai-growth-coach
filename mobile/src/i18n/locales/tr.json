@@ -118,6 +118,10 @@
   "lesson": {
     "playAudio": "Sesli dinle",
     "stopAudio": "Durdur",
+    "voiceRecord": "SESLİ KAYIT",
+    "voiceStop": "KAYDI DURDUR",
+    "voiceReRecord": "YENİDEN KAYDET",
+    "voicePlay": "DİNLE",
     "teaching": "Öğretim",
     "quiz": "Quiz",
     "action": "Bugün yap",
