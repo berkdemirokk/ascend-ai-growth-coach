@@ -73,28 +73,38 @@ export default function LessonScreen({ navigation, route }) {
   const [now, setNow] = useState(Date.now());
   const [isSpeaking, setIsSpeaking] = useState(false);
 
-  // Stop any in-progress narration when the user navigates away mid-read.
+  // Async-safe state updates: many things in this screen race against the
+  // user navigating away (haptics, sounds, TTS, completion celebration). If a
+  // setState fires after unmount React logs a warning AND the update is lost
+  // — but the operation tail can also crash if it touches refs. Gate the
+  // setState calls on this flag.
+  const mountedRef = useRef(true);
   useEffect(() => {
+    mountedRef.current = true;
     return () => {
+      mountedRef.current = false;
       ttsStop().catch(() => {});
     };
   }, []);
+  const safeSet = (setter) => (...args) => {
+    if (mountedRef.current) setter(...args);
+  };
 
   const handleToggleSpeak = async () => {
     if (isSpeaking) {
       await ttsStop();
-      setIsSpeaking(false);
+      safeSet(setIsSpeaking)(false);
       return;
     }
     if (!teaching) return;
-    setIsSpeaking(true);
+    safeSet(setIsSpeaking)(true);
     const lang = getCurrentLanguage?.() === 'en' ? 'en-US' : 'tr-TR';
     const ok = await ttsSpeak(teaching, {
       lang,
-      onDone: () => setIsSpeaking(false),
-      onError: () => setIsSpeaking(false),
+      onDone: () => safeSet(setIsSpeaking)(false),
+      onError: () => safeSet(setIsSpeaking)(false),
     });
-    if (!ok) setIsSpeaking(false);
+    if (!ok) safeSet(setIsSpeaking)(false);
   };
 
   // Track countdown for hearts refill
@@ -222,12 +232,14 @@ export default function LessonScreen({ navigation, route }) {
       }),
     ]).start();
 
-    // Show milestone modal if this completion crossed a streak milestone
+    // Show milestone modal if this completion crossed a streak milestone.
+    // 1.8s lag means the user might have navigated away — safeSet skips
+    // setState if the screen is gone.
     setTimeout(() => {
       const newStreak = currentStreak + 1;
       if (isMilestone(newStreak)) {
-        setMilestoneStreak(newStreak);
-        setMilestoneVisible(true);
+        safeSet(setMilestoneStreak)(newStreak);
+        safeSet(setMilestoneVisible)(true);
         playSound('milestone').catch(() => {});
       }
     }, 1800);

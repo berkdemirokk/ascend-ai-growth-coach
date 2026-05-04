@@ -260,3 +260,8 @@ export const getBannerId = () => {
 
 export const isAdsReady = () => adsReady;
 
+// Whether a rewarded ad has been loaded and is ready to show. Used by the
+// OutOfHearts modal to decide whether to expose the "Watch ad" CTA at all,
+// instead of showing it and then silently failing on tap.
+export const isRewardedReady = () => rewardedLoaded;
+

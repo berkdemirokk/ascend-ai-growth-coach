@@ -304,6 +304,15 @@
     "failedTitle": "Couldn't share",
     "failedBody": "Something went wrong. Try again."
   },
+  "hearts": {
+    "outTitle": "Out of Hearts",
+    "outSubtitle": "You need a heart to continue. Watch an ad to earn 1 heart or go Premium for unlimited.",
+    "refillIn": "Auto refill in: {{mins}} min",
+    "watchAd": "WATCH AD, EARN +1 HEART",
+    "goPremium": "GO PREMIUM — UNLIMITED HEARTS",
+    "adNotReadyTitle": "Ad not ready",
+    "adNotReadyBody": "No ad is available right now. Try again in a moment, or go Premium for ad-free + unlimited hearts."
+  },
   "leaderboard": {
     "title": "Leaderboard",
     "intro": "Top 50 disciplined users by current streak. Ranking is anonymous — real identities are never shared.",

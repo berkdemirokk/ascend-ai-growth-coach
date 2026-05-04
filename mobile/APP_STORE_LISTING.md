@@ -64,15 +64,25 @@ Her yol 50 ders. Her ders 5 dakika. Toplam 250 ders.
 🏆 OYUNLAŞTIRMA
 
 • Streak (gün sayısı) — Her gün ders bitir, alev devam etsin
-• Kalpler — Yanlış cevapta kalp kaybedersin (24 saatte yenilenir)
+• Streak Onarım Jetonu — Bir gün kaçırdıysan, jeton seriyi otomatik kurtarır
+• Kalpler — Yanlış cevapta kalp kaybedersin (30 dk'da yenilenir, ya da reklam izle)
 • Seviyeler — XP toplayarak Beginner → Master → Legendary
 • Rütbeler — Yol bitirdikçe açılan rütbeler
 • Başarımlar — 30+ farklı başarım
+• Anonim liderlik tablosu — En uzun seri kazanır, gerçek isim paylaşılmaz
+
+🎧 SESLİ DİNLE
+
+Yürürken, banyoda, otobüste — her dersin teaching kısmını sesli dinleyebilirsin. Tek tıkla başlar, tek tıkla durur. Cihazın native sesi (ekstra indirme yok).
+
+📊 HAFTALIK ÖZET
+
+Stats sekmesinde son 7 günün özeti: tamamladığın ders sayısı, aktif gün sayısı, en yoğun günün — hepsi tek bakışta.
 
 ✨ PREMIUM (opsiyonel)
 
 Ücretsiz: ilk 5 ders açık, reklamlı, bekleyerek kalp dolar
-Premium: tüm 250 ders, reklamsız, sınırsız kalp, streak donduruculari, detaylı istatistikler
+Premium: tüm 250 ders, reklamsız, sınırsız kalp, 12 streak onarım jetonu/yıl, detaylı istatistikler
 
 🌐 İKİ DİL
 
@@ -121,15 +131,27 @@ Each path is 50 lessons. Each lesson takes 5 minutes. 250 lessons total.
 🏆 GAMIFICATION
 
 • Streak (day counter) — Finish a lesson every day, keep the flame
-• Hearts — Lose one on wrong answer (refills in 24h)
+• Streak repair token — Miss a day? A token saves your streak automatically
+• Hearts — Lose one on wrong answer (refills in 30 min, or watch an ad)
 • Levels — Beginner → Master → Legendary via XP
 • Ranks — Earn ranks as you complete paths
 • Achievements — 30+ achievements to unlock
+• Anonymous leaderboard — Longest streaks win, real names never shared
+
+🎧 LISTEN ON THE GO
+
+Walking, in the shower, on the bus — every lesson's teaching can be played
+aloud with one tap. Uses your device's native voice (no extra download).
+
+📊 WEEKLY RECAP
+
+The Stats tab shows your last 7 days at a glance: lessons completed,
+active days, your strongest day — all in one card.
 
 ✨ PREMIUM (optional)
 
 Free: first 5 lessons unlocked, ads supported, hearts auto-refill
-Premium: all 250 lessons, ad-free, unlimited hearts, streak freezes, detailed stats
+Premium: all 250 lessons, ad-free, unlimited hearts, 12 streak repair tokens/year, detailed stats
 
 🌐 TWO LANGUAGES
 
@@ -166,6 +188,28 @@ discipline,habit,monk,stoic,detox,focus,streak,morning,routine,mindful,journal
 ---
 
 ## What's New in This Version (max 4000 chars per locale)
+
+### v1.0.10 (TR)
+
+```
+🎯 Sana özel onboarding — 3 hızlı soruyla kişisel plan
+🛡️ Streak Onarım Jetonu — Bir gün kaçırırsan, jeton seriyi korur
+🎧 Sesli ders — Her dersi tek tıkla dinle (yürürken, banyoda)
+📊 Haftalık özet — Son 7 günün tek bakışta
+🏆 Anonim liderlik tablosu — En uzun seri kazanır
+🐛 Daha hızlı, daha kararlı, daha sessiz hatalar
+```
+
+### v1.0.10 (EN)
+
+```
+🎯 Personal onboarding — 3 quick questions for your tailored plan
+🛡️ Streak Repair Token — Miss a day, a token saves your streak
+🎧 Audio lessons — Tap to listen on the go (walking, shower)
+📊 Weekly recap — Your last 7 days at a glance
+🏆 Anonymous leaderboard — Longest streaks win
+🐛 Faster, more stable, quieter errors
+```
 
 ### v1.0.9 (TR)
 

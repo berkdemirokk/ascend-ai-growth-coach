@@ -10,10 +10,11 @@ import {
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
+  Alert,
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { showRewarded, isAdsReady } from '../services/ads';
+import { showRewarded, isAdsReady, isRewardedReady } from '../services/ads';
 import { LT, LT_RADIUS } from '../config/lightTheme';
 
 export default function OutOfHeartsModal({
@@ -25,6 +26,7 @@ export default function OutOfHeartsModal({
 }) {
   const { t } = useTranslation();
   const [watching, setWatching] = useState(false);
+  const rewardedReady = isAdsReady() && isRewardedReady();
 
   const handleWatchAd = async () => {
     if (watching) return;
@@ -34,6 +36,16 @@ export default function OutOfHeartsModal({
       if (earned) {
         onRefill?.();
         onClose?.();
+      } else {
+        // Ad failed to show or user closed early. New AdMob accounts often
+        // serve no fill — make this visible so the tap doesn't feel broken.
+        Alert.alert(
+          t('hearts.adNotReadyTitle', 'Reklam hazır değil'),
+          t(
+            'hearts.adNotReadyBody',
+            'Şu an gösterilebilecek bir reklam yok. Birazdan tekrar dene ya da Premium\'a geçerek reklamsız + sınırsız kalp al.',
+          ),
+        );
       }
     } catch {}
     setWatching(false);
@@ -81,8 +93,9 @@ export default function OutOfHeartsModal({
             </View>
           ) : null}
 
-          {/* Watch ad CTA — secondary outline */}
-          {isAdsReady() ? (
+          {/* Watch ad CTA — only render when an ad is actually loaded so we
+              don't show a button that silently fails on tap. */}
+          {rewardedReady ? (
             <TouchableOpacity
               onPress={handleWatchAd}
               disabled={watching}
