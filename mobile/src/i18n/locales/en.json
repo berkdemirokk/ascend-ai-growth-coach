@@ -277,7 +277,14 @@
     "lessonProgress": "PROGRESS",
     "premiumToUnlock": "UNLOCK WITH PREMIUM",
     "lessonGenericSummary": "Another step on the discipline path.",
-    "lessonLabel": "Lesson"
+    "lessonLabel": "Lesson",
+    "certCta": "Share my certificate",
+    "certPreparing": "Preparing certificate...",
+    "certTitle": "Discipline Certificate",
+    "certSubtitle": "Completed the path",
+    "certLessons": "LESSONS",
+    "certDays": "DAYS",
+    "certShareMessage": "I completed the {{path}} path — {{count}} lessons done. Discipline academy: ascend.app"
   },
   "paths": {
     "dopamine-detox": {

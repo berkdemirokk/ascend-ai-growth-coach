@@ -32,6 +32,9 @@ import BannerAdBox from '../components/BannerAdBox';
 import OutOfHeartsModal from '../components/OutOfHeartsModal';
 import StreakInfoModal from '../components/StreakInfoModal';
 import LightTopAppBar from '../components/LightTopAppBar';
+import PathCertificateCard from '../components/PathCertificateCard';
+import { captureAndShare } from '../services/streakShare';
+import { useAuth } from '../contexts/AuthContext';
 import { LT, LT_SPACING, LT_RADIUS } from '../config/lightTheme';
 
 export default function PathScreen({ navigation }) {
@@ -49,7 +52,10 @@ export default function PathScreen({ navigation }) {
 
   const [outOfHeartsVisible, setOutOfHeartsVisible] = useState(false);
   const [streakInfoVisible, setStreakInfoVisible] = useState(false);
+  const [sharingCert, setSharingCert] = useState(false);
   const autoStartedRef = useRef(false);
+  const certCardRef = useRef(null);
+  const { user } = useAuth();
 
   const activePath = useMemo(
     () => getPathById(activePathId) || PATHS[0],
@@ -142,6 +148,45 @@ export default function PathScreen({ navigation }) {
             <View style={styles.progressMetaDot} />
             <Text style={styles.progressMetaText}>{progress.percent}%</Text>
           </View>
+
+          {progress.percent === 100 ? (
+            <TouchableOpacity
+              onPress={async () => {
+                if (sharingCert) return;
+                setSharingCert(true);
+                const today = new Date();
+                const dateStr = today.toLocaleDateString();
+                const userName =
+                  (user?.user_metadata?.name || '').trim() ||
+                  (user?.email || '').split('@')[0] ||
+                  t('home.greetingName', 'Disiplinci');
+                // Wait one tick so the off-screen card has its latest props
+                // before captureRef reads pixels.
+                await new Promise((r) => setTimeout(r, 50));
+                try {
+                  await captureAndShare({
+                    viewRef: certCardRef,
+                    message: t(
+                      'path.certShareMessage',
+                      '{{path}} yolunu tamamladım — {{count}} ders bitti. Disiplin akademisi: ascend.app',
+                      { path: t(`paths.${activePath.id}.title`, activePath.id), count: progress.completed },
+                    ),
+                  });
+                } finally {
+                  setSharingCert(false);
+                }
+              }}
+              activeOpacity={0.85}
+              style={styles.certCta}
+            >
+              <MaterialIcons name="verified" size={18} color={LT.onPrimary} />
+              <Text style={styles.certCtaText}>
+                {sharingCert
+                  ? t('path.certPreparing', 'Sertifika hazırlanıyor...')
+                  : t('path.certCta', 'Sertifikamı paylaş')}
+              </Text>
+            </TouchableOpacity>
+          ) : null}
         </View>
 
         {/* Path Switcher Pills */}
@@ -230,6 +275,26 @@ export default function PathScreen({ navigation }) {
         onClose={() => setStreakInfoVisible(false)}
         currentStreak={currentStreak}
       />
+
+      {/* Off-screen certificate captured for share image */}
+      <View pointerEvents="none" style={styles.certOffscreen}>
+        <PathCertificateCard
+          ref={certCardRef}
+          pathTitle={t(`paths.${activePath.id}.title`, activePath.id)}
+          completedDate={new Date().toLocaleDateString()}
+          userName={
+            (user?.user_metadata?.name || '').trim() ||
+            (user?.email || '').split('@')[0] ||
+            t('home.greetingName', 'Disiplinci')
+          }
+          lessonsCount={progress.completed}
+          daysCount={currentStreak}
+          title={t('path.certTitle', 'Disiplin Sertifikası')}
+          subtitle={t('path.certSubtitle', 'Yolu tamamladı')}
+          lessonsLabel={t('path.certLessons', 'DERS').toUpperCase()}
+          daysLabel={t('path.certDays', 'GÜN').toUpperCase()}
+        />
+      </View>
     </SafeAreaView>
   );
 }
@@ -455,6 +520,38 @@ const styles = StyleSheet.create({
     height: 4,
     borderRadius: 2,
     backgroundColor: LT.outlineVariant,
+  },
+
+  certCta: {
+    marginTop: 14,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    backgroundColor: LT.primary,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 999,
+    alignSelf: 'flex-start',
+    shadowColor: LT.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 12,
+    elevation: 4,
+  },
+  certCtaText: {
+    color: LT.onPrimary,
+    fontSize: 13,
+    fontWeight: '900',
+    letterSpacing: 0.4,
+  },
+
+  certOffscreen: {
+    position: 'absolute',
+    top: -10000,
+    left: -10000,
+    width: 720,
+    height: 480,
   },
 
   // Path switcher pills

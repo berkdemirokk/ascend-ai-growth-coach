@@ -277,7 +277,14 @@
     "lessonProgress": "İLERLEME",
     "premiumToUnlock": "PREMIUM İLE AÇ",
     "lessonGenericSummary": "Disiplin yolunda bir adım daha.",
-    "lessonLabel": "Ders"
+    "lessonLabel": "Ders",
+    "certCta": "Sertifikamı paylaş",
+    "certPreparing": "Sertifika hazırlanıyor...",
+    "certTitle": "Disiplin Sertifikası",
+    "certSubtitle": "Yolu tamamladı",
+    "certLessons": "DERS",
+    "certDays": "GÜN",
+    "certShareMessage": "{{path}} yolunu tamamladım — {{count}} ders bitti. Disiplin akademisi: ascend.app"
   },
   "paths": {
     "dopamine-detox": {
