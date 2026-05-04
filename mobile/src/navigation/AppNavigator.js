@@ -18,6 +18,7 @@ import LessonScreen from '../screens/LessonScreen';
 import PathScreen from '../screens/PathScreen';
 import ReflectionsScreen from '../screens/ReflectionsScreen';
 import InsightsScreen from '../screens/InsightsScreen';
+import LeaderboardScreen from '../screens/LeaderboardScreen';
 import WelcomeScreen from '../screens/auth/WelcomeScreen';
 import LoginScreen from '../screens/auth/LoginScreen';
 import SignupScreen from '../screens/auth/SignupScreen';
@@ -197,6 +198,14 @@ export default function AppNavigator() {
         <Stack.Screen
           name="Reflections"
           component={ReflectionsScreen}
+          options={{
+            presentation: 'modal',
+            animation: 'slide_from_bottom',
+          }}
+        />
+        <Stack.Screen
+          name="Leaderboard"
+          component={LeaderboardScreen}
           options={{
             presentation: 'modal',
             animation: 'slide_from_bottom',

@@ -18,6 +18,7 @@ const SYNCED_KEYS = [
   'pathProgress',
   'activePathId',
   'lessonHistory',
+  'anonUsername',
 ];
 
 export function pickSyncableState(state) {
@@ -169,6 +170,10 @@ export function mergeStates(localState, cloudPayload) {
     pathProgress: mergePathProgress(localState.pathProgress, cloudPayload.pathProgress),
     activePathId: newerSide.activePathId || localState.activePathId || cloudPayload.activePathId,
     lessonHistory: mergeLessonHistory(localState.lessonHistory, cloudPayload.lessonHistory),
+    // Anon username is sticky — once a device generated one, keep it. If both
+    // sides have a value, the local one wins so users don't get re-handled
+    // when they install on a second device that hadn't generated yet.
+    anonUsername: localState.anonUsername || cloudPayload.anonUsername || null,
   };
 }
 

@@ -304,9 +304,19 @@
     "failedTitle": "Couldn't share",
     "failedBody": "Something went wrong. Try again."
   },
+  "leaderboard": {
+    "title": "Leaderboard",
+    "intro": "Top 50 disciplined users by current streak. Ranking is anonymous — real identities are never shared.",
+    "you": "(you)",
+    "xp": "{{count}} XP",
+    "emptyTitle": "No one here yet",
+    "emptyBody": "Complete your first lesson to enter the leaderboard."
+  },
   "insights": {
     "title": "Stats",
     "subtitle": "Your journey, in numbers. Discipline made tangible.",
+    "leaderboardTitle": "Leaderboard",
+    "leaderboardSub": "Anonymous. Longest streaks win.",
     "weekLabel": "THIS WEEK",
     "weekLessons": "lessons",
     "weekActiveDays": "{{count}}/7 active days",

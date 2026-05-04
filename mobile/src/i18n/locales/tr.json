@@ -304,9 +304,19 @@
     "failedTitle": "Paylaşılamadı",
     "failedBody": "Bir sorun oluştu, tekrar dene."
   },
+  "leaderboard": {
+    "title": "Liderlik Tablosu",
+    "intro": "En uzun streak'e sahip 50 disiplinci. Sıralama anonim — gerçek kimliklerin paylaşılmaz.",
+    "you": "(sen)",
+    "xp": "{{count}} XP",
+    "emptyTitle": "Henüz kimse yok",
+    "emptyBody": "İlk dersini yaparak liderlik tablosuna gir."
+  },
   "insights": {
     "title": "İstatistikler",
     "subtitle": "Yolculuğun, sayılarda. Disiplinin somut ifadesi.",
+    "leaderboardTitle": "Liderlik Tablosu",
+    "leaderboardSub": "Anonim. En uzun seriler kazanır.",
     "weekLabel": "BU HAFTA",
     "weekLessons": "ders",
     "weekActiveDays": "{{count}}/7 gün aktif",

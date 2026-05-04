@@ -10,6 +10,10 @@ import {
 import { getRank } from '../config/ranks';
 import { getPathById } from '../data/paths';
 import { pullState, pushState, mergeStates } from '../services/cloudSync';
+import {
+  pushLeaderboardEntry,
+  generateAnonUsername,
+} from '../services/leaderboard';
 import { useAuth } from './AuthContext';
 import { supabase } from '../services/supabase';
 import { cancelAllNotifications } from '../services/notifications';
@@ -60,6 +64,10 @@ const initialState = {
   pathProgress: {},
   activePathId: 'dopamine-detox',
 
+  // Anonymous handle for the public streak leaderboard. Generated on first
+  // sign-in and re-used across devices via cloudSync.
+  anonUsername: null,
+
   // Internal
   _loaded: false,
 };
@@ -103,6 +111,7 @@ const ACTION_TYPES = {
   REFILL_HEARTS: 'REFILL_HEARTS',
   RESET_AD_COUNTER: 'RESET_AD_COUNTER',
   RESET_PROGRESS: 'RESET_PROGRESS',
+  ENSURE_ANON_USERNAME: 'ENSURE_ANON_USERNAME',
 };
 
 function appReducer(state, action) {
@@ -167,6 +176,13 @@ function appReducer(state, action) {
 
     case ACTION_TYPES.CLEAR_STREAK_FREEZE_TOAST:
       return { ...state, _streakFreezeToast: null };
+
+    case ACTION_TYPES.ENSURE_ANON_USERNAME: {
+      // Generate once, then sticky. cloudSync will replicate the chosen
+      // handle across devices so the user stays the same monk.
+      if (state.anonUsername) return state;
+      return { ...state, anonUsername: action.payload };
+    }
 
     case ACTION_TYPES.DELETE_ACCOUNT:
       return { ...initialState, _loaded: true };
@@ -331,6 +347,36 @@ export function AppProvider({ children }) {
     // Run once after load — subsequent freezes happen on the next app open.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state._loaded]);
+
+  // ── Ensure the user has an anon handle for the leaderboard ───────────────
+  useEffect(() => {
+    if (!state._loaded) return;
+    if (state.anonUsername) return;
+    dispatch({
+      type: ACTION_TYPES.ENSURE_ANON_USERNAME,
+      payload: generateAnonUsername(),
+    });
+  }, [state._loaded, state.anonUsername]);
+
+  // ── Push streak to public leaderboard whenever it changes ────────────────
+  useEffect(() => {
+    if (!state._loaded || !isAuthenticated || !userId) return;
+    if (!state.anonUsername) return;
+    pushLeaderboardEntry(userId, {
+      anonUsername: state.anonUsername,
+      currentStreak: state.currentStreak || 0,
+      longestStreak: state.longestStreak || 0,
+      totalXP: state.totalXP || 0,
+    }).catch(() => {});
+  }, [
+    state._loaded,
+    isAuthenticated,
+    userId,
+    state.anonUsername,
+    state.currentStreak,
+    state.longestStreak,
+    state.totalXP,
+  ]);
 
   // ── Save state to AsyncStorage on every change ─────────────────────────
   useEffect(() => {

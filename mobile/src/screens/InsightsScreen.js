@@ -268,6 +268,33 @@ export default function InsightsScreen({ navigation }) {
           </View>
         </View>
 
+        {/* Leaderboard CTA */}
+        <TouchableOpacity
+          onPress={() => navigation.navigate('Leaderboard')}
+          activeOpacity={0.85}
+          style={styles.leaderboardCta}
+        >
+          <View style={styles.leaderboardIconWrap}>
+            <MaterialIcons
+              name="emoji-events"
+              size={22}
+              color={LT.primaryContainer}
+            />
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.leaderboardTitle}>
+              {t('insights.leaderboardTitle', 'Liderlik Tablosu')}
+            </Text>
+            <Text style={styles.leaderboardSub}>
+              {t(
+                'insights.leaderboardSub',
+                'Anonim. En uzun seriler kazanır.',
+              )}
+            </Text>
+          </View>
+          <MaterialIcons name="chevron-right" size={20} color={LT.onSurfaceVariant} />
+        </TouchableOpacity>
+
         {/* Records */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>
@@ -764,6 +791,41 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
     color: LT.outline,
     textTransform: 'uppercase',
+  },
+
+  // Leaderboard CTA
+  leaderboardCta: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    marginHorizontal: LT_SPACING.containerMargin,
+    marginBottom: 14,
+    backgroundColor: LT.surfaceContainerLowest,
+    borderRadius: LT_RADIUS.xl,
+    borderWidth: 1,
+    borderColor: LT.outlineVariant,
+    padding: 16,
+  },
+  leaderboardIconWrap: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(227, 18, 18, 0.08)',
+    borderWidth: 1,
+    borderColor: 'rgba(227, 18, 18, 0.18)',
+  },
+  leaderboardTitle: {
+    fontSize: 14,
+    fontWeight: '900',
+    color: LT.onSurface,
+    marginBottom: 2,
+  },
+  leaderboardSub: {
+    fontSize: 11,
+    color: LT.onSurfaceVariant,
+    fontWeight: '600',
   },
 
   // Premium upsell
