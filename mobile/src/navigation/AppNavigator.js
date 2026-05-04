@@ -19,6 +19,7 @@ import PathScreen from '../screens/PathScreen';
 import ReflectionsScreen from '../screens/ReflectionsScreen';
 import InsightsScreen from '../screens/InsightsScreen';
 import LeaderboardScreen from '../screens/LeaderboardScreen';
+import LessonSearchScreen from '../screens/LessonSearchScreen';
 import WelcomeScreen from '../screens/auth/WelcomeScreen';
 import LoginScreen from '../screens/auth/LoginScreen';
 import SignupScreen from '../screens/auth/SignupScreen';
@@ -206,6 +207,14 @@ export default function AppNavigator() {
         <Stack.Screen
           name="Leaderboard"
           component={LeaderboardScreen}
+          options={{
+            presentation: 'modal',
+            animation: 'slide_from_bottom',
+          }}
+        />
+        <Stack.Screen
+          name="LessonSearch"
+          component={LessonSearchScreen}
           options={{
             presentation: 'modal',
             animation: 'slide_from_bottom',

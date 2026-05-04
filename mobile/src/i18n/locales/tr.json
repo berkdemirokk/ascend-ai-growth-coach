@@ -363,6 +363,12 @@
     "premiumGated": "Hedefe ulaştın — Premium ile aç",
     "upgradeCta": "PREMIUM'A GEÇ"
   },
+  "search": {
+    "title": "Ders ara",
+    "placeholder": "Anahtar kelime — odak, sabah, dopamin...",
+    "helpText": "En az 2 harfle ara — başlık, öğreti veya aksiyon içinde geçerse çıkar.",
+    "noResults": "Sonuç yok. Başka kelime dene."
+  },
   "leaderboard": {
     "title": "Liderlik Tablosu",
     "intro": "En uzun streak'e sahip 50 disiplinci. Sıralama anonim — gerçek kimliklerin paylaşılmaz.",

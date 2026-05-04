@@ -363,6 +363,12 @@
     "premiumGated": "Goal reached — unlock with Premium",
     "upgradeCta": "GO PREMIUM"
   },
+  "search": {
+    "title": "Search lessons",
+    "placeholder": "Keyword — focus, morning, dopamine...",
+    "helpText": "At least 2 letters — matches title, teaching, or action text.",
+    "noResults": "No results. Try a different word."
+  },
   "leaderboard": {
     "title": "Leaderboard",
     "intro": "Top 50 disciplined users by current streak. Ranking is anonymous — real identities are never shared.",

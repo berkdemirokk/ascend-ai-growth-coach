@@ -117,6 +117,15 @@ export default function PathScreen({ navigation }) {
         onAvatarPress={() => navigation.navigate('Settings')}
         onStreakPress={() => setStreakInfoVisible(true)}
         currentStreak={currentStreak}
+        rightContent={
+          <TouchableOpacity
+            onPress={() => navigation.navigate('LessonSearch')}
+            style={styles.searchBtn}
+            hitSlop={{ top: 8, left: 8, right: 8, bottom: 8 }}
+          >
+            <MaterialIcons name="search" size={20} color={LT.onSurface} />
+          </TouchableOpacity>
+        }
       />
 
       <ScrollView
@@ -520,6 +529,17 @@ const styles = StyleSheet.create({
     height: 4,
     borderRadius: 2,
     backgroundColor: LT.outlineVariant,
+  },
+
+  searchBtn: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: LT.surfaceContainer,
+    borderWidth: 1,
+    borderColor: LT.outlineVariant,
   },
 
   certCta: {
