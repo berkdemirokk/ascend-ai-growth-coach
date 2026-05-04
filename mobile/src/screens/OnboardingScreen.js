@@ -25,13 +25,24 @@ import { PATHS } from '../data/paths';
 import { setLanguage, getCurrentLanguage, SUPPORTED_LANGUAGES } from '../i18n';
 import { requestNotificationPermissions, scheduleDailyReminder } from '../services/notifications';
 
-const STEPS = ['welcome', 'pickPath', 'upsell'];
+const STEPS = ['welcome', 'personalize', 'pickPath', 'upsell'];
+
+// Map a chosen goal to the path that best fits it. Used to pre-select on the
+// next step so the personalization actually affects what the user sees first.
+const GOAL_TO_PATH = {
+  focus: 'mind-discipline',
+  morning: 'silent-morning',
+  fitness: 'body-discipline',
+  money: 'money-discipline',
+  discipline: 'dopamine-detox',
+};
 
 export default function OnboardingScreen({ navigation }) {
   const { t } = useTranslation();
   const { completeOnboarding, setUserProfile, setActivePath, isPremium } = useApp();
   const [step, setStep] = useState('welcome');
   const [selectedPath, setSelectedPath] = useState('dopamine-detox');
+  const [answers, setAnswers] = useState({ goal: null, time: null, mood: null });
 
   const buttonScale = useSharedValue(1);
   const animatedButtonStyle = useAnimatedStyle(() => ({
@@ -39,7 +50,10 @@ export default function OnboardingScreen({ navigation }) {
   }));
 
   const finishOnboarding = () => {
-    setUserProfile({ goals: ['discipline'], answers: {} });
+    setUserProfile({
+      goals: answers.goal ? [answers.goal] : ['discipline'],
+      answers,
+    });
     setActivePath(selectedPath);
     completeOnboarding();
     // Request notification permission AFTER onboarding so the user understands
@@ -51,12 +65,24 @@ export default function OnboardingScreen({ navigation }) {
       .catch(() => {});
   };
 
+  const handleAnswer = (key, value) => {
+    setAnswers((prev) => ({ ...prev, [key]: value }));
+    // When user picks a goal, pre-select the matching path so pickPath opens
+    // already focused on the right one — small thing, big "this app gets me"
+    // effect.
+    if (key === 'goal' && GOAL_TO_PATH[value]) {
+      setSelectedPath(GOAL_TO_PATH[value]);
+    }
+  };
+
   const handleNext = () => {
     buttonScale.value = withSpring(0.95, {}, () => {
       buttonScale.value = withSpring(1);
     });
 
     if (step === 'welcome') {
+      setStep('personalize');
+    } else if (step === 'personalize') {
       setStep('pickPath');
     } else if (step === 'pickPath') {
       // Skip upsell for premium users
@@ -74,12 +100,19 @@ export default function OnboardingScreen({ navigation }) {
   const handleUpsellSubscribe = () => {
     // Save profile + activate path BEFORE going to paywall, so even if user
     // backs out we don't lose onboarding state
-    setUserProfile({ goals: ['discipline'], answers: {} });
+    setUserProfile({
+      goals: answers.goal ? [answers.goal] : ['discipline'],
+      answers,
+    });
     setActivePath(selectedPath);
     completeOnboarding();
     // Navigate to paywall after onboarding completes
     setTimeout(() => navigation?.navigate?.('Paywall'), 300);
   };
+
+  // Personalize step requires the goal pick before moving forward — time/mood
+  // are nice-to-have but goal drives path pre-selection so it's mandatory.
+  const canAdvance = step !== 'personalize' || answers.goal != null;
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -90,6 +123,8 @@ export default function OnboardingScreen({ navigation }) {
 
         {step === 'welcome' ? (
           <WelcomeStep t={t} />
+        ) : step === 'personalize' ? (
+          <PersonalizeStep t={t} answers={answers} onAnswer={handleAnswer} />
         ) : step === 'pickPath' ? (
           <PickPathStep
             t={t}
@@ -118,14 +153,20 @@ export default function OnboardingScreen({ navigation }) {
           </View>
 
           {/* Primary CTA — solid red */}
-          <TouchableOpacity onPress={handleNext} activeOpacity={0.9} style={styles.primaryWrap}>
-            <View style={styles.primaryButton}>
+          <TouchableOpacity
+            onPress={canAdvance ? handleNext : undefined}
+            activeOpacity={canAdvance ? 0.9 : 1}
+            style={[styles.primaryWrap, !canAdvance && styles.primaryWrapDisabled]}
+          >
+            <View style={[styles.primaryButton, !canAdvance && styles.primaryButtonDisabled]}>
               <Text style={styles.primaryButtonText}>
                 {step === 'welcome'
                   ? t('onboarding.cta', 'Başla')
-                  : step === 'pickPath'
-                    ? t('onboarding.startPath', 'Bu yolu başlat')
-                    : t('onboarding.skipUpsell', 'Şimdilik Atla')}
+                  : step === 'personalize'
+                    ? t('onboarding.continuePersonalize', 'Devam et')
+                    : step === 'pickPath'
+                      ? t('onboarding.startPath', 'Bu yolu başlat')
+                      : t('onboarding.skipUpsell', 'Şimdilik Atla')}
               </Text>
               <MaterialIcons name="arrow-forward" size={20} color={LT.onPrimary} style={{ marginLeft: 6 }} />
             </View>
@@ -135,9 +176,11 @@ export default function OnboardingScreen({ navigation }) {
           <Text style={styles.caption}>
             {step === 'welcome'
               ? t('onboarding.captionWelcome', 'STRATEJİK ODAKLANMA BAŞLATILIYOR')
-              : step === 'pickPath'
-                ? t('onboarding.captionPickPath', 'YOLUNU SEÇ')
-                : t('onboarding.captionUpsell', 'PREMIUM İLE TAMAM')}
+              : step === 'personalize'
+                ? t('onboarding.captionPersonalize', 'KİŞİSEL PLAN OLUŞTURULUYOR')
+                : step === 'pickPath'
+                  ? t('onboarding.captionPickPath', 'YOLUNU SEÇ')
+                  : t('onboarding.captionUpsell', 'PREMIUM İLE TAMAM')}
           </Text>
         </Animated2.View>
       </View>
@@ -243,6 +286,123 @@ function WelcomeStep({ t }) {
   );
 }
 
+function PersonalizeStep({ t, answers, onAnswer }) {
+  const goalOptions = [
+    { id: 'focus', icon: 'center-focus-strong', labelKey: 'onboarding.goalFocus', fallback: 'Daha çok odaklan' },
+    { id: 'morning', icon: 'wb-twilight', labelKey: 'onboarding.goalMorning', fallback: 'Sabah rutinim' },
+    { id: 'fitness', icon: 'fitness-center', labelKey: 'onboarding.goalFitness', fallback: 'Vücut disiplini' },
+    { id: 'money', icon: 'account-balance-wallet', labelKey: 'onboarding.goalMoney', fallback: 'Para disiplini' },
+    { id: 'discipline', icon: 'whatshot', labelKey: 'onboarding.goalGeneral', fallback: 'Genel disiplin' },
+  ];
+  const timeOptions = [
+    { id: '5', labelKey: 'onboarding.time5', fallback: '5 dk' },
+    { id: '15', labelKey: 'onboarding.time15', fallback: '15 dk' },
+    { id: '30', labelKey: 'onboarding.time30', fallback: '30+ dk' },
+  ];
+  const moodOptions = [
+    { id: 'motivated', icon: 'whatshot', labelKey: 'onboarding.moodMotivated', fallback: 'Yüksek motivasyon' },
+    { id: 'lost', icon: 'help-outline', labelKey: 'onboarding.moodLost', fallback: 'Karışık hissediyorum' },
+    { id: 'fresh', icon: 'auto-awesome', labelKey: 'onboarding.moodFresh', fallback: 'Yeni başlangıç' },
+  ];
+
+  return (
+    <ScrollView
+      contentContainerStyle={styles.personalizeContent}
+      showsVerticalScrollIndicator={false}
+    >
+      <Text style={styles.personalizeIntro}>
+        {t('onboarding.personalizeIntro', 'Sana özel plan için 3 hızlı soru')}
+      </Text>
+
+      {/* Goal */}
+      <Text style={styles.personalizeQ}>
+        {t('onboarding.qGoal', 'Ne için buradasın?')}
+      </Text>
+      <View style={styles.optionList}>
+        {goalOptions.map((opt) => {
+          const active = answers.goal === opt.id;
+          return (
+            <TouchableOpacity
+              key={opt.id}
+              onPress={() => onAnswer('goal', opt.id)}
+              activeOpacity={0.85}
+              style={[styles.optionCard, active && styles.optionCardActive]}
+            >
+              <View style={[styles.optionIconBox, active && styles.optionIconBoxActive]}>
+                <MaterialIcons
+                  name={opt.icon}
+                  size={20}
+                  color={active ? LT.onPrimary : LT.onSurfaceVariant}
+                />
+              </View>
+              <Text style={[styles.optionLabel, active && styles.optionLabelActive]}>
+                {t(opt.labelKey, opt.fallback)}
+              </Text>
+              {active ? (
+                <MaterialIcons name="check-circle" size={18} color={LT.primary} />
+              ) : null}
+            </TouchableOpacity>
+          );
+        })}
+      </View>
+
+      {/* Time */}
+      <Text style={styles.personalizeQ}>
+        {t('onboarding.qTime', 'Günde ne kadar zaman ayırabilirsin?')}
+      </Text>
+      <View style={styles.optionRow}>
+        {timeOptions.map((opt) => {
+          const active = answers.time === opt.id;
+          return (
+            <TouchableOpacity
+              key={opt.id}
+              onPress={() => onAnswer('time', opt.id)}
+              activeOpacity={0.85}
+              style={[styles.chip, active && styles.chipActive]}
+            >
+              <Text style={[styles.chipLabel, active && styles.chipLabelActive]}>
+                {t(opt.labelKey, opt.fallback)}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
+      </View>
+
+      {/* Mood */}
+      <Text style={styles.personalizeQ}>
+        {t('onboarding.qMood', 'Şu an nasıl hissediyorsun?')}
+      </Text>
+      <View style={styles.optionList}>
+        {moodOptions.map((opt) => {
+          const active = answers.mood === opt.id;
+          return (
+            <TouchableOpacity
+              key={opt.id}
+              onPress={() => onAnswer('mood', opt.id)}
+              activeOpacity={0.85}
+              style={[styles.optionCard, active && styles.optionCardActive]}
+            >
+              <View style={[styles.optionIconBox, active && styles.optionIconBoxActive]}>
+                <MaterialIcons
+                  name={opt.icon}
+                  size={20}
+                  color={active ? LT.onPrimary : LT.onSurfaceVariant}
+                />
+              </View>
+              <Text style={[styles.optionLabel, active && styles.optionLabelActive]}>
+                {t(opt.labelKey, opt.fallback)}
+              </Text>
+              {active ? (
+                <MaterialIcons name="check-circle" size={18} color={LT.primary} />
+              ) : null}
+            </TouchableOpacity>
+          );
+        })}
+      </View>
+    </ScrollView>
+  );
+}
+
 function FeatureCard({ icon, iconColor, tint, border, title, subtitle }) {
   return (
     <View style={styles.featureCard}>
@@ -270,7 +430,7 @@ function UpsellStep({ t, onSubscribe }) {
       <Text style={styles.upsellSubtitle}>
         {t(
           'onboarding.upsellSubtitle',
-          'Premium ile 7 gün ücretsiz başla. İptal et, ücretsiz kalsın.',
+          'İlk 7 gün ücretsiz, sonra ayda ₺149,99 (otomatik yenilenir). İstediğin an iptal et.',
         )}
       </Text>
 
@@ -726,6 +886,11 @@ const styles = StyleSheet.create({
     shadowRadius: 16,
     elevation: 8,
   },
+  primaryWrapDisabled: {
+    backgroundColor: LT.outlineVariant,
+    shadowOpacity: 0,
+    elevation: 0,
+  },
   primaryButton: {
     paddingVertical: 18,
     paddingHorizontal: 24,
@@ -733,6 +898,101 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: LT.primary,
+  },
+  primaryButtonDisabled: {
+    backgroundColor: LT.outlineVariant,
+    opacity: 0.6,
+  },
+
+  // Personalize step
+  personalizeContent: {
+    paddingHorizontal: 24,
+    paddingTop: 24,
+    paddingBottom: 24,
+  },
+  personalizeIntro: {
+    fontSize: 14,
+    color: LT.onSurfaceVariant,
+    fontWeight: '600',
+    textAlign: 'center',
+    marginBottom: 20,
+    letterSpacing: 0.2,
+  },
+  personalizeQ: {
+    fontSize: 16,
+    fontWeight: '900',
+    color: LT.onSurface,
+    marginBottom: 10,
+    marginTop: 14,
+    letterSpacing: -0.2,
+  },
+  optionList: {
+    gap: 8,
+  },
+  optionCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    backgroundColor: LT.surfaceContainerLowest,
+    borderWidth: 1,
+    borderColor: LT.outlineVariant,
+    borderRadius: 12,
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+  },
+  optionCardActive: {
+    borderColor: LT.primary,
+    borderWidth: 2,
+    backgroundColor: LT.surfaceContainerLow,
+  },
+  optionIconBox: {
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: LT.surfaceContainerLow,
+    borderWidth: 1,
+    borderColor: LT.outlineVariant,
+  },
+  optionIconBoxActive: {
+    backgroundColor: LT.primary,
+    borderColor: LT.primary,
+  },
+  optionLabel: {
+    flex: 1,
+    color: LT.onSurface,
+    fontSize: 14,
+    fontWeight: '700',
+  },
+  optionLabelActive: {
+    color: LT.primary,
+  },
+  optionRow: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  chip: {
+    flex: 1,
+    paddingVertical: 14,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: LT.outlineVariant,
+    backgroundColor: LT.surfaceContainerLowest,
+    alignItems: 'center',
+  },
+  chipActive: {
+    borderColor: LT.primary,
+    borderWidth: 2,
+    backgroundColor: LT.surfaceContainerLow,
+  },
+  chipLabel: {
+    color: LT.onSurface,
+    fontSize: 14,
+    fontWeight: '800',
+  },
+  chipLabelActive: {
+    color: LT.primary,
   },
   primaryButtonText: {
     color: LT.onPrimary,
