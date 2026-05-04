@@ -140,6 +140,167 @@ create policy "events: insert own"
 -- The owner reads them via service-role from a dashboard or via Supabase UI.
 
 -- ──────────────────────────────────────────────────────────────────────────────
+-- Table: push_tokens
+-- Stores each device's Expo push token for server-initiated notifications
+-- (friend invite accepted, achievement unlocked, etc.). One row per user;
+-- last device wins because we want a single canonical token per user.
+-- ──────────────────────────────────────────────────────────────────────────────
+create table if not exists public.push_tokens (
+  user_id    uuid primary key references auth.users(id) on delete cascade,
+  expo_token text not null,
+  platform   text not null default 'ios',
+  updated_at timestamptz not null default now()
+);
+
+alter table public.push_tokens enable row level security;
+
+drop policy if exists "push: insert/update own" on public.push_tokens;
+create policy "push: insert/update own"
+  on public.push_tokens for all
+  using (auth.uid() = user_id)
+  with check (auth.uid() = user_id);
+
+-- ──────────────────────────────────────────────────────────────────────────────
+-- Table: referral_redemptions
+-- Tracks referral code redemption — referrer (the inviter), referee (the new
+-- user), and redemption status. Edge Function 'redeem-referral' creates the
+-- row and grants both users a 7-day Premium entitlement via RevenueCat.
+-- ──────────────────────────────────────────────────────────────────────────────
+create table if not exists public.referral_redemptions (
+  id           uuid primary key default gen_random_uuid(),
+  referrer_id  uuid references auth.users(id) on delete set null,
+  referee_id   uuid references auth.users(id) on delete cascade,
+  ref_code     text not null,
+  status       text not null default 'pending',
+  -- pending | granted | failed
+  created_at   timestamptz not null default now(),
+  granted_at   timestamptz,
+  unique (referee_id) -- one redemption per new user, prevents abuse
+);
+
+create index if not exists referral_redemptions_referrer_idx
+  on public.referral_redemptions (referrer_id, created_at desc);
+
+alter table public.referral_redemptions enable row level security;
+
+drop policy if exists "referrals: read own" on public.referral_redemptions;
+create policy "referrals: read own"
+  on public.referral_redemptions for select
+  using (auth.uid() = referrer_id or auth.uid() = referee_id);
+
+-- Inserts only via Edge Function (service role) — no client-direct inserts
+-- because we need to verify ref_code maps to a real anon_username.
+
+-- ──────────────────────────────────────────────────────────────────────────────
+-- Table: friendships + friend_invites
+-- Symmetric friendship: a single row per pair, ordered (user_a < user_b) so
+-- we never have duplicates. Status starts 'pending', flips to 'accepted'
+-- when the recipient accepts the invite.
+-- ──────────────────────────────────────────────────────────────────────────────
+create table if not exists public.friendships (
+  user_a       uuid not null references auth.users(id) on delete cascade,
+  user_b       uuid not null references auth.users(id) on delete cascade,
+  status       text not null default 'pending',
+  -- pending | accepted | blocked
+  initiated_by uuid not null references auth.users(id) on delete cascade,
+  created_at   timestamptz not null default now(),
+  accepted_at  timestamptz,
+  primary key (user_a, user_b),
+  check (user_a < user_b)
+);
+
+create index if not exists friendships_user_a_idx
+  on public.friendships (user_a, status);
+create index if not exists friendships_user_b_idx
+  on public.friendships (user_b, status);
+
+alter table public.friendships enable row level security;
+
+drop policy if exists "friendships: read own" on public.friendships;
+create policy "friendships: read own"
+  on public.friendships for select
+  using (auth.uid() = user_a or auth.uid() = user_b);
+
+-- Inserts/updates only via Edge Function so we can validate the invite code
+-- and prevent unauthorized friend additions.
+
+-- ──────────────────────────────────────────────────────────────────────────────
+-- Table: tribe_messages (path-based tribes — schema only, runtime deferred)
+-- Stub for v1.0.12 path tribes feature. Each path has its own room; users
+-- working on the same path can post short text messages. Moderation /
+-- reporting / muting infrastructure is NOT in this version — table exists
+-- so client code can be written against it but is gated off in the UI.
+-- ──────────────────────────────────────────────────────────────────────────────
+create table if not exists public.tribe_messages (
+  id          uuid primary key default gen_random_uuid(),
+  path_id     text not null,
+  user_id     uuid not null references auth.users(id) on delete cascade,
+  anon_handle text not null,
+  body        text not null check (char_length(body) <= 280),
+  created_at  timestamptz not null default now()
+);
+
+create index if not exists tribe_messages_path_idx
+  on public.tribe_messages (path_id, created_at desc);
+
+alter table public.tribe_messages enable row level security;
+
+-- Read: anyone signed in can read any tribe (public-by-design rooms).
+drop policy if exists "tribes: read all" on public.tribe_messages;
+create policy "tribes: read all"
+  on public.tribe_messages for select
+  using (auth.uid() is not null);
+
+-- Insert: only as the authenticated user. Rate limiting + abuse handling
+-- belongs in the Edge Function once we ship the feature.
+drop policy if exists "tribes: insert own" on public.tribe_messages;
+create policy "tribes: insert own"
+  on public.tribe_messages for insert
+  with check (auth.uid() = user_id);
+
+-- ──────────────────────────────────────────────────────────────────────────────
+-- Table: streak_duels (1v1 duels — schema only, runtime deferred)
+-- Stub for v1.0.13 streak duel feature. Two users challenge each other to a
+-- 7-day streak race; whoever has the higher current_streak at end_at wins.
+-- ──────────────────────────────────────────────────────────────────────────────
+create table if not exists public.streak_duels (
+  id            uuid primary key default gen_random_uuid(),
+  challenger_id uuid not null references auth.users(id) on delete cascade,
+  opponent_id   uuid not null references auth.users(id) on delete cascade,
+  status        text not null default 'pending',
+  -- pending | active | challenger_won | opponent_won | tied | abandoned
+  start_at      timestamptz,
+  end_at        timestamptz,
+  created_at    timestamptz not null default now(),
+  check (challenger_id <> opponent_id)
+);
+
+alter table public.streak_duels enable row level security;
+
+drop policy if exists "duels: read involved" on public.streak_duels;
+create policy "duels: read involved"
+  on public.streak_duels for select
+  using (auth.uid() = challenger_id or auth.uid() = opponent_id);
+
+-- ──────────────────────────────────────────────────────────────────────────────
+-- View: active_tribe_users
+-- Lightweight presence — last 5 minutes of analytics_events filtered to
+-- 'lesson_open' or 'lesson_complete' grouped by path_id. Powers the
+-- "47 kişi şu an X path'inde" feed without needing a realtime channel.
+-- ──────────────────────────────────────────────────────────────────────────────
+create or replace view public.active_tribe_counts as
+select
+  (props->>'pathId')::text as path_id,
+  count(distinct coalesce(user_id::text, anon_user_id)) as active_count
+from public.analytics_events
+where created_at > now() - interval '5 minutes'
+  and event in ('lesson_open', 'lesson_complete')
+  and props ? 'pathId'
+group by props->>'pathId';
+
+grant select on public.active_tribe_counts to anon, authenticated;
+
+-- ──────────────────────────────────────────────────────────────────────────────
 -- Auth settings you still need to check in the Supabase dashboard:
 --   Authentication → Providers → Email: enable "Confirm email" if you want
 --     e-mail verification. The app handles both confirmed and unconfirmed

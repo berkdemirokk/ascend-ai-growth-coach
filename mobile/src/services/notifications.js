@@ -178,7 +178,7 @@ export const scheduleComebackReminder = async ({ lastCompletedDate }) => {
       title: i18n.t('notifications.comebackTitle', 'Geri dön. Tek bir ders.'),
       body: i18n.t(
         'notifications.comebackBody',
-        '{{days}} gündür yoksun. Streak'ini sıfırlama — sadece 5 dakika, yeniden başla.',
+        '{{days}} gündür yoksun. Streak\'ini sıfırlama — sadece 5 dakika, yeniden başla.',
         { days: daysSince },
       ),
       sound: true,
