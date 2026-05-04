@@ -11,6 +11,7 @@ import {
   Linking,
   StatusBar,
   ActivityIndicator,
+  Share,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -44,6 +45,7 @@ export default function SettingsScreen({ navigation }) {
     vacationUntil,
     startVacation,
     endVacation,
+    anonUsername,
   } = useApp();
 
   const vacationActive = (() => {
@@ -52,6 +54,21 @@ export default function SettingsScreen({ navigation }) {
     const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
     return vacationUntil >= todayStr;
   })();
+
+  const handleInvite = async () => {
+    const code = anonUsername || 'ascend';
+    const link = `https://ascend.app/?ref=${encodeURIComponent(code)}`;
+    const message = t(
+      'settings.inviteShare',
+      'Disiplin akademisini birlikte yapalım — Ascend\'i indir, ilk 7 gün premium senden 🔥\n{{link}}',
+      { link },
+    );
+    try {
+      await Share.share({ message });
+    } catch {
+      // user dismissed or no share UI available
+    }
+  };
 
   const handleToggleVacation = () => {
     if (vacationActive) {
@@ -388,6 +405,37 @@ export default function SettingsScreen({ navigation }) {
 
           {/* Account */}
           <Section title={t('settings.account', 'HESAP (ACCOUNT)')}>
+            <TouchableOpacity
+              onPress={handleInvite}
+              activeOpacity={0.7}
+              style={[styles.row, styles.rowBorder]}
+            >
+              <View style={styles.rowLeft}>
+                <MaterialIcons
+                  name="card-giftcard"
+                  size={22}
+                  color={LT.primary}
+                />
+                <View>
+                  <Text style={styles.rowLabel}>
+                    {t('settings.invite', 'Arkadaşını davet et')}
+                  </Text>
+                  <Text style={styles.rowSub}>
+                    {t(
+                      'settings.inviteSub',
+                      'Davet kodun: {{code}} · 7 gün premium hediye',
+                      { code: anonUsername || '—' },
+                    )}
+                  </Text>
+                </View>
+              </View>
+              <MaterialIcons
+                name="chevron-right"
+                size={18}
+                color={LT.onSurfaceVariant}
+              />
+            </TouchableOpacity>
+
             <TouchableOpacity
               onPress={() => navigation.navigate('Paywall')}
               activeOpacity={0.7}
