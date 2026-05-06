@@ -8,14 +8,18 @@ const VARIANT_KEY = '@ascend/paywall_variant_v1';
 
 export const PAYWALL_VARIANTS = {
   // Variant A: Original — discipline-focused, minimalist
+  // CTA + subheadline are deliberately action-focused, not free-trial-led:
+  // Apple Guideline 3.1.2(c) requires the billed amount to be the most
+  // conspicuous pricing element. Free trial info lives in the small
+  // disclosure under the price.
   A: {
     id: 'A',
     headline: 'paywall.titleA',           // "TAM MONK MODE"
-    subheadline: 'paywall.subtitleA',      // "İlk 7 gün ücretsiz"
+    subheadline: 'paywall.subtitleA',      // "Tüm özellikleri aç"
     heroEmoji: '🔥',
     showSocialProof: false,
     showCountdown: false,
-    ctaText: 'paywall.ctaTrialA',          // "7 gün ücretsiz başla"
+    ctaText: 'paywall.ctaSubscribeA',      // "Premium'a Geç"
     features: ['hearts', 'paths', 'ads', 'sync', 'achievements'],
     bestValueBadge: 'paywall.bestValueA',  // "EN İYİ FİYAT"
     yearlyHighlight: true,
@@ -26,11 +30,11 @@ export const PAYWALL_VARIANTS = {
   B: {
     id: 'B',
     headline: 'paywall.titleB',           // "BU FIRSATI KAÇIRMA"
-    subheadline: 'paywall.subtitleB',      // "Premium'la 3x daha hızlı ilerle"
+    subheadline: 'paywall.subtitleB',      // "Disiplin yolculuğunu hızlandır"
     heroEmoji: '⚡',
     showSocialProof: false,
     showCountdown: false,                   // countdown timer also misleading without real offer
-    ctaText: 'paywall.ctaTrialB',          // "Bana özel teklifi al"
+    ctaText: 'paywall.ctaSubscribeB',      // "Premium'a Geç"
     features: ['hearts', 'paths', 'ads', 'sync', 'achievements'],
     bestValueBadge: 'paywall.bestValueB',  // "%70 KAZANÇ"
     yearlyHighlight: true,
@@ -43,7 +47,7 @@ export const PAYWALL_VARIANTS = {
     heroEmoji: '🧘',
     showSocialProof: false,
     showCountdown: false,
-    ctaText: 'paywall.ctaTrialC',          // "Master yolculuğunu başlat"
+    ctaText: 'paywall.ctaSubscribeC',      // "Master yolculuğunu başlat"
     features: ['hearts', 'paths', 'ads', 'sync', 'achievements'],
     bestValueBadge: 'paywall.bestValueC',  // "MASTER PAKETİ"
     yearlyHighlight: true,

@@ -53,6 +53,10 @@ export default function PaywallScreen({ navigation }) {
     ? `₺${(packages.yearly.product.price / 12).toFixed(2)}`
     : '₺83,33';
 
+  const selectedPriceString = selected === 'yearly' ? yearlyPrice : monthlyPrice;
+  const selectedPeriodKey = selected === 'yearly' ? 'paywall.perYear' : 'paywall.perMonth';
+  const selectedPeriodFallback = selected === 'yearly' ? '/ yıl' : '/ ay';
+
   const handleSubscribe = async () => {
     if (!packages.monthly && !packages.yearly) {
       Alert.alert(
@@ -134,7 +138,7 @@ export default function PaywallScreen({ navigation }) {
             {t(variant?.headline || 'paywall.title', 'TAM MONK MODE').toUpperCase()}
           </Text>
           <Text style={styles.heroSubtitle}>
-            {t(variant?.subheadline || 'paywall.subtitle', 'İlk 7 gün ücretsiz')}
+            {t(variant?.subheadline || 'paywall.subtitle', 'Tüm özellikleri aç')}
           </Text>
           {variant?.showSocialProof ? (
             <View style={styles.socialProofPill}>
@@ -196,6 +200,12 @@ export default function PaywallScreen({ navigation }) {
             label={t('paywall.feature5', 'Premium başarılar')}
           />
         </View>
+
+        {/* Subscription title — Apple Guideline 3.1.2(c): purchase flow must
+             explicitly name the auto-renewing subscription. */}
+        <Text style={styles.subscriptionTitle}>
+          {t('paywall.subscriptionTitle', 'Ascend Premium')}
+        </Text>
 
         {/* Price cards */}
         {loadingPackages ? (
@@ -279,6 +289,33 @@ export default function PaywallScreen({ navigation }) {
           </View>
         )}
 
+        {/* Billed-amount summary — Apple Guideline 3.1.2(c) requires the
+             total billed amount to be the most clear and conspicuous pricing
+             element. Free trial / per-unit pricing is intentionally rendered
+             smaller below. */}
+        {!loadingPackages && (packages.monthly || packages.yearly) ? (
+          <View style={styles.billedAmountBlock}>
+            <Text style={styles.billedAmountLabel}>
+              {selected === 'yearly'
+                ? t('paywall.billedYearly', 'Yıllık ücret')
+                : t('paywall.billedMonthlyLabel', 'Aylık ücret')}
+            </Text>
+            <Text style={styles.billedAmount}>
+              {selectedPriceString}
+              <Text style={styles.billedAmountPeriod}>
+                {' '}
+                {t(selectedPeriodKey, selectedPeriodFallback)}
+              </Text>
+            </Text>
+            <Text style={styles.billedAmountTrialNote}>
+              {t(
+                'paywall.trialDisclosure',
+                '7 gün ücretsiz deneme dahil. Sonra otomatik yenilenir.',
+              )}
+            </Text>
+          </View>
+        ) : null}
+
         {/* CTA */}
         <TouchableOpacity
           onPress={handleSubscribe}
@@ -296,13 +333,13 @@ export default function PaywallScreen({ navigation }) {
               <ActivityIndicator color={LT.onPrimary} />
             ) : (
               <Text style={styles.ctaText}>
-                {t(variant?.ctaText || 'paywall.ctaTrial', '7 gün ücretsiz başla')}
+                {t(variant?.ctaText || 'paywall.ctaSubscribe', 'Aboneliği Başlat')}
               </Text>
             )}
           </View>
         </TouchableOpacity>
 
-        {/* Footer */}
+        {/* Footer — auto-renewal disclosure required by Apple */}
         <Text style={styles.footerNote}>
           {t(
             'paywall.autoRenew',
@@ -528,6 +565,54 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   retryText: { color: LT.onPrimary, fontSize: 13, fontWeight: '800' },
+
+  // Subscription title (above price cards) — Apple 3.1.2(c) compliance
+  subscriptionTitle: {
+    color: LT.onSurfaceVariant,
+    fontSize: 12,
+    fontWeight: '700',
+    letterSpacing: 1.4,
+    marginBottom: 10,
+    textTransform: 'uppercase',
+  },
+
+  // Billed-amount summary (above CTA) — must be the most prominent pricing
+  // element on the page per Apple Guideline 3.1.2(c).
+  billedAmountBlock: {
+    width: '100%',
+    maxWidth: 420,
+    alignItems: 'center',
+    marginBottom: 16,
+    paddingVertical: 12,
+  },
+  billedAmountLabel: {
+    color: LT.onSurfaceVariant,
+    fontSize: 12,
+    fontWeight: '700',
+    letterSpacing: 1.2,
+    textTransform: 'uppercase',
+    marginBottom: 4,
+  },
+  billedAmount: {
+    color: LT.onSurface,
+    fontSize: 36,
+    fontWeight: '900',
+    letterSpacing: -1,
+  },
+  billedAmountPeriod: {
+    color: LT.onSurfaceVariant,
+    fontSize: 16,
+    fontWeight: '600',
+    letterSpacing: 0,
+  },
+  billedAmountTrialNote: {
+    color: LT.onSurfaceVariant,
+    fontSize: 11,
+    fontWeight: '500',
+    marginTop: 6,
+    textAlign: 'center',
+    maxWidth: 280,
+  },
 
   // Price cards
   priceCards: {
