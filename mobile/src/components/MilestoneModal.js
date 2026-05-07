@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
+import { useTranslation } from 'react-i18next';
 
 const MILESTONES = {
   3: { emoji: '🔥', title: '3 Gün!', subtitle: 'Alev tutuştu' },
@@ -27,6 +28,7 @@ export const isMilestone = (streak) => Object.keys(MILESTONES).includes(String(s
 export const getMilestone = (streak) => MILESTONES[streak] || null;
 
 export default function MilestoneModal({ visible, streak, onClose }) {
+  const { t } = useTranslation();
   const scale = useRef(new Animated.Value(0)).current;
   const milestone = getMilestone(streak);
 
@@ -57,8 +59,12 @@ export default function MilestoneModal({ visible, streak, onClose }) {
             style={styles.gradient}
           >
             <Text style={styles.emoji}>{milestone.emoji}</Text>
-            <Text style={styles.title}>{milestone.title}</Text>
-            <Text style={styles.subtitle}>{milestone.subtitle}</Text>
+            <Text style={styles.title}>
+              {t(`milestone.${streak}.title`, milestone.title)}
+            </Text>
+            <Text style={styles.subtitle}>
+              {t(`milestone.${streak}.subtitle`, milestone.subtitle)}
+            </Text>
             <Text style={styles.streakNumber}>{streak} gün</Text>
             <TouchableOpacity onPress={onClose} style={styles.closeBtn} activeOpacity={0.8}>
               <Text style={styles.closeBtnText}>Devam et 🔥</Text>
