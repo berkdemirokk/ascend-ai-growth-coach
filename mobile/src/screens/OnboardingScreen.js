@@ -433,12 +433,20 @@ function UpsellStep({ t, onSubscribe }) {
       <Text style={styles.upsellTitle}>
         {t('onboarding.upsellTitle', 'Disiplini hızlandır')}
       </Text>
-      <Text style={styles.upsellSubtitle}>
-        {t(
-          'onboarding.upsellSubtitle',
-          'İlk 7 gün ücretsiz, sonra ayda ₺149,99 (otomatik yenilenir). İstediğin an iptal et.',
-        )}
-      </Text>
+
+      {/* Apple HIG 3.1.2(c): the billed amount must be the most clear and
+          conspicuous pricing element. Free trial info is subordinate. */}
+      <View style={styles.priceBlock}>
+        <Text style={styles.priceAmount}>
+          {t('onboarding.priceMonthly', '₺149,99 / ay')}
+        </Text>
+        <Text style={styles.priceTrial}>
+          {t(
+            'onboarding.priceTrial',
+            'İlk 7 gün ücretsiz, sonra otomatik yenilenir. İstediğin an iptal et.',
+          )}
+        </Text>
+      </View>
 
       <View style={styles.upsellFeatures}>
         <UpsellFeature
@@ -471,7 +479,7 @@ function UpsellStep({ t, onSubscribe }) {
         <View style={styles.upsellCta}>
           <MaterialIcons name="auto-awesome" size={18} color={LT.onPrimary} />
           <Text style={styles.upsellCtaText}>
-            {t('onboarding.upsellCta', '7 gün ücretsiz dene')}
+            {t('onboarding.upsellCta', 'Aboneliği başlat')}
           </Text>
         </View>
       </TouchableOpacity>
@@ -479,7 +487,7 @@ function UpsellStep({ t, onSubscribe }) {
       <Text style={styles.upsellDisclaimer}>
         {t(
           'onboarding.upsellDisclaimer',
-          'Otomatik yenilenir. App Store\'dan dilediğin an iptal edebilirsin.',
+          '₺149,99/ay — abonelik otomatik yenilenir. App Store\'dan dilediğin an iptal edebilirsin.',
         )}
       </Text>
     </ScrollView>
@@ -712,11 +720,32 @@ const styles = StyleSheet.create({
   },
   upsellTitle: {
     color: LT.primary,
-    fontSize: 28,
+    fontSize: 24,
     fontWeight: '900',
     letterSpacing: -0.6,
     textAlign: 'center',
-    marginBottom: 8,
+    marginBottom: 14,
+  },
+  // Apple HIG 3.1.2(c): billed amount must be the most prominent pricing element.
+  priceBlock: {
+    alignItems: 'center',
+    marginBottom: 20,
+    paddingHorizontal: 12,
+  },
+  priceAmount: {
+    color: LT.onSurface,
+    fontSize: 38,
+    fontWeight: '900',
+    letterSpacing: -1.2,
+    marginBottom: 6,
+    textAlign: 'center',
+  },
+  priceTrial: {
+    color: LT.onSurfaceVariant,
+    fontSize: 12,
+    fontWeight: '500',
+    textAlign: 'center',
+    lineHeight: 17,
   },
   upsellSubtitle: {
     color: LT.onSurfaceVariant,

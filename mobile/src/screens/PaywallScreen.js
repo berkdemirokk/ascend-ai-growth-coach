@@ -139,7 +139,10 @@ export default function PaywallScreen({ navigation }) {
             {t(variant?.headline || 'paywall.title', 'TAM MONK MODE').toUpperCase()}
           </Text>
           <Text style={styles.heroSubtitle}>
-            {t(variant?.subheadline || 'paywall.subtitle', 'İlk 7 gün ücretsiz')}
+            {t(
+              variant?.subheadline || 'paywall.subtitle',
+              'Bir aylık veya yıllık abonelik. 7 gün ücretsiz dene.',
+            )}
           </Text>
           {variant?.showSocialProof ? (
             <View style={styles.socialProofPill}>
@@ -424,16 +427,17 @@ const styles = StyleSheet.create({
   },
   heroTitle: {
     color: LT.onSurface,
-    fontSize: 32,
+    fontSize: 26,
     fontWeight: '900',
     letterSpacing: -1,
     marginBottom: 6,
     textAlign: 'center',
   },
   heroSubtitle: {
-    color: LT.primary,
-    fontSize: 16,
-    fontWeight: '700',
+    color: LT.onSurfaceVariant,
+    fontSize: 13,
+    fontWeight: '500',
+    textAlign: 'center',
   },
   socialProofPill: {
     flexDirection: 'row',
@@ -619,9 +623,9 @@ const styles = StyleSheet.create({
   },
   priceAmount: {
     color: LT.onSurface,
-    fontSize: 22,
-    fontWeight: '800',
-    letterSpacing: -0.4,
+    fontSize: 30,
+    fontWeight: '900',
+    letterSpacing: -0.8,
   },
   pricePerMonth: {
     color: LT.onSurfaceVariant,
@@ -640,9 +644,9 @@ const styles = StyleSheet.create({
   },
   priceAmountYearly: {
     color: LT.onPrimary,
-    fontSize: 22,
-    fontWeight: '800',
-    letterSpacing: -0.4,
+    fontSize: 30,
+    fontWeight: '900',
+    letterSpacing: -0.8,
   },
   pricePerMonthYearly: {
     color: LT.onPrimary,

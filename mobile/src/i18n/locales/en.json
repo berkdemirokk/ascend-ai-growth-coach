@@ -56,7 +56,11 @@
     "moodMotivated": "Highly motivated",
     "moodLost": "Feeling lost",
     "moodFresh": "Fresh start",
-    "upsellSubtitle": "First 7 days free, then ₺149,99/month (auto-renews). Cancel anytime."
+    "upsellSubtitle": "First 7 days free, then ₺149,99/month (auto-renews). Cancel anytime.",
+    "priceMonthly": "₺149.99 / month",
+    "priceTrial": "First 7 days free, then auto-renews. Cancel anytime.",
+    "upsellCta": "Start Subscription",
+    "upsellDisclaimer": "₺149.99/month — subscription auto-renews. Cancel anytime in the App Store."
   },
   "auth": {
     "welcomeTitle": "Welcome to Monk Mode",

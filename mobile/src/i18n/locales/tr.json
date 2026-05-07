@@ -56,7 +56,11 @@
     "moodMotivated": "Yüksek motivasyon",
     "moodLost": "Karışık hissediyorum",
     "moodFresh": "Yeni başlangıç",
-    "upsellSubtitle": "İlk 7 gün ücretsiz, sonra ayda ₺149,99 (otomatik yenilenir). İstediğin an iptal et."
+    "upsellSubtitle": "İlk 7 gün ücretsiz, sonra ayda ₺149,99 (otomatik yenilenir). İstediğin an iptal et.",
+    "priceMonthly": "₺149,99 / ay",
+    "priceTrial": "İlk 7 gün ücretsiz, sonra otomatik yenilenir. İstediğin an iptal et.",
+    "upsellCta": "Aboneliği başlat",
+    "upsellDisclaimer": "₺149,99/ay — abonelik otomatik yenilenir. App Store'dan dilediğin an iptal edebilirsin."
   },
   "auth": {
     "welcomeTitle": "Monk Mode'a Hoşgeldin",
