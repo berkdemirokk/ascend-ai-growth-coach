@@ -9,7 +9,11 @@
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { useApp } from '../contexts/AppContext';
-import { getBannerId, isAdsReady } from '../services/ads';
+import {
+  getBannerId,
+  isAdsReady,
+  requestNonPersonalizedAdsOnly,
+} from '../services/ads';
 
 export default function BannerAdBox() {
   const { isPremium } = useApp();
@@ -44,7 +48,12 @@ export default function BannerAdBox() {
       <BannerAd
         unitId={adId}
         size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
-        requestOptions={{ requestNonPersonalizedAdsOnly: false }}
+        requestOptions={{
+          // Mirrors interstitial/rewarded — personalized only when ATT
+          // explicitly granted. Apple Review will check that no
+          // personalized request fires before consent.
+          requestNonPersonalizedAdsOnly: requestNonPersonalizedAdsOnly(),
+        }}
         onAdLoaded={() => setLoaded(true)}
         onAdFailedToLoad={() => setLoaded(false)}
       />

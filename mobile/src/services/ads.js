@@ -43,11 +43,16 @@ const getRewardedId = () => {
 
 // ─── ATT + init ──────────────────────────────────────────────────────────────
 
+// Last known ATT status, updated by requestTrackingPermissionIfNeeded and
+// read by createAdRequest below to set requestNonPersonalizedAdsOnly.
+let lastTrackingStatus = 'undetermined';
+
 /**
  * Request App Tracking Transparency. Exported so callers can trigger it
  * AFTER user has had a moment to understand the app (Apple guideline:
- * "explain why you need tracking before asking"). Recommended trigger:
- * after first lesson completion.
+ * "explain why you need tracking before asking"). The current call site
+ * is OnboardingScreen.finishOnboarding — after the user has seen the
+ * welcome, picked a goal, picked a path, and saw/skipped the upsell.
  *
  * Returns 'granted' | 'denied' | 'undetermined' | 'restricted' | 'unknown'.
  */
@@ -58,16 +63,27 @@ export const requestTrackingPermissionIfNeeded = async () => {
     if (!mod) return 'unknown';
     const { getTrackingPermissionsAsync, requestTrackingPermissionsAsync } = mod;
     const existing = await getTrackingPermissionsAsync();
-    if (existing?.status === 'undetermined') {
+    let status = existing?.status || 'unknown';
+    if (status === 'undetermined') {
       const result = await requestTrackingPermissionsAsync();
-      return result?.status || 'unknown';
+      status = result?.status || 'unknown';
     }
-    return existing?.status || 'unknown';
+    lastTrackingStatus = status;
+    return status;
   } catch (e) {
     console.warn('ATT request skipped:', e?.message);
     return 'unknown';
   }
 };
+
+// True only when the user has explicitly granted ATT — for any other state
+// (denied, undetermined, restricted, unknown) we serve non-personalized ads.
+const isPersonalizedAdsAllowed = () => lastTrackingStatus === 'granted';
+
+// Exported so the React banner component can mirror the same flag in its
+// requestOptions. Without this the banner would silently send personalized
+// requests even when the user denied ATT.
+export const requestNonPersonalizedAdsOnly = () => !isPersonalizedAdsAllowed();
 
 // Hybrid monetization: free users see ads, premium users don't.
 // AdMob is shown after every 2-3 lesson completions.
@@ -107,7 +123,7 @@ export const loadInterstitial = async () => {
   try {
     const adUnitId = getInterstitialId();
     interstitial = gma.InterstitialAd.createForAdRequest(adUnitId, {
-      requestNonPersonalizedAdsOnly: false,
+      requestNonPersonalizedAdsOnly: !isPersonalizedAdsAllowed(),
     });
 
     await new Promise((resolve, reject) => {
@@ -160,7 +176,7 @@ export const loadRewarded = async () => {
   if (!adUnitId) return;
   try {
     rewarded = gma.RewardedAd.createForAdRequest(adUnitId, {
-      requestNonPersonalizedAdsOnly: false,
+      requestNonPersonalizedAdsOnly: !isPersonalizedAdsAllowed(),
     });
     await new Promise((resolve, reject) => {
       const offLoaded = rewarded.addAdEventListener(

@@ -28,7 +28,12 @@ import {
   scheduleDailyReminder,
   scheduleWeeklyRecap,
 } from '../services/notifications';
-import { requestTrackingPermissionIfNeeded } from '../services/ads';
+import {
+  requestTrackingPermissionIfNeeded,
+  initAds,
+  loadInterstitial,
+  loadRewarded,
+} from '../services/ads';
 
 const STEPS = ['welcome', 'personalize', 'pickPath', 'upsell'];
 
@@ -61,26 +66,38 @@ export default function OnboardingScreen({ navigation }) {
     });
     setActivePath(selectedPath);
     completeOnboarding();
-    // ATT prompt fires here, right when onboarding completes. Apple Review
-    // (iPad reviewer) flagged that the prompt was unreachable when ATT was
-    // gated to first-lesson-completion only — guest-mode reviewers never
-    // tapped a lesson. Firing it after onboarding guarantees the prompt
-    // appears within ~30 seconds of fresh install, before any tracking
-    // data is collected. Sequenced after notification request so iOS shows
-    // the prompts one at a time.
-    requestNotificationPermissions()
-      .then((granted) => {
+
+    // Sequenced post-onboarding flow (Apple-compliant ordering):
+    //   1. Notification permission (5.1.1 — ask at meaningful moment)
+    //   2. ATT prompt (App Tracking Transparency)
+    //   3. AdMob SDK init (AFTER ATT — never before)
+    //
+    // Apple Review submission 52b37ca1 rejected v1.0.10 b52 because
+    // they couldn't surface the ATT prompt during their iPad review.
+    // The prompt was previously gated to first-lesson-completion; a
+    // reviewer browsing in guest mode never tapped a lesson. Now the
+    // prompt fires within ~30s of fresh install. Equally important:
+    // the ad SDK does NOT initialize until ATT has resolved, so no
+    // third-party tracking can possibly happen before consent.
+    (async () => {
+      try {
+        const granted = await requestNotificationPermissions();
         if (granted) {
           scheduleDailyReminder().catch(() => {});
           scheduleWeeklyRecap().catch(() => {});
         }
-        // Fire ATT prompt after notif prompt resolves (or is skipped),
-        // regardless of grant outcome — both are independent.
-        requestTrackingPermissionIfNeeded().catch(() => {});
-      })
-      .catch(() => {
-        requestTrackingPermissionIfNeeded().catch(() => {});
-      });
+      } catch {}
+      try {
+        await requestTrackingPermissionIfNeeded();
+      } catch {}
+      try {
+        await initAds();
+        loadInterstitial().catch(() => {});
+        loadRewarded().catch(() => {});
+      } catch (e) {
+        console.warn('[onboarding] ad init failed:', e?.message);
+      }
+    })();
   };
 
   const handleAnswer = (key, value) => {
@@ -124,9 +141,17 @@ export default function OnboardingScreen({ navigation }) {
     });
     setActivePath(selectedPath);
     completeOnboarding();
-    // Same ATT-on-onboarding-complete logic as finishOnboarding — fires
-    // before the user reaches any ad-related surface.
-    requestTrackingPermissionIfNeeded().catch(() => {});
+    // Same sequenced ATT-then-ads flow as finishOnboarding. Even premium
+    // users go through ATT — they may downgrade later and need consent
+    // already on file.
+    (async () => {
+      try { await requestTrackingPermissionIfNeeded(); } catch {}
+      try {
+        await initAds();
+        loadInterstitial().catch(() => {});
+        loadRewarded().catch(() => {});
+      } catch {}
+    })();
     // Navigate to paywall after onboarding completes
     setTimeout(() => navigation?.navigate?.('Paywall'), 300);
   };

@@ -28,6 +28,13 @@ import LightTopAppBar from '../components/LightTopAppBar';
 import StreakInfoModal from '../components/StreakInfoModal';
 import BannerAdBox from '../components/BannerAdBox';
 import {
+  requestTrackingPermissionIfNeeded,
+  initAds,
+  loadInterstitial,
+  loadRewarded,
+  isAdsReady,
+} from '../services/ads';
+import {
   getDailyChallenge,
   DAILY_CHALLENGE_BONUS_XP,
 } from '../config/dailyChallenges';
@@ -133,6 +140,27 @@ export default function HomeScreen({ navigation }) {
       lessonId: currentLesson.id,
     });
   };
+
+  // Existing users (App Store update from a build < 53) finished onboarding
+  // before the ATT-then-init-ads flow existed, so AdMob never booted for
+  // them. Run a one-shot guard on Home mount: if SDK still isn't ready,
+  // request ATT (idempotent if already answered) then init the SDK.
+  // For new installs onboarding already did this — isAdsReady() is true,
+  // and this block no-ops.
+  const adInitTriggeredRef = useRef(false);
+  useEffect(() => {
+    if (adInitTriggeredRef.current) return;
+    if (isAdsReady()) return;
+    adInitTriggeredRef.current = true;
+    (async () => {
+      try { await requestTrackingPermissionIfNeeded(); } catch {}
+      try {
+        await initAds();
+        loadInterstitial().catch(() => {});
+        loadRewarded().catch(() => {});
+      } catch {}
+    })();
+  }, []);
 
   // One-tap cold open: returning users (3+ day streak who haven't done today's
   // lesson yet) skip the home tab and land directly in their next lesson.

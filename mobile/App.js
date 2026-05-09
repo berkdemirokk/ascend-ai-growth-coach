@@ -8,7 +8,6 @@ import { AuthProvider } from './src/contexts/AuthContext';
 import AppNavigator from './src/navigation/AppNavigator';
 import ErrorBoundary from './src/components/ErrorBoundary';
 import { initPurchases } from './src/services/purchases';
-import { initAds, loadInterstitial, loadRewarded } from './src/services/ads';
 import { initI18n } from './src/i18n';
 import { LT } from './src/config/lightTheme';
 
@@ -28,19 +27,15 @@ export default function App() {
       } catch (e) {
         console.warn('Purchases init failed:', e?.message);
       }
-      try {
-        await initAds();
-        // Preload both ad types so they're instant when shown.
-        loadInterstitial().catch(() => {});
-        loadRewarded().catch(() => {});
-      } catch (e) {
-        console.warn('Ads init failed:', e?.message);
-      }
-      // Note: notification permission is NOT requested here. Apple guideline
-      // 5.1.1 requires we ask only at a meaningful moment. The prompt is
-      // triggered:
-      //   - At the end of onboarding (OnboardingScreen.finishOnboarding)
-      //   - When the user toggles "Daily Reminder" in Settings
+      // AdMob is NOT initialized here on purpose. Apple Review (submission
+      // 52b37ca1) flagged the previous build for ATT-related concerns. We
+      // now defer the ad SDK boot to OnboardingScreen.finishOnboarding,
+      // right AFTER the ATT prompt resolves — so no third-party SDK loads
+      // before the user has seen and answered the tracking permission
+      // request.
+      //
+      // Notifications are also deferred to onboarding-end for the same
+      // "ask at a meaningful moment" reason (Apple guideline 5.1.1).
     })();
   }, []);
 
