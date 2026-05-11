@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Privacy Policy — Ascend Monk Mode</title>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 720px; margin: 40px auto; padding: 0 20px; color: #222; line-height: 1.7; }
+  h1 { font-size: 1.6rem; }
+  h2 { font-size: 1.2rem; margin-top: 2rem; }
+  small { color: #666; }
+  table { border-collapse: collapse; width: 100%; margin-top: 8px; }
+  th, td { border: 1px solid #ccc; padding: 8px 10px; text-align: left; vertical-align: top; font-size: 0.95rem; }
+  th { background: #f5f5f5; }
+  .lang-switch { text-align: right; font-size: 0.9rem; margin-bottom: -16px; }
+  .lang-switch a { color: #555; text-decoration: none; border-bottom: 1px dotted #999; }
+</style>
+</head>
+<body>
+<div class="lang-switch"><a href="privacy.html">Türkçe versiyon →</a></div>
+
+<h1>Privacy Policy</h1>
+<small>Last updated: 3 May 2026 · Effective: 3 May 2026</small>
+
+<p>Ascend: Monk Mode (the "App") is a personal-discipline and habit-building app developed by Berk Demirok ("we"). This policy explains what data we collect, how we use it, who we share it with, and your rights. By using the App you accept this policy.</p>
+
+<h2>1. Data We Collect</h2>
+
+<h3>1.1 Information you provide</h3>
+<ul>
+  <li><strong>Account info:</strong> email, name (optional). Provided via email/password or "Sign in with Apple". With Apple Sign-In you can hide your real email; in that case only Apple's relay address is stored.</li>
+  <li><strong>In-app content:</strong> chosen discipline path, lesson progress, quiz answers, streak (day count), XP, achievements, hearts, and optional written lesson reflections.</li>
+  <li><strong>Preferences:</strong> app language, sound on/off, notification preference.</li>
+</ul>
+
+<h3>1.2 Automatically collected</h3>
+<ul>
+  <li><strong>Device identifiers:</strong> Apple Push Notification token (only if you enable notifications). App Store sandbox subscription validation data.</li>
+  <li><strong>Advertising identifier (IDFA):</strong> ONLY if you tap "Allow" in the App Tracking Transparency (ATT) prompt; Google AdMob then uses it for ad measurement. If you tap "Ask App Not to Track", your IDFA is not shared and you receive non-personalized ads only. Premium subscribers see no ad SDKs at all.</li>
+  <li><strong>Diagnostics:</strong> we currently do not run any crash-reporting or analytics SDK. If we add one we will update this policy and notify you in-app.</li>
+</ul>
+
+<h2>2. Data We Do NOT Collect</h2>
+<ul>
+  <li>Location (GPS or IP-based)</li>
+  <li>Contacts, calendar</li>
+  <li>Photos, video, camera, microphone</li>
+  <li>Browsing history, data from other apps</li>
+  <li>Sensitive financial data (card numbers, bank info). All purchases run through the Apple App Store; we have no access to payment instruments.</li>
+  <li>Health data</li>
+</ul>
+
+<h2>3. How We Use Data</h2>
+<ul>
+  <li>Create your account and sync across devices</li>
+  <li>Save and restore your progress</li>
+  <li>Send a daily reminder push notification (only if you grant permission)</li>
+  <li>Verify premium subscription status and gate content accordingly</li>
+  <li>With ATT consent, show ads and measure ad performance (free users)</li>
+  <li>Prevent abuse (e.g. mass account creation)</li>
+</ul>
+
+<h2>4. Third-Party Service Providers</h2>
+
+<p>We share the minimum data necessary with the following providers. Each is bound by its own privacy policy.</p>
+
+<table>
+  <thead>
+    <tr><th>Provider</th><th>Purpose</th><th>Data shared</th><th>Privacy policy</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Supabase (hosted PostgreSQL, EU)</td>
+      <td>User account, session, progress storage</td>
+      <td>Email, password hash, app progress</td>
+      <td><a href="https://supabase.com/privacy">supabase.com/privacy</a></td>
+    </tr>
+    <tr>
+      <td>Apple App Store / Sign in with Apple</td>
+      <td>Identity verification, in-app subscription</td>
+      <td>Apple ID identity token, subscription receipt</td>
+      <td><a href="https://www.apple.com/legal/privacy/">apple.com/legal/privacy</a></td>
+    </tr>
+    <tr>
+      <td>RevenueCat</td>
+      <td>Subscription entitlement validation</td>
+      <td>Anonymous app-user ID, subscription status</td>
+      <td><a href="https://www.revenuecat.com/privacy/">revenuecat.com/privacy</a></td>
+    </tr>
+    <tr>
+      <td>Google AdMob (free users only)</td>
+      <td>Banner / interstitial / rewarded ads</td>
+      <td>IDFA if ATT granted; else only non-personalized signals (device class, OS version)</td>
+      <td><a href="https://policies.google.com/technologies/ads">policies.google.com/technologies/ads</a></td>
+    </tr>
+    <tr>
+      <td>Expo Application Services (EAS)</td>
+      <td>Build &amp; distribution pipeline (no user data shared)</td>
+      <td>None</td>
+      <td><a href="https://expo.dev/privacy">expo.dev/privacy</a></td>
+    </tr>
+  </tbody>
+</table>
+
+<p><strong>We do not sell your data for ad retargeting, email marketing, or data brokerage.</strong> Without ATT consent, AdMob ads remain non-personalized.</p>
+
+<h2>5. App Tracking Transparency (ATT)</h2>
+<p>We follow Apple's ATT policy. After you finish your first lesson, you'll see Apple's standard system dialog. If you tap "Ask App Not to Track" your IDFA is not shared; the App keeps working fully — just with generic ads. You can change this anytime in iOS Settings → Privacy &amp; Security → Tracking. Premium subscribers see no ads regardless.</p>
+
+<h2>6. Data Retention &amp; Location</h2>
+<ul>
+  <li>Account and progress data is stored in Supabase's EU (Frankfurt) region.</li>
+  <li>If you delete your account, your Supabase user row and all related progress are irreversibly deleted within 30 days (cascade DELETE).</li>
+  <li>We cannot delete subscription receipts that Apple stores on its own servers; for that, contact Apple directly.</li>
+</ul>
+
+<h2>7. Children's Privacy</h2>
+<p>The App is NOT directed at children under 13. We do not knowingly collect data from anyone under 13. If we learn that a child under 13 provided data, we delete the account. Report concerns to <a href="mailto:berkkdemirok@gmail.com">berkkdemirok@gmail.com</a>.</p>
+
+<h2>8. Your Rights (KVKK / GDPR / CCPA-equivalent)</h2>
+<ul>
+  <li><strong>Access:</strong> learn what data we hold about you</li>
+  <li><strong>Deletion:</strong> use Settings → Danger Zone → "Delete Account" in-app to wipe all server data instantly. Compliant with App Store Guideline 5.1.1(v) — server-side cascade DELETE.</li>
+  <li><strong>Correction:</strong> update your account info in-app or via support email</li>
+  <li><strong>Portability:</strong> request a JSON copy of your data via email</li>
+  <li><strong>Objection / restriction:</strong> disable notifications or ATT in iOS settings at any time</li>
+  <li><strong>Complaint:</strong> in Turkey, KVKK; in the EU, your local DPA; in California, your AG office</li>
+</ul>
+
+<h2>9. Security</h2>
+<p>Data is transmitted over HTTPS. Passwords are hashed by Supabase using bcrypt — nobody, including us, sees your plaintext password. Apple's infrastructure protects all payment data.</p>
+
+<h2>10. Policy Changes</h2>
+<p>If we change this policy we update the effective date and show an in-app notice for material changes. Email us for past versions.</p>
+
+<h2>11. Contact</h2>
+<p>Questions, requests, complaints: <a href="mailto:berkkdemirok@gmail.com">berkkdemirok@gmail.com</a><br>
+Data controller: Berk Demirok, Turkey</p>
+</body>
+</html>

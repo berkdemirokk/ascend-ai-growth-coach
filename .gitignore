@@ -1,0 +1,16 @@
+node_modules/
+build/
+dist/
+coverage/
+.DS_Store
+*.log
+.env*
+!.env.example
+server/data/
+
+# ASC API keys - never commit
+mobile/credentials/
+
+# Local env (never commit)
+**/.env.local
+.env.local

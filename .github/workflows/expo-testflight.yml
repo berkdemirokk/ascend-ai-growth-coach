@@ -1,0 +1,82 @@
+name: Expo iOS TestFlight
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "mobile-v*"
+
+jobs:
+  build-and-upload:
+    runs-on: macos-latest
+    timeout-minutes: 90
+    defaults:
+      run:
+        working-directory: mobile
+    env:
+      EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: mobile/package-lock.json
+
+      - name: Select latest Xcode
+        run: |
+          XCODE_APP=$(find /Applications -maxdepth 1 -name "Xcode*.app" | sort -V | tail -n 1)
+          sudo xcode-select -s "$XCODE_APP/Contents/Developer"
+          xcodebuild -version
+
+      - name: Setup Expo / EAS CLI
+        uses: expo/expo-github-action@v8
+        with:
+          expo-version: latest
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Write App Store Connect API key file
+        working-directory: ${{ github.workspace }}
+        run: |
+          API_KEY_PATH="$RUNNER_TEMP/AuthKey_${{ secrets.APP_STORE_CONNECT_KEY_ID }}.p8"
+          cat > "$API_KEY_PATH" <<'EOF'
+          ${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY }}
+          EOF
+          echo "API_KEY_PATH=$API_KEY_PATH" >> "$GITHUB_ENV"
+
+      - name: EAS Build (local)
+        env:
+          EXPO_ASC_API_KEY_PATH: ${{ env.API_KEY_PATH }}
+          EXPO_ASC_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          EXPO_ASC_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+          EXPO_APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          EXPO_APPLE_TEAM_TYPE: INDIVIDUAL
+        run: |
+          # Build IPA locally using EAS tooling. EAS manages cert + profile.
+          eas build \
+            --platform ios \
+            --profile production \
+            --local \
+            --non-interactive \
+            --output "$RUNNER_TEMP/ascend.ipa"
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-ipa
+          path: ${{ runner.temp }}/ascend.ipa
+
+      - name: Upload to TestFlight
+        uses: apple-actions/upload-testflight-build@v3
+        with:
+          app-path: ${{ runner.temp }}/ascend.ipa
+          issuer-id: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+          api-key-id: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          api-private-key: ${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY }}
